@@ -139,7 +139,7 @@ class TexturePool implements ITexturePool
 		var nativeSize:Float = size * textureScale;
 		
 		if (_usePotTextures)
-			return nativeSize > _sizeStep ? MathUtil.getNextPowerOfTwo(nativeSize) : _sizeStep;
+			return nativeSize > _sizeStep ? MathUtil.getNextPowerOfTwo(cast nativeSize) : _sizeStep;
 		else
 			return Math.ceil(nativeSize / _sizeStep) * _sizeStep;
 	}

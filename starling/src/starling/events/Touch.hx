@@ -194,7 +194,7 @@ class Touch
 	
 	private function set_globalX(value:Float):Float
 	{
-		_previousGlobalX = _globalX != (_globalX != 0) ? value:_globalX;  // isNaN check  
+		_previousGlobalX = _globalX != _globalX ? value : _globalX; // isNaN check
 		_globalX = value;
 		return value;
 	}
@@ -208,7 +208,7 @@ class Touch
 	
 	private function set_globalY(value:Float):Float
 	{
-		_previousGlobalY = _globalY != (_globalY != 0) ? value:_globalY;  // isNaN check  
+		_previousGlobalY = _globalY != _globalY ? value : _globalY; // isNaN check
 		_globalY = value;
 		return value;
 	}

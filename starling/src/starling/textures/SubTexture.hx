@@ -91,7 +91,7 @@ class SubTexture extends Texture
 		while (texture != null)
 		{
 			_transformationMatrixToRoot.concat(texture._transformationMatrix);
-			texture = try cast(texture.parent, SubTexture) catch(e:Dynamic) null;
+			texture = cast(texture.parent, SubTexture);
 		}
 	}
 	

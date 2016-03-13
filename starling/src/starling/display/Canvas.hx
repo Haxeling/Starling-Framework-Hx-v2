@@ -49,14 +49,13 @@ class Canvas extends DisplayObjectContainer
 	/** @inheritDoc */
 	override public function hitTest(localPoint:Point):DisplayObject
 	{
-		if (!visible || !touchable || !hitTestMask(localPoint))			 return null  // do that much more efficiently (it contains custom implementations for circles, etc).	// we could also use the standard hit test implementation, but the polygon class can  ;
+		if (!visible || !touchable || !hitTestMask(localPoint)) return null;
 		
+		// we could also use the standard hit test implementation, but the polygon class can
+		// do that much more efficiently (it contains custom implementations for circles, etc).	
 		
-		
-		
-		
-		
-		for (i in 0...len){if (_polygons[i].containsPoint(localPoint))				 return this;
+		for (i in 0...len) { 
+			if (_polygons[i].containsPoint(localPoint)) return this;
 		}
 		
 		return null;

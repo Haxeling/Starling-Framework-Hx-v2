@@ -164,7 +164,7 @@ class TrueTypeCompositor implements ITextCompositor
 		{
 			if (size <= 4)				 break;
 			
-			textFormat.size = size--;
+			textFormat.size = untyped size--;
 			textField.defaultTextFormat = textFormat;
 			
 			if (isHtmlText)				 textField.htmlText = text
@@ -181,6 +181,7 @@ class BitmapDataEx extends BitmapData
 
 	private var _scale:Float = 1.0;
 	
+	@:allow(starling.text.TrueTypeCompositor)
 	private function new(width:Int, height:Int, transparent:Bool = true, fillColor:Int = 0x0)
 	{
 		super(width, height, transparent, fillColor);

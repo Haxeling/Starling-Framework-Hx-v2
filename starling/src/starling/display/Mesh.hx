@@ -169,13 +169,13 @@ class Mesh extends DisplayObject
 	 */
 	public function setStyle(meshStyle:MeshStyle = null, mergeWithPredecessor:Bool = true):Void
 	{
-		if (meshStyle == null) meshStyle = try cast(Type.createInstance(sDefaultStyle, []), MeshStyle) catch(e:Dynamic) null
+		if (meshStyle == null) meshStyle = cast(Type.createInstance(sDefaultStyle, []), MeshStyle);
 		else if (meshStyle == _style) return;
 		else if (meshStyle.target != null) meshStyle.target.setStyle();
 		
 		if (_style != null) 
 		{
-			if (mergeWithPredecessor)				 meshStyle.copyFrom(_style);
+			if (mergeWithPredecessor) meshStyle.copyFrom(_style);
 			_style.setTarget(null);
 		}
 		

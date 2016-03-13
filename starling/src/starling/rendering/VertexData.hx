@@ -147,8 +147,8 @@ class VertexData
 	public function new(format:Dynamic = null, initialCapacity:Int = 32)
 	{
 		if (format == null)			 _format = MeshStyle.VERTEX_FORMAT
-		else if (Std.is(format, VertexDataFormat))			 _format = format
-		else if (Std.is(format, String))			 _format = VertexDataFormat.fromString(try cast(format, String) catch(e:Dynamic) null)
+		else if (Std.is(format, VertexDataFormat)) _format = format
+		else if (Std.is(format, String)) _format = VertexDataFormat.fromString(cast(format, String));
 		else throw new ArgumentError("'format' must be String or VertexDataFormat");
 		
 		_attributes = _format.attributes;
@@ -354,7 +354,7 @@ class VertexData
 	 *  describing both its format and size. */
 	public function toString():String
 	{
-		return StringTools.format(
+		return StringUtil.format(
 			"[VertexData format=\"{0}\" numVertices={1}]",
 			[_format.formatString, _numVertices]
 		);
@@ -689,7 +689,7 @@ class VertexData
 		for (i in 0..._numVertices){
 			_rawData.position = offset;
 			
-			if (_rawData.readUnsignedInt() != 0xffffffff) 
+			if (_rawData.readUnsignedInt() != cast 0xffffffff) 
 				return true;
 			
 			offset += _vertexSize;

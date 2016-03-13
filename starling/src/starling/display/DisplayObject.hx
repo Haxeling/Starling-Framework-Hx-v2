@@ -1277,7 +1277,7 @@ class DisplayObject extends EventDispatcher
 	 *  to the stage. */
 	private function get_stage():Stage
 	{
-		return try cast(this.base, Stage) catch(e:Dynamic) null;
+		return cast(this.base, Stage);
 	}
 }
 

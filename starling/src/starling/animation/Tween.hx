@@ -31,9 +31,9 @@ import starling.events.EventDispatcher;
  *  <listing>
  *  var tween:Tween = new Tween(object, 2.0, Transitions.EASE_IN_OUT);
  *  tween.animate("x", object.x + 50);
- *  tween.animate("rotation", deg2rad(45));
+ *  tween.animate("rotation", Deg2rad.call(45));
  *  tween.fadeTo(0);	// equivalent to 'animate("alpha", 0)'
- *  Starling.juggler.add(tween);</listing> 
+ *  Starling.Juggler.add(tween);</listing> 
  *  
  *  <p>Note that the object is added to a juggler at the end of this sample. That's because a 
  *  tween will only be executed if its "advanceTime" method is executed regularly - the 
@@ -125,10 +125,11 @@ class Tween extends EventDispatcher implements IAnimatable
 		_currentCycle = -1;
 		_nextTween = null;
 		
+		
 		if (Std.is(transition, String)) 
 			this.transition = cast(transition, String);
-		else if (Std.is(transition, Function)) 
-			this.transitionFunc = cast(transition, Function);
+		else if (Reflect.isFunction(transition)) 
+			this.transitionFunc = cast(transition);
 		else 
 		throw new ArgumentError("Transition must be either a string or a function");
 		
@@ -161,7 +162,7 @@ class Tween extends EventDispatcher implements IAnimatable
 	 */
 	public function animate(property:String, endValue:Float):Void
 	{
-		if (_target == null)			 return  // tweening null just does nothing.  ;
+		if (_target == null) return; // tweening null just does nothing.
 		
 		var pos:Int = _properties.length;
 		var updateFunc:Function = getUpdateFuncFromProperty(property);
@@ -203,17 +204,17 @@ class Tween extends EventDispatcher implements IAnimatable
 	/** @inheritDoc */
 	public function advanceTime(time:Float):Void
 	{
-		if (time == 0 || (_repeatCount == 1 && _currentTime == _totalTime))			 return;
+		if (time == 0 || (_repeatCount == 1 && _currentTime == _totalTime))	return;
 		
 		var i:Int;
 		var previousTime:Float = _currentTime;
 		var restTime:Float = _totalTime - _currentTime;
-		var carryOverTime:Float = time > (restTime != 0) ? time - restTime:0.0;
+		var carryOverTime:Float = time > restTime ? time - restTime : 0.0;
 		
 		_currentTime += time;
 		
-		if (_currentTime <= 0) 
-			return
+		if (_currentTime <= 0) return;
+			
 		// the delay is not over yet
 		else if (_currentTime > _totalTime) 
 			_currentTime = _totalTime;
@@ -231,7 +232,7 @@ class Tween extends EventDispatcher implements IAnimatable
 		
 		for (i in 0...numProperties){
 			if (_startValues[i] != _startValues[i])				   // isNaN check - "isNaN" causes allocation!  
-			_startValues[i] = try cast(Reflect.field(_target, Std.string(_properties[i])), Float) catch(e:Dynamic) null;
+			_startValues[i] = cast(Reflect.field(_target, Std.string(_properties[i])), Float);
 			
 			var updateFunc:Function = _updateFuncs[i];
 			updateFunc(_properties[i], _startValues[i], _endValues[i]);
@@ -260,7 +261,7 @@ class Tween extends EventDispatcher implements IAnimatable
 				// add it to another juggler; so this event has to be dispatched *before*
 				// executing 'onComplete'.
 				dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-				if (onComplete != null)					 onComplete.apply(this, onCompleteArgs);
+				if (onComplete != null) onComplete(onCompleteArgs);
 			}
 		}
 		
@@ -368,7 +369,7 @@ class Tween extends EventDispatcher implements IAnimatable
 	{
 		var index:Int = Lambda.indexOf(_properties, property);
 		if (index == -1)			 throw new ArgumentError("The property '" + property + "' is not animated")
-		else return try cast(_endValues[index], Float) catch(e:Dynamic) null;
+		else return cast(_endValues[index], Float);
 	}
 	
 	/** Indicates if the tween is finished. */
@@ -608,14 +609,15 @@ class Tween extends EventDispatcher implements IAnimatable
 	private static var sTweenPool:Array<Tween> = [];
 	
 	/** @private */
-	private static function fromPool(target:Dynamic, time:Float,
-			transition:Dynamic = "linear"):Tween
+	@:allow(starling.animation)
+	private static function fromPool(target:Dynamic, time:Float, transition:Dynamic = "linear"):Tween
 	{
-		if (sTweenPool.length)			 return sTweenPool.pop().reset(target, time, transition)
+		if (sTweenPool.length > 0) return sTweenPool.pop().reset(target, time, transition)
 		else return new Tween(target, time, transition);
 	}
 	
 	/** @private */
+	@:allow(starling.animation)
 	private static function toPool(tween:Tween):Void
 	{
 		// reset any object-references, to make sure we don't prevent any garbage collection

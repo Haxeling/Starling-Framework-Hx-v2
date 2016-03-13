@@ -12,6 +12,7 @@ package starling.rendering;
 
 import flash.display3D.Context3DVertexBufferFormat;
 import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 
 /** Holds the properties of a single attribute in a VertexDataFormat instance.
  *  The member variables must never be changed; they are only <code>public</code>
@@ -25,8 +26,11 @@ class VertexDataAttribute
 		"float3": 12,
 		"float4": 16
 	};*/
-	private static var _FORMAT_SIZES:Map<Context3DVertexBufferFormat, Int>;
-	private static var FORMAT_SIZES(get, null):Map<Context3DVertexBufferFormat, Int>;
+	private static var _FORMAT_SIZES:FormatSizes;
+	private static var FORMAT_SIZES(get, null):FormatSizes;
+	
+	//private static var _FORMAT_SIZES:Map<Context3DVertexBufferFormat, Int>;
+	//private static var FORMAT_SIZES(get, null):Map<Context3DVertexBufferFormat, Int>;
 
 	public var name:String;
 	public var format:Context3DVertexBufferFormat;
@@ -37,28 +41,44 @@ class VertexDataAttribute
 	/** Creates a new instance with the given properties. */
 	public function new(name:String, format:Context3DVertexBufferFormat, offset:Int)
 	{
-		if (!FORMAT_SIZES.exists(format))
+		try {
+			var i:Int = untyped VertexDataAttribute.FORMAT_SIZES[format];
+		}
+		catch (e:Error) {
+			trace("Error: " + e);
 			throw new ArgumentError(
 				"Invalid attribute format: " + format + ". " +
 				"Use one of the following: 'float1'-'float4', 'bytes4'");
-
+		}
+		
 		this.name = name;
 		this.format = format;
 		this.offset = offset;
-		this.size = FORMAT_SIZES.get(format);
+		this.size = untyped FORMAT_SIZES[format];
 		this.isColor = name.indexOf("color") != -1 || name.indexOf("Color") != -1;
 	}
 	
-	static function get_FORMAT_SIZES():Map<Context3DVertexBufferFormat, Int>
+	static function get_FORMAT_SIZES():FormatSizes
 	{
 		if (_FORMAT_SIZES == null) {
-			_FORMAT_SIZES = new Map<Context3DVertexBufferFormat, Int>();
-			_FORMAT_SIZES.set(Context3DVertexBufferFormat.BYTES_4, 4);
-			_FORMAT_SIZES.set(Context3DVertexBufferFormat.FLOAT_1, 4);
-			_FORMAT_SIZES.set(Context3DVertexBufferFormat.FLOAT_2, 8);
-			_FORMAT_SIZES.set(Context3DVertexBufferFormat.FLOAT_3, 12);
-			_FORMAT_SIZES.set(Context3DVertexBufferFormat.FLOAT_4, 16);
+			_FORMAT_SIZES = new FormatSizes();
 		}
 		return _FORMAT_SIZES;
+	}
+}
+
+class FormatSizes
+{
+	
+	public var bytes4:Int = 4;
+	public var float1:Int = 4;
+	public var float2:Int = 8;
+	public var float3:Int = 12;
+	public var float4:Int = 16;
+	
+	@:allow(starling.rendering.VertexDataAttribute)
+	private function new ():Void
+	{
+		
 	}
 }

@@ -63,7 +63,7 @@ class MainMenu extends Sprite
 			button.height = 42;
 			button.readjustSize();
 			button.x = count % 2 == (0) ? 28:167;
-			button.y = 155 + as3hx.Compat.parseInt(count / 2) * 46;
+			button.y = 155 + cast(count / 2, Int) * 46;
 			button.name = Type.getClassName(sceneClass);
 			addChild(button);
 			

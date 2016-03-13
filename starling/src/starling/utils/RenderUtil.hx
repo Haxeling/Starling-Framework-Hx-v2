@@ -68,12 +68,18 @@ class RenderUtil
 		else if (format == Context3DTextureFormat.COMPRESSED_ALPHA) 
 			options.push("dxt5");
 		
-		if (smoothing == TextureSmoothing.NONE) 
-			options.push("nearest", (mipMapping) ? "mipnearest":"mipnone")
-		else if (smoothing == TextureSmoothing.BILINEAR) 
-			options.push("linear", (mipMapping) ? "mipnearest":"mipnone")
-		else 
-		options.push("linear", (mipMapping) ? "miplinear":"mipnone");
+		if (smoothing == TextureSmoothing.NONE) {
+			options.push("nearest");
+			options.push(mipMapping ? "mipnearest":"mipnone");
+		}
+		else if (smoothing == TextureSmoothing.BILINEAR) {
+			options.push("linear");
+			options.push(mipMapping ? "mipnearest":"mipnone");
+		}
+		else {
+			options.push("linear");
+			options.push(mipMapping ? "miplinear":"mipnone");
+		}
 		
 		return "<" + options.join("") + ">";
 	}
@@ -222,9 +228,9 @@ class RenderUtil
 		else 
 		throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array<Context3DProfile>'");
 		/*else if (Std.is(profile, String)) 
-			profiles = [cast(profile, String) catch(e:Dynamic) null]*/
+			profiles = [cast(profile, String)]*/
 		/*else if (Std.is(profile, Array)) 
-			profiles = try cast(profile, Array<String>) catch(e:Dynamic) null*/
+			profiles = cast(profile, Array<String>)*/
 		/*else 
 		throw new ArgumentError("Profile must be of type 'String' or 'Array'");*/
 		

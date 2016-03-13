@@ -4,11 +4,11 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="project.xml" />
+    <movie path="application.xml" />
     <movie fps="60" />
     <movie width="800" />
     <movie height="480" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
     <movie background="000000" />
@@ -19,6 +19,7 @@
     <class path="C:\_projects\HaxeLibraries\Imagination\openfl" />
     <class path="C:\_sdks\haxe\3.2\haxe\lib\lime\2,9,0" />
     <class path="C:\_sdks\haxe\3.2\haxe\lib\actuate\1,8,6" />
+    <class path="C:\_sdks\haxe\3.2\haxe\lib\air3\0,0,1" />
     <class path="src" />
     <class path="..\starling\src" />
     <class path="C:\_projects\HaxeLibraries\Imagination\openfl\extern" />
@@ -26,12 +27,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=3.6.0&#xA;lime=2.9.0&#xA;actuate=1.8.6&#xA;openfl-next&#xA;tools=2.9.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;display" />
+    <option directives="openfl=3.6.0&#xA;lime=2.9.0&#xA;actuate=1.8.6&#xA;air3=0.0.1&#xA;openfl-next&#xA;tools=2.9.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;air&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 17" />
+    <option additional="-swf-version 17&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -39,7 +40,8 @@
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\Main.hx" />
+    <compile path="src\DemoMobile.hx" />
+    <compile path="src\sample\Main.hx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

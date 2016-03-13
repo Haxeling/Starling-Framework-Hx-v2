@@ -19,8 +19,8 @@ class TouchSheet extends Sprite
 		
 		if (contents != null) 
 		{
-			contents.x = as3hx.Compat.parseInt(contents.width / -2);
-			contents.y = as3hx.Compat.parseInt(contents.height / -2);
+			contents.x = contents.width / -2;
+			contents.y = contents.height / -2;
 			addChild(contents);
 		}
 	}

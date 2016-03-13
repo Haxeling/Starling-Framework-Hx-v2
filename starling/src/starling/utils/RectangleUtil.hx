@@ -79,13 +79,13 @@ class RectangleUtil
 		
 		if (scaleMode == ScaleMode.SHOW_ALL) 
 		{
-			factor = factorX < (factorY != 0) ? factorX:factorY;
-			if (pixelPerfect)				 factor = nextSuitableScaleFactor(factor, false);
+			factor = factorX < factorY ? factorX : factorY;
+			if (pixelPerfect) factor = nextSuitableScaleFactor(factor, false);
 		}
 		else if (scaleMode == ScaleMode.NO_BORDER) 
 		{
-			factor = factorX > (factorY != 0) ? factorX:factorY;
-			if (pixelPerfect)				 factor = nextSuitableScaleFactor(factor, true);
+			factor = factorX > factorY ? factorX : factorY;
+			if (pixelPerfect) factor = nextSuitableScaleFactor(factor, true);
 		}
 		
 		width *= factor;

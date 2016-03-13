@@ -31,7 +31,7 @@ class Menu extends Sprite
 		var button:Button = new Button(Root.assets.getTexture("button_normal"), "Start");
 		button.textFormat.font = "Ubuntu";
 		button.textFormat.size = 16;
-		button.x = as3hx.Compat.parseInt((Constants.STAGE_WIDTH - button.width) / 2);
+		button.x = (Constants.STAGE_WIDTH - button.width) / 2;
 		button.y = Constants.STAGE_HEIGHT * 0.75;
 		button.addEventListener(Event.TRIGGERED, onButtonTriggered);
 		addChild(button);

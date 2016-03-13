@@ -95,8 +95,8 @@ class TouchEvent extends Event
 			out:Array<Touch> = null):Array<Touch>
 	{
 		if (out == null)			 out = [];
-		// var allTouches:Array<Touch> = try cast(data, Array<Touch>) catch(e:Dynamic) null;
-		var dataArray:Array<Dynamic> = try cast(data, Array<Dynamic>) catch (e:Dynamic) null;
+		// var allTouches:Array<Touch> = cast(data, Array<Touch>);
+		var dataArray:Array<Dynamic> = cast(data, Array<Dynamic>);
 		var allTouches = new Array<Touch>();
 		for (j in 0...dataArray.length) allTouches.push(dataArray[j]);
 	   
@@ -176,10 +176,10 @@ class TouchEvent extends Event
 		{
 			var chainLength:Int = (bubbles) ? chain.length:1;
 			var previousTarget:EventDispatcher = target;
-			setTarget(try cast(chain[0], EventDispatcher) catch(e:Dynamic) null);
+			setTarget(cast(chain[0], EventDispatcher));
 			
 			for (i in 0...chainLength){
-				var chainElement:EventDispatcher = try cast(chain[i], EventDispatcher) catch(e:Dynamic) null;
+				var chainElement:EventDispatcher = cast(chain[i], EventDispatcher);
 				if (Lambda.indexOf(_visitedObjects, chainElement) == -1) 
 				{
 					var stopPropagation:Bool = chainElement.invokeEvent(this);
@@ -203,7 +203,7 @@ class TouchEvent extends Event
 	/** All touches that are currently available. */
 	private function get_touches():Array<Touch>
 	{
-		var dataArray:Array<Dynamic> = try cast(data, Array<Dynamic>) catch (e:Dynamic) null;
+		var dataArray:Array<Dynamic> = cast(data, Array<Dynamic>);
 		var _touches = new Array<Touch>();
 		for (j in 0...dataArray.length) _touches.push(dataArray[j]);
 		return _touches;

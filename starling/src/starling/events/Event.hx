@@ -136,7 +136,7 @@ class Event
 	/** Returns a description of the event, containing type and bubble information. */
 	public function toString():String
 	{
-		return StringTools.format(
+		return StringUtil.format(
 			"[{0} type=\"{1}\" bubbles={2}]",
 			[Type.getClassName(Type.getClass(this)).split("::").pop(), _type, _bubbles]
 		);

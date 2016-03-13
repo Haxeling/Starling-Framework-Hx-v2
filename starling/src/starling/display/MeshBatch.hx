@@ -180,7 +180,7 @@ class MeshBatch extends Mesh
 		var meshStyleType:Class<Dynamic> = meshStyle.type;
 		
 		if (_style.type != meshStyleType) 
-			setStyle(try cast(Type.createInstance(meshStyleType, []), MeshStyle) catch(e:Dynamic) null, false);
+			setStyle(cast(Type.createInstance(meshStyleType, []), MeshStyle), false);
 		
 		_style.copyFrom(meshStyle);
 	}

@@ -60,7 +60,7 @@ class VertexDataFormat
 	private var _attributes:Array<VertexDataAttribute>;
 	
 	// format cache
-	private static var sFormats:Dictionary = new Dictionary();
+	private static var sFormats = new Map<String, VertexDataFormat>();
 	
 	/** Don't use the constructor, but call <code>VertexDataFormat.fromString</code> instead.
 	 *  This allows for efficient format caching. */
@@ -98,7 +98,7 @@ class VertexDataFormat
 	 */
 	public static function fromString(format:String):VertexDataFormat
 	{
-		if (Lambda.has(sFormats, format)) return Reflect.field(sFormats, format)
+		if (sFormats.exists(format)) return sFormats.get(format)
 		else 
 		{
 			var instance:VertexDataFormat = new VertexDataFormat();
@@ -106,11 +106,11 @@ class VertexDataFormat
 			
 			var normalizedFormat:String = instance._format;
 			
-			if (Lambda.has(sFormats, normalizedFormat)) 
-				instance = Reflect.field(sFormats, normalizedFormat);
+			if (sFormats.exists(normalizedFormat)) 
+				instance = sFormats.get(normalizedFormat);
 			
-			Reflect.setField(sFormats, format, instance);
-			Reflect.setField(sFormats, normalizedFormat, instance);
+			sFormats.set(format, instance);
+			sFormats.set(normalizedFormat, instance);
 			
 			return instance;
 		}
@@ -205,7 +205,7 @@ class VertexDataFormat
 					throw new ArgumentError(("Invalid format string: " + attrDesc));
 				
 				var attribute:VertexDataAttribute = 
-				new VertexDataAttribute(attrName, attrFormat, offset);
+				new VertexDataAttribute(attrName, cast attrFormat, offset);
 				
 				offset += attribute.size;
 				

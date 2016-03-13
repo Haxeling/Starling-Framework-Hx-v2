@@ -256,7 +256,7 @@ class Starling extends EventDispatcher
 	private var _nativeOverlay:Sprite;
 	
 	private static var sCurrent:Starling;
-	private static var sPainters:Dictionary = new Dictionary(true);
+	private static var sPainters = new Map<Stage3D, Painter>();
 	private static var sAll:Array<Starling> = [];
 	
 	var tempStageWidth:Int;
@@ -409,7 +409,7 @@ class Starling extends EventDispatcher
 	{
 		if (_root == null && _rootClass != null) 
 		{
-			_root = try cast(Type.createInstance(_rootClass, []), DisplayObject) catch(e:Dynamic) null;
+			_root = cast(Type.createInstance(_rootClass, []), DisplayObject);
 			if (_root == null)				 throw new Error("Invalid root class: " + _rootClass);
 			_stage.addChildAt(_root, 0);
 			
@@ -419,12 +419,12 @@ class Starling extends EventDispatcher
 	
 	private function createPainter(stage3D:Stage3D):Painter
 	{
-		if (Lambda.has(sPainters, stage3D)) 
-			return Reflect.field(sPainters, Std.string(stage3D))
+		if (sPainters.exists(stage3D)) 
+			return sPainters.get(stage3D);
 		else 
 		{
 			var painter:Painter = new Painter(stage3D);
-			Reflect.setField(sPainters, Std.string(stage3D), painter);
+			sPainters.set(stage3D, painter);
 			return painter;
 		}
 	}
@@ -698,7 +698,7 @@ class Starling extends EventDispatcher
 		var globalX:Float;
 		var globalY:Float;
 		var touchID:Int;
-		var phase:String;
+		var phase:String = null;
 		var pressure:Float = 1.0;
 		var width:Float = 1.0;
 		var height:Float = 1.0;
@@ -706,7 +706,7 @@ class Starling extends EventDispatcher
 		// figure out general touch properties
 		if (Std.is(event, MouseEvent)) 
 		{
-			var mouseEvent:MouseEvent = try cast(event, MouseEvent) catch(e:Dynamic) null;
+			var mouseEvent:MouseEvent = cast(event, MouseEvent);
 			globalX = mouseEvent.stageX;
 			globalY = mouseEvent.stageY;
 			touchID = 0;
@@ -719,7 +719,7 @@ class Starling extends EventDispatcher
 		}
 		else 
 		{
-			var touchEvent:TouchEvent = try cast(event, TouchEvent) catch(e:Dynamic) null;
+			var touchEvent:TouchEvent = cast(event, TouchEvent);
 			
 			// On a system that supports both mouse and touch input, the primary touch point
 			// is dispatched as mouse event as well. Since we don't want to listen to that

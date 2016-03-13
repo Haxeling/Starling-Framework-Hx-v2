@@ -54,7 +54,7 @@ class EventDispatcher
 		if (_eventListeners == null) 
 			_eventListeners = new Map<String, Array<Function>>();
 		
-	   // var listeners:Array<Function> = try cast(Reflect.field(_eventListeners, type)) catch(e:Dynamic) null;
+	   // var listeners:Array<Function> = cast(Reflect.field(_eventListeners, type));
 		var listeners:Array<Function> = _eventListeners.get(type);
 		if (listeners == null) {
 			_eventListeners.set(type, [listener]);
@@ -70,7 +70,7 @@ class EventDispatcher
 	{
 		if (_eventListeners != null) 
 		{
-			var listeners:Array<Function> = try cast(Reflect.field(_eventListeners, type)) catch(e:Dynamic) null;
+			var listeners:Array<Function> = cast(Reflect.field(_eventListeners, type));
 			var numListeners:Int = (listeners != null) ? listeners.length:0;
 			
 			if (numListeners > 0) 
@@ -184,7 +184,7 @@ class EventDispatcher
 		// that way, changes done by the listeners won't affect the bubble chain.
 		
 		var chain:Array<EventDispatcher>;
-		var element:DisplayObject = try cast(this, DisplayObject) catch(e:Dynamic) null;
+		var element:DisplayObject = cast(this, DisplayObject);
 		var length:Int = 1;
 		
 		if (sBubbleChains.length > 0) {chain = sBubbleChains.pop();chain[0] = element;

@@ -402,7 +402,7 @@ class IndexData
 	 *  made smaller. */
 	private function ensureQuadDataCapacity(numIndices:Int):Void
 	{
-		if (sQuadData.length >= numIndices * INDEX_SIZE) return;
+		if (sQuadData.length >= cast numIndices * INDEX_SIZE) return;
 		
 		var i:Int;
 		var oldNumQuads:Int = Math.floor(sQuadData.length / 12);

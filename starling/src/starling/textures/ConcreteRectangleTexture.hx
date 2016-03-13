@@ -54,7 +54,7 @@ class ConcreteRectangleTexture extends ConcreteTexture
 	
 	private function get_rectangleBase():RectangleTexture
 	{
-		return try cast(base, RectangleTexture) catch(e:Dynamic) null;
+		return cast(base, RectangleTexture);
 	}
 }
 

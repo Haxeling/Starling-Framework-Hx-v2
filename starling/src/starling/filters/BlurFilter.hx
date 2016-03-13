@@ -60,7 +60,7 @@ class BlurFilter extends FragmentFilter
 			input0:Texture = null, input1:Texture = null,
 			input2:Texture = null, input3:Texture = null):Texture
 	{
-		var effect:BlurEffect = try cast(this.effect, BlurEffect) catch(e:Dynamic) null;
+		var effect:BlurEffect = cast(this.effect, BlurEffect);
 		
 		if (_blurX == 0 && _blurY == 0) 
 		{
@@ -189,7 +189,8 @@ class BlurEffect extends FilterEffect
 				"sub v1, va1, vc4.zwxx",   // pos: -2 |  
 				"sub v2, va1, vc4.xyxx",   // pos: -1 | --> kernel positions  
 				"add v3, va1, vc4.xyxx",   // pos: +1 |	 (only 1st two values are relevant)  
-				"add v4, va1, vc4.zwxx"  // pos: +2 |  ].join("\n");
+				"add v4, va1, vc4.zwxx"  // pos: +2 |
+			].join("\n");
 		
 		// v0-v4 - kernel position
 		// fs0   - input texture
@@ -215,7 +216,8 @@ class BlurEffect extends FilterEffect
 				
 				tex("ft4", "v4", 0, texture),   // read pixel +2  
 				"mul ft4, ft4, fc0.zzzz	   ",   // multiply with weight  
-				"add  oc, ft5, ft4			"  // add to output color  ].join("\n");
+				"add  oc, ft5, ft4			"  // add to output color
+			].join("\n");
 		
 		return Program.fromSource(vertexShader, fragmentShader);
 	}

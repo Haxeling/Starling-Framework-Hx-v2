@@ -227,10 +227,10 @@ class TextField extends DisplayObjectContainer
 		var width:Float = _hitArea.width;
 		var height:Float = _hitArea.height;
 		
-		var topLine:Quad = try cast(_border.getChildAt(0), Quad) catch(e:Dynamic) null;
-		var rightLine:Quad = try cast(_border.getChildAt(1), Quad) catch(e:Dynamic) null;
-		var bottomLine:Quad = try cast(_border.getChildAt(2), Quad) catch(e:Dynamic) null;
-		var leftLine:Quad = try cast(_border.getChildAt(3), Quad) catch(e:Dynamic) null;
+		var topLine:Quad = cast(_border.getChildAt(0), Quad);
+		var rightLine:Quad = cast(_border.getChildAt(1), Quad);
+		var bottomLine:Quad = cast(_border.getChildAt(2), Quad);
+		var leftLine:Quad = cast(_border.getChildAt(3), Quad);
 		
 		topLine.width = width;topLine.height = 1;
 		bottomLine.width = width;bottomLine.height = 1;

@@ -63,9 +63,10 @@ class Program
 	public static function fromSource(vertexShader:String, fragmentShader:String,
 			agalVersion:Int = 1):Program
 	{
+		trace("check casting works correctly");
 		return new Program(
-		sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion), 
-		sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
+		sAssembler.assemble(cast Context3DProgramType.VERTEX, vertexShader, agalVersion), 
+		sAssembler.assemble(cast Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
 	}
 	
 	/** Activates the program on the given context. If you don't pass a context, the current

@@ -118,9 +118,9 @@ class ConcretePotTexture extends ConcreteTexture
 	/** @inheritDoc */
 	override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
 	{
-		var isAsync:Bool = Std.is(async, Function) || async == true;
+		var isAsync:Bool = Reflect.isFunction(async) || async == true;
 		
-		if (Std.is(async, Function)) 
+		if (Reflect.isFunction(async)) 
 		{
 			_textureReadyCallback = untyped async;
 			base.addEventListener(Event.TEXTURE_READY, onTextureReady);
@@ -139,7 +139,7 @@ class ConcretePotTexture extends ConcreteTexture
 	
 	private function get_potBase():flash.display3D.textures.Texture
 	{
-		return try cast(base, flash.display3D.textures.Texture) catch(e:Dynamic) null;
+		return cast(base, flash.display3D.textures.Texture);
 	}
 }
 

@@ -180,8 +180,8 @@ class Texture
 	 */
 	public static function fromData(data:Dynamic, options:TextureOptions = null):Texture
 	{
-		if (Std.is(data, Bitmap))			 data = (try cast(data, Bitmap) catch(e:Dynamic) null).bitmapData;
-		if (options == null)			 options = sDefaultOptions;
+		if (Std.is(data, Bitmap)) data = cast(data, Bitmap).bitmapData;
+		if (options == null) options = sDefaultOptions;
 		
 		if (Std.is(data, Class)) 
 		{
@@ -191,13 +191,13 @@ class Texture
 		}
 		else if (Std.is(data, BitmapData)) 
 		{
-			return fromBitmapData(try cast(data, BitmapData) catch(e:Dynamic) null,
+			return fromBitmapData(cast(data, BitmapData),
 					options.mipMapping, options.optimizeForRenderToTexture,
 					options.scale, options.format);
 		}
 		else if (Std.is(data, ByteArray)) 
 		{
-			return fromAtfData(try cast(data, ByteArray) catch(e:Dynamic) null,
+			return fromAtfData(cast(data, ByteArray),
 					options.scale, options.mipMapping, options.onReady);
 		}
 		else 
@@ -220,20 +220,20 @@ class Texture
 		
 		if (Std.is(base, flash.display3D.textures.Texture)) 
 		{
-			return new ConcretePotTexture(try cast(base, flash.display3D.textures.Texture) catch(e:Dynamic) null, 
+			return new ConcretePotTexture(cast(base, flash.display3D.textures.Texture), 
 			options.format, width, height, options.mipMapping, 
 			options.premultipliedAlpha, options.optimizeForRenderToTexture, 
 			options.scale);
 		}
 		else if (Std.is(base, RectangleTexture)) 
 		{
-			return new ConcreteRectangleTexture(try cast(base, RectangleTexture) catch(e:Dynamic) null, 
+			return new ConcreteRectangleTexture(cast(base, RectangleTexture), 
 			options.format, width, height, options.premultipliedAlpha, 
 			options.optimizeForRenderToTexture, options.scale);
 		}
 		else if (Std.is(base, VideoTexture)) 
 		{
-			return new ConcreteVideoTexture(try cast(base, VideoTexture) catch(e:Dynamic) null, options.scale);
+			return new ConcreteVideoTexture(cast(base, VideoTexture), options.scale);
 		}
 		else 
 		throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(Type.getClass(base)));
@@ -261,7 +261,7 @@ class Texture
 		
 		if (Std.is(asset, Bitmap)) 
 		{
-			texture = Texture.fromBitmap(try cast(asset, Bitmap) catch(e:Dynamic) null, mipMapping,
+			texture = Texture.fromBitmap(cast(asset, Bitmap), mipMapping,
 							optimizeForRenderToTexture, scale, format);
 			texture.root.onRestore = function():Void
 					{
@@ -270,7 +270,7 @@ class Texture
 		}
 		else if (Std.is(asset, ByteArray)) 
 		{
-			texture = Texture.fromAtfData(try cast(asset, ByteArray) catch(e:Dynamic) null, scale, mipMapping, null);
+			texture = Texture.fromAtfData(cast(asset, ByteArray), scale, mipMapping, null);
 			texture.root.onRestore = function():Void
 					{
 						texture.root.uploadAtfData(Type.createInstance(assetClass, []));
@@ -409,7 +409,8 @@ class Texture
 			onComplete:Function = null):Texture
 	{
 		// workaround for bug in NetStream class:
-		if (stream.client == stream && !(Lambda.has(stream, "onMetaData"))) 
+		if (stream.client == stream && Reflect.getProperty(stream, "onMetaData") == null) 
+		//if (stream.client == stream && !(Lambda.has(stream, "onMetaData"))) 
 			stream.client = {
 					onMetaData:function(md:Dynamic):Void{
 					}
@@ -536,19 +537,19 @@ class Texture
 							actualWidth, actualHeight, format, optimizeForRenderToTexture);
 			
 			concreteTexture = new ConcreteRectangleTexture(
-					try cast(nativeTexture, RectangleTexture) catch(e:Dynamic) null, format, actualWidth, actualHeight, 
+					cast(nativeTexture, RectangleTexture), format, actualWidth, actualHeight, 
 					premultipliedAlpha, optimizeForRenderToTexture, scale);
 		}
 		else 
 		{
-			actualWidth = MathUtil.getNextPowerOfTwo(origWidth);
-			actualHeight = MathUtil.getNextPowerOfTwo(origHeight);
+			actualWidth = MathUtil.getNextPowerOfTwo(cast origWidth);
+			actualHeight = MathUtil.getNextPowerOfTwo(cast origHeight);
 			
 			nativeTexture = context.createTexture(
 							actualWidth, actualHeight, format, optimizeForRenderToTexture);
 			
 			concreteTexture = new ConcretePotTexture(
-					try cast(nativeTexture, flash.display3D.textures.Texture) catch(e:Dynamic) null, format, 
+					cast(nativeTexture, flash.display3D.textures.Texture), format, 
 					actualWidth, actualHeight, mipMapping, premultipliedAlpha, 
 					optimizeForRenderToTexture, scale);
 		}

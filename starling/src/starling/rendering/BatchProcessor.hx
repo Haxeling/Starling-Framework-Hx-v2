@@ -170,8 +170,8 @@ class BatchProcessor
 		if (_batches.length > token.batchID) 
 		{
 			var batch:MeshBatch = _batches[token.batchID];
-			batch.numIndices = untyped MathUtil.min(batch.numIndices, token.indexID);
-			batch.numVertices = untyped MathUtil.min(batch.numVertices, token.vertexID);
+			batch.numIndices = untyped Math.min(batch.numIndices, token.indexID);
+			batch.numVertices = untyped Math.min(batch.numVertices, token.vertexID);
 		}
 		
 		_currentBatch = null;

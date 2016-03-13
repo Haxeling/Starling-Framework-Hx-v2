@@ -227,7 +227,7 @@ class DisplacementMapFilter extends FragmentFilter
 	
 	private function get_dispEffect():DisplacementMapEffect
 	{
-		return try cast(this.effect, DisplacementMapEffect) catch(e:Dynamic) null;
+		return cast(this.effect, DisplacementMapEffect);
 	}
 }
 
@@ -281,7 +281,8 @@ class DisplacementMapEffect extends FilterEffect
 			var vertexShader:String = [
 					"m44  op, va0, vc0",   // 4x4 matrix transform to output space  
 					"mov  v0, va1",   // pass input texture coordinates to fragment program  
-					"mov  v1, va2"  // pass map texture coordinates to fragment program  ].join("\n");
+					"mov  v1, va2"  // pass map texture coordinates to fragment program  
+			].join("\n");
 			
 			// v0:	input texCoords
 			// v1:	map texCoords
@@ -293,7 +294,8 @@ class DisplacementMapEffect extends FilterEffect
 					"sub ft1, ft0, fc0",   // subtract 0.5 -> range [-0.5, 0.5]  
 					"m44 ft2, ft1, fc1",   // multiply matrix with displacement values  
 					"add ft3,  v0, ft2",   // add displacement values to texture coords  
-					tex("oc", "ft3", 0, texture)  // read input texture at displaced coords  ].join("\n");
+					tex("oc", "ft3", 0, texture)  // read input texture at displaced coords  
+				].join("\n");
 			
 			return Program.fromSource(vertexShader, fragmentShader);
 		}
@@ -353,18 +355,18 @@ class DisplacementMapEffect extends FilterEffect
 		for (i in 0...16){sMatrixData[i] = 0;
 		}
 		
-		if (_componentX == BitmapDataChannel.RED)			 columnX = 0
-		else if (_componentX == BitmapDataChannel.GREEN)			 columnX = 1
-		else if (_componentX == BitmapDataChannel.BLUE)			 columnX = 2
+		if (_componentX == BitmapDataChannel.RED) columnX = 0
+		else if (_componentX == BitmapDataChannel.GREEN) columnX = 1
+		else if (_componentX == BitmapDataChannel.BLUE) columnX = 2
 		else columnX = 3;
 		
-		if (_componentY == BitmapDataChannel.RED)			 columnY = 0
-		else if (_componentY == BitmapDataChannel.GREEN)			 columnY = 1
-		else if (_componentY == BitmapDataChannel.BLUE)			 columnY = 2
+		if (_componentY == BitmapDataChannel.RED) columnY = 0
+		else if (_componentY == BitmapDataChannel.GREEN) columnY = 1
+		else if (_componentY == BitmapDataChannel.BLUE)	columnY = 2
 		else columnY = 3;
 		
-		sMatrixData[as3hx.Compat.parseInt(columnX * 4)] = _scaleX * scale / textureWidth;
-		sMatrixData[as3hx.Compat.parseInt(columnY * 4 + 1)] = _scaleY * scale / textureHeight;
+		sMatrixData[columnX * 4] = _scaleX * scale / textureWidth;
+		sMatrixData[columnY * 4 + 1] = _scaleY * scale / textureHeight;
 		
 		out.copyRawDataFrom(sMatrixData);
 		

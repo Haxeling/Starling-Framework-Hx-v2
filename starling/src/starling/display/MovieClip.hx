@@ -12,6 +12,7 @@ package starling.display;
 
 import flash.errors.ArgumentError;
 import flash.errors.Error;
+import haxe.Constraints.Function;
 
 import flash.errors.IllegalOperationError;
 import flash.media.Sound;
@@ -20,6 +21,7 @@ import flash.media.SoundTransform;
 import starling.animation.IAnimatable;
 import starling.events.Event;
 import starling.textures.Texture;
+import starling.display.MovieClip;
 
 /** Dispatched whenever the movie has displayed its last frame. */
 @:meta(Event(name="complete",type="starling.events.Event"))
@@ -46,11 +48,6 @@ import starling.textures.Texture;
  *  
  *  @see starling.textures.TextureAtlas
  */
-
-
-
-import starling.display.MovieClip;
-
 
 class MovieClip extends Image implements IAnimatable
 {

@@ -98,13 +98,13 @@ class Painter
 	private var _stage3D:Stage3D;
 	private var _context:Context3D;
 	private var _shareContext:Bool;
-	private var _programs:Dictionary;
+	private var _programs:Map<String,Program>;
 	private var _data:Map<String, Dynamic>;
 	private var _drawCount:Int;
 	private var _frameID:Int;
 	private var _pixelSize:Float;
 	private var _enableErrorChecking:Bool;
-	private var _stencilReferenceValues:Dictionary;
+	private var _stencilReferenceValues:Map<String, Int>;
 	private var _clipRectStack:Array<Rectangle>;
 	private var _batchProcessor:BatchProcessor;
 	private var _batchCache:BatchProcessor;
@@ -142,9 +142,9 @@ class Painter
 		_backBufferWidth = (_context != null) ? _context.backBufferWidth:0;
 		_backBufferHeight = (_context != null) ? _context.backBufferHeight:0;
 		_backBufferScaleFactor = _pixelSize = 1.0;
-		_stencilReferenceValues = new Dictionary(true);
+		_stencilReferenceValues = new Map<String, Int>();
 		_clipRectStack = [];
-		_programs = new Dictionary();
+		_programs = new Map<String,Program>();
 		_data = new Map<String, Dynamic>();
 		
 		_batchProcessor = new BatchProcessor();
@@ -169,8 +169,8 @@ class Painter
 		if (!_shareContext) 
 			_context.dispose(false);
 		
-		for (program/* AS3HX WARNING could not determine type for var: program exp: EIdent(_programs) type: Dictionary */ in _programs)
-		program.dispose();
+		for (program in _programs)
+			program.dispose();
 	}
 	
 	// context handling
@@ -240,7 +240,7 @@ class Painter
 	public function registerProgram(name:String, program:Program):Void
 	{
 		deleteProgram(name);
-		Reflect.setField(_programs, name, program);
+		_programs.set(name, program);
 	}
 	
 	/** Deletes the program of a certain name. */
@@ -250,8 +250,7 @@ class Painter
 		if (program != null) 
 		{
 			program.dispose();
-			trace("Fix delete");
-			//delete _programs[name];
+			_programs.remove(name);
 		}
 	}
 	
@@ -259,14 +258,14 @@ class Painter
 	 *  this name has been registered. */
 	public function getProgram(name:String):Program
 	{
-		if (Lambda.has(_programs, name))			 return Reflect.field(_programs, name)
+		if (_programs.exists(name)) return _programs.get(name);
 		else return null;
 	}
 	
 	/** Indicates if a program is registered under a certain name. */
 	public function hasProgram(name:String):Bool
 	{
-		return Lambda.has(_programs, name);
+		return _programs.exists(name);
 	}
 	
 	// state stack
@@ -441,7 +440,7 @@ class Painter
 	 *  coordinates. */
 	private function isRectangularMask(mask:DisplayObject, out:Matrix):Bool
 	{
-		var quad:Quad = try cast(mask, Quad) catch(e:Dynamic) null;
+		var quad:Quad = cast(mask, Quad);
 		if (quad != null && !quad.is3D && quad.style.type == MeshStyle) 
 		{
 			if (mask.stage != null) mask.getTransformationMatrix(null, out)
@@ -539,7 +538,7 @@ class Painter
 					subset.numIndices = endToken.indexID - subset.indexID;
 				}
 				
-				if (subset.numVertices) 
+				if (subset.numVertices > 0) 
 				{
 					setStateTo(null, 1.0, meshBatch.blendMode);
 					_batchProcessor.addMesh(meshBatch, _state, subset, true);
@@ -710,15 +709,15 @@ class Painter
 	 */
 	private function get_stencilReferenceValue():Int
 	{
-		var key:Dynamic = (_state.renderTarget) ? _state.renderTargetBase:this;
-		if (Lambda.has(_stencilReferenceValues, key))			 return Reflect.field(_stencilReferenceValues, Std.string(key))
+		var key:Dynamic = (_state.renderTarget != null) ? _state.renderTargetBase:this;
+		if (_stencilReferenceValues.exists(Std.string(key))) return _stencilReferenceValues.get(Std.string(key));
 		else return 0;
 	}
 	
 	private function set_stencilReferenceValue(value:Int):Int
 	{
-		var key:Dynamic = (_state.renderTarget) ? _state.renderTargetBase:this;
-		Reflect.setField(_stencilReferenceValues, Std.string(key), value);
+		var key:Dynamic = (_state.renderTarget != null) ? _state.renderTargetBase:this;
+		_stencilReferenceValues.set(Std.string(key), value);
 		
 		if (contextValid) 
 			_context.setStencilReferenceValue(value);

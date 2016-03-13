@@ -103,12 +103,12 @@ class TouchMarker extends Sprite
 	
 	private function get_realMarker():Image
 	{
-		return try cast(getChildAt(0), Image) catch(e:Dynamic) null;
+		return cast(getChildAt(0), Image);
 	}
 	
 	private function get_mockMarker():Image
 	{
-		return try cast(getChildAt(1), Image) catch(e:Dynamic) null;
+		return cast(getChildAt(1), Image);
 	}
 	
 	private function get_realX():Float

@@ -94,8 +94,8 @@ class DemoMobile extends Sprite
 		assets.verbose = Capabilities.isDebugger;
 		assets.enqueue(
 				appDir.resolvePath("audio"),
-				appDir.resolvePath(StringTools.format("fonts/{0}x", scaleFactor)),
-				appDir.resolvePath(StringTools.format("textures/{0}x", scaleFactor))
+				appDir.resolvePath(StringUtil.format("fonts/{0}x", scaleFactor)),
+				appDir.resolvePath(StringUtil.format("textures/{0}x", scaleFactor))
 				);
 		
 		// Now, while the AssetManager now contains pointers to all the assets, it actually
@@ -118,7 +118,7 @@ class DemoMobile extends Sprite
 	
 	private function startGame(assets:AssetManager):Void
 	{
-		var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
+		var game:Game = cast(_starling.root, Game);
 		game.start(assets);
 		setTimeout(removeElements, 150);
 	}
@@ -127,7 +127,7 @@ class DemoMobile extends Sprite
 	{
 		// Add background image. By using "loadBytes", we can avoid any flickering.
 		
-		var bgPath:String = StringTools.format("textures/{0}x/background.jpg", scaleFactor);
+		var bgPath:String = StringUtil.format("textures/{0}x/background.jpg", scaleFactor);
 		var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
 		var bytes:ByteArray = new ByteArray();
 		var stream:FileStream = new FileStream();
@@ -144,7 +144,7 @@ class DemoMobile extends Sprite
 		_background.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
 				function(e:Dynamic):Void
 				{
-					(try cast(_background.content, Bitmap) catch(e:Dynamic) null).smoothing = true;
+					cast(_background.content, Bitmap).smoothing = true;
 				});
 		
 		// While the assets are loaded, we will display a progress bar.

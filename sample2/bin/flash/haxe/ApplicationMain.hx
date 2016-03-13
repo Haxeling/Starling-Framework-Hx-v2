@@ -30,6 +30,66 @@ class ApplicationMain {
 		var types = [];
 		
 		
+		urls.push ("textures/1x/atlas.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("textures/1x/atlas.xml");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("textures/1x/background.jpg");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("textures/1x/compressed_texture.atf");
+		types.push (lime.Assets.AssetType.BINARY);
+		
+		
+		urls.push ("textures/2x/atlas.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("textures/2x/atlas.xml");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("textures/2x/background.jpg");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("textures/2x/compressed_texture.atf");
+		types.push (lime.Assets.AssetType.BINARY);
+		
+		
+		urls.push ("audio/wing_flap.mp3");
+		types.push (lime.Assets.AssetType.MUSIC);
+		
+		
+		urls.push ("fonts/1x/desyrel.fnt");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("fonts/1x/desyrel.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("fonts/2x/desyrel.fnt");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("fonts/2x/desyrel.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("fonts/Ubuntu-License.txt");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("Ubuntu");
+		types.push (lime.Assets.AssetType.FONT);
+		
+		
 		
 		if (config.assetsPrefix != null) {
 			
@@ -91,13 +151,13 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "318",
+			build: "467",
 			company: "P.J.Shand",
-			file: "Starling2Sample",
+			file: "OpenFLStarlingSamples",
 			fps: 60,
-			name: "Starling2Sample",
+			name: "OpenFLStarlingSamples",
 			orientation: "",
-			packageName: "Starling2Sample",
+			packageName: "starling.samples",
 			version: "1.0.0",
 			windows: [
 				
@@ -113,7 +173,7 @@ class ApplicationMain {
 					parameters: "{}",
 					resizable: true,
 					stencilBuffer: true,
-					title: "Starling2Sample",
+					title: "OpenFLStarlingSamples",
 					vsync: false,
 					width: 800,
 					x: null,
@@ -145,7 +205,7 @@ class ApplicationMain {
 	public static function start ():Void {
 		
 		var hasMain = false;
-		var entryPoint = Type.resolveClass ("Main");
+		var entryPoint = Type.resolveClass ("sample.Main");
 		
 		for (methodName in Type.getClassFields (entryPoint)) {
 			
@@ -205,7 +265,7 @@ class ApplicationMain {
 
 
 @:build(DocumentClass.build())
-@:keep class DocumentClass extends Main {}
+@:keep class DocumentClass extends sample.Main {}
 
 
 #else

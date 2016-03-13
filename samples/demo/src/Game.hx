@@ -68,7 +68,7 @@ class Game extends Sprite
 	
 	private function onButtonTriggered(event:Event):Void
 	{
-		var button:Button = try cast(event.target, Button) catch(e:Dynamic) null;
+		var button:Button = cast(event.target, Button);
 		
 		if (button.name == "backButton") 
 			closeScene()
@@ -88,7 +88,7 @@ class Game extends Sprite
 		if (_currentScene != null)			 return;
 		
 		var sceneClass:Class<Dynamic> = Type.getClass(Type.resolveClass(name));
-		_currentScene = try cast(Type.createInstance(sceneClass, []), Scene) catch(e:Dynamic) null;
+		_currentScene = cast(Type.createInstance(sceneClass, []), Scene);
 		_mainMenu.removeFromParent();
 		addChild(_currentScene);
 	}

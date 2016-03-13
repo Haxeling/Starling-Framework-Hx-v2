@@ -56,7 +56,7 @@ class BenchmarkScene extends Scene
 		
 		_startButton = new MenuButton("Start benchmark", 140);
 		_startButton.addEventListener(Event.TRIGGERED, onStartButtonTriggered);
-		_startButton.x = Constants.CenterX - as3hx.Compat.parseInt(_startButton.width / 2);
+		_startButton.x = Constants.CenterX - (_startButton.width / 2);
 		_startButton.y = 20;
 		addChild(_startButton);
 		
@@ -145,7 +145,7 @@ class BenchmarkScene extends Scene
 			}
 		}
 		
-		if (_frameCount % as3hx.Compat.parseInt(_targetFps / 4) == 0) 
+		if (_frameCount % (_targetFps / 4) == 0) 
 			_statusText.text = Std.string(_container.numChildren) + " objects";
 	}
 	
@@ -205,7 +205,7 @@ class BenchmarkScene extends Scene
 		
 		var fps:Int = Starling.Current.nativeStage.frameRate;
 		var numChildren:Int = _container.numChildren;
-		var resultString:String = StringTools.format("Result:\n{0} objects\nwith {1} fps",
+		var resultString:String = StringUtil.format("Result:\n{0} objects\nwith {1} fps",
 				numChildren, fps);
 		trace(resultString.replace(new EReg('\\n', "g"), " "));
 		

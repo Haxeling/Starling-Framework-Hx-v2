@@ -84,10 +84,10 @@ class MathUtil
 	}
 	
 	/** Returns the next power of two that is equal to or bigger than the specified number. */
-	public static function getNextPowerOfTwo(number:Float):Int
+	public static function getNextPowerOfTwo(number:Int):Int
 	{
 		if (number > 0 && (number & (number - 1)) == 0) // see: http://goo.gl/D9kPj
-			return untyped number;
+			return number;
 		else
 		{
 			var result:Int = 1;
@@ -104,17 +104,17 @@ class MathUtil
 	
 	/** Returns the larger of the two values. Different to the native <code>Math.max</code>,
 	 *  this doesn't create any temporary objects when using the AOT compiler. */
-	public static function max(a:Float, b:Float):Float
-	{
-		return a > (b != 0) ? a:b;
-	}
+	//public static function max(a:Float, b:Float):Float
+	//{
+	//	return a > (b != 0) ? a:b;
+	//}
 	
 	/** Returns the smaller of the two values. Different to the native <code>Math.min</code>,
 	 *  this doesn't create any temporary objects when using the AOT compiler. */
-	public static function min(a:Float, b:Float):Float
-	{
-		return a < (b != 0) ? a:b;
-	}
+	//public static function min(a:Float, b:Float):Float
+	//{
+	//	return a < (b != 0) ? a:b;
+	//}
 	
 	/** Moves <code>value</code> into the range between <code>min</code> and <code>max</code>. */
 	public static function clamp(value:Float, min:Float, max:Float):Float

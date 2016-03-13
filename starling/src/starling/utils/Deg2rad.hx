@@ -12,12 +12,12 @@ package starling.utils;
 
 
 /**
- * Class for deg2rad
+ * Class for Deg2rad.call
  */
-@:final class ClassForDeg2rad
+@:final class Deg2rad
 {
 	/** Converts an angle from degrees into radians. */
-	public function deg2rad(deg:Float):Float
+	public static function call(deg:Float):Float
 	{
 		return deg / 180.0 * Math.PI;
 	}

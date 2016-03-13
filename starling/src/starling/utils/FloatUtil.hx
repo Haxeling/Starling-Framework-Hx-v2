@@ -22,7 +22,7 @@ class FloatUtil
 			return "NaN";
 		else
 		{
-			var t = M.exp(10, decimalPlaces);
+			var t = exp(10, decimalPlaces);
 			var s = Std.string(Std.int(x * t) / t);
 			var i = s.indexOf(".");
 			if (i != -1)
@@ -38,5 +38,27 @@ class FloatUtil
 			}
 			return s;
 		}
-	}	
+	}
+	
+	/**
+	 * Fast integer exponentiation for base <code>a</code> and exponent <code>n</code>.
+	 */
+	public static function exp(a:Int, n:Int):Int
+	{
+		var t = 1;
+		var r = 0;
+		while (true)
+		{
+			if (n & 1 != 0) t = a * t;
+			n >>= 1;
+			if (n == 0)
+			{
+				r = t;
+				break;
+			}
+			else
+				a *= a;
+		}
+		return r;
+	}
 }

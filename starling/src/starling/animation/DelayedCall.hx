@@ -149,14 +149,15 @@ class DelayedCall extends EventDispatcher implements IAnimatable
 	private static var sPool:Array<DelayedCall> = [];
 	
 	/** @private */
-	private static function fromPool(call:Function, delay:Float,
-			args:Array<Dynamic> = null):DelayedCall
+	@:allow(starling.animation)
+	private static function fromPool(call:Function, delay:Float, args:Array<Dynamic> = null):DelayedCall
 	{
 		if (sPool.length > 0) return sPool.pop().reset(call, delay, args)
 		else return new DelayedCall(call, delay, args);
 	}
 	
 	/** @private */
+	@:allow(starling.animation)
 	private static function toPool(delayedCall:DelayedCall):Void
 	{
 		// reset any object-references, to make sure we don't prevent any garbage collection

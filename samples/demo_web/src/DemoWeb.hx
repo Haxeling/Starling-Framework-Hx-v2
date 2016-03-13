@@ -91,7 +91,7 @@ class DemoWeb extends Sprite
 	
 	private function startGame(assets:AssetManager):Void
 	{
-		var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
+		var game:Game = cast(_starling.root, Game);
 		game.start(assets);
 		setTimeout(removeElements, 150);
 	}

@@ -59,7 +59,7 @@ class SystemUtil
 		/*try
 		{
 			var nativeAppClass:Dynamic = Type.resolveClass("flash.desktop::NativeApplication");
-			var nativeApp:EventDispatcher = try cast(Reflect.field(nativeAppClass, "nativeApplication"), EventDispatcher) catch(e:Dynamic) null;
+			var nativeApp:EventDispatcher = cast(Reflect.field(nativeAppClass, "nativeApplication"), EventDispatcher);
 			
 			nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);
 			nativeApp.addEventListener(Event.DEACTIVATE, onDeactivate, false, 0, true);

@@ -114,7 +114,7 @@ class CompositeFilter extends FragmentFilter
 	
 	private function get_compositeEffect():CompositeEffect
 	{
-		return try cast(this.effect, CompositeEffect) catch(e:Dynamic) null;
+		return cast(this.effect, CompositeEffect);
 	}
 }
 
@@ -171,12 +171,13 @@ class CompositeEffect extends FilterEffect
 			var layer:CompositeLayer = _layers[0];
 			
 			for (i in 0...numLayers){vertexShader.push(
-						StringTools.format("sub v{0}, va1, vc{1} \n", i, i + 4)  // v0-4 -> texture coords  
+						StringUtil.format("sub v{0}, va1, vc{1} \n", i, i + 4)  // v0-4 -> texture coords  
 						);
 			}
 			
 			var fragmentShader:Array<Dynamic> = [
-			"seq ft5, v0, v0"  // ft5 -> 1, 1, 1, 1  ];
+				"seq ft5, v0, v0"  // ft5 -> 1, 1, 1, 1
+			];
 			
 			for (i in 0...numLayers){
 				var fti:String = "ft" + i;
@@ -230,7 +231,7 @@ class CompositeEffect extends FilterEffect
 		
 		for (i in 0...numLayers){
 			layer = layers[i];
-			bits = RenderUtil.getTextureVariantBits(layer.texture) | (as3hx.Compat.parseInt(layer.replaceColor) << 3);
+			bits = RenderUtil.getTextureVariantBits(layer.texture) | (layer.replaceColor << 3);
 			totalBits |= bits << (i * 4);
 		}
 		

@@ -119,7 +119,7 @@ class TouchProcessor
 		if (_lastTaps.length > 0)
 		{
 			for (j in 0..._lastTaps.length) {
-				var i:Int = _lastTaps.length - j - i;
+				var i:Int = _lastTaps.length - j - 1;
 				if (_elapsedTime - _lastTaps[i].timestamp > _multitapTime){
 					_lastTaps.splice(i, 1);
 				}

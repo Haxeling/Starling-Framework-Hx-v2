@@ -28,7 +28,7 @@ import starling.events.EventDispatcher;
  *  <p>There is a default juggler available at the Starling class:</p>
  *  
  *  <pre>
- *  var juggler:Juggler = Starling.juggler;
+ *  var juggler:Juggler = Starling.Juggler;
  *  </pre>
  *  
  *  <p>You can create juggler objects yourself, just as well. That way, you can group 
@@ -55,17 +55,30 @@ class Juggler implements IAnimatable
 	private var objects(get, never):Array<IAnimatable>;
 
 	private var _objects:Array<IAnimatable>;
-	private var _objectIDs:Dictionary;
+	private var _objectIDs:Map<IAnimatable, Int>;
 	private var _elapsedTime:Float;
 	
 	private static var sCurrentObjectID:Int;
+	
+	private static var tweenSetters:Array<String> = null;
 	
 	/** Create an empty juggler. */
 	public function new()
 	{
 		_elapsedTime = 0;
 		_objects = [];
-		_objectIDs = new Dictionary(true);
+		_objectIDs = new Map<IAnimatable, Int>();
+		
+		if (tweenSetters == null) {
+			// Get all of the setters in the Tween class.
+			tweenSetters = new Array<String>();
+			for (field in Type.getInstanceFields(Tween)) {
+				if (field.indexOf("set_") == 0) {
+					tweenSetters.push(field.substr(4));
+				}
+			}
+			tweenSetters.sort(function(a, b) return Reflect.compare(a.toLowerCase(), b.toLowerCase()));
+		}
 	}
 	
 	/** Adds an object to the juggler.
@@ -80,13 +93,13 @@ class Juggler implements IAnimatable
 	
 	private function addWithID(object:IAnimatable, objectID:Int):Int
 	{
-		if (object != null && !(Lambda.has(_objectIDs, object))) 
+		if (object != null && !contains(object)) 
 		{
-			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-			if (dispatcher != null)				 dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			var dispatcher:EventDispatcher = cast(object, EventDispatcher);
+			if (dispatcher != null) dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 			
 			_objects[_objects.length] = object;
-			Reflect.setField(_objectIDs, Std.string(object), objectID);
+			_objectIDs.set(object, objectID);
 			
 			return objectID;
 		}
@@ -96,7 +109,7 @@ class Juggler implements IAnimatable
 	/** Determines if an object has been added to the juggler. */
 	public function contains(object:IAnimatable):Bool
 	{
-		return Lambda.has(_objectIDs, object);
+		return _objectIDs.exists(object);
 	}
 	
 	/** Removes an object from the juggler.
@@ -108,17 +121,16 @@ class Juggler implements IAnimatable
 	{
 		var objectID:Int = 0;
 		
-		if (object != null && Lambda.has(_objectIDs, object)) 
+		if (object != null && contains(object)) 
 		{
-			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-			if (dispatcher != null)				 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			var dispatcher:EventDispatcher = cast(object, EventDispatcher);
+			if (dispatcher != null)	dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 			
 			var index:Int = Lambda.indexOf(_objects, object);
 			_objects[index] = null;
 			
-			objectID = Reflect.field(_objectIDs, Std.string(object));
-			trace("fix delete on line 120");
-			//delete _objectIDs[object];
+			objectID = _objectIDs.get(object);
+			_objectIDs.remove(object);
 		}
 		
 		return objectID;
@@ -141,7 +153,7 @@ class Juggler implements IAnimatable
 		while (i >= 0){
 			var object:IAnimatable = _objects[i];
 			
-			if (Reflect.field(_objectIDs, Std.string(object)) == objectID) 
+			if (_objectIDs.get(object) == objectID) 
 			{
 				remove(object);
 				return objectID;
@@ -155,17 +167,16 @@ class Juggler implements IAnimatable
 	/** Removes all tweens with a certain target. */
 	public function removeTweens(target:Dynamic):Void
 	{
-		if (target == null)			 return;
+		if (target == null)	return;
 		
 		var i:Int = _objects.length - 1;
 		while (i >= 0){
-			var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
+			var tween:Tween = cast(_objects[i], Tween);
 			if (tween != null && tween.target == target) 
 			{
 				tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 				_objects[i] = null;
-				trace("fix delete on line 167");
-				// delete _objectIDs[tween];
+				_objectIDs.remove(tween);
 			}
 			--i;
 		}
@@ -174,17 +185,16 @@ class Juggler implements IAnimatable
 	/** Removes all delayed and repeated calls with a certain callback. */
 	public function removeDelayedCalls(callback:Function):Void
 	{
-		if (callback == null)			 return;
+		if (callback == null) return;
 		
 		var i:Int = _objects.length - 1;
 		while (i >= 0){
-			var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
+			var delayedCall:DelayedCall = cast(_objects[i], DelayedCall);
 			if (delayedCall != null && delayedCall.callback == callback) 
 			{
 				delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 				_objects[i] = null;
-				trace("fix delete on line 186");
-				// delete _objectIDs[tween];
+				_objectIDs.remove(delayedCall);
 			}
 			--i;
 		}
@@ -197,8 +207,8 @@ class Juggler implements IAnimatable
 		{
 			var i:Int = _objects.length - 1;
 			while (i >= 0){
-				var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
-				if (tween != null && tween.target == target)					 return true;
+				var tween:Tween = cast(_objects[i], Tween);
+				if (tween != null && tween.target == target) return true;
 				--i;
 			}
 		}
@@ -213,8 +223,8 @@ class Juggler implements IAnimatable
 		{
 			var i:Int = _objects.length - 1;
 			while (i >= 0){
-				var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
-				if (delayedCall != null && delayedCall.callback == callback)					 return true;
+				var delayedCall:DelayedCall = cast(_objects[i], DelayedCall);
+				if (delayedCall != null && delayedCall.callback == callback) return true;
 				--i;
 			}
 		}
@@ -233,11 +243,10 @@ class Juggler implements IAnimatable
 		var i:Int = _objects.length - 1;
 		while (i >= 0){
 			var object:IAnimatable = _objects[i];
-			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-			if (dispatcher != null)				 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			var dispatcher:EventDispatcher = cast(object, EventDispatcher);
+			if (dispatcher != null) dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 			_objects[i] = null;
-			trace("fix delete on line 239");
-			// delete _objectIDs[object];
+			_objectIDs.remove(object);
 			--i;
 		}
 	}
@@ -249,7 +258,7 @@ class Juggler implements IAnimatable
 	 *  @return Unique numeric identifier for the delayed call. This identifier may be used
 	 *		  to remove the object via <code>removeByID()</code>.
 	 */
-	public function delayCall(call:Function, delay:Float):Int
+	public function delayCall(call:Function, delay:Float, args:Array<Dynamic> = null):Int
 	{
 		if (call == null)			 throw new ArgumentError("call must not be null");
 		
@@ -264,7 +273,7 @@ class Juggler implements IAnimatable
 	 *  @return Unique numeric identifier for the delayed call. This identifier may be used
 	 *		  to remove the object via <code>removeByID()</code>.
 	 */
-	public function repeatCall(call:Function, interval:Float, repeatCount:Int = 0):Int
+	public function repeatCall(call:Function, interval:Float, repeatCount:Int = 0, args:Array<Dynamic> = null):Int
 	{
 		if (call == null)			 throw new ArgumentError("call must not be null");
 		
@@ -276,7 +285,7 @@ class Juggler implements IAnimatable
 	
 	private function onPooledDelayedCallComplete(event:Event):Void
 	{
-		DelayedCall.toPool(try cast(event.target, DelayedCall) catch(e:Dynamic) null);
+		DelayedCall.toPool(cast(event.target, DelayedCall));
 	}
 	
 	/** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
@@ -320,13 +329,15 @@ class Juggler implements IAnimatable
 		for (property in Reflect.fields(properties))
 		{
 			var value:Dynamic = Reflect.field(properties, property);
-			
-			if (tween.exists(property)) 
-				Reflect.setField(tween, property, value)
-			else if (target.exists(Tween.getPropertyName(property))) 
-				tween.animate(property, try cast(value, Float) catch(e:Dynamic) null)
-			else 
-			throw new ArgumentError("Invalid property: " + property);
+			if (tweenSetters.indexOf(property) >= 0) {
+				Reflect.setProperty(tween, property, value);
+			} else {
+				var currentValue:Dynamic = Reflect.getProperty(target, property);
+				if (currentValue == null) {
+					throw new ArgumentError("Invalid property: " + property);
+				}
+				tween.animate(property, cast value);
+			}
 		}
 		
 		tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledTweenComplete);
@@ -335,7 +346,7 @@ class Juggler implements IAnimatable
 	
 	private function onPooledTweenComplete(event:Event):Void
 	{
-		Tween.toPool(try cast(event.target, Tween) catch(e:Dynamic) null);
+		Tween.toPool(cast(event.target, Tween));
 	}
 	
 	/** Advances all objects by a certain time (in seconds). */
@@ -346,15 +357,13 @@ class Juggler implements IAnimatable
 		var i:Int;
 		
 		_elapsedTime += time;
-		if (numObjects == 0)			 return  // in the next frame), and we need to clean up any empty slots in the list.	// of animatables. we must not process new objects right now (they will be processed	// there is a high probability that the "advanceTime" function modifies the list  ;
+		if (numObjects == 0) return;
 		
+		// there is a high probability that the "advanceTime" function modifies the list  ;
+		// of animatables. we must not process new objects right now (they will be processed	
+		// in the next frame), and we need to clean up any empty slots in the list.	
 		
-		
-		
-		
-		
-		
-		
+		var i:Int = 0;
 		for (i in 0...numObjects){
 			var object:IAnimatable = _objects[i];
 			if (object != null) 
@@ -376,19 +385,19 @@ class Juggler implements IAnimatable
 			numObjects = _objects.length;  // count might have changed!  
 			
 			while (i < numObjects)
-			_objects[as3hx.Compat.parseInt(currentIndex++)] = _objects[as3hx.Compat.parseInt(i++)];
+			_objects[cast(currentIndex++, Int)] = _objects[cast(i++, Int)];
 			
-			_objects.length = currentIndex;
+			_objects.splice(currentIndex, _objects.length - currentIndex);
 		}
 	}
 	
 	private function onRemove(event:Event):Void
 	{
-		var objectID:Int = remove(try cast(event.target, IAnimatable) catch(e:Dynamic) null);
+		var objectID:Int = remove(cast(event.target, IAnimatable));
 		
 		if (objectID != 0) 
 		{
-			var tween:Tween = try cast(event.target, Tween) catch(e:Dynamic) null;
+			var tween:Tween = cast(event.target, Tween);
 			if (tween != null && tween.isComplete) 
 				addWithID(tween.nextTween, objectID);
 		}

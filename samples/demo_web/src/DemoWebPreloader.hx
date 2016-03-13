@@ -107,7 +107,7 @@ class DemoWebPreloader extends MovieClip
 		if (startupClass == null) 
 			throw new Error("Invalid Startup class in Preloader: " + STARTUP_CLASS);
 		
-		var startupObject:DisplayObject = try cast(Type.createInstance(startupClass, []), DisplayObject) catch(e:Dynamic) null;
+		var startupObject:DisplayObject = cast(Type.createInstance(startupClass, []), DisplayObject);
 		if (startupObject == null) 
 			throw new Error("Startup class needs to inherit from Sprite or MovieClip.");
 		

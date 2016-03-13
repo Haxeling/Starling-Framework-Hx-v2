@@ -39,7 +39,7 @@ class FilterChain extends FragmentFilter
 		_filters = [];
 		
 		for (i in 0...len){
-			var filter:FragmentFilter = try cast(args[i], FragmentFilter) catch(e:Dynamic) null;
+			var filter:FragmentFilter = cast(args[i], FragmentFilter);
 			if (filter != null)				 addFilterAt(filter, i)
 			else throw new ArgumentError("pass only fragment filters to the constructor");
 		}
@@ -119,7 +119,7 @@ class FilterChain extends FragmentFilter
 	 *  are decremented. If requested, the filter will be disposed right away. */
 	public function removeFilterAt(index:Int, dispose:Bool = false):FragmentFilter
 	{
-		var filter:FragmentFilter = try cast(_filters.removeAt(index), FragmentFilter) catch(e:Dynamic) null;
+		var filter:FragmentFilter = cast(_filters.removeAt(index), FragmentFilter);
 		filter.removeEventListener(Event.CHANGE, setRequiresRedraw);
 		if (dispose)			 filter.dispose();
 		setRequiresRedraw();

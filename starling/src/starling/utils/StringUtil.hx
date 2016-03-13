@@ -89,15 +89,17 @@ class StringUtil
 	 */
 	public static function trim(string:String):String
 	{
-		var startPos:Int;
-		var endPos:Int;
+		var startPos:Int = 0;
+		var endPos:Int = 0;
 		var length:Int = string.length;
 		
-		for (startPos in 0...length){if (string.charCodeAt(startPos) > 0x20)				 break;
+		for (startPos in 0...length) {
+			if (string.charCodeAt(startPos) > 0x20)	break;
 		}
 		
 		endPos = string.length - 1;
-		while (endPos >= startPos){if (string.charCodeAt(endPos) > 0x20)				 break;
+		while (endPos >= startPos) {
+			if (string.charCodeAt(endPos) > 0x20) break;
 			--endPos;
 		}
 		

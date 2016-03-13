@@ -186,7 +186,7 @@ class ColorMatrixFilter extends FragmentFilter
 			m10:Float, m11:Float, m12:Float, m13:Float, m14:Float,
 			m15:Float, m16:Float, m17:Float, m18:Float, m19:Float):Void
 	{
-		sMatrix.length = 0;
+		sMatrix.splice(0, sMatrix.length);
 		sMatrix.push(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9,
 				m10, m11, m12, m13, m14, m15, m16, m17, m18, m19);
 		
@@ -208,7 +208,7 @@ class ColorMatrixFilter extends FragmentFilter
 	
 	private function get_colorEffect():ColorMatrixEffect
 	{
-		return try cast(this.effect, ColorMatrixEffect) catch(e:Dynamic) null;
+		return cast(this.effect, ColorMatrixEffect);
 	}
 }
 
@@ -247,7 +247,8 @@ class ColorMatrixEffect extends FilterEffect
 				"m44 ft0, ft0, fc0			  ",   // multiply color with 4x4 matrix  
 				"add ft0, ft0, fc4			  ",   // add offset  
 				"mul ft0.xyz, ft0.xyz, ft0.www  ",   // multiply with alpha again (PMA)  
-				"mov oc, ft0					"  // copy to output  ].join("\n");
+				"mov oc, ft0					"  // copy to output  
+			].join("\n");
 		
 		return Program.fromSource(vertexShader, fragmentShader);
 	}

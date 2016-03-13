@@ -105,8 +105,8 @@ class Polygon
 			if (Std.is(args[0], Point)) 
 			{
 				for (i in 0...numArgs){
-					_coords[numCoords + i * 2] = (try cast(args[i], Point) catch(e:Dynamic) null).x;
-					_coords[numCoords + i * 2 + 1] = (try cast(args[i], Point) catch(e:Dynamic) null).y;
+					_coords[numCoords + i * 2] = cast(args[i], Point).x;
+					_coords[numCoords + i * 2 + 1] = cast(args[i], Point).y;
 				}
 			}
 			else if (Std.is(args[0], Float)) 
@@ -132,10 +132,10 @@ class Polygon
 	/** Returns the coordinates of a certain vertex. */
 	public function getVertex(index:Int, out:Point = null):Point
 	{
-		if (index >= 0 && index < numVertices) 
+		if (index >= 0 && index < numVertices)
 		{
-			out ||= new Point();
-			out.setTo(_coords[index * 2], _coords[index * 2 + 1]);
+			if (out == null) out = new Point();
+			out.setTo(mCoords[index * 2], mCoords[index * 2 + 1]);
 			return out;
 		}
 		else throw new RangeError("Invalid index: " + index);
@@ -250,7 +250,7 @@ class Polygon
 			else 
 			{
 				restIndexPos++;
-				if (restIndexPos == numRestIndices)					 break  // no more ears  ;
+				if (restIndexPos == numRestIndices) break;  // no more ears  ;
 			}
 		}
 		
@@ -335,7 +335,7 @@ class Polygon
 	private static function areVectorsIntersecting(ax:Float, ay:Float, bx:Float, by:Float,
 			cx:Float, cy:Float, dx:Float, dy:Float):Bool
 	{
-		if ((ax == bx && ay == by) || (cx == dx && cy == dy))			 return false  // length = 0  ;
+		if ((ax == bx && ay == by) || (cx == dx && cy == dy)) return false;  // length = 0  ;
 		
 		var abx:Float = bx - ax;
 		var aby:Float = by - ay;
@@ -343,11 +343,11 @@ class Polygon
 		var cdy:Float = dy - cy;
 		var tDen:Float = cdy * abx - cdx * aby;
 		
-		if (tDen == 0.0)			 return false  // parallel or identical  ;
+		if (tDen == 0.0) return false;  // parallel or identical  ;
 		
 		var t:Float = (aby * (cx - ax) - abx * (cy - ay)) / tDen;
 		
-		if (t < 0 || t > 1)			 return false  // outside c->d  ;
+		if (t < 0 || t > 1) return false;  // outside c->d  ;
 		
 		var s:Float = (aby != 0) ? (cy - ay + t * cdy) / aby:
 		(cx - ax + t * cdx) / abx;

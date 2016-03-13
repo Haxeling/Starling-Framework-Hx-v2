@@ -82,7 +82,6 @@ class Button extends DisplayObjectContainer
 	private var _scaleWhenOver:Float;
 	private var _alphaWhenDown:Float;
 	private var _alphaWhenDisabled:Float;
-	private var _useHandCursor:Bool;
 	private var _enabled:Bool;
 	private var _state:String;
 	private var _triggerBounds:Rectangle;
@@ -148,14 +147,14 @@ class Button extends DisplayObjectContainer
 		_textBounds.width *= scaleX;
 		_textBounds.height *= scaleY;
 		
-		if (_textField != null)			 createTextField();
+		if (_textField != null) createTextField();
 	}
 	
 	private function createTextField():Void
 	{
 		if (_textField == null) 
 		{
-			_textField = new TextField(_textBounds.width, _textBounds.height);
+			_textField = new TextField(untyped _textBounds.width, untyped _textBounds.height);
 			_textField.touchable = false;
 			_textField.autoScale = true;
 			_textField.batchable = true;
@@ -167,7 +166,7 @@ class Button extends DisplayObjectContainer
 		_textField.y = _textBounds.y;
 	}
 	
-	private function onTouch(event:TouchEvent):Void
+	override private function onTouch(event:TouchEvent):Void
 	{
 		Mouse.cursor = ((_useHandCursor && _enabled && event.interactsWith(this))) ? 
 				MouseCursor.BUTTON:MouseCursor.AUTO;

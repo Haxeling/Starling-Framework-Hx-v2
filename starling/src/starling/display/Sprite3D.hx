@@ -11,6 +11,7 @@
 package starling.display;
 
 import flash.errors.Error;
+import starling.utils.Deg2rad;
 
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -81,8 +82,6 @@ class Sprite3D extends DisplayObjectContainer
 	private var _pivotZ:Float;
 	private var _z:Float;
 	
-	private var _transformationMatrix:Matrix;
-	private var _transformationMatrix3D:Matrix3D;
 	private var _transformationChanged:Bool;
 	private var _is2D:Bool;
 	
@@ -129,12 +128,10 @@ class Sprite3D extends DisplayObjectContainer
 		if (_is2D)			 return super.hitTest(localPoint)
 		else 
 		{
-			if (!visible || !touchable)				 return null  // by this sprite3D and the straight line between the camera and the hit point.	// We calculate the interception point between the 3D plane that is spawned up  ;
+			if (!visible || !touchable) return null;
 			
-			
-			
-			
-			
+			// We calculate the interception point between the 3D plane that is spawned up  ;
+			// by this sprite3D and the straight line between the camera and the hit point.	
 			
 			sHelperMatrix.copyFrom(transformationMatrix3D);
 			sHelperMatrix.invert();
@@ -169,12 +166,12 @@ class Sprite3D extends DisplayObjectContainer
 	
 	private function onAddedChild(event:Event):Void
 	{
-		recursivelySetIs3D(try cast(event.target, DisplayObject) catch(e:Dynamic) null, true);
+		recursivelySetIs3D(cast(event.target, DisplayObject), true);
 	}
 	
 	private function onRemovedChild(event:Event):Void
 	{
-		recursivelySetIs3D(try cast(event.target, DisplayObject) catch(e:Dynamic) null, false);
+		recursivelySetIs3D(cast(event.target, DisplayObject), false);
 	}
 	
 	private function recursivelySetIs3D(object:DisplayObject, value:Bool):Void
@@ -184,7 +181,7 @@ class Sprite3D extends DisplayObjectContainer
 		
 		if (Std.is(object, DisplayObjectContainer)) 
 		{
-			var container:DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
+			var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
 			var numChildren:Int = container.numChildren;
 			
 			for (i in 0...numChildren){recursivelySetIs3D(container.getChildAt(i), value);
@@ -206,14 +203,16 @@ class Sprite3D extends DisplayObjectContainer
 		
 		_transformationMatrix3D.identity();
 		
-		if (scaleX != 1.0 || scaleY != 1.0 || _scaleZ != 1.0) 
-			_transformationMatrix3D.appendScale(scaleX || E, scaleY || E, _scaleZ || E);
+		if (scaleX != 1.0 || scaleY != 1.0 || _scaleZ != 1.0) {
+			//_transformationMatrix3D.appendScale(scaleX || E, scaleY || E, _scaleZ || E);
+			_transformationMatrix3D.appendScale(cast ((cast scaleX) || (cast E)) , cast ((cast scaleY) || (cast E)), cast ((cast scaleZ) || (cast E)));
+		}
 		if (_rotationX != 0.0) 
-			_transformationMatrix3D.appendRotation(rad2deg(_rotationX), Vector3D.X_AXIS);
+			_transformationMatrix3D.appendRotation(Deg2rad.call(_rotationX), Vector3D.X_AXIS);
 		if (_rotationY != 0.0) 
-			_transformationMatrix3D.appendRotation(rad2deg(_rotationY), Vector3D.Y_AXIS);
+			_transformationMatrix3D.appendRotation(Deg2rad.call(_rotationY), Vector3D.Y_AXIS);
 		if (rotationZ != 0.0) 
-			_transformationMatrix3D.appendRotation(rad2deg(rotationZ), Vector3D.Z_AXIS);
+			_transformationMatrix3D.appendRotation(Deg2rad.call(rotationZ), Vector3D.Z_AXIS);
 		if (x != 0.0 || y != 0.0 || _z != 0.0) 
 			_transformationMatrix3D.appendTranslation(x, y, _z);
 		if (pivotX != 0.0 || pivotY != 0.0 || _pivotZ != 0.0) 

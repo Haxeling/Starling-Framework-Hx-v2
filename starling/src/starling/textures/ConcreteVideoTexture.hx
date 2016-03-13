@@ -100,7 +100,7 @@ class ConcreteVideoTexture extends ConcreteTexture
 	
 	private function get_videoBase():VideoTexture
 	{
-		return try cast(base, VideoTexture) catch(e:Dynamic) null;
+		return cast(base, VideoTexture);
 	}
 }
 

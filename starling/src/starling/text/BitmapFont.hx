@@ -321,12 +321,14 @@ class BitmapFont implements ITextCompositor
 		var finished:Bool = false;
 		var charLocation:CharLocation;
 		var numChars:Int;
-		var containerWidth:Float;
-		var containerHeight:Float;
-		var scale:Float;
+		var containerWidth:Float = 0;
+		var containerHeight:Float = 0;
+		var scale:Float = 1;
 		var i:Int;
 		var j:Int;
-		
+		var currentX:Float = 0;
+		var currentY:Float = 0;
+				
 		if (fontSize < 0)			 fontSize *= -_size;
 		
 		while (!finished)
@@ -448,7 +450,7 @@ class BitmapFont implements ITextCompositor
 		
 		var finalLocations:Array<CharLocation> = CharLocation.vectorFromPool();
 		var numLines:Int = sLines.length;
-		var bottom:Float = untyped currentY + _lineHeight;
+		var bottom:Float = untyped (currentY + _lineHeight);
 		var yOffset:Int = 0;
 		
 		if (vAlign == Align.BOTTOM) yOffset = untyped containerHeight - bottom;

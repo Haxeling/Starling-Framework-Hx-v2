@@ -140,8 +140,8 @@ class DisplayObjectContainer extends DisplayObject
 				
 				if (stage != null) 
 				{
-					var container:DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
-					if (container != null)						 container.broadcastEventWith(Event.ADDED_TO_STAGE)
+					var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+					if (container != null) container.broadcastEventWith(Event.ADDED_TO_STAGE)
 					else child.dispatchEventWith(Event.ADDED_TO_STAGE);
 				}
 			}
@@ -176,15 +176,15 @@ class DisplayObjectContainer extends DisplayObject
 			
 			if (stage != null) 
 			{
-				var container:DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
-				if (container != null)					 container.broadcastEventWith(Event.REMOVED_FROM_STAGE)
+				var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+				if (container != null) container.broadcastEventWith(Event.REMOVED_FROM_STAGE)
 				else child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
 			}
 			
 			child.setParent(null);
 			index = Lambda.indexOf(_children, child);  // index might have changed by event handler  
-			if (index >= 0)				 _children.splice(index, 1);
-			if (dispose)				 child.dispose();
+			if (index >= 0) _children.splice(index, 1);
+			if (dispose) child.dispose();
 			
 			return child;
 		}
@@ -507,7 +507,7 @@ class DisplayObjectContainer extends DisplayObject
 	private function getChildEventListeners(object:DisplayObject, eventType:String,
 			listeners:Array<DisplayObject>):Void
 	{
-		var container:DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
+		var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
 		
 		if (object.hasEventListener(eventType)) 
 			listeners[listeners.length] = object;

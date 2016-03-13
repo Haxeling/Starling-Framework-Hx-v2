@@ -10,6 +10,10 @@
 
 package starling.textures;
 
+import flash.display3D.Context3DProfile;
+import flash.display3D.Context3DTextureFormat;
+import haxe.Constraints.Function;
+import openfl.errors.Error;
 import starling.textures.SubTexture;
 import starling.textures.Texture;
 
@@ -95,8 +99,9 @@ class RenderTexture extends SubTexture
 	 *  documentation of the <code>useDoubleBuffering</code> property.</p>
 	 */
 	public function new(width:Int, height:Int, persistent:Bool = true,
-			scale:Float = -1, format:String = "bgra")
+			scale:Float = -1, format:Context3DTextureFormat = null)
 	{
+		if (format == null) format = Context3DTextureFormat.BGRA;
 		_isPersistent = persistent;
 		_activeTexture = Texture.empty(width, height, true, false, true, scale, format);
 		_activeTexture.root.onRestore = _activeTexture.root.clear;
@@ -195,9 +200,7 @@ class RenderTexture extends SubTexture
 		var painter:Painter = Starling.Painter;
 		var state:RenderState = painter.state;
 		
-		if (!Starling.Current.contextValid)			 return  // switch buffers  ;
-		
-		
+		if (!Starling.Current.contextValid)			 return;  // switch buffers
 		
 		if (isDoubleBuffered) 
 		{
@@ -220,9 +223,7 @@ class RenderTexture extends SubTexture
 		painter.prepareToDraw();
 		
 		if (isDoubleBuffered || !isPersistent || !_bufferReady) 
-			painter.clear()  // draw buffer  ;
-		
-		
+			painter.clear();  // draw buffer
 		
 		if (isDoubleBuffered && _bufferReady) 
 			_helperImage.render(painter)
@@ -232,12 +233,14 @@ class RenderTexture extends SubTexture
 		try
 		{
 			_drawing = true;
-			execute(renderBlock, object, matrix, alpha);
-		};
-		finally;{
-			_drawing = false;
-			painter.popState();
+			Execute.call(renderBlock, [object, matrix, alpha]);
 		}
+		catch (e:Error) {
+			
+		}
+		
+		_drawing = false;
+		painter.popState();
 	}
 	
 	/** Clears the render texture with a certain color and alpha value. Call without any
@@ -287,20 +290,20 @@ class RenderTexture extends SubTexture
 	 */
 	private static function get_useDoubleBuffering():Bool
 	{
-		if (Starling.Current) 
+		if (Starling.Current != null) 
 		{
 			var painter:Painter = Starling.Painter;
-			var sharedData:Dictionary = painter.sharedData;
+			var sharedData:Map<String, Dynamic> = painter.sharedData;
 			
-			if (Lambda.has(sharedData, USE_DOUBLE_BUFFERING_DATA_NAME)) 
+			if (sharedData.exists(USE_DOUBLE_BUFFERING_DATA_NAME)) 
 			{
-				return Reflect.field(sharedData, USE_DOUBLE_BUFFERING_DATA_NAME);
+				return sharedData.get(USE_DOUBLE_BUFFERING_DATA_NAME);
 			}
 			else 
 			{
-				var profile:String = (painter.profile) ? painter.profile:"baseline";
-				var value:Bool = profile == "baseline" || profile == "baselineConstrained";
-				Reflect.setField(sharedData, USE_DOUBLE_BUFFERING_DATA_NAME, value);
+				var profile:Context3DProfile = (painter.profile != null) ? painter.profile:Context3DProfile.BASELINE;
+				var value:Bool = profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_CONSTRAINED;
+				sharedData.set(USE_DOUBLE_BUFFERING_DATA_NAME, value);
 				return value;
 			}
 		}
@@ -312,7 +315,7 @@ class RenderTexture extends SubTexture
 		if (Starling.Current == null) 
 			throw new IllegalOperationError("Starling not yet initialized")
 		else 
-		Starling.Painter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
+		Starling.Painter.sharedData.set(USE_DOUBLE_BUFFERING_DATA_NAME, value);
 		return value;
 	}
 }
