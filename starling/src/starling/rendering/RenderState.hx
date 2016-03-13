@@ -285,7 +285,9 @@ class RenderState
 	{
 		var currentTarget:TextureBase = (_renderTarget != null) ? _renderTarget.base:null;
 		var newTarget:TextureBase = (target != null) ? target.base:null;
-		var newOptions:Int = cast(enableDepthAndStencil, Int) | antiAlias << 4;
+		var enableDepthAndStencilBoolInt:Int = 0;
+		if (enableDepthAndStencil) enableDepthAndStencilBoolInt = 1;
+		var newOptions:Int = enableDepthAndStencilBoolInt | antiAlias << 4;
 		
 		if (currentTarget != newTarget || _renderTargetOptions != newOptions) 
 		{

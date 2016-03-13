@@ -32,7 +32,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 17&#xA;-debug " />
+    <option additional="-swf-version 17" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -55,7 +55,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="" />
+    <option testMovieCommand="bat\etc\RunAIR.bat" />
   </options>
   <!-- Plugin storage -->
   <storage />

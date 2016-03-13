@@ -183,7 +183,7 @@ class Painter
 	 *
 	 *  @see starling.utils.RenderUtil
 	 */
-	public function requestContext3D(renderMode:Context3DRenderMode, profile:Dynamic):Void
+	public function requestContext3D(renderMode:Context3DRenderMode, profile:Array<Context3DProfile>=null):Void
 	{
 		RenderUtil.requestContext3D(_stage3D, renderMode, profile);
 	}
@@ -213,8 +213,9 @@ class Painter
 	public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Float,
 			antiAlias:Int, enableDepthAndStencil:Bool):Void
 	{
-		trace("fix &&= on line 215");
+		trace("fix/check &&= on line 217");
 		//enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
+		if (!SystemUtil.supportsDepthAndStencil) enableDepthAndStencil = false;
 		
 		// Changing the stage3D position might move the back buffer to invalid bounds
 		// temporarily. To avoid problems, we set it to the smallest possible size first.
@@ -280,7 +281,7 @@ class Painter
 	{
 		_stateStackPos++;
 		
-		if (_stateStack.length < _stateStackPos + 1)			 _stateStack[_stateStackPos] = new RenderState();
+		if (_stateStack.length < _stateStackPos + 1) _stateStack[_stateStackPos] = new RenderState();
 		if (token != null)			 _batchProcessor.fillToken(token);
 		
 		_stateStack[_stateStackPos].copyFrom(_state);
@@ -317,7 +318,7 @@ class Painter
 		_state.copyFrom(_stateStack[_stateStackPos]);  // -> might cause 'finishMeshBatch'  
 		_stateStackPos--;
 		
-		if (token != null)			 _batchProcessor.fillToken(token);
+		if (token != null) _batchProcessor.fillToken(token);
 	}
 	
 	// masks
@@ -336,7 +337,7 @@ class Painter
 	 */
 	public function drawMask(mask:DisplayObject):Void
 	{
-		if (_context == null)			 return;
+		if (_context == null) return;
 		
 		finishMeshBatch();
 		
@@ -348,14 +349,20 @@ class Painter
 		}
 		else 
 		{
-			_context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-					Context3DCompareMode.EQUAL, Context3DStencilAction.INCREMENT_SATURATE);
+			_context.setStencilActions(
+				Context3DTriangleFace.FRONT_AND_BACK,
+				Context3DCompareMode.EQUAL, 
+				Context3DStencilAction.INCREMENT_SATURATE
+			);
 			
 			renderMask(mask);
 			stencilReferenceValue++;
 			
-			_context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-					Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+			_context.setStencilActions(
+				Context3DTriangleFace.FRONT_AND_BACK,
+				Context3DCompareMode.EQUAL,
+				Context3DStencilAction.KEEP
+			);
 		}
 	}
 	
@@ -379,14 +386,20 @@ class Painter
 		}
 		else 
 		{
-			_context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-					Context3DCompareMode.EQUAL, Context3DStencilAction.DECREMENT_SATURATE);
+			_context.setStencilActions(
+				Context3DTriangleFace.FRONT_AND_BACK,
+				Context3DCompareMode.EQUAL,
+				Context3DStencilAction.DECREMENT_SATURATE
+			);
 			
 			renderMask(mask);
 			stencilReferenceValue--;
 			
-			_context.setStencilActions(Context3DTriangleFace.FRONT_AND_BACK,
-					Context3DCompareMode.EQUAL, Context3DStencilAction.KEEP);
+			_context.setStencilActions(
+				Context3DTriangleFace.FRONT_AND_BACK,
+				Context3DCompareMode.EQUAL,
+				Context3DStencilAction.KEEP
+			);
 		}
 	}
 	

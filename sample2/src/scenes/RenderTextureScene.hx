@@ -23,16 +23,16 @@ class RenderTextureScene extends Scene
 	private var _canvas:Image;
 	private var _brush:Image;
 	private var _button:Button;
-	private var _colors:Dictionary;
+	private var _colors:Map<Int, Int>;
 	
 	public function new()
 	{
 		super();
-		_colors = new Dictionary();
+		_colors = new Map<Int, Int>();
 		_renderTexture = new RenderTexture(320, 435);
 		
 		_canvas = new Image(_renderTexture);
-		_canvas.addEventListener(TouchEvent.TOUCH, onTouch);
+		_canvas.addEventListener(TouchEvent.TOUCH, OnTouch);
 		addChild(_canvas);
 		
 		_brush = new Image(Game.assets.getTexture("brush"));
@@ -53,7 +53,7 @@ class RenderTextureScene extends Scene
 		addChild(_button);
 	}
 	
-	private function onTouch(event:TouchEvent):Void
+	private function OnTouch(event:TouchEvent):Void
 	{
 		// touching the canvas will draw a brush texture. The 'drawBundled' method is not
 		// strictly necessary, but it's faster when you are drawing with several fingers
@@ -66,7 +66,7 @@ class RenderTextureScene extends Scene
 					for (touch in touches)
 					{
 						if (touch.phase == TouchPhase.BEGAN) 
-							_colors[touch.id] = Math.random() * Int.MAX_VALUE;
+							_colors.set(touch.id, cast Math.random() * 0x3FFFFFFF);
 						
 						if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED) 
 							continue;
@@ -74,7 +74,7 @@ class RenderTextureScene extends Scene
 						var location:Point = touch.getLocation(_canvas);
 						_brush.x = location.x;
 						_brush.y = location.y;
-						_brush.color = _colors[touch.id];
+						_brush.color = _colors.get(touch.id);
 						_brush.rotation = Math.random() * Math.PI * 2.0;
 						
 						_renderTexture.draw(_brush);

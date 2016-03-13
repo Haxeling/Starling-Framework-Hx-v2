@@ -139,7 +139,8 @@ class CompositeEffect extends FilterEffect
 		
 		_layers = new Array<CompositeLayer>();
 		
-		for (i in 0...numLayers){_layers[i] = new CompositeLayer();
+		for (i in 0...numLayers) {
+			_layers[i] = new CompositeLayer();
 		}
 	}
 	
@@ -150,11 +151,11 @@ class CompositeEffect extends FilterEffect
 	
 	private function getUsedLayers(out:Array<Dynamic> = null):Array<Dynamic>
 	{
-		if (out == null)			 out = []
-		else out.length = 0;
+		if (out == null) out = []
+		else out.splice(0, out.length);
 		
 		for (layer in _layers)
-		if (layer.texture)			 out[out.length] = layer;
+		if (layer.texture != null) out[out.length] = layer;
 		
 		return out;
 	}
@@ -170,9 +171,10 @@ class CompositeEffect extends FilterEffect
 			var vertexShader:Array<Dynamic> = ["m44 op, va0, vc0"];  // transform position to clip-space  
 			var layer:CompositeLayer = _layers[0];
 			
-			for (i in 0...numLayers){vertexShader.push(
-						StringUtil.format("sub v{0}, va1, vc{1} \n", i, i + 4)  // v0-4 -> texture coords  
-						);
+			for (i in 0...numLayers) {
+				vertexShader.push(
+					StringUtil.format("sub v{0}, va1, vc{1} \n", [i, i + 4])  // v0-4 -> texture coords  
+				);
 			}
 			
 			var fragmentShader:Array<Dynamic> = [
@@ -190,24 +192,20 @@ class CompositeEffect extends FilterEffect
 						tex(fti, vi, i, layers[i].texture)  // fti => texture i color  
 						);
 				
-				if (layer.replaceColor) 
-					fragmentShader.push(
-						"mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w",
-						"mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www"
-						)
-				else 
-				fragmentShader.push(
-						"mul " + fti + ", " + fti + ", " +fci  // fti *= color  
-						);
+				if (layer.replaceColor) {
+					fragmentShader.push("mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w");
+					fragmentShader.push("mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www");
+				}
+				else {
+					fragmentShader.push("mul " + fti + ", " + fti + ", " +fci);  // fti *= color  
+				}
 				
 				if (i != 0) 
 				{
 					// "normal" blending: src × ONE + dst × ONE_MINUS_SOURCE_ALPHA
-					fragmentShader.push(
-							"sub ft4, ft5, " + fti + ".wwww",  // ft4 => 1 - src.alpha  
-							"mul ft0, ft0, ft4",  // ft0 => dst * (1 - src.alpha)  
-							"add ft0, ft0, " +fti  // ft0 => src + (dst * 1 - src.alpha)  
-							);
+					fragmentShader.push("sub ft4, ft5, " + fti + ".wwww"); // ft4 => 1 - src.alpha  
+					fragmentShader.push("mul ft0, ft0, ft4"); // ft0 => dst * (1 - src.alpha)
+					fragmentShader.push("add ft0, ft0, " +fti); // ft0 => src + (dst * 1 - src.alpha)  
 				}
 			}
 			
@@ -231,7 +229,9 @@ class CompositeEffect extends FilterEffect
 		
 		for (i in 0...numLayers){
 			layer = layers[i];
-			bits = RenderUtil.getTextureVariantBits(layer.texture) | (layer.replaceColor << 3);
+			var replaceColorBoolInt:Int = 0;
+			if (layer.replaceColor) replaceColorBoolInt = 1;
+			bits = RenderUtil.getTextureVariantBits(layer.texture) | (replaceColorBoolInt << 3);
 			totalBits |= bits << (i * 4);
 		}
 		
@@ -277,7 +277,9 @@ class CompositeEffect extends FilterEffect
 	
 	override private function afterDraw(context:Context3D):Void
 	{
-		for (i in 0...len){context.setTextureAt(i, null);
+		var len:Int = _layers.length;
+		for (i in 0...len) {
+			context.setTextureAt(i, null);
 		}
 	}
 	

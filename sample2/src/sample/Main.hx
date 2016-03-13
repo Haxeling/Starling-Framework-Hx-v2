@@ -6,6 +6,7 @@ import flash.desktop.NativeApplication;
 import flash.display.Bitmap;
 import flash.display.Loader;
 import flash.display.Sprite;
+import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
 import flash.events.Event;
 import flash.filesystem.File;
@@ -57,7 +58,7 @@ class Main extends Sprite
 		
 		Starling.MultitouchEnabled = true;  // useful on mobile devices  
 		
-		_starling = new Starling(Game, stage, viewPort, null, Context3DRenderMode.AUTO, "auto");
+		_starling = new Starling(Game, stage, viewPort, null, Context3DRenderMode.AUTO, [Context3DProfile.BASELINE]);
 		_starling.stage.stageWidth = StageWidth;  // <- same size on all devices!  
 		_starling.stage.stageHeight = StageHeight;  // <- same size on all devices!  
 		_starling.enableErrorChecking = Capabilities.isDebugger;
@@ -129,6 +130,7 @@ class Main extends Sprite
 		// Add background image. By using "loadBytes", we can avoid any flickering.
 		
 		var bgPath:String = StringUtil.format("textures/{0}x/background.jpg", [scaleFactor]);
+		trace("bgPath = " + bgPath);
 		var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
 		var bytes:ByteArray = new ByteArray();
 		var stream:FileStream = new FileStream();

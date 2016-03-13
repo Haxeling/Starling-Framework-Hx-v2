@@ -56,7 +56,7 @@ class Polygon
 	public function new(vertices:Array<Dynamic> = null)
 	{
 		_coords = [];
-		addVertices.apply(this, vertices);
+		addVertices(vertices);
 	}
 	
 	/** Creates a clone of this polygon. */
@@ -76,7 +76,7 @@ class Polygon
 	public function reverse():Void
 	{
 		var numCoords:Int = _coords.length;
-		var numVertices:Int = numCoords / 2;
+		var numVertices:Int = untyped numCoords / 2;
 		var tmp:Float;
 		
 		var i:Int = 0;
@@ -94,7 +94,7 @@ class Polygon
 	
 	/** Adds vertices to the polygon. Pass either a list of 'Point' instances or alternating
 	 *  'x' and 'y' coordinates. */
-	public function addVertices():Void
+	public function addVertices(args:Array<Dynamic>):Void
 	{
 		var i:Int;
 		var numArgs:Int = args.length;
@@ -135,7 +135,7 @@ class Polygon
 		if (index >= 0 && index < numVertices)
 		{
 			if (out == null) out = new Point();
-			out.setTo(mCoords[index * 2], mCoords[index * 2 + 1]);
+			out.setTo(_coords[index * 2], _coords[index * 2 + 1]);
 			return out;
 		}
 		else throw new RangeError("Invalid index: " + index);
@@ -158,7 +158,7 @@ class Polygon
 			var jy:Float = _coords[j * 2 + 1];
 			
 			if ((iy < y && jy >= y || jy < y && iy >= y) && (ix <= x || jx <= x)) 
-				oddNodes ^= Int(ix + (y - iy) / (jy - iy) * (jx - ix) < x);
+				oddNodes ^= cast(ix + (y - iy) / (jy - iy) * (jx - ix) < x, Int);
 			
 			j = i;
 		}
@@ -195,7 +195,7 @@ class Polygon
 		if (indexData == null)			 indexData = new IndexData(numTriangles * 3);
 		if (numTriangles == 0)			 return indexData;
 		
-		sRestIndices.length = numVertices;
+		sRestIndices.splice(numVertices, sRestIndices.length - numVertices);
 		for (i in 0...numVertices){sRestIndices[i] = i;
 		}
 		
@@ -242,7 +242,7 @@ class Polygon
 			if (earFound) 
 			{
 				indexData.addTriangle(i0 + offset, i1 + offset, i2 + offset);
-				sRestIndices.removeAt((restIndexPos + 1) % numRestIndices);
+				sRestIndices.splice((restIndexPos + 1) % numRestIndices, 1);
 				
 				numRestIndices--;
 				restIndexPos = 0;
@@ -437,13 +437,13 @@ class Polygon
 	 *  value will fill up the path with zeros. */
 	private function get_numVertices():Int
 	{
-		return _coords.length / 2;
+		return untyped _coords.length / 2;
 	}
 	
 	private function set_numVertices(value:Int):Int
 	{
 		var oldLength:Int = numVertices;
-		_coords.length = value * 2;
+		_coords.splice(value * 2, _coords.length - (value * 2));
 		
 		if (oldLength < value) 
 		{
@@ -475,27 +475,27 @@ class ImmutablePolygon extends Polygon
 		_frozen = true;
 	}
 	
-	override public function addVertices():Void
+	override public function addVertices(args:Array<Dynamic>):Void
 	{
-		if (_frozen)			 throw getImmutableError()
-		else super.addVertices.apply(this, args);
+		if (_frozen) throw getImmutableError()
+		else super.addVertices(args);
 	}
 	
 	override public function setVertex(index:Int, x:Float, y:Float):Void
 	{
-		if (_frozen)			 throw getImmutableError()
+		if (_frozen) throw getImmutableError()
 		else super.setVertex(index, x, y);
 	}
 	
 	override public function reverse():Void
 	{
-		if (_frozen)			 throw getImmutableError()
+		if (_frozen) throw getImmutableError()
 		else super.reverse();
 	}
 	
 	override private function set_numVertices(value:Int):Int
 	{
-		if (_frozen)			 throw getImmutableError()
+		if (_frozen) throw getImmutableError()
 		else super.reverse();
 		return value;
 	}
@@ -527,8 +527,8 @@ class Ellipse extends ImmutablePolygon
 	
 	private function getVertices(numSides:Int):Array<Dynamic>
 	{
-		if (numSides < 0)			 numSides = Math.PI * (_radiusX + _radiusY) / 4.0;
-		if (numSides < 6)			 numSides = 6;
+		if (numSides < 0) numSides = cast Math.PI * (_radiusX + _radiusY) / 4.0;
+		if (numSides < 6) numSides = 6;
 		
 		var vertices:Array<Dynamic> = [];
 		var angleDelta:Float = 2 * Math.PI / numSides;

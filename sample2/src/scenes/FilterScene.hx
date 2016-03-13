@@ -106,14 +106,14 @@ class FilterScene extends Scene
 		hueFilter.adjustHue(1);
 		_filterInfos.push(["Hue", hueFilter]);
 		
-		var chain:FilterChain = new FilterChain(hueFilter, new DropShadowFilter());
+		var chain:FilterChain = new FilterChain([hueFilter, new DropShadowFilter()]);
 		_filterInfos.push(["Hue + Shadow", chain]);
 	}
 	
 	private function createDisplacementMap(width:Float, height:Float):Texture
 	{
 		var scale:Float = Starling.ContentScaleFactor;
-		var map:BitmapData = new BitmapData(width * scale, height * scale, false);
+		var map:BitmapData = new BitmapData(Math.floor(width * scale), Math.floor(height * scale), false);
 		map.perlinNoise(20 * scale, 20 * scale, 3, 5, false, true);
 		var texture:Texture = Texture.fromBitmapData(map, false, false, scale);
 		return texture;

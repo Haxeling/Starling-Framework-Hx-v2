@@ -198,9 +198,11 @@ class TouchProcessor
 		
 		// if the target of a hovering touch changed, we dispatch the event to the previous
 		// target to notify it that it's no longer being hovered over.
-		for (touchData in sHoveringTouchData) 
-			if (touchData.touch.target != touchData.target)
+		for (touchData in sHoveringTouchData) {
+			var touch:Touch = touchData.touch;
+			if (touch.target != touchData.target)
 				touchEvent.dispatch(touchData.bubbleChain);
+		}
 		
 		// dispatch events for the rest of our updated touches
 		for (touch in touches)

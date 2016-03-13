@@ -76,7 +76,7 @@ class MovieClip extends Image implements IAnimatable
 	 *  The movie will have the size of the first frame. */
 	public function new(textures:Array<Texture>, fps:Float = 12)
 	{
-		super();
+		super(null);
 		if (textures.length > 0) 
 		{
 			super(textures[0]);
@@ -124,7 +124,7 @@ class MovieClip extends Image implements IAnimatable
 		
 		var frame:MovieClipFrame = new MovieClipFrame(texture, duration);
 		frame.sound = sound;
-		_frames.insertAt(frameID, frame);
+		_frames.insert(frameID, frame);
 		
 		if (frameID == numFrames) 
 		{
@@ -142,7 +142,7 @@ class MovieClip extends Image implements IAnimatable
 		if (frameID < 0 || frameID >= numFrames)			 throw new ArgumentError("Invalid frame id");
 		if (numFrames == 1)			 throw new IllegalOperationError("Movie clip must not be empty");
 		
-		_frames.removeAt(frameID);
+		_frames.splice(frameID, 0);
 		
 		if (frameID != numFrames) 
 			updateStartTimes();
@@ -257,14 +257,11 @@ class MovieClip extends Image implements IAnimatable
 	/** @inheritDoc */
 	public function advanceTime(passedTime:Float):Void
 	{
-		if (!_playing)			 return  // Thus, we have to start over with the remaining time whenever that happens.	// (a frame action or a 'COMPLETE' event handler), that callback might modify the clip.	// The tricky part in this method is that whenever a callback is executed  ;
+		if (!_playing) return;
 		
-		
-		
-		
-		
-		
-		
+		// The tricky part in this method is that whenever a callback is executed
+		// (a frame action or a 'COMPLETE' event handler), that callback might modify the clip.
+		// Thus, we have to start over with the remaining time whenever that happens.
 		
 		var frame:MovieClipFrame = _frames[_currentFrameID];
 		
@@ -522,11 +519,15 @@ class MovieClipFrame
 	{
 		if (action != null) 
 		{
-			var numArgs:Int = action.length;
+			#if flash
+				var numArgs:Int = untyped action['length'];
+			#else
+				var numArgs:Int = 2
+			#end
 			
-			if (numArgs == 0)				 action()
-			else if (numArgs == 1)				 action(movie)
-			else if (numArgs == 2)				 action(movie, frameID)
+			if (numArgs == 0) action()
+			else if (numArgs == 1) action(movie)
+			else if (numArgs == 2) action(movie, frameID)
 			else throw new Error("Frame actions support zero, one or two parameters: " +
 			"movie:MovieClip, frameID:int");
 		}

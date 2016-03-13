@@ -42,7 +42,7 @@ class Canvas extends DisplayObjectContainer
 	/** @inheritDoc */
 	override public function dispose():Void
 	{
-		_polygons.length = 0;
+		_polygons.splice(0, _polygons.length);
 		super.dispose();
 	}
 	
@@ -54,6 +54,7 @@ class Canvas extends DisplayObjectContainer
 		// we could also use the standard hit test implementation, but the polygon class can
 		// do that much more efficiently (it contains custom implementations for circles, etc).	
 		
+		var len:Int = _polygons.length;
 		for (i in 0...len) { 
 			if (_polygons[i].containsPoint(localPoint)) return this;
 		}
@@ -107,7 +108,7 @@ class Canvas extends DisplayObjectContainer
 	public function clear():Void
 	{
 		removeChildren(0, -1, true);
-		_polygons.length = 0;
+		_polygons.splice(0, _polygons.length);
 	}
 	
 	private function appendPolygon(polygon:Polygon):Void

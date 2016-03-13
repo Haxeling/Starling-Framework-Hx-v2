@@ -187,8 +187,26 @@ class ColorMatrixFilter extends FragmentFilter
 			m15:Float, m16:Float, m17:Float, m18:Float, m19:Float):Void
 	{
 		sMatrix.splice(0, sMatrix.length);
-		sMatrix.push(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9,
-				m10, m11, m12, m13, m14, m15, m16, m17, m18, m19);
+		sMatrix.push(m0); 
+		sMatrix.push(m1); 
+		sMatrix.push(m2); 
+		sMatrix.push(m3); 
+		sMatrix.push(m4); 
+		sMatrix.push(m5); 
+		sMatrix.push(m6); 
+		sMatrix.push(m7); 
+		sMatrix.push(m8); 
+		sMatrix.push(m9);
+		sMatrix.push(m10); 
+		sMatrix.push(m11); 
+		sMatrix.push(m12); 
+		sMatrix.push(m13); 
+		sMatrix.push(m14); 
+		sMatrix.push(m15); 
+		sMatrix.push(m16); 
+		sMatrix.push(m17); 
+		sMatrix.push(m18); 
+		sMatrix.push(m19);
 		
 		concat(sMatrix);
 	}
@@ -300,15 +318,27 @@ class ColorMatrixEffect extends FilterEffect
 		// the shader needs the matrix components in a different order,
 		// and it needs the offsets in the range 0-1.
 		
-		_shaderMatrix.length = 0;
-		_shaderMatrix.push(
-				_userMatrix[0], _userMatrix[1], _userMatrix[2], _userMatrix[3],
-				_userMatrix[5], _userMatrix[6], _userMatrix[7], _userMatrix[8],
-				_userMatrix[10], _userMatrix[11], _userMatrix[12], _userMatrix[13],
-				_userMatrix[15], _userMatrix[16], _userMatrix[17], _userMatrix[18],
-				_userMatrix[4] / 255.0, _userMatrix[9] / 255.0, _userMatrix[14] / 255.0,
-				_userMatrix[19] / 255.0
-				);
+		_shaderMatrix.splice(0, _shaderMatrix.length);
+		_shaderMatrix.push(_userMatrix[0]);
+		_shaderMatrix.push(_userMatrix[1]);
+		_shaderMatrix.push(_userMatrix[2]); 
+		_shaderMatrix.push(_userMatrix[3]);
+		_shaderMatrix.push(_userMatrix[5]); 
+		_shaderMatrix.push(_userMatrix[6]); 
+		_shaderMatrix.push(_userMatrix[7]); 
+		_shaderMatrix.push(_userMatrix[8]);
+		_shaderMatrix.push(_userMatrix[10]); 
+		_shaderMatrix.push(_userMatrix[11]); 
+		_shaderMatrix.push(_userMatrix[12]); 
+		_shaderMatrix.push(_userMatrix[13]);
+		_shaderMatrix.push(_userMatrix[15]); 
+		_shaderMatrix.push(_userMatrix[16]); 
+		_shaderMatrix.push(_userMatrix[17]); 
+		_shaderMatrix.push(_userMatrix[18]);
+		_shaderMatrix.push(_userMatrix[4] / 255.0); 
+		_shaderMatrix.push(_userMatrix[9] / 255.0); 
+		_shaderMatrix.push(_userMatrix[14] / 255.0);
+		_shaderMatrix.push(_userMatrix[19] / 255.0);
 	}
 	
 	// properties
@@ -321,19 +351,19 @@ class ColorMatrixEffect extends FilterEffect
 	private function set_matrix(value:Array<Float>):Array<Float>
 	{
 		if (value != null && value.length != 20) 
-			throw new ArgumentError("Invalid matrix length: must be 20");
-		
-		if (value == null) 
-		{
-			_userMatrix.length = 0;
-			_userMatrix.push.apply(_userMatrix, IDENTITY);
-		}
-		else 
-		{
-			copyMatrix(value, _userMatrix);
-		}
-		
-		updateShaderMatrix();
-		return value;
+            throw new ArgumentError("Invalid matrix length: must be 20");
+        
+        if (value == null)
+        {
+			_userMatrix.splice(0, _userMatrix.length);
+			for (i in 0...IDENTITY.length) _userMatrix.push(IDENTITY[i]);
+        }
+        else
+        {
+            copyMatrix(value, _userMatrix);
+        }
+        
+        updateShaderMatrix();
+        return _userMatrix;
 	}
 }

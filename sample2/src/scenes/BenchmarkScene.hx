@@ -85,7 +85,7 @@ class BenchmarkScene extends Scene
 		
 		_startButton.visible = false;
 		_started = true;
-		_targetFps = Starling.Current.nativeStage.frameRate;
+		_targetFps = untyped Starling.Current.nativeStage.frameRate;
 		_frameCount = 0;
 		_failCount = 0;
 		_phase = 0;
@@ -203,11 +203,12 @@ class BenchmarkScene extends Scene
 		_started = false;
 		_startButton.visible = true;
 		
-		var fps:Int = Starling.Current.nativeStage.frameRate;
+		var fps:Int = untyped Starling.Current.nativeStage.frameRate;
 		var numChildren:Int = _container.numChildren;
-		var resultString:String = StringUtil.format("Result:\n{0} objects\nwith {1} fps",
-				numChildren, fps);
-		trace(resultString.replace(new EReg('\\n', "g"), " "));
+		var resultString:String = StringUtil.format(
+			"Result:\n{0} objects\nwith {1} fps",
+			[numChildren, fps]
+		);
 		
 		_resultText = new TextField(240, 200, resultString);
 		_resultText.format.size = 30;
@@ -217,7 +218,7 @@ class BenchmarkScene extends Scene
 		addChild(_resultText);
 		
 		_container.scale = 1.0;
-		_frameTimes.length = 0;
+		_frameTimes.splice(0, _frameTimes.length);
 		_statusText.text = "";
 		
 		var i:Int = numChildren - 1;

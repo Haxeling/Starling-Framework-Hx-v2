@@ -83,8 +83,10 @@ class AnimationScene extends Scene
 		tween.animate("rotation", Deg2rad.call(90));  // conventional 'animate' call  
 		tween.moveTo(300, 360);  // convenience method for animating 'x' and 'y'  
 		tween.scaleTo(0.5);  // convenience method for 'scaleX' and 'scaleY'  
-		tween.onComplete = function():Void{_startButton.enabled = true;
-				};
+		tween.onComplete = function():Void
+		{
+			_startButton.enabled = true;
+		};
 		
 		// the tween alone is useless -- for an animation to be carried out, it has to be
 		// advance once in every frame.
@@ -110,10 +112,11 @@ class AnimationScene extends Scene
 		// you use your own juggler in a component of your game, because it gives you perfect
 		// control over the flow of time and animations.
 		
-		Starling.Juggler.delayCall(colorizeEgg, 1.0, true);
-		Starling.Juggler.delayCall(colorizeEgg, 2.0, false);
-		Starling.Juggler.delayCall(function():Void{_delayButton.enabled = true;
-				}, 2.0);
+		Starling.Juggler.delayCall(colorizeEgg, 1.0, [true]);
+		Starling.Juggler.delayCall(colorizeEgg, 2.0, [false]);
+		Starling.Juggler.delayCall(function():Void {
+			_delayButton.enabled = true;
+		}, 2.0);
 	}
 	
 	private function colorizeEgg(colorize:Bool):Void

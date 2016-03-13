@@ -151,7 +151,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "467",
+			build: "524",
 			company: "P.J.Shand",
 			file: "OpenFLStarlingSamples",
 			fps: 60,

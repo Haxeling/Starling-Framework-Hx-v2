@@ -29,7 +29,7 @@ class StringUtil
 		// TODO: add number formatting options
 		
 		for (i in 0...args.length) {
-			format = format.split("\\{" + i + "\\}").join(args[i]);
+			format = format.split("{" + i + "}").join(args[i]);
 		}
 		
 		return format;

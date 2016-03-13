@@ -33,7 +33,7 @@ import starling.textures.TextureSmoothing;
 /** A utility class containing methods related to Stage3D and rendering in general. */
 class RenderUtil
 {
-	static private var profiles;
+	static private var profiles:Array<Context3DProfile>;
 	static private var currentProfile:Context3DProfile;
 	static private var stage3D:Stage3D;
 	static private var renderMode:Context3DRenderMode;
@@ -210,29 +210,21 @@ class RenderUtil
 	 *				   profile automatically. This will try all known Stage3D profiles,
 	 *				   beginning with the most powerful.</p>
 	 */
-	public static function requestContext3D(stage3D:Stage3D, renderMode:Context3DRenderMode, profile:Dynamic=null):Void
+	public static function requestContext3D(stage3D:Stage3D, renderMode:Context3DRenderMode, profiles:Array<Context3DProfile>=null):Void
 	{
+		RenderUtil.profiles = profiles;
 		RenderUtil.renderMode = renderMode;
 		RenderUtil.stage3D = stage3D;
-		profiles = new Array<Context3DProfile>();
 		
-		if (profile == null) 
-			profiles = [Context3DProfile.STANDARD, Context3DProfile.STANDARD_CONSTRAINED, 
-				Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED]
-		else if (Std.is(profile, Context3DProfile)) 
-			profiles = [cast(profile, Context3DProfile)];
-		else if (Std.is(profile, Array)) {
-			var d:Array<Dynamic> = cast(profile, Array<Dynamic>);
-			for (i in 0...d.length) profiles.push(cast(d, Context3DProfile));
+		if (RenderUtil.profiles == null) {
+			RenderUtil.profiles = [
+				Context3DProfile.STANDARD, 
+				Context3DProfile.STANDARD_CONSTRAINED, 
+				Context3DProfile.BASELINE_EXTENDED, 
+				Context3DProfile.BASELINE, 
+				Context3DProfile.BASELINE_CONSTRAINED
+			];
 		}
-		else 
-		throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array<Context3DProfile>'");
-		/*else if (Std.is(profile, String)) 
-			profiles = [cast(profile, String)]*/
-		/*else if (Std.is(profile, Array)) 
-			profiles = cast(profile, Array<String>)*/
-		/*else 
-		throw new ArgumentError("Profile must be of type 'String' or 'Array'");*/
 		
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
 		stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);

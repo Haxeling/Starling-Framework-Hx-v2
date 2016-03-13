@@ -33,12 +33,12 @@ class FilterChain extends FragmentFilter
 	private static var sPadding:Padding = new Padding();
 	
 	/** Creates a new chain with the given filters. */
-	public function new()
+	public function new(args:Array<FragmentFilter>)
 	{
 		super();
 		_filters = [];
 		
-		for (i in 0...len){
+		for (i in 0...args.length){
 			var filter:FragmentFilter = cast(args[i], FragmentFilter);
 			if (filter != null)				 addFilterAt(filter, i)
 			else throw new ArgumentError("pass only fragment filters to the constructor");
@@ -53,7 +53,7 @@ class FilterChain extends FragmentFilter
 		for (filter in _filters)
 		filter.dispose();
 		
-		_filters.length = 0;
+		_filters.splice(0, _filters.length);
 		
 		super.dispose();
 	}
@@ -78,7 +78,9 @@ class FilterChain extends FragmentFilter
 			inTexture = outTexture;
 			outTexture = _filters[i].process(painter, pool, inTexture);
 			
-			if (i)				 pool.putTexture(inTexture);
+			trace("check if (i > 0) == if (i)");
+			//if (i) pool.putTexture(inTexture);
+			if (i > 0) pool.putTexture(inTexture);
 		}
 		
 		return outTexture;
@@ -101,7 +103,7 @@ class FilterChain extends FragmentFilter
 	/** Adds a filter to the chain at the given index. */
 	public function addFilterAt(filter:FragmentFilter, index:Int):Void
 	{
-		_filters.insertAt(index, filter);
+		_filters.insert(index, filter);
 		filter.addEventListener(Event.CHANGE, setRequiresRedraw);
 		setRequiresRedraw();
 	}
@@ -119,9 +121,9 @@ class FilterChain extends FragmentFilter
 	 *  are decremented. If requested, the filter will be disposed right away. */
 	public function removeFilterAt(index:Int, dispose:Bool = false):FragmentFilter
 	{
-		var filter:FragmentFilter = cast(_filters.removeAt(index), FragmentFilter);
+		var filter:FragmentFilter = cast(_filters.splice(index, 1), FragmentFilter);
 		filter.removeEventListener(Event.CHANGE, setRequiresRedraw);
-		if (dispose)			 filter.dispose();
+		if (dispose) filter.dispose();
 		setRequiresRedraw();
 		return filter;
 	}

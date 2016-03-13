@@ -293,7 +293,7 @@ class Starling extends EventDispatcher
 	 */
 	public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage,
 			viewPort:Rectangle = null, stage3D:Stage3D = null,
-			renderMode:Context3DRenderMode = null, profile:Dynamic = "auto")
+			renderMode:Context3DRenderMode = null, profile:Array<Context3DProfile> = null)
 	{
 		super();
 		if (stage == null)			 throw new ArgumentError("Stage must not be null");
