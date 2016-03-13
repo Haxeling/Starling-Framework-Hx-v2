@@ -19,9 +19,9 @@ package starling.display;
  */
 class Sprite extends DisplayObjectContainer
 {
-    /** Creates an empty sprite. */
-    public function new()
-    {
-        super();
-    }
+	/** Creates an empty sprite. */
+	public function new()
+	{
+		super();
+	}
 }

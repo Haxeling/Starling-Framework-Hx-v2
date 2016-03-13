@@ -164,7 +164,7 @@ class TouchProcessor
 	 *  given touches. Called internally by "advanceTime". To calculate updated targets,
 	 *  the method will call "hitTest" on the "root" object.
 	 *  
-	 *  @param touches    a list of all touches that have changed just now.
+	 *  @param touches	a list of all touches that have changed just now.
 	 *  @param shiftDown  indicates if the shift key was down when the touches occurred.
 	 *  @param ctrlDown   indicates if the ctrl or cmd key was down when the touches occurred.
 	 */
@@ -246,10 +246,10 @@ class TouchProcessor
 		// the new hover point should be just outside the stage, near the point where
 		// the mouse point was last to be seen.
 		
-		if (minDist == distLeft)       exitX = -offset;
+		if (minDist == distLeft)	   exitX = -offset;
 		else if (minDist == distRight) exitX = _stage.stageWidth + offset;
 		else if (minDist == distTop)   exitY = -offset;
-		else                           exitY = _stage.stageHeight + offset;
+		else						   exitY = _stage.stageHeight + offset;
 		
 		enqueue(0, TouchPhase.HOVER, exitX, exitY);
 	}
@@ -385,7 +385,7 @@ class TouchProcessor
 				target.addEventListener(Event.CONTEXT3D_CREATE, createTouchMarker);
 		}
 		else if (!value && _touchMarker != null)
-		{                
+		{				
 			_touchMarker.removeFromParent(true);
 			_touchMarker = null;
 		}

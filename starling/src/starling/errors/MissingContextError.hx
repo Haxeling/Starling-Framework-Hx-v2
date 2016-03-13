@@ -16,9 +16,9 @@ import flash.errors.Error;
  *  available. */
 class MissingContextError extends Error
 {
-    /** Creates a new MissingContextError object. */
-    public function new(message:Dynamic = "Starling context is missing", id:Dynamic = 0)
-    {
-        super(message, id);
-    }
+	/** Creates a new MissingContextError object. */
+	public function new(message:Dynamic = "Starling context is missing", id:Dynamic = 0)
+	{
+		super(message, id);
+	}
 }

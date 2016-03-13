@@ -16,10 +16,10 @@ import flash.errors.Error;
  *  on the current platform. */
 class NotSupportedError extends Error
 {
-    /** Creates a new NotSupportedError object. */
-    public function new(message:Dynamic = "", id:Dynamic = 0)
-    {
-        super(message, id);
-    }
+	/** Creates a new NotSupportedError object. */
+	public function new(message:Dynamic = "", id:Dynamic = 0)
+	{
+		super(message, id);
+	}
 }
 

@@ -26,137 +26,137 @@ import starling.utils.MathUtil;
  */
 class TexturePool implements ITexturePool
 {
-    public var textureWidth(get, never):Float;
-    public var textureHeight(get, never):Float;
-    public var textureScale(get, never):Float;
+	public var textureWidth(get, never):Float;
+	public var textureHeight(get, never):Float;
+	public var textureScale(get, never):Float;
 
-    private var _scale:Float;
-    private var _width:Float;
-    private var _height:Float;
-    private var _nativeWidth:Int;
-    private var _nativeHeight:Int;
-    private var _pool:Array<Texture>;
-    private var _usePotTextures:Bool;
-    private var _sizeStep:Int;
-    
-    // helpers
-    private var sRegion:Rectangle = new Rectangle();
-    
-    /** Creates a new, empty instance. */
-    @:allow(starling.filters)
-    private function new()
-    {
-        _usePotTextures = Starling.Current.profile == Context3DProfile.BASELINE_CONSTRAINED;
-        _sizeStep = 64;  // must be POT!  
-        _pool = [];
-        
-        setSize(_sizeStep, _sizeStep, 1);
-    }
-    
-    /** Purges the pool. */
-    public function dispose():Void
-    {
-        purge();
-    }
-    
-    /** Updates the size of the returned textures. Small size changes may allow the
-     *  existing textures to be reused; big size changes will automatically dispose
-     *  them. */
-    public function setSize(width:Float, height:Float, scale:Float = -1):Void
-    {
-        if (scale <= 0)             scale = Starling.ContentScaleFactor;
-        
-        var factor:Float;
-        var maxNativeSize:Int = Texture.maxSize;
-        var newNativeWidth:Int = getNativeSize(width, scale);
-        var newNativeHeight:Int = getNativeSize(height, scale);
-        
-        if (newNativeWidth > maxNativeSize || newNativeHeight > maxNativeSize) 
-        {
-            factor = maxNativeSize / Math.max(newNativeWidth, newNativeHeight);
-            newNativeWidth *= untyped factor;
-            newNativeHeight *= untyped factor;
-            scale *= factor;
-        }
-        
-        if (_nativeWidth != newNativeWidth || _nativeHeight != newNativeHeight) 
-        {
-            purge();
-            
-            _nativeWidth = newNativeWidth;
-            _nativeHeight = newNativeHeight;
-        }
-        
-        _width = width;
-        _height = height;
-        _scale = scale;
-    }
-    
-    /** @inheritDoc */
-    public function getTexture():Texture
-    {
-        var texture:Texture;
-        
-        if (_pool.length > 0) 
-            texture = _pool.pop()
-        else 
-        texture = Texture.empty(_nativeWidth / _scale, _nativeHeight / _scale,
-                        true, false, true, _scale);
-        
-        if (texture.width != _width || texture.height != _height) 
-        {
-            sRegion.setTo(0, 0, _width, _height);
-            texture = new SubTexture(texture.root, sRegion, true);
-        }
-        
-        texture.root.clear();
-        return texture;
-    }
-    
-    /** @inheritDoc */
-    public function putTexture(texture:Texture):Void
-    {
-        if (texture != null) 
-        {
-            if (texture.root.nativeWidth == _nativeWidth && texture.root.nativeHeight == _nativeHeight) 
-                _pool.insert(_pool.length, texture)
-            else 
-            texture.dispose();
-        }
-    }
-    
-    /** Purges the pool and disposes all textures. */
-    public function purge():Void
-    {
-        for (i in 0..._pool.length)
-                _pool[i].dispose();
+	private var _scale:Float;
+	private var _width:Float;
+	private var _height:Float;
+	private var _nativeWidth:Int;
+	private var _nativeHeight:Int;
+	private var _pool:Array<Texture>;
+	private var _usePotTextures:Bool;
+	private var _sizeStep:Int;
+	
+	// helpers
+	private var sRegion:Rectangle = new Rectangle();
+	
+	/** Creates a new, empty instance. */
+	@:allow(starling.filters)
+	private function new()
+	{
+		_usePotTextures = Starling.Current.profile == Context3DProfile.BASELINE_CONSTRAINED;
+		_sizeStep = 64;  // must be POT!  
+		_pool = [];
 		
-        _pool.splice(0, _pool.length);
-    }
-    
-    private function getNativeSize(size:Float, textureScale:Float):Int
-    {
-        var nativeSize:Float = size * textureScale;
+		setSize(_sizeStep, _sizeStep, 1);
+	}
+	
+	/** Purges the pool. */
+	public function dispose():Void
+	{
+		purge();
+	}
+	
+	/** Updates the size of the returned textures. Small size changes may allow the
+	 *  existing textures to be reused; big size changes will automatically dispose
+	 *  them. */
+	public function setSize(width:Float, height:Float, scale:Float = -1):Void
+	{
+		if (scale <= 0)			 scale = Starling.ContentScaleFactor;
+		
+		var factor:Float;
+		var maxNativeSize:Int = Texture.maxSize;
+		var newNativeWidth:Int = getNativeSize(width, scale);
+		var newNativeHeight:Int = getNativeSize(height, scale);
+		
+		if (newNativeWidth > maxNativeSize || newNativeHeight > maxNativeSize) 
+		{
+			factor = maxNativeSize / Math.max(newNativeWidth, newNativeHeight);
+			newNativeWidth *= untyped factor;
+			newNativeHeight *= untyped factor;
+			scale *= factor;
+		}
+		
+		if (_nativeWidth != newNativeWidth || _nativeHeight != newNativeHeight) 
+		{
+			purge();
+			
+			_nativeWidth = newNativeWidth;
+			_nativeHeight = newNativeHeight;
+		}
+		
+		_width = width;
+		_height = height;
+		_scale = scale;
+	}
+	
+	/** @inheritDoc */
+	public function getTexture():Texture
+	{
+		var texture:Texture;
+		
+		if (_pool.length > 0) 
+			texture = _pool.pop()
+		else 
+		texture = Texture.empty(_nativeWidth / _scale, _nativeHeight / _scale,
+						true, false, true, _scale);
+		
+		if (texture.width != _width || texture.height != _height) 
+		{
+			sRegion.setTo(0, 0, _width, _height);
+			texture = new SubTexture(texture.root, sRegion, true);
+		}
+		
+		texture.root.clear();
+		return texture;
+	}
+	
+	/** @inheritDoc */
+	public function putTexture(texture:Texture):Void
+	{
+		if (texture != null) 
+		{
+			if (texture.root.nativeWidth == _nativeWidth && texture.root.nativeHeight == _nativeHeight) 
+				_pool.insert(_pool.length, texture)
+			else 
+			texture.dispose();
+		}
+	}
+	
+	/** Purges the pool and disposes all textures. */
+	public function purge():Void
+	{
+		for (i in 0..._pool.length)
+				_pool[i].dispose();
+		
+		_pool.splice(0, _pool.length);
+	}
+	
+	private function getNativeSize(size:Float, textureScale:Float):Int
+	{
+		var nativeSize:Float = size * textureScale;
 		
 		if (_usePotTextures)
 			return nativeSize > _sizeStep ? MathUtil.getNextPowerOfTwo(nativeSize) : _sizeStep;
 		else
 			return Math.ceil(nativeSize / _sizeStep) * _sizeStep;
-    }
-    
-    /** The width of the returned textures (in points). */
-    private function get_textureWidth():Float {
+	}
+	
+	/** The width of the returned textures (in points). */
+	private function get_textureWidth():Float {
 		return _width;
-    }
-    
-    /** The height of the returned textures (in points). */
-    private function get_textureHeight():Float {
+	}
+	
+	/** The height of the returned textures (in points). */
+	private function get_textureHeight():Float {
 		return _height;
-    }
-    
-    /** The scale factor of the returned textures. */
-    private function get_textureScale():Float {
+	}
+	
+	/** The scale factor of the returned textures. */
+	private function get_textureScale():Float {
 		return _scale;
-    }
+	}
 }
 

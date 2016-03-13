@@ -19,12 +19,12 @@ import starling.display.MeshBatch;
 interface ITextCompositor
 {
 
-    /** Draws the given text into a MeshBatch, using the supplied format and options. */
-    function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
-            format:TextFormat, options:TextOptions = null):Void;
-    
-    /** Clears the MeshBatch (filled by the same class) and disposes any resources that
-     *  are no longer needed. */
-    function clearMeshBatch(meshBatch:MeshBatch):Void;
+	/** Draws the given text into a MeshBatch, using the supplied format and options. */
+	function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
+			format:TextFormat, options:TextOptions = null):Void;
+	
+	/** Clears the MeshBatch (filled by the same class) and disposes any resources that
+	 *  are no longer needed. */
+	function clearMeshBatch(meshBatch:MeshBatch):Void;
 }
 

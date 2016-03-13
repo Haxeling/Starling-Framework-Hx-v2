@@ -29,140 +29,140 @@ import starling.events.EventDispatcher;
  */
 class DelayedCall extends EventDispatcher implements IAnimatable
 {
-    public var isComplete(get, never):Bool;
-    public var totalTime(get, never):Float;
-    public var currentTime(get, never):Float;
-    public var repeatCount(get, set):Int;
-    public var callback(get, never):Function;
-    public var arguments(get, never):Array<Dynamic>;
+	public var isComplete(get, never):Bool;
+	public var totalTime(get, never):Float;
+	public var currentTime(get, never):Float;
+	public var repeatCount(get, set):Int;
+	public var callback(get, never):Function;
+	public var arguments(get, never):Array<Dynamic>;
 
-    private var _currentTime:Float;
-    private var _totalTime:Float;
-    private var _callback:Function;
-    private var _args:Array<Dynamic>;
-    private var _repeatCount:Int;
-    
-    /** Creates a delayed call. */
-    public function new(callback:Function, delay:Float, args:Array<Dynamic> = null)
-    {
-        super();
-        reset(callback, delay, args);
-    }
-    
-    /** Resets the delayed call to its default values, which is useful for pooling. */
-    public function reset(callback:Function, delay:Float, args:Array<Dynamic> = null):DelayedCall
-    {
-        _currentTime = 0;
-        _totalTime = Math.max(delay, 0.0001);
-        _callback = callback;
-        _args = args;
-        _repeatCount = 1;
-        
-        return this;
-    }
-    
-    /** @inheritDoc */
-    public function advanceTime(time:Float):Void
-    {
-        var previousTime:Float = _currentTime;
-        _currentTime += time;
-        
-        if (_currentTime > _totalTime) 
-            _currentTime = _totalTime;
-        
-        if (previousTime < _totalTime && _currentTime >= _totalTime) 
-        {
-            if (_repeatCount == 0 || _repeatCount > 1) 
-            {
-                //_callback.apply(null, _args);
-                Execute.call(_callback, _args);
-                if (_repeatCount > 0)                     _repeatCount -= 1;
-                _currentTime = 0;
-                advanceTime((previousTime + time) - _totalTime);
-            }
-            else 
-            {
-                // save call & args: they might be changed through an event listener
-                var call:Function = _callback;
-                var args:Array<Dynamic> = _args;
-                
-                // in the callback, people might want to call "reset" and re-add it to the
-                // juggler; so this event has to be dispatched *before* executing 'call'.
-                dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-                //call.apply(null, args);
+	private var _currentTime:Float;
+	private var _totalTime:Float;
+	private var _callback:Function;
+	private var _args:Array<Dynamic>;
+	private var _repeatCount:Int;
+	
+	/** Creates a delayed call. */
+	public function new(callback:Function, delay:Float, args:Array<Dynamic> = null)
+	{
+		super();
+		reset(callback, delay, args);
+	}
+	
+	/** Resets the delayed call to its default values, which is useful for pooling. */
+	public function reset(callback:Function, delay:Float, args:Array<Dynamic> = null):DelayedCall
+	{
+		_currentTime = 0;
+		_totalTime = Math.max(delay, 0.0001);
+		_callback = callback;
+		_args = args;
+		_repeatCount = 1;
+		
+		return this;
+	}
+	
+	/** @inheritDoc */
+	public function advanceTime(time:Float):Void
+	{
+		var previousTime:Float = _currentTime;
+		_currentTime += time;
+		
+		if (_currentTime > _totalTime) 
+			_currentTime = _totalTime;
+		
+		if (previousTime < _totalTime && _currentTime >= _totalTime) 
+		{
+			if (_repeatCount == 0 || _repeatCount > 1) 
+			{
+				//_callback.apply(null, _args);
+				Execute.call(_callback, _args);
+				if (_repeatCount > 0)					 _repeatCount -= 1;
+				_currentTime = 0;
+				advanceTime((previousTime + time) - _totalTime);
+			}
+			else 
+			{
+				// save call & args: they might be changed through an event listener
+				var call:Function = _callback;
+				var args:Array<Dynamic> = _args;
+				
+				// in the callback, people might want to call "reset" and re-add it to the
+				// juggler; so this event has to be dispatched *before* executing 'call'.
+				dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
+				//call.apply(null, args);
 				Execute.call(call, args);
-            }
-        }
-    }
-    
-    /** Advances the delayed call so that it is executed right away. If 'repeatCount' is
-      * anything else than '1', this method will complete only the current iteration. */
-    public function complete():Void
-    {
-        var restTime:Float = _totalTime - _currentTime;
-        if (restTime > 0)             advanceTime(restTime);
-    }
-    
-    /** Indicates if enough time has passed, and the call has already been executed. */
-    private function get_isComplete():Bool
-    {
-        return _repeatCount == 1 && _currentTime >= _totalTime;
-    }
-    
-    /** The time for which calls will be delayed (in seconds). */
-    private function get_totalTime():Float
+			}
+		}
+	}
+	
+	/** Advances the delayed call so that it is executed right away. If 'repeatCount' is
+	  * anything else than '1', this method will complete only the current iteration. */
+	public function complete():Void
+	{
+		var restTime:Float = _totalTime - _currentTime;
+		if (restTime > 0)			 advanceTime(restTime);
+	}
+	
+	/** Indicates if enough time has passed, and the call has already been executed. */
+	private function get_isComplete():Bool
+	{
+		return _repeatCount == 1 && _currentTime >= _totalTime;
+	}
+	
+	/** The time for which calls will be delayed (in seconds). */
+	private function get_totalTime():Float
 	{
 		return _totalTime;
-    }
-    
-    /** The time that has already passed (in seconds). */
-    private function get_currentTime():Float
+	}
+	
+	/** The time that has already passed (in seconds). */
+	private function get_currentTime():Float
 	{
 		return _currentTime;
-    }
-    
-    /** The number of times the call will be repeated. 
-     *  Set to '0' to repeat indefinitely. @default 1 */
-    private function get_repeatCount():Int
+	}
+	
+	/** The number of times the call will be repeated. 
+	 *  Set to '0' to repeat indefinitely. @default 1 */
+	private function get_repeatCount():Int
 	{
 		return _repeatCount;
-    }
-    private function set_repeatCount(value:Int):Int{_repeatCount = value;
-        return value;
-    }
-    
-    /** The callback that will be executed when the time is up. */
-    private function get_callback():Function
+	}
+	private function set_repeatCount(value:Int):Int{_repeatCount = value;
+		return value;
+	}
+	
+	/** The callback that will be executed when the time is up. */
+	private function get_callback():Function
 	{
 		return _callback;
-    }
-    
-    /** The arguments that the callback will be executed with.
-     *  Beware: not a copy, but the actual object! */
-    private function get_arguments():Array<Dynamic>
+	}
+	
+	/** The arguments that the callback will be executed with.
+	 *  Beware: not a copy, but the actual object! */
+	private function get_arguments():Array<Dynamic>
 	{
 		return _args;
-    }
-    
-    // delayed call pooling
-    
-    private static var sPool:Array<DelayedCall> = [];
-    
-    /** @private */
-    private static function fromPool(call:Function, delay:Float,
-            args:Array<Dynamic> = null):DelayedCall
-    {
-        if (sPool.length > 0) return sPool.pop().reset(call, delay, args)
-        else return new DelayedCall(call, delay, args);
-    }
-    
-    /** @private */
-    private static function toPool(delayedCall:DelayedCall):Void
-    {
-        // reset any object-references, to make sure we don't prevent any garbage collection
-        delayedCall._callback = null;
-        delayedCall._args = null;
-        delayedCall.removeEventListeners();
-        sPool.push(delayedCall);
-    }
+	}
+	
+	// delayed call pooling
+	
+	private static var sPool:Array<DelayedCall> = [];
+	
+	/** @private */
+	private static function fromPool(call:Function, delay:Float,
+			args:Array<Dynamic> = null):DelayedCall
+	{
+		if (sPool.length > 0) return sPool.pop().reset(call, delay, args)
+		else return new DelayedCall(call, delay, args);
+	}
+	
+	/** @private */
+	private static function toPool(delayedCall:DelayedCall):Void
+	{
+		// reset any object-references, to make sure we don't prevent any garbage collection
+		delayedCall._callback = null;
+		delayedCall._args = null;
+		delayedCall.removeEventListeners();
+		sPool.push(delayedCall);
+	}
 }

@@ -15,9 +15,9 @@ import flash.errors.Error;
 /** An AbstractMethodError is thrown when you attempt to call an abstract method. */
 class AbstractMethodError extends Error
 {
-    /** Creates a new AbstractMethodError object. */
-    public function new(message:Dynamic = "Method needs to be implemented in subclass", id:Dynamic = 0)
-    {
-        super(message, id);
-    }
+	/** Creates a new AbstractMethodError object. */
+	public function new(message:Dynamic = "Method needs to be implemented in subclass", id:Dynamic = 0)
+	{
+		super(message, id);
+	}
 }

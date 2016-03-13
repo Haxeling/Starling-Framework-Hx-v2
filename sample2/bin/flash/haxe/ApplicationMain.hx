@@ -91,7 +91,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "317",
+			build: "318",
 			company: "P.J.Shand",
 			file: "Starling2Sample",
 			fps: 60,

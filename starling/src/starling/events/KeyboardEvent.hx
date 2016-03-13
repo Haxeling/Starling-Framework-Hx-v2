@@ -23,94 +23,94 @@ package starling.events;
  */
 class KeyboardEvent extends Event
 {
-    public var charCode(get, never):Int;
-    public var keyCode(get, never):Int;
-    public var keyLocation(get, never):Int;
-    public var altKey(get, never):Bool;
-    public var ctrlKey(get, never):Bool;
-    public var shiftKey(get, never):Bool;
+	public var charCode(get, never):Int;
+	public var keyCode(get, never):Int;
+	public var keyLocation(get, never):Int;
+	public var altKey(get, never):Bool;
+	public var ctrlKey(get, never):Bool;
+	public var shiftKey(get, never):Bool;
 
-    /** Event type for a key that was released. */
-    public static var KEY_UP:String = "keyUp";
-    
-    /** Event type for a key that was pressed. */
-    public static var KEY_DOWN:String = "keyDown";
-    
-    private var _charCode:Int;
-    private var _keyCode:Int;
-    private var _keyLocation:Int;
-    private var _altKey:Bool;
-    private var _ctrlKey:Bool;
-    private var _shiftKey:Bool;
-    private var _isDefaultPrevented:Bool;
-    
-    /** Creates a new KeyboardEvent. */
-    public function new(type:String, charCode:Int = 0, keyCode:Int = 0,
-            keyLocation:Int = 0, ctrlKey:Bool = false,
-            altKey:Bool = false, shiftKey:Bool = false)
-    {
-        super(type, false, keyCode);
-        _charCode = charCode;
-        _keyCode = keyCode;
-        _keyLocation = keyLocation;
-        _ctrlKey = ctrlKey;
-        _altKey = altKey;
-        _shiftKey = shiftKey;
-    }
-    
-    // prevent default
-    
-    /** Cancels the keyboard event's default behavior. This will be forwarded to the native
-     *  flash KeyboardEvent. */
-    public function preventDefault():Void
-    {
-        _isDefaultPrevented = true;
-    }
-    
-    /** Checks whether the preventDefault() method has been called on the event. */
-    public function isDefaultPrevented():Bool
+	/** Event type for a key that was released. */
+	public static var KEY_UP:String = "keyUp";
+	
+	/** Event type for a key that was pressed. */
+	public static var KEY_DOWN:String = "keyDown";
+	
+	private var _charCode:Int;
+	private var _keyCode:Int;
+	private var _keyLocation:Int;
+	private var _altKey:Bool;
+	private var _ctrlKey:Bool;
+	private var _shiftKey:Bool;
+	private var _isDefaultPrevented:Bool;
+	
+	/** Creates a new KeyboardEvent. */
+	public function new(type:String, charCode:Int = 0, keyCode:Int = 0,
+			keyLocation:Int = 0, ctrlKey:Bool = false,
+			altKey:Bool = false, shiftKey:Bool = false)
+	{
+		super(type, false, keyCode);
+		_charCode = charCode;
+		_keyCode = keyCode;
+		_keyLocation = keyLocation;
+		_ctrlKey = ctrlKey;
+		_altKey = altKey;
+		_shiftKey = shiftKey;
+	}
+	
+	// prevent default
+	
+	/** Cancels the keyboard event's default behavior. This will be forwarded to the native
+	 *  flash KeyboardEvent. */
+	public function preventDefault():Void
+	{
+		_isDefaultPrevented = true;
+	}
+	
+	/** Checks whether the preventDefault() method has been called on the event. */
+	public function isDefaultPrevented():Bool
 	{
 		return _isDefaultPrevented;
-    }
-    
-    // properties
-    
-    /** Contains the character code of the key. */
-    private function get_charCode():Int
+	}
+	
+	// properties
+	
+	/** Contains the character code of the key. */
+	private function get_charCode():Int
 	{
 		return _charCode;
-    }
-    
-    /** The key code of the key. */
-    private function get_keyCode():Int
+	}
+	
+	/** The key code of the key. */
+	private function get_keyCode():Int
 	{
 		return _keyCode;
-    }
-    
-    /** Indicates the location of the key on the keyboard. This is useful for differentiating 
-     *  keys that appear more than once on a keyboard. @see Keylocation */
-    private function get_keyLocation():Int
+	}
+	
+	/** Indicates the location of the key on the keyboard. This is useful for differentiating 
+	 *  keys that appear more than once on a keyboard. @see Keylocation */
+	private function get_keyLocation():Int
 	{
 		return _keyLocation;
-    }
-    
-    /** Indicates whether the Alt key is active on Windows or Linux; 
-     *  indicates whether the Option key is active on Mac OS. */
-    private function get_altKey():Bool
+	}
+	
+	/** Indicates whether the Alt key is active on Windows or Linux; 
+	 *  indicates whether the Option key is active on Mac OS. */
+	private function get_altKey():Bool
 	{
 		return _altKey;
-    }
-    
-    /** Indicates whether the Ctrl key is active on Windows or Linux; 
-     *  indicates whether either the Ctrl or the Command key is active on Mac OS. */
-    private function get_ctrlKey():Bool
+	}
+	
+	/** Indicates whether the Ctrl key is active on Windows or Linux; 
+	 *  indicates whether either the Ctrl or the Command key is active on Mac OS. */
+	private function get_ctrlKey():Bool
 	{
 		return _ctrlKey;
-    }
-    
-    /** Indicates whether the Shift key modifier is active (true) or inactive (false). */
-    private function get_shiftKey():Bool
+	}
+	
+	/** Indicates whether the Shift key modifier is active (true) or inactive (false). */
+	private function get_shiftKey():Bool
 	{
 		return _shiftKey;
-    }
+	}
 }

@@ -35,70 +35,70 @@ import starling.errors.MissingContextError;
  */
 class Program
 {
-    private var _vertexShader:ByteArray;
-    private var _fragmentShader:ByteArray;
-    private var _program3D:Program3D;
-    
-    private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
-    
-    /** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
-    public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
-    {
-        _vertexShader = vertexShader;
-        _fragmentShader = fragmentShader;
-        
-        // Handle lost context (using conventional Flash event for weak listener support)
-        Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
-                onContextCreated, false, 0, true);
-    }
-    
-    /** Disposes the internal Program3D instance. */
-    public function dispose():Void
-    {
-        Starling.Current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
-        disposeProgram();
-    }
-    
-    /** Creates a new Program instance from AGAL assembly language. */
-    public static function fromSource(vertexShader:String, fragmentShader:String,
-            agalVersion:Int = 1):Program
-    {
-        return new Program(
-        sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion), 
-        sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
-    }
-    
-    /** Activates the program on the given context. If you don't pass a context, the current
-     *  Starling context will be used. */
-    public function activate(context:Context3D = null):Void
-    {
-        if (context == null) 
-        {
-            context = Starling.Context;
-            if (context == null)                 throw new MissingContextError();
-        }
-        
-        if (_program3D == null) 
-        {
-            _program3D = context.createProgram();
-            _program3D.upload(_vertexShader, _fragmentShader);
-        }
-        
-        context.setProgram(_program3D);
-    }
-    
-    private function onContextCreated(event:Event):Void
-    {
-        disposeProgram();
-    }
-    
-    private function disposeProgram():Void
-    {
-        if (_program3D != null) 
-        {
-            _program3D.dispose();
-            _program3D = null;
-        }
-    }
+	private var _vertexShader:ByteArray;
+	private var _fragmentShader:ByteArray;
+	private var _program3D:Program3D;
+	
+	private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
+	
+	/** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
+	public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
+	{
+		_vertexShader = vertexShader;
+		_fragmentShader = fragmentShader;
+		
+		// Handle lost context (using conventional Flash event for weak listener support)
+		Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
+				onContextCreated, false, 0, true);
+	}
+	
+	/** Disposes the internal Program3D instance. */
+	public function dispose():Void
+	{
+		Starling.Current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+		disposeProgram();
+	}
+	
+	/** Creates a new Program instance from AGAL assembly language. */
+	public static function fromSource(vertexShader:String, fragmentShader:String,
+			agalVersion:Int = 1):Program
+	{
+		return new Program(
+		sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion), 
+		sAssembler.assemble(Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
+	}
+	
+	/** Activates the program on the given context. If you don't pass a context, the current
+	 *  Starling context will be used. */
+	public function activate(context:Context3D = null):Void
+	{
+		if (context == null) 
+		{
+			context = Starling.Context;
+			if (context == null)				 throw new MissingContextError();
+		}
+		
+		if (_program3D == null) 
+		{
+			_program3D = context.createProgram();
+			_program3D.upload(_vertexShader, _fragmentShader);
+		}
+		
+		context.setProgram(_program3D);
+	}
+	
+	private function onContextCreated(event:Event):Void
+	{
+		disposeProgram();
+	}
+	
+	private function disposeProgram():Void
+	{
+		if (_program3D != null) 
+		{
+			_program3D.dispose();
+			_program3D = null;
+		}
+	}
 }
 

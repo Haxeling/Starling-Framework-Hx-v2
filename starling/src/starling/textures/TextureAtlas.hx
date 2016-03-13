@@ -22,9 +22,9 @@ import starling.utils.StringUtil;
  *  <p>Using a texture atlas for your textures solves two problems:</p>
  *  
  *  <ul>
- *    <li>Whenever you switch between textures, the batching of image objects is disrupted.</li>
- *    <li>Any Stage3D texture has to have side lengths that are powers of two. Starling hides 
- *        this limitation from you, but at the cost of additional graphics memory.</li>
+ *	<li>Whenever you switch between textures, the batching of image objects is disrupted.</li>
+ *	<li>Any Stage3D texture has to have side lengths that are powers of two. Starling hides 
+ *		this limitation from you, but at the cost of additional graphics memory.</li>
  *  </ul>
  *  
  *  <p>By using a texture atlas, you avoid both texture switches and the power-of-two 
@@ -54,7 +54,7 @@ import starling.utils.StringUtil;
  * 
  *  <listing>
  * 	&lt;SubTexture name='trimmed' x='0' y='0' height='10' width='10'
- * 	    frameX='-10' frameY='-10' frameWidth='30' frameHeight='30'/&gt;
+ * 		frameX='-10' frameY='-10' frameWidth='30' frameHeight='30'/&gt;
  *  </listing>
  *
  *  <strong>Texture Rotation</strong>
@@ -72,155 +72,155 @@ import starling.utils.StringUtil;
  */
 class TextureAtlas
 {
-    public var texture(get, never):Texture;
+	public var texture(get, never):Texture;
 
-    private var _atlasTexture:Texture;
-    private var _subTextures:Dictionary;
-    private var _subTextureNames:Array<String>;
-    
-    /** helper objects */
-    private static var sNames:Array<String> = [];
-    
-    /** Create a texture atlas from a texture by parsing the regions from an XML file. */
-    public function new(texture:Texture, atlasXml:FastXML = null)
-    {
-        _subTextures = new Dictionary();
-        _atlasTexture = texture;
-        
-        if (atlasXml != null) 
-            parseAtlasXml(atlasXml);
-    }
-    
-    /** Disposes the atlas texture. */
-    public function dispose():Void
-    {
-        _atlasTexture.dispose();
-    }
-    
-    /** This function is called by the constructor and will parse an XML in Starling's 
-     *  default atlas file format. Override this method to create custom parsing logic
-     *  (e.g. to support a different file format). */
-    private function parseAtlasXml(atlasXml:FastXML):Void
-    {
-        var scale:Float = _atlasTexture.scale;
-        var region:Rectangle = new Rectangle();
-        var frame:Rectangle = new Rectangle();
-        
-        for (subTexture in atlasXml.nodes.SubTexture)
-        {
-            var name:String = StringTools.clean(subTexture.att.name);
-            var x:Float = parseFloat(subTexture.att.x) / scale;
-            var y:Float = parseFloat(subTexture.att.y) / scale;
-            var width:Float = parseFloat(subTexture.att.width) / scale;
-            var height:Float = parseFloat(subTexture.att.height) / scale;
-            var frameX:Float = parseFloat(subTexture.att.frameX) / scale;
-            var frameY:Float = parseFloat(subTexture.att.frameY) / scale;
-            var frameWidth:Float = parseFloat(subTexture.att.frameWidth) / scale;
-            var frameHeight:Float = parseFloat(subTexture.att.frameHeight) / scale;
-            var rotated:Bool = parseBool(subTexture.att.rotated);
-            
-            region.setTo(x, y, width, height);
-            frame.setTo(frameX, frameY, frameWidth, frameHeight);
-            
-            if (frameWidth > 0 && frameHeight > 0) 
-                addRegion(name, region, frame, rotated)
-            else 
-            addRegion(name, region, null, rotated);
-        }
-    }
-    
-    /** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */
-    public function getTexture(name:String):Texture
-    {
-        return Reflect.field(_subTextures, name);
-    }
-    
-    /** Returns all textures that start with a certain string, sorted alphabetically
-     *  (especially useful for "MovieClip"). */
-    public function getTextures(prefix:String = "", out:Array<Texture> = null):Array<Texture>
-    {
-        if (out == null)             out = [];
-        
-        for (name/* AS3HX WARNING could not determine type for var: name exp: ECall(EIdent(getNames),[EIdent(prefix),EIdent(sNames)]) type: null */ in getNames(prefix, sNames))
-        out[out.length] = getTexture(name);  // avoid 'push'  
-        
-        sNames.length = 0;
-        return out;
-    }
-    
-    /** Returns all texture names that start with a certain string, sorted alphabetically. */
-    public function getNames(prefix:String = "", out:Array<String> = null):Array<String>
-    {
-        var name:String;
-        if (out == null)             out = [];
-        
-        if (_subTextureNames == null) 
-        {
-            // optimization: store sorted list of texture names
-            _subTextureNames = [];
-            for (name in Reflect.fields(_subTextures))_subTextureNames[_subTextureNames.length] = name;
-            _subTextureNames.sort(Array.CASEINSENSITIVE);
-        }
-        
-        for (name in _subTextureNames)
-        if (name.indexOf(prefix) == 0) 
-            out[out.length] = name;
-        
-        return out;
-    }
-    
-    /** Returns the region rectangle associated with a specific name, or <code>null</code>
-     *  if no region with that name has been registered. */
-    public function getRegion(name:String):Rectangle
-    {
-        var subTexture:SubTexture = Reflect.field(_subTextures, name);
-        return (subTexture != null) ? subTexture.region:null;
-    }
-    
-    /** Returns the frame rectangle of a specific region, or <code>null</code> if that region 
-     *  has no frame. */
-    public function getFrame(name:String):Rectangle
-    {
-        var subTexture:SubTexture = Reflect.field(_subTextures, name);
-        return (subTexture != null) ? subTexture.frame:null;
-    }
-    
-    /** If true, the specified region in the atlas is rotated by 90 degrees (clockwise). The
-     *  SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
-    public function getRotation(name:String):Bool
-    {
-        var subTexture:SubTexture = Reflect.field(_subTextures, name);
-        return (subTexture != null) ? subTexture.rotated:false;
-    }
-    
-    /** Adds a named region for a SubTexture (described by rectangle with coordinates in
-     *  points) with an optional frame. */
-    public function addRegion(name:String, region:Rectangle, frame:Rectangle = null,
-            rotated:Bool = false):Void
-    {
-        Reflect.setField(_subTextures, name, new SubTexture(_atlasTexture, region, false, frame, rotated));
-        _subTextureNames = null;
-    }
-    
-    /** Removes a region with a certain name. */
-    public function removeRegion(name:String):Void
-    {
-        var subTexture:SubTexture = Reflect.field(_subTextures, name);
-        if (subTexture != null)             subTexture.dispose();
-        ;
-        _subTextureNames = null;
-    }
-    
-    /** The base texture that makes up the atlas. */
-    private function get_texture():Texture
+	private var _atlasTexture:Texture;
+	private var _subTextures:Dictionary;
+	private var _subTextureNames:Array<String>;
+	
+	/** helper objects */
+	private static var sNames:Array<String> = [];
+	
+	/** Create a texture atlas from a texture by parsing the regions from an XML file. */
+	public function new(texture:Texture, atlasXml:FastXML = null)
+	{
+		_subTextures = new Dictionary();
+		_atlasTexture = texture;
+		
+		if (atlasXml != null) 
+			parseAtlasXml(atlasXml);
+	}
+	
+	/** Disposes the atlas texture. */
+	public function dispose():Void
+	{
+		_atlasTexture.dispose();
+	}
+	
+	/** This function is called by the constructor and will parse an XML in Starling's 
+	 *  default atlas file format. Override this method to create custom parsing logic
+	 *  (e.g. to support a different file format). */
+	private function parseAtlasXml(atlasXml:FastXML):Void
+	{
+		var scale:Float = _atlasTexture.scale;
+		var region:Rectangle = new Rectangle();
+		var frame:Rectangle = new Rectangle();
+		
+		for (subTexture in atlasXml.nodes.SubTexture)
+		{
+			var name:String = StringTools.clean(subTexture.att.name);
+			var x:Float = parseFloat(subTexture.att.x) / scale;
+			var y:Float = parseFloat(subTexture.att.y) / scale;
+			var width:Float = parseFloat(subTexture.att.width) / scale;
+			var height:Float = parseFloat(subTexture.att.height) / scale;
+			var frameX:Float = parseFloat(subTexture.att.frameX) / scale;
+			var frameY:Float = parseFloat(subTexture.att.frameY) / scale;
+			var frameWidth:Float = parseFloat(subTexture.att.frameWidth) / scale;
+			var frameHeight:Float = parseFloat(subTexture.att.frameHeight) / scale;
+			var rotated:Bool = parseBool(subTexture.att.rotated);
+			
+			region.setTo(x, y, width, height);
+			frame.setTo(frameX, frameY, frameWidth, frameHeight);
+			
+			if (frameWidth > 0 && frameHeight > 0) 
+				addRegion(name, region, frame, rotated)
+			else 
+			addRegion(name, region, null, rotated);
+		}
+	}
+	
+	/** Retrieves a SubTexture by name. Returns <code>null</code> if it is not found. */
+	public function getTexture(name:String):Texture
+	{
+		return Reflect.field(_subTextures, name);
+	}
+	
+	/** Returns all textures that start with a certain string, sorted alphabetically
+	 *  (especially useful for "MovieClip"). */
+	public function getTextures(prefix:String = "", out:Array<Texture> = null):Array<Texture>
+	{
+		if (out == null)			 out = [];
+		
+		for (name/* AS3HX WARNING could not determine type for var: name exp: ECall(EIdent(getNames),[EIdent(prefix),EIdent(sNames)]) type: null */ in getNames(prefix, sNames))
+		out[out.length] = getTexture(name);  // avoid 'push'  
+		
+		sNames.length = 0;
+		return out;
+	}
+	
+	/** Returns all texture names that start with a certain string, sorted alphabetically. */
+	public function getNames(prefix:String = "", out:Array<String> = null):Array<String>
+	{
+		var name:String;
+		if (out == null)			 out = [];
+		
+		if (_subTextureNames == null) 
+		{
+			// optimization: store sorted list of texture names
+			_subTextureNames = [];
+			for (name in Reflect.fields(_subTextures))_subTextureNames[_subTextureNames.length] = name;
+			_subTextureNames.sort(Array.CASEINSENSITIVE);
+		}
+		
+		for (name in _subTextureNames)
+		if (name.indexOf(prefix) == 0) 
+			out[out.length] = name;
+		
+		return out;
+	}
+	
+	/** Returns the region rectangle associated with a specific name, or <code>null</code>
+	 *  if no region with that name has been registered. */
+	public function getRegion(name:String):Rectangle
+	{
+		var subTexture:SubTexture = Reflect.field(_subTextures, name);
+		return (subTexture != null) ? subTexture.region:null;
+	}
+	
+	/** Returns the frame rectangle of a specific region, or <code>null</code> if that region 
+	 *  has no frame. */
+	public function getFrame(name:String):Rectangle
+	{
+		var subTexture:SubTexture = Reflect.field(_subTextures, name);
+		return (subTexture != null) ? subTexture.frame:null;
+	}
+	
+	/** If true, the specified region in the atlas is rotated by 90 degrees (clockwise). The
+	 *  SubTexture is thus rotated counter-clockwise to cancel out that transformation. */
+	public function getRotation(name:String):Bool
+	{
+		var subTexture:SubTexture = Reflect.field(_subTextures, name);
+		return (subTexture != null) ? subTexture.rotated:false;
+	}
+	
+	/** Adds a named region for a SubTexture (described by rectangle with coordinates in
+	 *  points) with an optional frame. */
+	public function addRegion(name:String, region:Rectangle, frame:Rectangle = null,
+			rotated:Bool = false):Void
+	{
+		Reflect.setField(_subTextures, name, new SubTexture(_atlasTexture, region, false, frame, rotated));
+		_subTextureNames = null;
+	}
+	
+	/** Removes a region with a certain name. */
+	public function removeRegion(name:String):Void
+	{
+		var subTexture:SubTexture = Reflect.field(_subTextures, name);
+		if (subTexture != null)			 subTexture.dispose();
+		;
+		_subTextureNames = null;
+	}
+	
+	/** The base texture that makes up the atlas. */
+	private function get_texture():Texture
 	{
 		return _atlasTexture;
-    }
-    
-    // utility methods
-    
-    private static function parseBool(value:String):Bool
-    {
-        return value.toLowerCase() == "true";
-    }
+	}
+	
+	// utility methods
+	
+	private static function parseBool(value:String):Bool
+	{
+		return value.toLowerCase() == "true";
+	}
 }

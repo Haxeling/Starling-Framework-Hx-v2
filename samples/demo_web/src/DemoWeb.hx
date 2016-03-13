@@ -24,106 +24,106 @@ import utils.ProgressBar;
 
 class DemoWeb extends Sprite
 {
-    private var _starling:Starling;
-    private var _background:Bitmap;
-    private var _progressBar:ProgressBar;
-    
-    public function new()
-    {
-        super();
-        if (stage)             start()
-        else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-    }
-    
-    private function onAddedToStage(event:Dynamic):Void
-    {
-        removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-        start();
-    }
-    
-    private function start():Void
-    {
-        // We develop the game in a *fixed* coordinate system of 320x480. The game might
-        // then run on a device with a different resolution; for that case, we zoom the
-        // viewPort to the optimal size for any display and load the optimal textures.
-        
-        Starling.multitouchEnabled = true;  // for Multitouch Scene  
-        
-        _starling = new Starling(Game, stage, null, null, "auto", "auto");
-        _starling.simulateMultitouch = true;
-        _starling.enableErrorChecking = Capabilities.isDebugger;
-        _starling.addEventListener(Event.ROOT_CREATED, function():Void
-                {
-                    loadAssets(startGame);
-                });
-        
-        _starling.start();
-        initElements();
-    }
-    
-    private function loadAssets(onComplete:Function):Void
-    {
-        // Our assets are loaded and managed by the 'AssetManager'. To use that class,
-        // we first have to enqueue pointers to all assets we want it to load.
-        
-        var assets:AssetManager = new AssetManager();
-        
-        assets.verbose = Capabilities.isDebugger;
-        assets.enqueue(EmbeddedAssets);
-        
-        // Now, while the AssetManager now contains pointers to all the assets, it actually
-        // has not loaded them yet. This happens in the "loadQueue" method; and since this
-        // will take a while, we'll update the progress bar accordingly.
-        
-        assets.loadQueue(function(ratio:Float):Void
-                {
-                    _progressBar.ratio = ratio;
-                    if (ratio == 1) 
-                    {
-                        // now would be a good time for a clean-up
-                        System.pauseForGCIfCollectionImminent(0);
-                        System.gc();
-                        
-                        onComplete(assets);
-                    }
-                });
-    }
-    
-    private function startGame(assets:AssetManager):Void
-    {
-        var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
-        game.start(assets);
-        setTimeout(removeElements, 150);
-    }
-    
-    private function initElements():Void
-    {
-        // Add background image.
-        
-        _background = new embeddedassets.Background();
-        _background.smoothing = true;
-        addChild(_background);
-        
-        // While the assets are loaded, we will display a progress bar.
-        
-        _progressBar = new ProgressBar(175, 20);
-        _progressBar.x = (_background.width - _progressBar.width) / 2;
-        _progressBar.y = _background.height * 0.7;
-        addChild(_progressBar);
-    }
-    
-    private function removeElements():Void
-    {
-        if (_background != null) 
-        {
-            removeChild(_background);
-            _background = null;
-        }
-        
-        if (_progressBar != null) 
-        {
-            removeChild(_progressBar);
-            _progressBar = null;
-        }
-    }
+	private var _starling:Starling;
+	private var _background:Bitmap;
+	private var _progressBar:ProgressBar;
+	
+	public function new()
+	{
+		super();
+		if (stage)			 start()
+		else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+	}
+	
+	private function onAddedToStage(event:Dynamic):Void
+	{
+		removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+		start();
+	}
+	
+	private function start():Void
+	{
+		// We develop the game in a *fixed* coordinate system of 320x480. The game might
+		// then run on a device with a different resolution; for that case, we zoom the
+		// viewPort to the optimal size for any display and load the optimal textures.
+		
+		Starling.multitouchEnabled = true;  // for Multitouch Scene  
+		
+		_starling = new Starling(Game, stage, null, null, "auto", "auto");
+		_starling.simulateMultitouch = true;
+		_starling.enableErrorChecking = Capabilities.isDebugger;
+		_starling.addEventListener(Event.ROOT_CREATED, function():Void
+				{
+					loadAssets(startGame);
+				});
+		
+		_starling.start();
+		initElements();
+	}
+	
+	private function loadAssets(onComplete:Function):Void
+	{
+		// Our assets are loaded and managed by the 'AssetManager'. To use that class,
+		// we first have to enqueue pointers to all assets we want it to load.
+		
+		var assets:AssetManager = new AssetManager();
+		
+		assets.verbose = Capabilities.isDebugger;
+		assets.enqueue(EmbeddedAssets);
+		
+		// Now, while the AssetManager now contains pointers to all the assets, it actually
+		// has not loaded them yet. This happens in the "loadQueue" method; and since this
+		// will take a while, we'll update the progress bar accordingly.
+		
+		assets.loadQueue(function(ratio:Float):Void
+				{
+					_progressBar.ratio = ratio;
+					if (ratio == 1) 
+					{
+						// now would be a good time for a clean-up
+						System.pauseForGCIfCollectionImminent(0);
+						System.gc();
+						
+						onComplete(assets);
+					}
+				});
+	}
+	
+	private function startGame(assets:AssetManager):Void
+	{
+		var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
+		game.start(assets);
+		setTimeout(removeElements, 150);
+	}
+	
+	private function initElements():Void
+	{
+		// Add background image.
+		
+		_background = new embeddedassets.Background();
+		_background.smoothing = true;
+		addChild(_background);
+		
+		// While the assets are loaded, we will display a progress bar.
+		
+		_progressBar = new ProgressBar(175, 20);
+		_progressBar.x = (_background.width - _progressBar.width) / 2;
+		_progressBar.y = _background.height * 0.7;
+		addChild(_progressBar);
+	}
+	
+	private function removeElements():Void
+	{
+		if (_background != null) 
+		{
+			removeChild(_background);
+			_background = null;
+		}
+		
+		if (_progressBar != null) 
+		{
+			removeChild(_progressBar);
+			_progressBar = null;
+		}
+	}
 }

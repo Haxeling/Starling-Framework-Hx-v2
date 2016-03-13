@@ -21,20 +21,20 @@ import starling.events.Event;
  */
 class EnterFrameEvent extends Event
 {
-    public var passedTime(get, never):Float;
+	public var passedTime(get, never):Float;
 
-    /** Event type for a display object that is entering a new frame. */
-    public static var ENTER_FRAME:String = "enterFrame";
-    
-    /** Creates an enter frame event with the passed time. */
-    public function new(type:String, passedTime:Float, bubbles:Bool = false)
-    {
-        super(type, bubbles, passedTime);
-    }
-    
-    /** The time that has passed since the last frame (in seconds). */
-    private function get_passedTime():Float
+	/** Event type for a display object that is entering a new frame. */
+	public static var ENTER_FRAME:String = "enterFrame";
+	
+	/** Creates an enter frame event with the passed time. */
+	public function new(type:String, passedTime:Float, bubbles:Bool = false)
+	{
+		super(type, bubbles, passedTime);
+	}
+	
+	/** The time that has passed since the last frame (in seconds). */
+	private function get_passedTime():Float
 	{
 		return try cast(data, Float) catch(e:Dynamic) null;
-    }
+	}
 }

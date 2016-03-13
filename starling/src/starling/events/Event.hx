@@ -38,194 +38,194 @@ import starling.utils.StringUtil;
  */
 class Event
 {
-    public var bubbles(get, never):Bool;
-    public var target(get, never):EventDispatcher;
-    public var currentTarget(get, never):EventDispatcher;
-    public var type(get, never):String;
-    public var data(get, never):Dynamic;
+	public var bubbles(get, never):Bool;
+	public var target(get, never):EventDispatcher;
+	public var currentTarget(get, never):EventDispatcher;
+	public var type(get, never):String;
+	public var data(get, never):Dynamic;
 	
 	@:allow(starling.events)
-    private var stopsPropagation(get, never):Bool;
+	private var stopsPropagation(get, never):Bool;
 	@:allow(starling.events)
-    private var stopsImmediatePropagation(get, never):Bool;
+	private var stopsImmediatePropagation(get, never):Bool;
 
-    /** Event type for a display object that is added to a parent. */
-    public static var ADDED:String = "added";
-    /** Event type for a display object that is added to the stage */
-    public static var ADDED_TO_STAGE:String = "addedToStage";
-    /** Event type for a display object that is entering a new frame. */
-    public static var ENTER_FRAME:String = "enterFrame";
-    /** Event type for a display object that is removed from its parent. */
-    public static var REMOVED:String = "removed";
-    /** Event type for a display object that is removed from the stage. */
-    public static var REMOVED_FROM_STAGE:String = "removedFromStage";
-    /** Event type for a triggered button. */
-    public static var TRIGGERED:String = "triggered";
-    /** Event type for a resized Flash Player. */
-    public static var RESIZE:String = "resize";
-    /** Event type that may be used whenever something finishes. */
-    public static var COMPLETE:String = "complete";
-    /** Event type for a (re)created stage3D rendering context. */
-    public static var CONTEXT3D_CREATE:String = "context3DCreate";
-    /** Event type that is dispatched by the Starling instance directly before rendering. */
-    public static var RENDER:String = "render";
-    /** Event type that indicates that the root DisplayObject has been created. */
-    public static var ROOT_CREATED:String = "rootCreated";
-    /** Event type for an animated object that requests to be removed from the juggler. */
-    public static var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
-    /** Event type that is dispatched by the AssetManager after a context loss. */
-    public static var TEXTURES_RESTORED:String = "texturesRestored";
-    /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
-    public static var IO_ERROR:String = "ioError";
-    /** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
-    public static var SECURITY_ERROR:String = "securityError";
-    /** Event type that is dispatched by the AssetManager when an xml or json file couldn't
-     *  be parsed. */
-    public static var PARSE_ERROR:String = "parseError";
-    /** Event type that is dispatched by the Starling instance when it encounters a problem
-     *  from which it cannot recover, e.g. a lost device context. */
-    public static var FATAL_ERROR:String = "fatalError";
-    
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var CHANGE:String = "change";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var CANCEL:String = "cancel";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var SCROLL:String = "scroll";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var OPEN:String = "open";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var CLOSE:String = "close";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var SELECT:String = "select";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var READY:String = "ready";
-    /** An event type to be utilized in custom events. Not used by Starling right now. */
-    public static var UPDATE:String = "update";
-    
-    private static var sEventPool:Array<Event> = [];
-    
-    private var _target:EventDispatcher;
-    private var _currentTarget:EventDispatcher;
-    private var _type:String;
-    private var _bubbles:Bool;
-    private var _stopsPropagation:Bool;
-    private var _stopsImmediatePropagation:Bool;
-    private var _data:Dynamic;
-    
-    /** Creates an event object that can be passed to listeners. */
-    public function new(type:String, bubbles:Bool = false, data:Dynamic = null)
-    {
-        _type = type;
-        _bubbles = bubbles;
-        _data = data;
-    }
-    
-    /** Prevents listeners at the next bubble stage from receiving the event. */
-    public function stopPropagation():Void
-    {
-        _stopsPropagation = true;
-    }
-    
-    /** Prevents any other listeners from receiving the event. */
-    public function stopImmediatePropagation():Void
-    {
-        _stopsPropagation = _stopsImmediatePropagation = true;
-    }
-    
-    /** Returns a description of the event, containing type and bubble information. */
-    public function toString():String
-    {
-        return StringTools.format(
+	/** Event type for a display object that is added to a parent. */
+	public static var ADDED:String = "added";
+	/** Event type for a display object that is added to the stage */
+	public static var ADDED_TO_STAGE:String = "addedToStage";
+	/** Event type for a display object that is entering a new frame. */
+	public static var ENTER_FRAME:String = "enterFrame";
+	/** Event type for a display object that is removed from its parent. */
+	public static var REMOVED:String = "removed";
+	/** Event type for a display object that is removed from the stage. */
+	public static var REMOVED_FROM_STAGE:String = "removedFromStage";
+	/** Event type for a triggered button. */
+	public static var TRIGGERED:String = "triggered";
+	/** Event type for a resized Flash Player. */
+	public static var RESIZE:String = "resize";
+	/** Event type that may be used whenever something finishes. */
+	public static var COMPLETE:String = "complete";
+	/** Event type for a (re)created stage3D rendering context. */
+	public static var CONTEXT3D_CREATE:String = "context3DCreate";
+	/** Event type that is dispatched by the Starling instance directly before rendering. */
+	public static var RENDER:String = "render";
+	/** Event type that indicates that the root DisplayObject has been created. */
+	public static var ROOT_CREATED:String = "rootCreated";
+	/** Event type for an animated object that requests to be removed from the juggler. */
+	public static var REMOVE_FROM_JUGGLER:String = "removeFromJuggler";
+	/** Event type that is dispatched by the AssetManager after a context loss. */
+	public static var TEXTURES_RESTORED:String = "texturesRestored";
+	/** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
+	public static var IO_ERROR:String = "ioError";
+	/** Event type that is dispatched by the AssetManager when a file/url cannot be loaded. */
+	public static var SECURITY_ERROR:String = "securityError";
+	/** Event type that is dispatched by the AssetManager when an xml or json file couldn't
+	 *  be parsed. */
+	public static var PARSE_ERROR:String = "parseError";
+	/** Event type that is dispatched by the Starling instance when it encounters a problem
+	 *  from which it cannot recover, e.g. a lost device context. */
+	public static var FATAL_ERROR:String = "fatalError";
+	
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var CHANGE:String = "change";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var CANCEL:String = "cancel";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var SCROLL:String = "scroll";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var OPEN:String = "open";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var CLOSE:String = "close";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var SELECT:String = "select";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var READY:String = "ready";
+	/** An event type to be utilized in custom events. Not used by Starling right now. */
+	public static var UPDATE:String = "update";
+	
+	private static var sEventPool:Array<Event> = [];
+	
+	private var _target:EventDispatcher;
+	private var _currentTarget:EventDispatcher;
+	private var _type:String;
+	private var _bubbles:Bool;
+	private var _stopsPropagation:Bool;
+	private var _stopsImmediatePropagation:Bool;
+	private var _data:Dynamic;
+	
+	/** Creates an event object that can be passed to listeners. */
+	public function new(type:String, bubbles:Bool = false, data:Dynamic = null)
+	{
+		_type = type;
+		_bubbles = bubbles;
+		_data = data;
+	}
+	
+	/** Prevents listeners at the next bubble stage from receiving the event. */
+	public function stopPropagation():Void
+	{
+		_stopsPropagation = true;
+	}
+	
+	/** Prevents any other listeners from receiving the event. */
+	public function stopImmediatePropagation():Void
+	{
+		_stopsPropagation = _stopsImmediatePropagation = true;
+	}
+	
+	/** Returns a description of the event, containing type and bubble information. */
+	public function toString():String
+	{
+		return StringTools.format(
 			"[{0} type=\"{1}\" bubbles={2}]",
-            [Type.getClassName(Type.getClass(this)).split("::").pop(), _type, _bubbles]
+			[Type.getClassName(Type.getClass(this)).split("::").pop(), _type, _bubbles]
 		);
-    }
-    
-    /** Indicates if event will bubble. */
-    private function get_bubbles():Bool {
+	}
+	
+	/** Indicates if event will bubble. */
+	private function get_bubbles():Bool {
 		return _bubbles;
-    }
-    
-    /** The object that dispatched the event. */
-    private function get_target():EventDispatcher {
+	}
+	
+	/** The object that dispatched the event. */
+	private function get_target():EventDispatcher {
 		return _target;
-    }
-    
-    /** The object the event is currently bubbling at. */
-    private function get_currentTarget():EventDispatcher {
+	}
+	
+	/** The object the event is currently bubbling at. */
+	private function get_currentTarget():EventDispatcher {
 		return _currentTarget;
-    }
-    
-    /** A string that identifies the event. */
-    private function get_type():String {
+	}
+	
+	/** A string that identifies the event. */
+	private function get_type():String {
 		return _type;
-    }
-    
-    /** Arbitrary data that is attached to the event. */
-    private function get_data():Dynamic {
+	}
+	
+	/** Arbitrary data that is attached to the event. */
+	private function get_data():Dynamic {
 		return _data;
-    }
-    
-    // properties for internal use
-    
-    /** @private */
-    @:allow(starling.events)
-    private function setTarget(value:EventDispatcher):Void {
+	}
+	
+	// properties for internal use
+	
+	/** @private */
+	@:allow(starling.events)
+	private function setTarget(value:EventDispatcher):Void {
 		_target = value;
-    }
-    
-    /** @private */
-    @:allow(starling.events)
-    private function setCurrentTarget(value:EventDispatcher):Void {
+	}
+	
+	/** @private */
+	@:allow(starling.events)
+	private function setCurrentTarget(value:EventDispatcher):Void {
 		_currentTarget = value;
-    }
-    
-    /** @private */
-    @:allow(starling.events)
-    private function setData(value:Dynamic):Void {
+	}
+	
+	/** @private */
+	@:allow(starling.events)
+	private function setData(value:Dynamic):Void {
 		_data = value;
-    }
-    
-    /** @private */
-    @:allow(starling.events)
-    private function get_stopsPropagation():Bool {
+	}
+	
+	/** @private */
+	@:allow(starling.events)
+	private function get_stopsPropagation():Bool {
 		return _stopsPropagation;
-    }
-    
-    /** @private */
-    @:allow(starling.events)
-    private function get_stopsImmediatePropagation():Bool {
+	}
+	
+	/** @private */
+	@:allow(starling.events)
+	private function get_stopsImmediatePropagation():Bool {
 		return _stopsImmediatePropagation;
-    }
-    
-    // event pooling
-    
-    /** @private */
+	}
+	
+	// event pooling
+	
+	/** @private */
 	@:allow(starling.events)
-    private static function fromPool(type:String, bubbles:Bool = false, data:Dynamic = null):Event
-    {
-        if (sEventPool.length > 0) return sEventPool.pop().reset(type, bubbles, data);
+	private static function fromPool(type:String, bubbles:Bool = false, data:Dynamic = null):Event
+	{
+		if (sEventPool.length > 0) return sEventPool.pop().reset(type, bubbles, data);
 		else return new Event(type, bubbles, data);
-    }
-    
-    /** @private */
+	}
+	
+	/** @private */
 	@:allow(starling.events)
-    private static function toPool(event:Event):Void
-    {
-        event._data = event._target = event._currentTarget = null;
-        sEventPool[sEventPool.length] = event;
-    }
-    
-    /** @private */
+	private static function toPool(event:Event):Void
+	{
+		event._data = event._target = event._currentTarget = null;
+		sEventPool[sEventPool.length] = event;
+	}
+	
+	/** @private */
 	@:allow(starling.events)
-    private function reset(type:String, bubbles:Bool = false, data:Dynamic = null):Event
-    {
-        _type = type;
-        _bubbles = bubbles;
-        _data = data;
-        _target = _currentTarget = null;
-        _stopsPropagation = _stopsImmediatePropagation = false;
-        return this;
-    }
+	private function reset(type:String, bubbles:Bool = false, data:Dynamic = null):Event
+	{
+		_type = type;
+		_bubbles = bubbles;
+		_data = data;
+		_target = _currentTarget = null;
+		_stopsPropagation = _stopsImmediatePropagation = false;
+		return this;
+	}
 }

@@ -51,364 +51,364 @@ import starling.events.EventDispatcher;
  */
 class Juggler implements IAnimatable
 {
-    public var elapsedTime(get, never):Float;
-    private var objects(get, never):Array<IAnimatable>;
+	public var elapsedTime(get, never):Float;
+	private var objects(get, never):Array<IAnimatable>;
 
-    private var _objects:Array<IAnimatable>;
-    private var _objectIDs:Dictionary;
-    private var _elapsedTime:Float;
-    
-    private static var sCurrentObjectID:Int;
-    
-    /** Create an empty juggler. */
-    public function new()
-    {
-        _elapsedTime = 0;
-        _objects = [];
-        _objectIDs = new Dictionary(true);
-    }
-    
-    /** Adds an object to the juggler.
-     *
-     *  @return Unique numeric identifier for the animation. This identifier may be used
-     *          to remove the object via <code>removeByID()</code>.
-     */
-    public function add(object:IAnimatable):Int
-    {
-        return addWithID(object, getNextID());
-    }
-    
-    private function addWithID(object:IAnimatable, objectID:Int):Int
-    {
-        if (object != null && !(Lambda.has(_objectIDs, object))) 
-        {
-            var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-            if (dispatcher != null)                 dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            
-            _objects[_objects.length] = object;
-            Reflect.setField(_objectIDs, Std.string(object), objectID);
-            
-            return objectID;
-        }
-        else return 0;
-    }
-    
-    /** Determines if an object has been added to the juggler. */
-    public function contains(object:IAnimatable):Bool
-    {
-        return Lambda.has(_objectIDs, object);
-    }
-    
-    /** Removes an object from the juggler.
-     *
-     *  @return The (now meaningless) unique numeric identifier for the animation, or zero
-     *          if the object was not found.
-     */
-    public function remove(object:IAnimatable):Int
-    {
-        var objectID:Int = 0;
-        
-        if (object != null && Lambda.has(_objectIDs, object)) 
-        {
-            var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-            if (dispatcher != null)                 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            
-            var index:Int = Lambda.indexOf(_objects, object);
-            _objects[index] = null;
-            
-            objectID = Reflect.field(_objectIDs, Std.string(object));
+	private var _objects:Array<IAnimatable>;
+	private var _objectIDs:Dictionary;
+	private var _elapsedTime:Float;
+	
+	private static var sCurrentObjectID:Int;
+	
+	/** Create an empty juggler. */
+	public function new()
+	{
+		_elapsedTime = 0;
+		_objects = [];
+		_objectIDs = new Dictionary(true);
+	}
+	
+	/** Adds an object to the juggler.
+	 *
+	 *  @return Unique numeric identifier for the animation. This identifier may be used
+	 *		  to remove the object via <code>removeByID()</code>.
+	 */
+	public function add(object:IAnimatable):Int
+	{
+		return addWithID(object, getNextID());
+	}
+	
+	private function addWithID(object:IAnimatable, objectID:Int):Int
+	{
+		if (object != null && !(Lambda.has(_objectIDs, object))) 
+		{
+			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
+			if (dispatcher != null)				 dispatcher.addEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			
+			_objects[_objects.length] = object;
+			Reflect.setField(_objectIDs, Std.string(object), objectID);
+			
+			return objectID;
+		}
+		else return 0;
+	}
+	
+	/** Determines if an object has been added to the juggler. */
+	public function contains(object:IAnimatable):Bool
+	{
+		return Lambda.has(_objectIDs, object);
+	}
+	
+	/** Removes an object from the juggler.
+	 *
+	 *  @return The (now meaningless) unique numeric identifier for the animation, or zero
+	 *		  if the object was not found.
+	 */
+	public function remove(object:IAnimatable):Int
+	{
+		var objectID:Int = 0;
+		
+		if (object != null && Lambda.has(_objectIDs, object)) 
+		{
+			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
+			if (dispatcher != null)				 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			
+			var index:Int = Lambda.indexOf(_objects, object);
+			_objects[index] = null;
+			
+			objectID = Reflect.field(_objectIDs, Std.string(object));
 			trace("fix delete on line 120");
 			//delete _objectIDs[object];
-        }
-        
-        return objectID;
-    }
-    
-    /** Removes an object from the juggler, identified by the unique numeric identifier you
-     *  received when adding it.
-     *
-     *  <p>It's not uncommon that an animatable object is added to a juggler repeatedly,
-     *  e.g. when using an object-pool. Thus, when using the <code>remove</code> method,
-     *  you might accidentally remove an object that has changed its context. By using
-     *  <code>removeByID</code> instead, you can be sure to avoid that, since the objectID
-     *  will always be unique.</p>
-     *
-     *  @return if successful, the passed objectID; if the object was not found, zero.
-     */
-    public function removeByID(objectID:Int):Int
-    {
-        var i:Int = _objects.length - 1;
-        while (i >= 0){
-            var object:IAnimatable = _objects[i];
-            
-            if (Reflect.field(_objectIDs, Std.string(object)) == objectID) 
-            {
-                remove(object);
-                return objectID;
-            }
-            --i;
-        }
-        
-        return 0;
-    }
-    
-    /** Removes all tweens with a certain target. */
-    public function removeTweens(target:Dynamic):Void
-    {
-        if (target == null)             return;
-        
-        var i:Int = _objects.length - 1;
-        while (i >= 0){
-            var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
-            if (tween != null && tween.target == target) 
-            {
-                tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-                _objects[i] = null;
-                trace("fix delete on line 167");
+		}
+		
+		return objectID;
+	}
+	
+	/** Removes an object from the juggler, identified by the unique numeric identifier you
+	 *  received when adding it.
+	 *
+	 *  <p>It's not uncommon that an animatable object is added to a juggler repeatedly,
+	 *  e.g. when using an object-pool. Thus, when using the <code>remove</code> method,
+	 *  you might accidentally remove an object that has changed its context. By using
+	 *  <code>removeByID</code> instead, you can be sure to avoid that, since the objectID
+	 *  will always be unique.</p>
+	 *
+	 *  @return if successful, the passed objectID; if the object was not found, zero.
+	 */
+	public function removeByID(objectID:Int):Int
+	{
+		var i:Int = _objects.length - 1;
+		while (i >= 0){
+			var object:IAnimatable = _objects[i];
+			
+			if (Reflect.field(_objectIDs, Std.string(object)) == objectID) 
+			{
+				remove(object);
+				return objectID;
+			}
+			--i;
+		}
+		
+		return 0;
+	}
+	
+	/** Removes all tweens with a certain target. */
+	public function removeTweens(target:Dynamic):Void
+	{
+		if (target == null)			 return;
+		
+		var i:Int = _objects.length - 1;
+		while (i >= 0){
+			var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
+			if (tween != null && tween.target == target) 
+			{
+				tween.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+				_objects[i] = null;
+				trace("fix delete on line 167");
 				// delete _objectIDs[tween];
-            }
-            --i;
-        }
-    }
-    
-    /** Removes all delayed and repeated calls with a certain callback. */
-    public function removeDelayedCalls(callback:Function):Void
-    {
-        if (callback == null)             return;
-        
-        var i:Int = _objects.length - 1;
-        while (i >= 0){
-            var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
-            if (delayedCall != null && delayedCall.callback == callback) 
-            {
-                delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-                _objects[i] = null;
-                trace("fix delete on line 186");
+			}
+			--i;
+		}
+	}
+	
+	/** Removes all delayed and repeated calls with a certain callback. */
+	public function removeDelayedCalls(callback:Function):Void
+	{
+		if (callback == null)			 return;
+		
+		var i:Int = _objects.length - 1;
+		while (i >= 0){
+			var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
+			if (delayedCall != null && delayedCall.callback == callback) 
+			{
+				delayedCall.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+				_objects[i] = null;
+				trace("fix delete on line 186");
 				// delete _objectIDs[tween];
-            }
-            --i;
-        }
-    }
-    
-    /** Figures out if the juggler contains one or more tweens with a certain target. */
-    public function containsTweens(target:Dynamic):Bool
-    {
-        if (target != null) 
-        {
-            var i:Int = _objects.length - 1;
-            while (i >= 0){
-                var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
-                if (tween != null && tween.target == target)                     return true;
-                --i;
-            }
-        }
-        
-        return false;
-    }
-    
-    /** Figures out if the juggler contains one or more delayed calls with a certain callback. */
-    public function containsDelayedCalls(callback:Function):Bool
-    {
-        if (callback != null) 
-        {
-            var i:Int = _objects.length - 1;
-            while (i >= 0){
-                var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
-                if (delayedCall != null && delayedCall.callback == callback)                     return true;
-                --i;
-            }
-        }
-        
-        return false;
-    }
-    
-    /** Removes all objects at once. */
-    public function purge():Void
-    {
-        // the object vector is not purged right away, because if this method is called
-        // from an 'advanceTime' call, this would make the loop crash. Instead, the
-        // vector is filled with 'null' values. They will be cleaned up on the next call
-        // to 'advanceTime'.
-        
-        var i:Int = _objects.length - 1;
-        while (i >= 0){
-            var object:IAnimatable = _objects[i];
-            var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
-            if (dispatcher != null)                 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
-            _objects[i] = null;
-            trace("fix delete on line 239");
+			}
+			--i;
+		}
+	}
+	
+	/** Figures out if the juggler contains one or more tweens with a certain target. */
+	public function containsTweens(target:Dynamic):Bool
+	{
+		if (target != null) 
+		{
+			var i:Int = _objects.length - 1;
+			while (i >= 0){
+				var tween:Tween = try cast(_objects[i], Tween) catch(e:Dynamic) null;
+				if (tween != null && tween.target == target)					 return true;
+				--i;
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Figures out if the juggler contains one or more delayed calls with a certain callback. */
+	public function containsDelayedCalls(callback:Function):Bool
+	{
+		if (callback != null) 
+		{
+			var i:Int = _objects.length - 1;
+			while (i >= 0){
+				var delayedCall:DelayedCall = try cast(_objects[i], DelayedCall) catch(e:Dynamic) null;
+				if (delayedCall != null && delayedCall.callback == callback)					 return true;
+				--i;
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Removes all objects at once. */
+	public function purge():Void
+	{
+		// the object vector is not purged right away, because if this method is called
+		// from an 'advanceTime' call, this would make the loop crash. Instead, the
+		// vector is filled with 'null' values. They will be cleaned up on the next call
+		// to 'advanceTime'.
+		
+		var i:Int = _objects.length - 1;
+		while (i >= 0){
+			var object:IAnimatable = _objects[i];
+			var dispatcher:EventDispatcher = try cast(object, EventDispatcher) catch(e:Dynamic) null;
+			if (dispatcher != null)				 dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
+			_objects[i] = null;
+			trace("fix delete on line 239");
 			// delete _objectIDs[object];
-            --i;
-        }
-    }
-    
-    /** Delays the execution of a function until <code>delay</code> seconds have passed.
-     *  This method provides a convenient alternative for creating and adding a DelayedCall
-     *  manually.
-     *
-     *  @return Unique numeric identifier for the delayed call. This identifier may be used
-     *          to remove the object via <code>removeByID()</code>.
-     */
-    public function delayCall(call:Function, delay:Float):Int
-    {
-        if (call == null)             throw new ArgumentError("call must not be null");
-        
-        var delayedCall:DelayedCall = DelayedCall.fromPool(call, delay, args);
-        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
-        return add(delayedCall);
-    }
-    
-    /** Runs a function at a specified interval (in seconds). A 'repeatCount' of zero
-     *  means that it runs indefinitely.
-     *
-     *  @return Unique numeric identifier for the delayed call. This identifier may be used
-     *          to remove the object via <code>removeByID()</code>.
-     */
-    public function repeatCall(call:Function, interval:Float, repeatCount:Int = 0):Int
-    {
-        if (call == null)             throw new ArgumentError("call must not be null");
-        
-        var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
-        delayedCall.repeatCount = repeatCount;
-        delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
-        return add(delayedCall);
-    }
-    
-    private function onPooledDelayedCallComplete(event:Event):Void
-    {
-        DelayedCall.toPool(try cast(event.target, DelayedCall) catch(e:Dynamic) null);
-    }
-    
-    /** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
-     *  this method uses a tween instance (taken from an object pool) that is added to the
-     *  juggler right away. This method provides a convenient alternative for creating 
-     *  and adding a tween manually.
-     *  
-     *  <p>Fill 'properties' with key-value pairs that describe both the 
-     *  tween and the animation target. Here is an example:</p>
-     *  
-     *  <pre>
-     *  juggler.tween(object, 2.0, {
-     *      transition: Transitions.EASE_IN_OUT,
-     *      delay: 20, // -> tween.delay = 20
-     *      x: 50      // -> tween.animate("x", 50)
-     *  });
-     *  </pre> 
-     *
-     *  <p>To cancel the tween, call 'Juggler.removeTweens' with the same target, or pass
-     *  the returned 'IAnimatable' instance to 'Juggler.remove()'. Do not use the returned
-     *  IAnimatable otherwise; it is taken from a pool and will be reused.</p>
-     *
-     *  <p>Note that some property types may be animated in a special way:</p>
-     *  <ul>
-     *    <li>If the property contains the string <code>color</code> or <code>Color</code>,
-     *        it will be treated as an unsigned integer with a color value
-     *        (e.g. <code>0xff0000</code> for red). Each color channel will be animated
-     *        individually.</li>
-     *    <li>The same happens if you append the string <code>#rgb</code> to the name.</li>
-     *    <li>If you append <code>#rad</code>, the property is treated as an angle in radians,
-     *        making sure it always uses the shortest possible arc for the rotation.</li>
-     *    <li>The string <code>#deg</code> does the same for angles in degrees.</li>
-     *  </ul>
-     */
-    public function tween(target:Dynamic, time:Float, properties:Dynamic):Int
-    {
-        if (target == null)             throw new ArgumentError("target must not be null");
-        
-        var tween:Tween = Tween.fromPool(target, time);
-        
-        for (property in Reflect.fields(properties))
-        {
-            var value:Dynamic = Reflect.field(properties, property);
-            
-            if (tween.exists(property)) 
-                Reflect.setField(tween, property, value)
-            else if (target.exists(Tween.getPropertyName(property))) 
-                tween.animate(property, try cast(value, Float) catch(e:Dynamic) null)
-            else 
-            throw new ArgumentError("Invalid property: " + property);
-        }
-        
-        tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledTweenComplete);
-        return add(tween);
-    }
-    
-    private function onPooledTweenComplete(event:Event):Void
-    {
-        Tween.toPool(try cast(event.target, Tween) catch(e:Dynamic) null);
-    }
-    
-    /** Advances all objects by a certain time (in seconds). */
-    public function advanceTime(time:Float):Void
-    {
-        var numObjects:Int = _objects.length;
-        var currentIndex:Int = 0;
-        var i:Int;
-        
-        _elapsedTime += time;
-        if (numObjects == 0)             return  // in the next frame), and we need to clean up any empty slots in the list.    // of animatables. we must not process new objects right now (they will be processed    // there is a high probability that the "advanceTime" function modifies the list  ;
-        
-        
-        
-        
-        
-        
-        
-        
-        for (i in 0...numObjects){
-            var object:IAnimatable = _objects[i];
-            if (object != null) 
-            {
-                // shift objects into empty slots along the way
-                if (currentIndex != i) 
-                {
-                    _objects[currentIndex] = object;
-                    _objects[i] = null;
-                }
-                
-                object.advanceTime(time);
-                ++currentIndex;
-            }
-        }
-        
-        if (currentIndex != i) 
-        {
-            numObjects = _objects.length;  // count might have changed!  
-            
-            while (i < numObjects)
-            _objects[as3hx.Compat.parseInt(currentIndex++)] = _objects[as3hx.Compat.parseInt(i++)];
-            
-            _objects.length = currentIndex;
-        }
-    }
-    
-    private function onRemove(event:Event):Void
-    {
-        var objectID:Int = remove(try cast(event.target, IAnimatable) catch(e:Dynamic) null);
-        
-        if (objectID != 0) 
-        {
-            var tween:Tween = try cast(event.target, Tween) catch(e:Dynamic) null;
-            if (tween != null && tween.isComplete) 
-                addWithID(tween.nextTween, objectID);
-        }
-    }
-    
-    private static function getNextID():Int
+			--i;
+		}
+	}
+	
+	/** Delays the execution of a function until <code>delay</code> seconds have passed.
+	 *  This method provides a convenient alternative for creating and adding a DelayedCall
+	 *  manually.
+	 *
+	 *  @return Unique numeric identifier for the delayed call. This identifier may be used
+	 *		  to remove the object via <code>removeByID()</code>.
+	 */
+	public function delayCall(call:Function, delay:Float):Int
+	{
+		if (call == null)			 throw new ArgumentError("call must not be null");
+		
+		var delayedCall:DelayedCall = DelayedCall.fromPool(call, delay, args);
+		delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
+		return add(delayedCall);
+	}
+	
+	/** Runs a function at a specified interval (in seconds). A 'repeatCount' of zero
+	 *  means that it runs indefinitely.
+	 *
+	 *  @return Unique numeric identifier for the delayed call. This identifier may be used
+	 *		  to remove the object via <code>removeByID()</code>.
+	 */
+	public function repeatCall(call:Function, interval:Float, repeatCount:Int = 0):Int
+	{
+		if (call == null)			 throw new ArgumentError("call must not be null");
+		
+		var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
+		delayedCall.repeatCount = repeatCount;
+		delayedCall.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledDelayedCallComplete);
+		return add(delayedCall);
+	}
+	
+	private function onPooledDelayedCallComplete(event:Event):Void
+	{
+		DelayedCall.toPool(try cast(event.target, DelayedCall) catch(e:Dynamic) null);
+	}
+	
+	/** Utilizes a tween to animate the target object over <code>time</code> seconds. Internally,
+	 *  this method uses a tween instance (taken from an object pool) that is added to the
+	 *  juggler right away. This method provides a convenient alternative for creating 
+	 *  and adding a tween manually.
+	 *  
+	 *  <p>Fill 'properties' with key-value pairs that describe both the 
+	 *  tween and the animation target. Here is an example:</p>
+	 *  
+	 *  <pre>
+	 *  juggler.tween(object, 2.0, {
+	 *	  transition: Transitions.EASE_IN_OUT,
+	 *	  delay: 20, // -> tween.delay = 20
+	 *	  x: 50	  // -> tween.animate("x", 50)
+	 *  });
+	 *  </pre> 
+	 *
+	 *  <p>To cancel the tween, call 'Juggler.removeTweens' with the same target, or pass
+	 *  the returned 'IAnimatable' instance to 'Juggler.remove()'. Do not use the returned
+	 *  IAnimatable otherwise; it is taken from a pool and will be reused.</p>
+	 *
+	 *  <p>Note that some property types may be animated in a special way:</p>
+	 *  <ul>
+	 *	<li>If the property contains the string <code>color</code> or <code>Color</code>,
+	 *		it will be treated as an unsigned integer with a color value
+	 *		(e.g. <code>0xff0000</code> for red). Each color channel will be animated
+	 *		individually.</li>
+	 *	<li>The same happens if you append the string <code>#rgb</code> to the name.</li>
+	 *	<li>If you append <code>#rad</code>, the property is treated as an angle in radians,
+	 *		making sure it always uses the shortest possible arc for the rotation.</li>
+	 *	<li>The string <code>#deg</code> does the same for angles in degrees.</li>
+	 *  </ul>
+	 */
+	public function tween(target:Dynamic, time:Float, properties:Dynamic):Int
+	{
+		if (target == null)			 throw new ArgumentError("target must not be null");
+		
+		var tween:Tween = Tween.fromPool(target, time);
+		
+		for (property in Reflect.fields(properties))
+		{
+			var value:Dynamic = Reflect.field(properties, property);
+			
+			if (tween.exists(property)) 
+				Reflect.setField(tween, property, value)
+			else if (target.exists(Tween.getPropertyName(property))) 
+				tween.animate(property, try cast(value, Float) catch(e:Dynamic) null)
+			else 
+			throw new ArgumentError("Invalid property: " + property);
+		}
+		
+		tween.addEventListener(Event.REMOVE_FROM_JUGGLER, onPooledTweenComplete);
+		return add(tween);
+	}
+	
+	private function onPooledTweenComplete(event:Event):Void
+	{
+		Tween.toPool(try cast(event.target, Tween) catch(e:Dynamic) null);
+	}
+	
+	/** Advances all objects by a certain time (in seconds). */
+	public function advanceTime(time:Float):Void
+	{
+		var numObjects:Int = _objects.length;
+		var currentIndex:Int = 0;
+		var i:Int;
+		
+		_elapsedTime += time;
+		if (numObjects == 0)			 return  // in the next frame), and we need to clean up any empty slots in the list.	// of animatables. we must not process new objects right now (they will be processed	// there is a high probability that the "advanceTime" function modifies the list  ;
+		
+		
+		
+		
+		
+		
+		
+		
+		for (i in 0...numObjects){
+			var object:IAnimatable = _objects[i];
+			if (object != null) 
+			{
+				// shift objects into empty slots along the way
+				if (currentIndex != i) 
+				{
+					_objects[currentIndex] = object;
+					_objects[i] = null;
+				}
+				
+				object.advanceTime(time);
+				++currentIndex;
+			}
+		}
+		
+		if (currentIndex != i) 
+		{
+			numObjects = _objects.length;  // count might have changed!  
+			
+			while (i < numObjects)
+			_objects[as3hx.Compat.parseInt(currentIndex++)] = _objects[as3hx.Compat.parseInt(i++)];
+			
+			_objects.length = currentIndex;
+		}
+	}
+	
+	private function onRemove(event:Event):Void
+	{
+		var objectID:Int = remove(try cast(event.target, IAnimatable) catch(e:Dynamic) null);
+		
+		if (objectID != 0) 
+		{
+			var tween:Tween = try cast(event.target, Tween) catch(e:Dynamic) null;
+			if (tween != null && tween.isComplete) 
+				addWithID(tween.nextTween, objectID);
+		}
+	}
+	
+	private static function getNextID():Int
 	{
 		return ++sCurrentObjectID;
-    }
-    
-    /** The total life time of the juggler (in seconds). */
-    private function get_elapsedTime():Float
+	}
+	
+	/** The total life time of the juggler (in seconds). */
+	private function get_elapsedTime():Float
 	{
 		return _elapsedTime;
-    }
-    
-    /** The actual vector that contains all objects that are currently being animated. */
-    private function get_objects():Array<IAnimatable>
+	}
+	
+	/** The actual vector that contains all objects that are currently being animated. */
+	private function get_objects():Array<IAnimatable>
 	{
 		return _objects;
-    }
+	}
 }
 
