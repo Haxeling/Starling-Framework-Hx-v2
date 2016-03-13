@@ -11,12 +11,13 @@
 package starling.rendering;
 
 
-import flash.display3d.Context3DTriangleFace;
-import flash.display3d.textures.TextureBase;
+import flash.display3D.Context3DTriangleFace;
+import flash.display3D.textures.TextureBase;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
 import flash.geom.Rectangle;
 import flash.geom.Vector3D;
+import haxe.Constraints.Function;
 
 import starling.display.BlendMode;
 import starling.textures.Texture;
@@ -66,36 +67,39 @@ import starling.utils.RectangleUtil;
  */
 class RenderState
 {
-    public var modelviewMatrix(get, set) : Matrix;
-    public var modelviewMatrix3D(get, set) : Matrix3D;
-    public var projectionMatrix3D(get, set) : Matrix3D;
-    public var mvpMatrix3D(get, never) : Matrix3D;
-    public var alpha(get, set) : Float;
-    public var blendMode(get, set) : String;
-    public var renderTarget(get, set) : Texture;
-    private var renderTargetBase(get, never) : TextureBase;
-    public var culling(get, set) : String;
-    public var clipRect(get, set) : Rectangle;
-    public var renderTargetAntiAlias(get, never) : Int;
-    public var renderTargetSupportsDepthAndStencil(get, never) : Bool;
-    public var is3D(get, never) : Bool;
-    private var onDrawRequired(get, set) : Function;
+    public var modelviewMatrix(get, set):Matrix;
+    public var modelviewMatrix3D(get, set):Matrix3D;
+    public var projectionMatrix3D(get, set):Matrix3D;
+    public var mvpMatrix3D(get, never):Matrix3D;
+    public var alpha(get, set):Float;
+    public var blendMode(get, set):String;
+    public var renderTarget(get, set):Texture;
+	public var culling(get, set):Context3DTriangleFace;
+    public var clipRect(get, set):Rectangle;
+    public var renderTargetAntiAlias(get, never):Int;
+    public var renderTargetSupportsDepthAndStencil(get, never):Bool;
+    public var is3D(get, never):Bool;
+	
+	@:allow(starling.rendering)
+    private var renderTargetBase(get, never):TextureBase;
+	@:allow(starling.rendering)
+    private var onDrawRequired(get, set):Void -> Void;
 
-    private var _alpha : Float;
-    private var _blendMode : String;
-    private var _renderTarget : Texture;
-    private var _renderTargetOptions : Int;
-    private var _culling : String;
-    private var _clipRect : Rectangle;
-    private var _onDrawRequired : Function;
+    private var _alpha:Float;
+    private var _blendMode:String;
+    private var _renderTarget:Texture;
+    private var _renderTargetOptions:Int;
+    private var _culling:Context3DTriangleFace;
+    private var _clipRect:Rectangle;
+    private var _onDrawRequired:Void -> Void;
     
-    private var _modelviewMatrix : Matrix;
-    private var _modelviewMatrix3D : Matrix3D;
-    private var _projectionMatrix3D : Matrix3D;
-    private var _mvpMatrix3D : Matrix3D;
+    private var _modelviewMatrix:Matrix;
+    private var _modelviewMatrix3D:Matrix3D;
+    private var _projectionMatrix3D:Matrix3D;
+    private var _mvpMatrix3D:Matrix3D;
     
     // helper objects
-    private static var sMatrix3D : Matrix3D = new Matrix3D();
+    private static var sMatrix3D:Matrix3D = new Matrix3D();
     
     /** Creates a new render state with the default settings. */
     public function new()
@@ -104,14 +108,14 @@ class RenderState
     }
     
     /** Duplicates all properties of another instance on the current instance. */
-    public function copyFrom(renderState : RenderState) : Void
+    public function copyFrom(renderState:RenderState):Void
     {
         if (_onDrawRequired != null) 
         {
-            var currentTarget : TextureBase = (_renderTarget != null) ? _renderTarget.base : null;
-            var nextTarget : TextureBase = (renderState._renderTarget) ? renderState._renderTarget.base : null;
-            var clipRectChanges : Bool = _clipRect || (renderState._clipRect) ? 
-            !RectangleUtil.compare(_clipRect, renderState._clipRect) : false;
+            var currentTarget:TextureBase = (_renderTarget != null) ? _renderTarget.base:null;
+            var nextTarget:TextureBase = (renderState._renderTarget != null) ? renderState._renderTarget.base:null;
+            var clipRectChanges:Bool = _clipRect != null || (renderState._clipRect != null) ? 
+            !RectangleUtil.compare(_clipRect, renderState._clipRect):false;
             
             if (_blendMode != renderState._blendMode || _culling != renderState._culling ||
                 currentTarget != nextTarget || clipRectChanges) 
@@ -128,16 +132,16 @@ class RenderState
         _modelviewMatrix.copyFrom(renderState._modelviewMatrix);
         _projectionMatrix3D.copyFrom(renderState._projectionMatrix3D);
         
-        if (_modelviewMatrix3D != null || renderState._modelviewMatrix3D) 
+        if (_modelviewMatrix3D != null || renderState._modelviewMatrix3D != null) 
             this.modelviewMatrix3D = renderState._modelviewMatrix3D;
         
-        if (_clipRect != null || renderState._clipRect) 
+        if (_clipRect != null || renderState._clipRect != null) 
             this.clipRect = renderState._clipRect;
     }
     
     /** Resets the RenderState to the default settings.
      *  (Check each property documentation for its default value.) */
-    public function reset() : Void
+    public function reset():Void
     {
         this.alpha = 1.0;
         this.blendMode = BlendMode.NORMAL;
@@ -158,7 +162,7 @@ class RenderState
     // matrix methods / properties
     
     /** Prepends the given matrix to the 2D modelview matrix. */
-    public function transformModelviewMatrix(matrix : Matrix) : Void
+    public function transformModelviewMatrix(matrix:Matrix):Void
     {
         MatrixUtil.prependMatrix(_modelviewMatrix, matrix);
     }
@@ -167,7 +171,7 @@ class RenderState
      *  The current contents of the 2D modelview matrix is stored in the 3D modelview matrix
      *  before doing so; the 2D modelview matrix is then reset to the identity matrix.
      */
-    public function transformModelviewMatrix3D(matrix : Matrix3D) : Void
+    public function transformModelviewMatrix3D(matrix:Matrix3D):Void
     {
         if (_modelviewMatrix3D == null) 
             _modelviewMatrix3D = Pool.getMatrix3D();
@@ -190,9 +194,9 @@ class RenderState
      *  <p>If you pass only the first 4 parameters, the camera will be set up above the center
      *  of the stage, with a field of view of 1.0 rad.</p>
      */
-    public function setProjectionMatrix(x : Float, y : Float, width : Float, height : Float,
-            stageWidth : Float = 0, stageHeight : Float = 0,
-            cameraPos : Vector3D = null) : Void
+    public function setProjectionMatrix(x:Float, y:Float, width:Float, height:Float,
+            stageWidth:Float = 0, stageHeight:Float = 0,
+            cameraPos:Vector3D = null):Void
     {
         MatrixUtil.createPerspectiveProjectionMatrix(
                 x, y, width, height, stageWidth, stageHeight, cameraPos, _projectionMatrix3D);
@@ -201,7 +205,7 @@ class RenderState
     /** Changes the modelview matrices (2D and, if available, 3D) to identity matrices.
      *  An object transformed an identity matrix performs no transformation.
      */
-    public function setModelviewMatricesToIdentity() : Void
+    public function setModelviewMatricesToIdentity():Void
     {
         _modelviewMatrix.identity();
         if (_modelviewMatrix3D != null)             _modelviewMatrix3D.identity();
@@ -210,18 +214,24 @@ class RenderState
     /** Returns the current 2D modelview matrix.
      *  CAUTION: Use with care! Each call returns the same instance.
      *  @default identity matrix */
-    private function get_modelviewMatrix() : Matrix{return _modelviewMatrix;
+    private function get_modelviewMatrix():Matrix
+	{
+		return _modelviewMatrix;
     }
-    private function set_modelviewMatrix(value : Matrix) : Matrix{_modelviewMatrix.copyFrom(value);
+	
+    private function set_modelviewMatrix(value:Matrix):Matrix{_modelviewMatrix.copyFrom(value);
         return value;
     }
     
     /** Returns the current 3D modelview matrix, if there have been 3D transformations.
      *  CAUTION: Use with care! Each call returns the same instance.
      *  @default null */
-    private function get_modelviewMatrix3D() : Matrix3D{return _modelviewMatrix3D;
+    private function get_modelviewMatrix3D():Matrix3D
+	{
+		return _modelviewMatrix3D;
     }
-    private function set_modelviewMatrix3D(value : Matrix3D) : Matrix3D
+	
+    private function set_modelviewMatrix3D(value:Matrix3D):Matrix3D
     {
         if (value != null) 
         {
@@ -240,15 +250,18 @@ class RenderState
      *  to set it up in an intuitive way.
      *  CAUTION: Use with care! Each call returns the same instance.
      *  @default identity matrix */
-    private function get_projectionMatrix3D() : Matrix3D{return _projectionMatrix3D;
+    private function get_projectionMatrix3D():Matrix3D
+	{
+		return _projectionMatrix3D;
     }
-    private function set_projectionMatrix3D(value : Matrix3D) : Matrix3D{_projectionMatrix3D.copyFrom(value);
+	
+    private function set_projectionMatrix3D(value:Matrix3D):Matrix3D{_projectionMatrix3D.copyFrom(value);
         return value;
     }
     
     /** Calculates the product of modelview and projection matrix and stores it in a 3D matrix.
      *  CAUTION: Use with care! Each call returns the same instance. */
-    private function get_mvpMatrix3D() : Matrix3D
+    private function get_mvpMatrix3D():Matrix3D
     {
         _mvpMatrix3D.copyFrom(_projectionMatrix3D);
         if (_modelviewMatrix3D != null)             _mvpMatrix3D.prepend(_modelviewMatrix3D);
@@ -267,12 +280,12 @@ class RenderState
      *                    This parameter affects only texture targets. Note that at the time
      *                    of this writing, AIR supports anti-aliasing only on Desktop.
      */
-    public function setRenderTarget(target : Texture, enableDepthAndStencil : Bool = true,
-            antiAlias : Int = 0) : Void
+    public function setRenderTarget(target:Texture, enableDepthAndStencil:Bool = true,
+            antiAlias:Int = 0):Void
     {
-        var currentTarget : TextureBase = (_renderTarget != null) ? _renderTarget.base : null;
-        var newTarget : TextureBase = (target != null) ? target.base : null;
-        var newOptions : Int = Int(enableDepthAndStencil) | antiAlias << 4;
+        var currentTarget:TextureBase = (_renderTarget != null) ? _renderTarget.base:null;
+        var newTarget:TextureBase = (target != null) ? target.base:null;
+        var newOptions:Int = cast(enableDepthAndStencil, Int) | antiAlias << 4;
         
         if (currentTarget != newTarget || _renderTargetOptions != newOptions) 
         {
@@ -289,9 +302,10 @@ class RenderState
      *  this already includes the current object! The value is the product of current object's
      *  alpha value and all its parents. @default 1.0
      */
-    private function get_alpha() : Float{return _alpha;
+    private function get_alpha():Float {
+		return _alpha;
     }
-    private function set_alpha(value : Float) : Float{_alpha = value;
+    private function set_alpha(value:Float):Float{_alpha = value;
         return value;
     }
     
@@ -301,9 +315,10 @@ class RenderState
      *  @default BlendMode.NORMAL
      *  @see starling.display.BlendMode
      */
-    private function get_blendMode() : String{return _blendMode;
+    private function get_blendMode():String {
+		return _blendMode;
     }
-    private function set_blendMode(value : String) : String
+    private function set_blendMode(value:String):String
     {
         if (value != BlendMode.AUTO && _blendMode != value) 
         {
@@ -316,26 +331,29 @@ class RenderState
     /** The texture that is currently being rendered into, or <code>null</code>
      *  to render into the back buffer. On assignment, calls <code>setRenderTarget</code>
      *  with its default parameters. */
-    private function get_renderTarget() : Texture{return _renderTarget;
+    private function get_renderTarget():Texture {
+		return _renderTarget;
     }
-    private function set_renderTarget(value : Texture) : Texture{setRenderTarget(value);
+    private function set_renderTarget(value:Texture):Texture {
+		setRenderTarget(value);
         return value;
     }
     
     /** @private */
     @:allow(starling.rendering)
-    private function get_renderTargetBase() : TextureBase
+    private function get_renderTargetBase():TextureBase
     {
-        return (_renderTarget != null) ? _renderTarget.base : null;
+        return (_renderTarget != null) ? _renderTarget.base:null;
     }
     
     /** Sets the triangle culling mode. Allows to exclude triangles from rendering based on
      *  their orientation relative to the view plane.
      *  @default Context3DTriangleFace.NONE
      */
-    private function get_culling() : String{return _culling;
+    private function get_culling():Context3DTriangleFace {
+		return _culling;
     }
-    private function set_culling(value : String) : String
+    private function set_culling(value:Context3DTriangleFace):Context3DTriangleFace
     {
         if (_culling != value) 
         {
@@ -351,9 +369,10 @@ class RenderState
      *
      *  @default null
      */
-    private function get_clipRect() : Rectangle{return _clipRect;
+    private function get_clipRect():Rectangle {
+		return _clipRect;
     }
-    private function set_clipRect(value : Rectangle) : Rectangle
+    private function set_clipRect(value:Rectangle):Rectangle
     {
         if (!RectangleUtil.compare(_clipRect, value)) 
         {
@@ -374,21 +393,22 @@ class RenderState
     
     /** The anti-alias setting used when setting the current render target
      *  via <code>setRenderTarget</code>. */
-    private function get_renderTargetAntiAlias() : Int
+    private function get_renderTargetAntiAlias():Int
     {
         return _renderTargetOptions >> 4;
     }
     
     /** Indicates if the render target (set via <code>setRenderTarget</code>)
      *  has its depth and stencil buffers enabled. */
-    private function get_renderTargetSupportsDepthAndStencil() : Bool
+    private function get_renderTargetSupportsDepthAndStencil():Bool
     {
         return (_renderTargetOptions & 0xf) != 0;
     }
     
     /** Indicates if there have been any 3D transformations.
      *  Returns <code>true</code> if the 3D modelview matrix contains a value. */
-    private function get_is3D() : Bool{return _modelviewMatrix3D != null;
+    private function get_is3D():Bool {
+		return _modelviewMatrix3D != null;
     }
     
     /** @private
@@ -397,10 +417,12 @@ class RenderState
      *  This is the case if blend mode, render target, culling or clipping rectangle
      *  are changing. */
     @:allow(starling.rendering)
-    private function get_onDrawRequired() : Function{return _onDrawRequired;
+    private function get_onDrawRequired():Void -> Void {
+		return _onDrawRequired;
     }
     @:allow(starling.rendering)
-    private function set_onDrawRequired(value : Function) : Function{_onDrawRequired = value;
+    private function set_onDrawRequired(value:Void -> Void):Void -> Void {
+		_onDrawRequired = value;
         return value;
     }
 }

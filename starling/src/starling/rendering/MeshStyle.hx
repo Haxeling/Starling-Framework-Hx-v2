@@ -10,6 +10,7 @@
 
 package starling.rendering;
 
+import haxe.Constraints.Function;
 import starling.rendering.RenderState;
 import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
@@ -17,7 +18,6 @@ import starling.rendering.VertexDataFormat;
 import flash.geom.Matrix;
 import flash.geom.Point;
 
-import starling.core.StarlingInternal;
 import starling.display.Mesh;
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -95,27 +95,27 @@ import starling.textures.TextureSmoothing;
  */
 class MeshStyle extends EventDispatcher
 {
-    private var vertexData(get, never) : VertexData;
-    private var indexData(get, never) : IndexData;
-    public var type(get, never) : Class<Dynamic>;
-    public var color(get, set) : Int;
-    public var vertexFormat(get, never) : VertexDataFormat;
-    public var texture(get, set) : Texture;
-    public var textureSmoothing(get, set) : String;
-    public var target(get, never) : Mesh;
+    private var vertexData(get, never):VertexData;
+    private var indexData(get, never):IndexData;
+    public var type(get, never):Class<Dynamic>;
+    public var color(get, set):Int;
+    public var vertexFormat(get, never):VertexDataFormat;
+    public var texture(get, set):Texture;
+    public var textureSmoothing(get, set):String;
+    public var target(get, never):Mesh;
 
     /** The vertex format expected by this style (the same as found in the MeshEffect-class). */
-    public static var VERTEX_FORMAT : VertexDataFormat = MeshEffect.VERTEX_FORMAT;
+    public static var VERTEX_FORMAT:VertexDataFormat = MeshEffect.VERTEX_FORMAT;
     
-    private var _type : Class<Dynamic>;
-    private var _target : Mesh;
-    private var _texture : Texture;
-    private var _textureSmoothing : String;
-    private var _vertexData : VertexData;  // just a reference to the target's vertex data  
-    private var _indexData : IndexData;  // just a reference to the target's index data  
+    private var _type:Class<Dynamic>;
+    private var _target:Mesh;
+    private var _texture:Texture;
+    private var _textureSmoothing:String;
+    private var _vertexData:VertexData;  // just a reference to the target's vertex data  
+    private var _indexData:IndexData;  // just a reference to the target's index data  
     
     // helper objects
-    private static var sPoint : Point = new Point();
+    private static var sPoint:Point = new Point();
     
     /** Creates a new MeshStyle instance.
      *  Subclasses must provide a constructor that can be called without any arguments. */
@@ -123,13 +123,13 @@ class MeshStyle extends EventDispatcher
     {
         super();
         _textureSmoothing = TextureSmoothing.BILINEAR;
-        _type = Type.getClass(cast((this), Object).constructor);
+        _type = Type.getClass(this);
     }
     
     /** Copies all properties of the given style to the current instance (or a subset, if the
      *  classes don't match). Must be overridden by all subclasses!
      */
-    public function copyFrom(meshStyle : MeshStyle) : Void
+    public function copyFrom(meshStyle:MeshStyle):Void
     {
         _texture = meshStyle._texture;
         _textureSmoothing = meshStyle._textureSmoothing;
@@ -137,9 +137,9 @@ class MeshStyle extends EventDispatcher
     
     /** Creates a clone of this instance. The method will work for subclasses automatically,
      *  no need to override it. */
-    public function clone() : MeshStyle
+    public function clone():MeshStyle
     {
-        var clone : MeshStyle = Type.createInstance(_type, []);
+        var clone:MeshStyle = Type.createInstance(_type, []);
         clone.copyFrom(this);
         return clone;
     }
@@ -147,7 +147,7 @@ class MeshStyle extends EventDispatcher
     /** Creates the effect that does the actual, low-level rendering.
      *  To be overridden by subclasses!
      */
-    public function createEffect() : MeshEffect
+    public function createEffect():MeshEffect
     {
         return new MeshEffect();
     }
@@ -158,7 +158,7 @@ class MeshStyle extends EventDispatcher
      *
      *  <p>To be overridden by subclasses!</p>
      */
-    public function updateEffect(effect : MeshEffect, state : RenderState) : Void
+    public function updateEffect(effect:MeshEffect, state:RenderState):Void
     {
         effect.texture = _texture;
         effect.textureSmoothing = _textureSmoothing;
@@ -171,11 +171,11 @@ class MeshStyle extends EventDispatcher
      *  The base implementation just checks if the styles are of the same type
      *  and if the textures are compatible.
      */
-    public function canBatchWith(meshStyle : MeshStyle) : Bool
+    public function canBatchWith(meshStyle:MeshStyle):Bool
     {
         if (_type == meshStyle._type) 
         {
-            var newTexture : Texture = meshStyle._texture;
+            var newTexture:Texture = meshStyle._texture;
             
             if (_texture == null && newTexture == null)                 return true
             else if (_texture != null && newTexture != null) 
@@ -194,8 +194,8 @@ class MeshStyle extends EventDispatcher
      *  subclass of <code>Mesh</code>). Subclasses may override this method if they need
      *  to modify the vertex data in that process.</p>
      */
-    public function batchVertexData(targetStyle : MeshStyle, targetVertexID : Int = 0,
-            matrix : Matrix = null, vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function batchVertexData(targetStyle:MeshStyle, targetVertexID:Int = 0,
+            matrix:Matrix = null, vertexID:Int = 0, numVertices:Int = -1):Void
     {
         _vertexData.copyTo(targetStyle._vertexData, targetVertexID, matrix, vertexID, numVertices);
     }
@@ -208,27 +208,27 @@ class MeshStyle extends EventDispatcher
      *  subclass of <code>Mesh</code>). Subclasses may override this method if they need
      *  to modify the index data in that process.</p>
      */
-    public function batchIndexData(targetStyle : MeshStyle, targetIndexID : Int = 0, offset : Int = 0,
-            indexID : Int = 0, numIndices : Int = -1) : Void
+    public function batchIndexData(targetStyle:MeshStyle, targetIndexID:Int = 0, offset:Int = 0,
+            indexID:Int = 0, numIndices:Int = -1):Void
     {
         _indexData.copyTo(targetStyle._indexData, targetIndexID, offset, indexID, numIndices);
     }
     
     /** Call this method if the target needs to be redrawn.
      *  The call is simply forwarded to the mesh. */
-    private function setRequiresRedraw() : Void
+    private function setRequiresRedraw():Void
     {
         if (_target != null)             _target.setRequiresRedraw();
     }
     
     /** Called when assigning a target mesh. Override to plug in class-specific logic. */
-    private function onTargetAssigned(target : Mesh) : Void
+    private function onTargetAssigned(target:Mesh):Void
     {
     }
     
     // enter frame event
     
-    override public function addEventListener(type : String, listener : Function) : Void
+    override public function addEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null) 
             _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -236,7 +236,7 @@ class MeshStyle extends EventDispatcher
         super.addEventListener(type, listener);
     }
     
-    override public function removeEventListener(type : String, listener : Function) : Void
+    override public function removeEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null) 
             _target.removeEventListener(type, onEnterFrame);
@@ -244,7 +244,7 @@ class MeshStyle extends EventDispatcher
         super.removeEventListener(type, listener);
     }
     
-    private function onEnterFrame(event : Event) : Void
+    private function onEnterFrame(event:Event):Void
     {
         dispatchEvent(event);
     }
@@ -252,8 +252,8 @@ class MeshStyle extends EventDispatcher
     // internal methods
     
     /** @private */
-    private function setTarget(target : Mesh = null, vertexData : VertexData = null,
-            indexData : IndexData = null) : Void
+	@:allow(starling)
+    private function setTarget(target:Mesh=null, vertexData:VertexData=null, indexData:IndexData=null):Void
     {
         if (_target != target) 
         {
@@ -277,40 +277,40 @@ class MeshStyle extends EventDispatcher
     // vertex manipulation
     
     /** Returns the alpha value of the vertex at the specified index. */
-    public function getVertexAlpha(vertexID : Int) : Float
+    public function getVertexAlpha(vertexID:Int):Float
     {
         return _vertexData.getAlpha(vertexID);
     }
     
     /** Sets the alpha value of the vertex at the specified index to a certain value. */
-    public function setVertexAlpha(vertexID : Int, alpha : Float) : Void
+    public function setVertexAlpha(vertexID:Int, alpha:Float):Void
     {
         _vertexData.setAlpha(vertexID, "color", alpha);
         setRequiresRedraw();
     }
     
     /** Returns the RGB color of the vertex at the specified index. */
-    public function getVertexColor(vertexID : Int) : Int
+    public function getVertexColor(vertexID:Int):Int
     {
         return _vertexData.getColor(vertexID);
     }
     
     /** Sets the RGB color of the vertex at the specified index to a certain value. */
-    public function setVertexColor(vertexID : Int, color : Int) : Void
+    public function setVertexColor(vertexID:Int, color:Int):Void
     {
         _vertexData.setColor(vertexID, "color", color);
         setRequiresRedraw();
     }
     
     /** Returns the texture coordinates of the vertex at the specified index. */
-    public function getTexCoords(vertexID : Int, out : Point = null) : Point
+    public function getTexCoords(vertexID:Int, out:Point = null):Point
     {
         if (_texture != null)             return _texture.getTexCoords(_vertexData, vertexID, "texCoords", out)
         else return _vertexData.getPoint(vertexID, "texCoords", out);
     }
     
     /** Sets the texture coordinates of the vertex at the specified index to the given values. */
-    public function setTexCoords(vertexID : Int, u : Float, v : Float) : Void
+    public function setTexCoords(vertexID:Int, u:Float, v:Float):Void
     {
         if (_texture != null)             _texture.setTexCoords(_vertexData, vertexID, "texCoords", u, v)
         else _vertexData.setPoint(vertexID, "texCoords", u, v);
@@ -323,31 +323,37 @@ class MeshStyle extends EventDispatcher
     /** Returns a reference to the vertex data of the assigned target (or <code>null</code>
      *  if there is no target). Beware: the style itself does not own any vertices;
      *  it is limited to manipulating those of the target mesh. */
-    private function get_vertexData() : VertexData{return _vertexData;
+    private function get_vertexData():VertexData
+	{
+		return _vertexData;
     }
     
     /** Returns a reference to the index data of the assigned target (or <code>null</code>
      *  if there is no target). Beware: the style itself does not own any indices;
      *  it is limited to manipulating those of the target mesh. */
-    private function get_indexData() : IndexData{return _indexData;
+    private function get_indexData():IndexData
+	{
+		return _indexData;
     }
     
     /** The actual class of this style. */
-    private function get_type() : Class<Dynamic>{return _type;
+    private function get_type():Class<Dynamic>
+	{
+		return _type;
     }
     
     /** Changes the color of all vertices to the same value.
      *  The getter simply returns the color of the first vertex. */
-    private function get_color() : Int
+    private function get_color():Int
     {
-        if (_vertexData.numVertices > 0)             return _vertexData.getColor(0)
+        if (_vertexData.numVertices > 0) return _vertexData.getColor(0)
         else return 0x0;
     }
     
-    private function set_color(value : Int) : Int
+    private function set_color(value:Int):Int
     {
-        var i : Int;
-        var numVertices : Int = _vertexData.numVertices;
+        var i:Int;
+        var numVertices:Int = _vertexData.numVertices;
         
         for (i in 0...numVertices){_vertexData.setColor(i, "color", value);
         }
@@ -357,22 +363,25 @@ class MeshStyle extends EventDispatcher
     }
     
     /** The format used to store the vertices. */
-    private function get_vertexFormat() : VertexDataFormat
+    private function get_vertexFormat():VertexDataFormat
     {
         return VERTEX_FORMAT;
     }
     
     /** The texture that is mapped to the mesh (or <code>null</code>, if there is none). */
-    private function get_texture() : Texture{return _texture;
+    private function get_texture():Texture
+	{
+		return _texture;
     }
-    private function set_texture(value : Texture) : Texture
+	
+    private function set_texture(value:Texture):Texture
     {
         if (value != _texture) 
         {
             if (value != null) 
             {
-                var i : Int;
-                var numVertices : Int = (_vertexData != null) ? _vertexData.numVertices : 0;
+                var i:Int;
+                var numVertices:Int = (_vertexData != null) ? _vertexData.numVertices:0;
                 
                 for (i in 0...numVertices){
                     getTexCoords(i, sPoint);
@@ -387,9 +396,12 @@ class MeshStyle extends EventDispatcher
     }
     
     /** The smoothing filter that is used for the texture. @default bilinear */
-    private function get_textureSmoothing() : String{return _textureSmoothing;
+    private function get_textureSmoothing():String
+	{
+		return _textureSmoothing;
     }
-    private function set_textureSmoothing(value : String) : String
+	
+    private function set_textureSmoothing(value:String):String
     {
         if (value != _textureSmoothing) 
         {
@@ -400,7 +412,9 @@ class MeshStyle extends EventDispatcher
     }
     
     /** The target the style is currently assigned to. */
-    private function get_target() : Mesh{return _target;
+    private function get_target():Mesh
+	{
+		return _target;
     }
 }
 

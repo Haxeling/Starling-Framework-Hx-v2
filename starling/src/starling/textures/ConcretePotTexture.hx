@@ -10,11 +10,13 @@
 
 package starling.textures;
 
+import flash.display3D.Context3DTextureFormat;
 import flash.errors.ArgumentError;
+import haxe.Constraints.Function;
 import starling.textures.ConcreteTexture;
 
 import flash.display.BitmapData;
-import flash.display3d.textures.TextureBase;
+import flash.display3D.textures.TextureBase;
 import flash.events.Event;
 import flash.geom.Matrix;
 import flash.geom.Point;
@@ -31,20 +33,20 @@ import starling.utils.Execute;
  *  For internal use only. */
 class ConcretePotTexture extends ConcreteTexture
 {
-    private var potBase(get, never) : flash.display3d.textures.Texture;
+    private var potBase(get, never):flash.display3D.textures.Texture;
 
-    private var _textureReadyCallback : Function;
+    private var _textureReadyCallback:Function;
     
-    private static var sMatrix : Matrix = new Matrix();
-    private static var sRectangle : Rectangle = new Rectangle();
-    private static var sOrigin : Point = new Point();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sRectangle:Rectangle = new Rectangle();
+    private static var sOrigin:Point = new Point();
     
     /** Creates a new instance with the given parameters. */
     @:allow(starling.textures)
-    private function new(base : flash.display3d.textures.Texture, format : String,
-            width : Int, height : Int, mipMapping : Bool,
-            premultipliedAlpha : Bool,
-            optimizedForRenderTexture : Bool = false, scale : Float = 1)
+    private function new(base:flash.display3D.textures.Texture, format:Context3DTextureFormat,
+            width:Int, height:Int, mipMapping:Bool,
+            premultipliedAlpha:Bool,
+            optimizedForRenderTexture:Bool = false, scale:Float = 1)
     {
         super(base, format, width, height, mipMapping, premultipliedAlpha,
                 optimizedForRenderTexture, scale);
@@ -57,41 +59,41 @@ class ConcretePotTexture extends ConcreteTexture
     }
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
         super.dispose();
     }
     
     /** @inheritDoc */
-    override private function createBase() : TextureBase
+    override private function createBase():TextureBase
     {
-        return Starling.context.createTexture(
-                nativeWidth, nativeHeight, format, optimizedForRenderTexture);
+        return Starling.Context.createTexture(
+                untyped nativeWidth, untyped nativeHeight, format, optimizedForRenderTexture);
     }
     
     /** @inheritDoc */
-    override public function uploadBitmapData(data : BitmapData) : Void
+    override public function uploadBitmapData(data:BitmapData):Void
     {
         potBase.uploadFromBitmapData(data);
         
-        var buffer : BitmapData = null;
+        var buffer:BitmapData = null;
         
         if (data.width != nativeWidth || data.height != nativeHeight) 
         {
-            buffer = new BitmapData(nativeWidth, nativeHeight, true, 0);
+            buffer = new BitmapData(untyped nativeWidth, untyped nativeHeight, true, 0);
             buffer.copyPixels(data, data.rect, sOrigin);
             data = buffer;
         }
         
         if (mipMapping && data.width > 1 && data.height > 1) 
         {
-            var currentWidth : Int = data.width >> 1;
-            var currentHeight : Int = data.height >> 1;
-            var level : Int = 1;
-            var canvas : BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
-            var bounds : Rectangle = sRectangle;
-            var matrix : Matrix = sMatrix;
+            var currentWidth:Int = data.width >> 1;
+            var currentHeight:Int = data.height >> 1;
+            var level:Int = 1;
+            var canvas:BitmapData = new BitmapData(currentWidth, currentHeight, true, 0);
+            var bounds:Rectangle = sRectangle;
+            var matrix:Matrix = sMatrix;
             matrix.setTo(0.5, 0.0, 0.0, 0.5, 0.0, 0.0);
             
             while (currentWidth >= 1 || currentHeight >= 1)
@@ -114,13 +116,13 @@ class ConcretePotTexture extends ConcreteTexture
     }
     
     /** @inheritDoc */
-    override public function uploadAtfData(data : ByteArray, offset : Int = 0, async : Dynamic = null) : Void
+    override public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
     {
-        var isAsync : Bool = Std.is(async, Function) || async == true;
+        var isAsync:Bool = Std.is(async, Function) || async == true;
         
         if (Std.is(async, Function)) 
         {
-            _textureReadyCallback = try cast(async, Function) catch(e:Dynamic) null;
+            _textureReadyCallback = untyped async;
             base.addEventListener(Event.TEXTURE_READY, onTextureReady);
         }
         
@@ -128,14 +130,14 @@ class ConcretePotTexture extends ConcreteTexture
         setDataUploaded();
     }
     
-    private function onTextureReady(event : Event) : Void
+    private function onTextureReady(event:Event):Void
     {
         base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
-        execute(_textureReadyCallback, this);
+        Execute.call(_textureReadyCallback, [this]);
         _textureReadyCallback = null;
     }
     
-    private function get_potBase() : flash.display3d.textures.Texture
+    private function get_potBase():flash.display3D.textures.Texture
     {
         return try cast(base, flash.display3D.textures.Texture) catch(e:Dynamic) null;
     }

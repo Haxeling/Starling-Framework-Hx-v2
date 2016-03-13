@@ -66,30 +66,30 @@ import starling.utils.Rad2deg;
  */
 class Sprite3D extends DisplayObjectContainer
 {
-    public var z(get, set) : Float;
-    public var pivotZ(get, set) : Float;
-    public var scaleZ(get, set) : Float;
-    public var rotationX(get, set) : Float;
-    public var rotationY(get, set) : Float;
-    public var rotationZ(get, set) : Float;
+    public var z(get, set):Float;
+    public var pivotZ(get, set):Float;
+    public var scaleZ(get, set):Float;
+    public var rotationX(get, set):Float;
+    public var rotationY(get, set):Float;
+    public var rotationZ(get, set):Float;
 
-    private static inline var E : Float = 0.00001;
+    private static var E:Float = 0.00001;
     
-    private var _rotationX : Float;
-    private var _rotationY : Float;
-    private var _scaleZ : Float;
-    private var _pivotZ : Float;
-    private var _z : Float;
+    private var _rotationX:Float;
+    private var _rotationY:Float;
+    private var _scaleZ:Float;
+    private var _pivotZ:Float;
+    private var _z:Float;
     
-    private var _transformationMatrix : Matrix;
-    private var _transformationMatrix3D : Matrix3D;
-    private var _transformationChanged : Bool;
-    private var _is2D : Bool;
+    private var _transformationMatrix:Matrix;
+    private var _transformationMatrix3D:Matrix3D;
+    private var _transformationChanged:Bool;
+    private var _is2D:Bool;
     
     /** Helper objects. */
-    private static var sHelperPoint : Vector3D = new Vector3D();
-    private static var sHelperPointAlt : Vector3D = new Vector3D();
-    private static var sHelperMatrix : Matrix3D = new Matrix3D();
+    private static var sHelperPoint:Vector3D = new Vector3D();
+    private static var sHelperPointAlt:Vector3D = new Vector3D();
+    private static var sHelperMatrix:Matrix3D = new Matrix3D();
     
     /** Creates an empty Sprite3D. */
     public function new()
@@ -107,7 +107,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
         if (_is2D)             super.render(painter)
         else 
@@ -124,7 +124,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function hitTest(localPoint : Point) : DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (_is2D)             return super.hitTest(localPoint)
         else 
@@ -147,9 +147,9 @@ class Sprite3D extends DisplayObjectContainer
         }
     }
     
-    override public function setRequiresRedraw() : Void
+    override public function setRequiresRedraw():Void
     {
-        var was2D : Bool = _is2D;
+        var was2D:Bool = _is2D;
         
         _is2D = _z > -E && _z < E &&
                 _rotationX > -E && _rotationX < E &&
@@ -160,32 +160,32 @@ class Sprite3D extends DisplayObjectContainer
         super.setRequiresRedraw();
     }
     
-    override private function get_supportsRenderCache() : Bool
+    override private function get_supportsRenderCache():Bool
     {
         return _is2D && super.supportsRenderCache;
     }
     
     // helpers
     
-    private function onAddedChild(event : Event) : Void
+    private function onAddedChild(event:Event):Void
     {
         recursivelySetIs3D(try cast(event.target, DisplayObject) catch(e:Dynamic) null, true);
     }
     
-    private function onRemovedChild(event : Event) : Void
+    private function onRemovedChild(event:Event):Void
     {
         recursivelySetIs3D(try cast(event.target, DisplayObject) catch(e:Dynamic) null, false);
     }
     
-    private function recursivelySetIs3D(object : DisplayObject, value : Bool) : Void
+    private function recursivelySetIs3D(object:DisplayObject, value:Bool):Void
     {
         if (Std.is(object, Sprite3D)) 
             return;
         
         if (Std.is(object, DisplayObjectContainer)) 
         {
-            var container : DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
-            var numChildren : Int = container.numChildren;
+            var container:DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
+            var numChildren:Int = container.numChildren;
             
             for (i in 0...numChildren){recursivelySetIs3D(container.getChildAt(i), value);
             }
@@ -194,15 +194,15 @@ class Sprite3D extends DisplayObjectContainer
         object.setIs3D(value);
     }
     
-    private function updateMatrices() : Void
+    private function updateMatrices():Void
     {
-        var x : Float = this.x;
-        var y : Float = this.y;
-        var scaleX : Float = this.scaleX;
-        var scaleY : Float = this.scaleY;
-        var pivotX : Float = this.pivotX;
-        var pivotY : Float = this.pivotY;
-        var rotationZ : Float = this.rotation;
+        var x:Float = this.x;
+        var y:Float = this.y;
+        var scaleX:Float = this.scaleX;
+        var scaleY:Float = this.scaleY;
+        var pivotX:Float = this.pivotX;
+        var pivotY:Float = this.pivotY;
+        var rotationZ:Float = this.rotation;
         
         _transformationMatrix3D.identity();
         
@@ -228,7 +228,7 @@ class Sprite3D extends DisplayObjectContainer
     /** The 2D transformation matrix of the object relative to its parent — if it can be
      *  represented in such a matrix (the values of 'z', 'rotationX/Y', and 'pivotZ' are
      *  zero). Otherwise, the identity matrix. CAUTION: not a copy, but the actual object! */
-    override private function get_transformationMatrix() : Matrix
+    override private function get_transformationMatrix():Matrix
     {
         if (_transformationChanged) 
         {
@@ -239,7 +239,7 @@ class Sprite3D extends DisplayObjectContainer
         return _transformationMatrix;
     }
     
-    override private function set_transformationMatrix(value : Matrix) : Matrix
+    override private function set_transformationMatrix(value:Matrix):Matrix
     {
         super.transformationMatrix = value;
         _rotationX = _rotationY = _pivotZ = _z = 0;
@@ -249,7 +249,7 @@ class Sprite3D extends DisplayObjectContainer
     
     /**  The 3D transformation matrix of the object relative to its parent.
      *   CAUTION: not a copy, but the actual object! */
-    override private function get_transformationMatrix3D() : Matrix3D
+    override private function get_transformationMatrix3D():Matrix3D
     {
         if (_transformationChanged) 
         {
@@ -261,7 +261,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_x(value : Float) : Float
+    override private function set_x(value:Float):Float
     {
         super.x = value;
         _transformationChanged = true;
@@ -269,7 +269,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_y(value : Float) : Float
+    override private function set_y(value:Float):Float
     {
         super.y = value;
         _transformationChanged = true;
@@ -279,9 +279,12 @@ class Sprite3D extends DisplayObjectContainer
     /** The z coordinate of the object relative to the local coordinates of the parent.
      *  The z-axis points away from the camera, i.e. positive z-values will move the object further
      *  away from the viewer. */
-    private function get_z() : Float{return _z;
+    private function get_z():Float
+	{
+		return _z;
     }
-    private function set_z(value : Float) : Float
+	
+    private function set_z(value:Float):Float
     {
         _z = value;
         _transformationChanged = true;
@@ -290,7 +293,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_pivotX(value : Float) : Float
+    override private function set_pivotX(value:Float):Float
     {
         super.pivotX = value;
         _transformationChanged = true;
@@ -298,7 +301,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_pivotY(value : Float) : Float
+    override private function set_pivotY(value:Float):Float
     {
         super.pivotY = value;
         _transformationChanged = true;
@@ -306,9 +309,12 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** The z coordinate of the object's origin in its own coordinate space (default: 0). */
-    private function get_pivotZ() : Float{return _pivotZ;
+    private function get_pivotZ():Float
+	{
+		return _pivotZ;
     }
-    private function set_pivotZ(value : Float) : Float
+	
+    private function set_pivotZ(value:Float):Float
     {
         _pivotZ = value;
         _transformationChanged = true;
@@ -317,7 +323,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_scaleX(value : Float) : Float
+    override private function set_scaleX(value:Float):Float
     {
         super.scaleX = value;
         _transformationChanged = true;
@@ -325,7 +331,7 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_scaleY(value : Float) : Float
+    override private function set_scaleY(value:Float):Float
     {
         super.scaleY = value;
         _transformationChanged = true;
@@ -333,9 +339,12 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** The depth scale factor. '1' means no scale, negative values flip the object. */
-    private function get_scaleZ() : Float{return _scaleZ;
+    private function get_scaleZ():Float
+	{
+		return _scaleZ;
     }
-    private function set_scaleZ(value : Float) : Float
+	
+    private function set_scaleZ(value:Float):Float
     {
         _scaleZ = value;
         _transformationChanged = true;
@@ -344,14 +353,14 @@ class Sprite3D extends DisplayObjectContainer
     }
     
     /** @private */
-    override private function set_skewX(value : Float) : Float
+    override private function set_skewX(value:Float):Float
     {
         throw new Error("3D objects do not support skewing");
         return value;
     }
     
     /** @private */
-    override private function set_skewY(value : Float) : Float
+    override private function set_skewY(value:Float):Float
     {
         throw new Error("3D objects do not support skewing");
         return value;
@@ -359,7 +368,7 @@ class Sprite3D extends DisplayObjectContainer
     
     /** The rotation of the object about the z axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
-    override private function set_rotation(value : Float) : Float
+    override private function set_rotation(value:Float):Float
     {
         super.rotation = value;
         _transformationChanged = true;
@@ -368,9 +377,12 @@ class Sprite3D extends DisplayObjectContainer
     
     /** The rotation of the object about the x axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
-    private function get_rotationX() : Float{return _rotationX;
+    private function get_rotationX():Float
+	{
+		return _rotationX;
     }
-    private function set_rotationX(value : Float) : Float
+	
+    private function set_rotationX(value:Float):Float
     {
         _rotationX = MathUtil.normalizeAngle(value);
         _transformationChanged = true;
@@ -380,9 +392,12 @@ class Sprite3D extends DisplayObjectContainer
     
     /** The rotation of the object about the y axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
-    private function get_rotationY() : Float{return _rotationY;
+    private function get_rotationY():Float
+	{
+		return _rotationY;
     }
-    private function set_rotationY(value : Float) : Float
+	
+    private function set_rotationY(value:Float):Float
     {
         _rotationY = MathUtil.normalizeAngle(value);
         _transformationChanged = true;
@@ -392,9 +407,12 @@ class Sprite3D extends DisplayObjectContainer
     
     /** The rotation of the object about the z axis, in radians.
      *  (In Starling, all angles are measured in radians.) */
-    private function get_rotationZ() : Float{return rotation;
+    private function get_rotationZ():Float
+	{
+		return rotation;
     }
-    private function set_rotationZ(value : Float) : Float{rotation = value;
+	
+    private function set_rotationZ(value:Float):Float{rotation = value;
         return value;
     }
 }

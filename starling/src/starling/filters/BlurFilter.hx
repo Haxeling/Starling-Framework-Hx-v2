@@ -20,8 +20,8 @@ import starling.textures.Texture;
 /** The BlurFilter applies a Gaussian blur to an object. The strength of the blur can be
  *  set for x- and y-axis separately. */
 
-import flash.display3d.Context3D;
-import flash.display3d.Context3DProgramType;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DProgramType;
 
 import starling.rendering.Program;
 
@@ -30,11 +30,11 @@ import starling.utils.RenderUtil;
 
 class BlurFilter extends FragmentFilter
 {
-    public var blurX(get, set) : Float;
-    public var blurY(get, set) : Float;
+    public var blurX(get, set):Float;
+    public var blurY(get, set):Float;
 
-    private var _blurX : Float;
-    private var _blurY : Float;
+    private var _blurX:Float;
+    private var _blurY:Float;
     
     /** Create a new BlurFilter. For each blur direction, the number of required passes is
      *  <code>Math.ceil(blur)</code>.
@@ -46,7 +46,7 @@ class BlurFilter extends FragmentFilter
      *      <li>etc.</li>
      *  </ul>
      */
-    public function new(blurX : Float = 1.0, blurY : Float = 1.0)
+    public function new(blurX:Float = 1.0, blurY:Float = 1.0)
     {
         super();
         _blurX = blurX;
@@ -56,11 +56,11 @@ class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    override public function process(painter : Painter, pool : ITexturePool,
-            input0 : Texture = null, input1 : Texture = null,
-            input2 : Texture = null, input3 : Texture = null) : Texture
+    override public function process(painter:Painter, pool:ITexturePool,
+            input0:Texture = null, input1:Texture = null,
+            input2:Texture = null, input3:Texture = null):Texture
     {
-        var effect : BlurEffect = try cast(this.effect, BlurEffect) catch(e:Dynamic) null;
+        var effect:BlurEffect = try cast(this.effect, BlurEffect) catch(e:Dynamic) null;
         
         if (_blurX == 0 && _blurY == 0) 
         {
@@ -68,10 +68,10 @@ class BlurFilter extends FragmentFilter
             return super.process(painter, pool, input0);
         }
         
-        var blurX : Float = Math.abs(_blurX);
-        var blurY : Float = Math.abs(_blurY);
-        var outTexture : Texture = input0;
-        var inTexture : Texture;
+        var blurX:Float = Math.abs(_blurX);
+        var blurY:Float = Math.abs(_blurY);
+        var outTexture:Texture = input0;
+        var inTexture:Texture;
         
         effect.direction = BlurEffect.HORIZONTAL;
         
@@ -103,24 +103,27 @@ class BlurFilter extends FragmentFilter
     }
     
     /** @private */
-    override private function createEffect() : FilterEffect
+    override private function createEffect():FilterEffect
     {
         return new BlurEffect();
     }
     
-    private function updatePadding() : Void
+    private function updatePadding():Void
     {
-        var paddingX : Float = (_blurX != 0) ? Math.ceil(Math.abs(_blurX)) + 3 : 1;
-        var paddingY : Float = (_blurY != 0) ? Math.ceil(Math.abs(_blurY)) + 3 : 1;
+        var paddingX:Float = (_blurX != 0) ? Math.ceil(Math.abs(_blurX)) + 3:1;
+        var paddingY:Float = (_blurY != 0) ? Math.ceil(Math.abs(_blurY)) + 3:1;
         
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }
     
     /** The blur factor in x-direction.
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    private function get_blurX() : Float{return _blurX;
+    private function get_blurX():Float
+	{
+		return _blurX;
     }
-    private function set_blurX(value : Float) : Float
+	
+    private function set_blurX(value:Float):Float
     {
         _blurX = value;
         updatePadding();
@@ -129,9 +132,12 @@ class BlurFilter extends FragmentFilter
     
     /** The blur factor in y-direction.
      *  The number of required passes will be <code>Math.ceil(value)</code>. */
-    private function get_blurY() : Float{return _blurY;
+    private function get_blurY():Float
+	{
+		return _blurY;
     }
-    private function set_blurY(value : Float) : Float
+	
+    private function set_blurY(value:Float):Float
     {
         _blurY = value;
         updatePadding();
@@ -144,40 +150,40 @@ class BlurFilter extends FragmentFilter
 
 class BlurEffect extends FilterEffect
 {
-    public var direction(get, set) : String;
-    public var strength(get, set) : Float;
+    public var direction(get, set):String;
+    public var strength(get, set):Float;
 
-    public static inline var HORIZONTAL : String = "horizontal";
-    public static inline var VERTICAL : String = "vertical";
+    public static var HORIZONTAL:String = "horizontal";
+    public static var VERTICAL:String = "vertical";
     
-    private static inline var MAX_SIGMA : Float = 2.0;
+    private static var MAX_SIGMA:Float = 2.0;
     
-    private var _strength : Float;
-    private var _direction : String;
+    private var _strength:Float;
+    private var _direction:String;
     
-    private var _offsets : Array<Float> = [0, 0, 0, 0];
-    private var _weights : Array<Float> = [0, 0, 0, 0];
+    private var _offsets:Array<Float> = [0, 0, 0, 0];
+    private var _weights:Array<Float> = [0, 0, 0, 0];
     
     // helpers
-    private var sTmpWeights : Array<Float> = new Array<Float>();
+    private var sTmpWeights:Array<Float> = new Array<Float>();
     
     /** Creates a new BlurEffect.
      *
      *  @param direction     horizontal or vertical
      *  @param strength      range 0-1
      */
-    public function new(direction : String = "horizontal", strength : Float = 1)
+    public function new(direction:String = "horizontal", strength:Float = 1)
     {
         super();
         this.strength = strength;
         this.direction = direction;
     }
     
-    override private function createProgram() : Program
+    override private function createProgram():Program
     {
-        if (_strength == 0)             return super.createProgram();
+        if (_strength == 0) return super.createProgram();
         
-        var vertexShader : String = [
+        var vertexShader:String = [
                 "m44 op, va0, vc0     ",   // 4x4 matrix transform to output space  
                 "mov v0, va1          ",   // pos:  0 |  
                 "sub v1, va1, vc4.zwxx",   // pos: -2 |  
@@ -191,7 +197,7 @@ class BlurEffect extends FilterEffect
         // ft0-4 - pixel color from texture
         // ft5   - output color
         
-        var fragmentShader : String = [
+        var fragmentShader:String = [
                 tex("ft0", "v0", 0, texture),   // read center pixel  
                 "mul ft5, ft0, fc0.xxxx       ",   // multiply with center weight  
                 
@@ -214,7 +220,7 @@ class BlurEffect extends FilterEffect
         return Program.fromSource(vertexShader, fragmentShader);
     }
     
-    override private function beforeDraw(context : Context3D) : Void
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
         
@@ -227,12 +233,12 @@ class BlurEffect extends FilterEffect
         }
     }
     
-    override private function get_programVariantName() : Int
+    override private function get_programVariantName():Int
     {
-        return super.programVariantName | ((_strength != 0) ? 1 << 4 : 0);
+        return super.programVariantName | ((_strength != 0) ? 1 << 4:0);
     }
     
-    private function updateParameters() : Void
+    private function updateParameters():Void
     {
         // algorithm described here:
         // http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
@@ -241,8 +247,8 @@ class BlurEffect extends FilterEffect
         // shader. By making use of linear texture sampling, we can produce similar output
         // to what would be 9 look-ups.
         
-        var sigma : Float;
-        var pixelSize : Float;
+        var sigma:Float;
+        var pixelSize:Float;
         
         if (_direction == HORIZONTAL) 
         {
@@ -255,8 +261,8 @@ class BlurEffect extends FilterEffect
             pixelSize = 1.0 / texture.root.height;
         }
         
-        var twoSigmaSq : Float = 2 * sigma * sigma;
-        var multiplier : Float = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
+        var twoSigmaSq:Float = 2 * sigma * sigma;
+        var multiplier:Float = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
         
         // get weights on the exact pixels (sTmpWeights) and calculate sums (_weights)
         
@@ -269,8 +275,8 @@ class BlurEffect extends FilterEffect
         
         // normalize weights so that sum equals "1.0"
         
-        var weightSum : Float = _weights[0] + 2 * _weights[1] + 2 * _weights[2];
-        var invWeightSum : Float = 1.0 / weightSum;
+        var weightSum:Float = _weights[0] + 2 * _weights[1] + 2 * _weights[2];
+        var invWeightSum:Float = 1.0 / weightSum;
         
         _weights[0] *= invWeightSum;
         _weights[1] *= invWeightSum;
@@ -278,8 +284,8 @@ class BlurEffect extends FilterEffect
         
         // calculate intermediate offsets
         
-        var offset1 : Float = (pixelSize * sTmpWeights[1] + 2 * pixelSize * sTmpWeights[2]) / _weights[1];
-        var offset2 : Float = (3 * pixelSize * sTmpWeights[3] + 4 * pixelSize * sTmpWeights[4]) / _weights[2];
+        var offset1:Float = (pixelSize * sTmpWeights[1] + 2 * pixelSize * sTmpWeights[2]) / _weights[1];
+        var offset2:Float = (3 * pixelSize * sTmpWeights[3] + 4 * pixelSize * sTmpWeights[4]) / _weights[2];
         
         // depending on pass, we move in x- or y-direction
         
@@ -299,20 +305,26 @@ class BlurEffect extends FilterEffect
         }
     }
     
-    private static function tex(resultReg : String, uvReg : String, sampler : Int, texture : Texture) : String
+    private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture):String
     {
         return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture);
     }
     
-    private function get_direction() : String{return _direction;
+    private function get_direction():String
+	{
+		return _direction;
     }
-    private function set_direction(value : String) : String{_direction = value;
+	
+    private function set_direction(value:String):String{_direction = value;
         return value;
     }
     
-    private function get_strength() : Float{return _strength;
+    private function get_strength():Float
+	{
+		return _strength;
     }
-    private function set_strength(value : Float) : Float
+	
+    private function set_strength(value:Float):Float
     {
         _strength = MathUtil.clamp(value, 0, 1);
         return value;

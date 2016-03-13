@@ -10,10 +10,11 @@
 
 package starling.rendering;
 
+import flash.display3D.Context3DVertexBufferFormat;
 import flash.errors.ArgumentError;
 import starling.rendering.VertexDataAttribute;
 
-import flash.display3d.VertexBuffer3D;
+import flash.display3D.VertexBuffer3D;
 import flash.utils.Dictionary;
 
 import starling.core.Starling;
@@ -46,18 +47,20 @@ import starling.utils.StringUtil;
  */
 class VertexDataFormat
 {
-    private var attributes(get, never) : Array<VertexDataAttribute>;
-    public var formatString(get, never) : String;
-    public var vertexSizeInBytes(get, never) : Int;
-    public var vertexSizeIn32Bits(get, never) : Int;
-    public var numAttributes(get, never) : Int;
+	@:allow(starling.rendering)
+    private var attributes(get, never):Array<VertexDataAttribute>;
+	
+    public var formatString(get, never):String;
+    public var vertexSizeInBytes(get, never):Int;
+    public var vertexSizeIn32Bits(get, never):Int;
+    public var numAttributes(get, never):Int;
 
-    private var _format : String;
-    private var _vertexSize : Int;
-    private var _attributes : Array<VertexDataAttribute>;
+    private var _format:String;
+    private var _vertexSize:Int;
+    private var _attributes:Array<VertexDataAttribute>;
     
     // format cache
-    private static var sFormats : Dictionary = new Dictionary();
+    private static var sFormats:Dictionary = new Dictionary();
     
     /** Don't use the constructor, but call <code>VertexDataFormat.fromString</code> instead.
      *  This allows for efficient format caching. */
@@ -93,15 +96,15 @@ class VertexDataFormat
      *        created or resized.</li>
      *  </ul>
      */
-    public static function fromString(format : String) : VertexDataFormat
+    public static function fromString(format:String):VertexDataFormat
     {
-        if (Lambda.has(sFormats, format))             return Reflect.field(sFormats, format)
+        if (Lambda.has(sFormats, format)) return Reflect.field(sFormats, format)
         else 
         {
-            var instance : VertexDataFormat = new VertexDataFormat();
+            var instance:VertexDataFormat = new VertexDataFormat();
             instance.parseFormat(format);
             
-            var normalizedFormat : String = instance._format;
+            var normalizedFormat:String = instance._format;
             
             if (Lambda.has(sFormats, normalizedFormat)) 
                 instance = Reflect.field(sFormats, normalizedFormat);
@@ -116,46 +119,46 @@ class VertexDataFormat
     // query methods
     
     /** Returns the size of a certain vertex attribute in bytes. */
-    public function getSizeInBytes(attrName : String) : Int
+    public function getSizeInBytes(attrName:String):Int
     {
         return getAttribute(attrName).size;
     }
     
     /** Returns the size of a certain vertex attribute in 32 bit units. */
-    public function getSizeIn32Bits(attrName : String) : Int
+    public function getSizeIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).size / 4;
+        return untyped getAttribute(attrName).size / 4;
     }
     
     /** Returns the offset (in bytes) of an attribute within a vertex. */
-    public function getOffsetInBytes(attrName : String) : Int
+    public function getOffsetInBytes(attrName:String):Int
     {
         return getAttribute(attrName).offset;
     }
     
     /** Returns the offset (in 32 bit units) of an attribute within a vertex. */
-    public function getOffsetIn32Bits(attrName : String) : Int
+    public function getOffsetIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).offset / 4;
+        return untyped getAttribute(attrName).offset / 4;
     }
     
     /** Returns the format of a certain vertex attribute, identified by its name.
      *  Typical values: <code>float1, float2, float3, float4, bytes4</code>. */
-    public function getFormat(attrName : String) : String
+    public function getFormat(attrName:String):Context3DVertexBufferFormat
     {
         return getAttribute(attrName).format;
     }
     
     /** Returns the name of the attribute at the given position within the vertex format. */
-    public function getName(attrIndex : Int) : String
+    public function getName(attrIndex:Int):String
     {
         return _attributes[attrIndex].name;
     }
     
     /** Indicates if the format contains an attribute with the given name. */
-    public function hasAttribute(attrName : String) : Bool
+    public function hasAttribute(attrName:String):Bool
     {
-        var numAttributes : Int = _attributes.length;
+        var numAttributes:Int = _attributes.length;
         
         for (i in 0...numAttributes){if (_attributes[i].name == attrName)                 return true;
         }
@@ -169,44 +172,44 @@ class VertexDataFormat
      *  program input. This wraps the <code>Context3D</code>-method with the same name,
      *  automatically replacing <code>attrName</code> with the corresponding values for
      *  <code>bufferOffset</code> and <code>format</code>. */
-    public function setVertexBufferAt(index : Int, buffer : VertexBuffer3D, attrName : String) : Void
+    public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, attrName:String):Void
     {
-        var attribute : VertexDataAttribute = getAttribute(attrName);
-        Starling.context.setVertexBufferAt(index, buffer, attribute.offset / 4, attribute.format);
+        var attribute:VertexDataAttribute = getAttribute(attrName);
+        Starling.Context.setVertexBufferAt(index, buffer, untyped attribute.offset / 4, attribute.format);
     }
     
     // parsing
     
-    private function parseFormat(format : String) : Void
+    private function parseFormat(format:String):Void
     {
         if (format != null && format != "") 
         {
-            _attributes.length = 0;
+            _attributes.splice(0, _attributes.length);
             _format = "";
             
-            var parts : Array<Dynamic> = format.split(",");
-            var numParts : Int = parts.length;
-            var offset : Int = 0;
+            var parts:Array<Dynamic> = format.split(",");
+            var numParts:Int = parts.length;
+            var offset:Int = 0;
             
             for (i in 0...numParts){
-                var attrDesc : String = parts[i];
-                var attrParts : Array<Dynamic> = attrDesc.split(":");
+                var attrDesc:String = parts[i];
+                var attrParts:Array<Dynamic> = attrDesc.split(":");
                 
                 if (attrParts.length != 2) 
                     throw new ArgumentError("Missing colon: " + attrDesc);
                 
-                var attrName : String = StringTools.trim(attrParts[0]);
-                var attrFormat : String = StringTools.trim(attrParts[1]);
+                var attrName:String = StringTools.trim(attrParts[0]);
+                var attrFormat:String = StringTools.trim(attrParts[1]);
                 
                 if (attrName.length == 0 || attrFormat.length == 0) 
                     throw new ArgumentError(("Invalid format string: " + attrDesc));
                 
-                var attribute : VertexDataAttribute = 
+                var attribute:VertexDataAttribute = 
                 new VertexDataAttribute(attrName, attrFormat, offset);
                 
                 offset += attribute.size;
                 
-                _format += (i == (0) ? "" : ", ") + attribute.name + ":" + attribute.format;
+                _format += (i == (0) ? "":", ") + attribute.name + ":" + attribute.format;
                 _attributes[_attributes.length] = attribute;
             }
             
@@ -219,7 +222,7 @@ class VertexDataFormat
     }
     
     /** Returns the normalized format string. */
-    public function toString() : String
+    public function toString():String
     {
         return _format;
     }
@@ -228,11 +231,11 @@ class VertexDataFormat
     
     /** @private */
     @:allow(starling.rendering)
-    private function getAttribute(attrName : String) : VertexDataAttribute
+    private function getAttribute(attrName:String):VertexDataAttribute
     {
-        var i : Int;
-        var attribute : VertexDataAttribute;
-        var numAttributes : Int = _attributes.length;
+        var i:Int;
+        var attribute:VertexDataAttribute;
+        var numAttributes:Int = _attributes.length;
         
         for (i in 0...numAttributes){
             attribute = _attributes[i];
@@ -244,7 +247,7 @@ class VertexDataFormat
     
     /** @private */
     @:allow(starling.rendering)
-    private function get_attributes() : Array<VertexDataAttribute>
+    private function get_attributes():Array<VertexDataAttribute>
     {
         return _attributes;
     }
@@ -252,25 +255,25 @@ class VertexDataFormat
     // properties
     
     /** Returns the normalized format string. */
-    private function get_formatString() : String
+    private function get_formatString():String
     {
         return _format;
     }
     
     /** The size (in bytes) of each vertex. */
-    private function get_vertexSizeInBytes() : Int
+    private function get_vertexSizeInBytes():Int
     {
         return _vertexSize;
     }
     
     /** The size (in 32 bit units) of each vertex. */
-    private function get_vertexSizeIn32Bits() : Int
+    private function get_vertexSizeIn32Bits():Int
     {
-        return _vertexSize / 4;
+        return untyped _vertexSize / 4;
     }
     
     /** The number of attributes per vertex. */
-    private function get_numAttributes() : Int
+    private function get_numAttributes():Int
     {
         return _attributes.length;
     }

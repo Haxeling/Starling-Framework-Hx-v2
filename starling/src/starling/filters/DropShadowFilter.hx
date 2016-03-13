@@ -22,20 +22,20 @@ import starling.utils.Padding;
  */
 class DropShadowFilter extends FragmentFilter
 {
-    public var color(get, set) : Int;
-    public var alpha(get, set) : Float;
-    public var distance(get, set) : Float;
-    public var angle(get, set) : Float;
-    public var blur(get, set) : Float;
+    public var color(get, set):Int;
+    public var alpha(get, set):Float;
+    public var distance(get, set):Float;
+    public var angle(get, set):Float;
+    public var blur(get, set):Float;
 
-    private var _blurFilter : BlurFilter;
-    private var _compositeFilter : CompositeFilter;
-    private var _distance : Float;
-    private var _angle : Float;
+    private var _blurFilter:BlurFilter;
+    private var _compositeFilter:CompositeFilter;
+    private var _distance:Float;
+    private var _angle:Float;
     
     /** Creates a new DropShadowFilter instance with the specified parameters. */
-    public function new(distance : Float = 4.0, angle : Float = 0.785,
-            color : Int = 0x0, alpha : Float = 0.5, blur : Float = 1.0)
+    public function new(distance:Float = 4.0, angle:Float = 0.785,
+            color:Int = 0x0, alpha:Float = 0.5, blur:Float = 1.0)
     {
         super();
         _compositeFilter = new CompositeFilter();
@@ -50,7 +50,7 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _blurFilter.dispose();
         _compositeFilter.dispose();
@@ -59,28 +59,28 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** @private */
-    override public function process(painter : Painter, pool : ITexturePool,
-            input0 : Texture = null, input1 : Texture = null,
-            input2 : Texture = null, input3 : Texture = null) : Texture
+    override public function process(painter:Painter, pool:ITexturePool,
+            input0:Texture = null, input1:Texture = null,
+            input2:Texture = null, input3:Texture = null):Texture
     {
-        var shadow : Texture = _blurFilter.process(painter, pool, input0);
-        var result : Texture = _compositeFilter.process(painter, pool, shadow, input0);
+        var shadow:Texture = _blurFilter.process(painter, pool, input0);
+        var result:Texture = _compositeFilter.process(painter, pool, shadow, input0);
         pool.putTexture(shadow);
         return result;
     }
     
-    private function updatePadding() : Void
+    private function updatePadding():Void
     {
-        var offsetX : Float = Math.cos(_angle) * _distance;
-        var offsetY : Float = Math.sin(_angle) * _distance;
+        var offsetX:Float = Math.cos(_angle) * _distance;
+        var offsetY:Float = Math.sin(_angle) * _distance;
         
         _compositeFilter.setOffsetAt(0, offsetX, offsetY);
         
-        var blurPadding : Padding = _blurFilter.padding;
-        var left : Float = blurPadding.left;
-        var right : Float = blurPadding.right;
-        var top : Float = blurPadding.top;
-        var bottom : Float = blurPadding.bottom;
+        var blurPadding:Padding = _blurFilter.padding;
+        var left:Float = blurPadding.left;
+        var right:Float = blurPadding.right;
+        var top:Float = blurPadding.top;
+        var bottom:Float = blurPadding.bottom;
         
         if (offsetX > 0)             right += offsetX
         else left -= offsetX;
@@ -91,9 +91,12 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** The color of the shadow. @default 0x0 */
-    private function get_color() : Int{return _compositeFilter.getColorAt(0);
+    private function get_color():Int
+	{
+		return _compositeFilter.getColorAt(0);
     }
-    private function set_color(value : Int) : Int
+	
+    private function set_color(value:Int):Int
     {
         if (color != value) 
         {
@@ -104,9 +107,12 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** The alpha value of the shadow. @default 0.5 */
-    private function get_alpha() : Float{return _compositeFilter.getAlphaAt(0);
+    private function get_alpha():Float
+	{
+		return _compositeFilter.getAlphaAt(0);
     }
-    private function set_alpha(value : Float) : Float
+	
+    private function set_alpha(value:Float):Float
     {
         if (alpha != value) 
         {
@@ -117,9 +123,12 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** The offset distance for the shadow, in points. @default 4.0 */
-    private function get_distance() : Float{return _distance;
+    private function get_distance():Float
+	{
+		return _distance;
     }
-    private function set_distance(value : Float) : Float
+	
+    private function set_distance(value:Float):Float
     {
         if (_distance != value) 
         {
@@ -130,9 +139,12 @@ class DropShadowFilter extends FragmentFilter
     }
     
     /** The angle with which the shadow is offset, in radians. @default Math.PI / 4 */
-    private function get_angle() : Float{return _angle;
+    private function get_angle():Float
+	{
+		return _angle;
     }
-    private function set_angle(value : Float) : Float
+	
+    private function set_angle(value:Float):Float
     {
         if (_angle != value) 
         {
@@ -145,9 +157,12 @@ class DropShadowFilter extends FragmentFilter
     /** The amount of blur with which the shadow is created.
      *  The number of required passes will be <code>Math.ceil(value) × 2</code>.
      *  @default 1.0 */
-    private function get_blur() : Float{return _blurFilter.blurX;
+    private function get_blur():Float
+	{
+		return _blurFilter.blurX;
     }
-    private function set_blur(value : Float) : Float
+	
+    private function set_blur(value:Float):Float
     {
         if (blur != value) 
         {

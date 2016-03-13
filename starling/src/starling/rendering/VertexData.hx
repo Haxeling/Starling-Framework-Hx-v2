@@ -10,12 +10,14 @@
 
 package starling.rendering;
 
+import flash.display3D.Context3DBufferUsage;
+import flash.display3D.Context3DVertexBufferFormat;
 import flash.errors.ArgumentError;
 import starling.rendering.VertexDataAttribute;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3d.Context3D;
-import flash.display3d.VertexBuffer3D;
+import flash.display3D.Context3D;
+import flash.display3D.VertexBuffer3D;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix;
 import flash.geom.Matrix3D;
@@ -92,31 +94,31 @@ import starling.utils.StringUtil;
  */
 class VertexData
 {
-    public var premultipliedAlpha(get, set) : Bool;
-    public var numVertices(get, set) : Int;
-    public var rawData(get, never) : ByteArray;
-    public var format(get, set) : VertexDataFormat;
-    public var formatString(get, never) : String;
-    public var vertexSizeInBytes(get, never) : Int;
-    public var vertexSizeIn32Bits(get, never) : Int;
-    public var sizeInBytes(get, never) : Int;
-    public var sizeIn32Bits(get, never) : Int;
+    public var premultipliedAlpha(get, set):Bool;
+    public var numVertices(get, set):Int;
+    public var rawData(get, never):ByteArray;
+    public var format(get, set):VertexDataFormat;
+    public var formatString(get, never):String;
+    public var vertexSizeInBytes(get, never):Int;
+    public var vertexSizeIn32Bits(get, never):Int;
+    public var sizeInBytes(get, never):Int;
+    public var sizeIn32Bits(get, never):Int;
 
-    private var _rawData : ByteArray;
-    private var _numVertices : Int;
-    private var _format : VertexDataFormat;
-    private var _attributes : Array<VertexDataAttribute>;
-    private var _numAttributes : Int;
-    private var _premultipliedAlpha : Bool;
+    private var _rawData:ByteArray;
+    private var _numVertices:Int;
+    private var _format:VertexDataFormat;
+    private var _attributes:Array<VertexDataAttribute>;
+    private var _numAttributes:Int;
+    private var _premultipliedAlpha:Bool;
     
-    private var _posOffset : Int;  // in bytes  
-    private var _colOffset : Int;  // in bytes  
-    private var _vertexSize : Int;  // in bytes  
+    private var _posOffset:Int;  // in bytes  
+    private var _colOffset:Int;  // in bytes  
+    private var _vertexSize:Int;  // in bytes  
     
     // helper objects
-    private static var sHelperPoint : Point = new Point();
-    private static var sHelperPoint3D : Vector3D = new Vector3D();
-    private static var sBytes : ByteArray = new ByteArray();
+    private static var sHelperPoint:Point = new Point();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
+    private static var sBytes:ByteArray = new ByteArray();
     
     /** Creates an empty VertexData object with the given format and initial capacity.
      *
@@ -142,7 +144,7 @@ class VertexData
      *  <p>Thus, be sure to always make a generous educated guess, depending on the planned
      *  usage of your VertexData instances.</p>
      */
-    public function new(format : Dynamic = null, initialCapacity : Int = 32)
+    public function new(format:Dynamic = null, initialCapacity:Int = 32)
     {
         if (format == null)             _format = MeshStyle.VERTEX_FORMAT
         else if (Std.is(format, VertexDataFormat))             _format = format
@@ -151,8 +153,8 @@ class VertexData
         
         _attributes = _format.attributes;
         _numAttributes = _attributes.length;
-        _posOffset = (_format.hasAttribute("position")) ? _format.getOffsetInBytes("position") : 0;
-        _colOffset = (_format.hasAttribute("color")) ? _format.getOffsetInBytes("color") : 0;
+        _posOffset = (_format.hasAttribute("position")) ? _format.getOffsetInBytes("position"):0;
+        _colOffset = (_format.hasAttribute("color")) ? _format.getOffsetInBytes("color"):0;
         _vertexSize = _format.vertexSizeInBytes;
         _numVertices = 0;
         _premultipliedAlpha = true;
@@ -163,16 +165,16 @@ class VertexData
     }
     
     /** Explicitly frees up the memory used by the ByteArray. */
-    public function clear() : Void
+    public function clear():Void
     {
         _rawData.clear();
         _numVertices = 0;
     }
     
     /** Creates a duplicate of the vertex data object. */
-    public function clone() : VertexData
+    public function clone():VertexData
     {
-        var clone : VertexData = new VertexData(_format, _numVertices);
+        var clone:VertexData = new VertexData(_format, _numVertices);
         clone._rawData.writeBytes(_rawData);
         clone._numVertices = _numVertices;
         clone._premultipliedAlpha = _premultipliedAlpha;
@@ -195,8 +197,8 @@ class VertexData
      *  Beware, though, that the copy-operation becomes much more expensive when the formats
      *  differ.</p>
      */
-    public function copyTo(target : VertexData, targetVertexID : Int = 0, matrix : Matrix = null,
-            vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function copyTo(target:VertexData, targetVertexID:Int = 0, matrix:Matrix = null,
+            vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
@@ -204,23 +206,19 @@ class VertexData
         if (_format == target._format) 
         {
             if (target._numVertices < targetVertexID + numVertices) 
-                target._numVertices = targetVertexID + numVertices  // and then overwrite only the transformed positions.    // In this case, it's fastest to copy the complete range in one call  ;
-            
-            
-            
-            
-            
-            
-            var targetRawData : ByteArray = target._rawData;
+                target._numVertices = targetVertexID + numVertices;
+			
+			// and then overwrite only the transformed positions.    // In this case, it's fastest to copy the complete range in one call  ;
+            var targetRawData:ByteArray = target._rawData;
             targetRawData.position = targetVertexID * _vertexSize;
             targetRawData.writeBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
             
             if (matrix != null) 
             {
-                var x : Float;
-                var y : Float;
-                var position : Int = targetVertexID * _vertexSize + _posOffset;
-                var endPosition : Int = position + (numVertices * _vertexSize);
+                var x:Float;
+                var y:Float;
+                var position:Int = targetVertexID * _vertexSize + _posOffset;
+                var endPosition:Int = position + (numVertices * _vertexSize);
                 
                 while (position < endPosition)
                 {
@@ -239,11 +237,12 @@ class VertexData
         else 
         {
             if (target._numVertices < targetVertexID + numVertices) 
-                target.numVertices = targetVertexID + numVertices  // ensure correct alphas!  ;
-            
+                target.numVertices = targetVertexID + numVertices;
+			
+			// ensure correct alphas!
             for (i in 0..._numAttributes){
-                var srcAttr : VertexDataAttribute = _attributes[i];
-                var tgtAttr : VertexDataAttribute = target.getAttribute(srcAttr.name);
+                var srcAttr:VertexDataAttribute = _attributes[i];
+                var tgtAttr:VertexDataAttribute = target.getAttribute(srcAttr.name);
                 
                 if (tgtAttr != null)   // only copy attributes that exist in the target, as well  
                 {
@@ -267,11 +266,11 @@ class VertexData
      *  that matrix before storing it in the target object. It must consist of two float
      *  values.</p>
      */
-    public function copyAttributeTo(target : VertexData, targetVertexID : Int, attrName : String,
-            matrix : Matrix = null, vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function copyAttributeTo(target:VertexData, targetVertexID:Int, attrName:String,
+            matrix:Matrix = null, vertexID:Int = 0, numVertices:Int = -1):Void
     {
-        var sourceAttribute : VertexDataAttribute = getAttribute(attrName);
-        var targetAttribute : VertexDataAttribute = target.getAttribute(attrName);
+        var sourceAttribute:VertexDataAttribute = getAttribute(attrName);
+        var targetAttribute:VertexDataAttribute = target.getAttribute(attrName);
         
         if (sourceAttribute == null) 
             throw new ArgumentError("Attribute '" + attrName + "' not found in source data");
@@ -284,9 +283,9 @@ class VertexData
     }
     
     private function copyAttributeTo_internal(
-            target : VertexData, targetVertexID : Int, matrix : Matrix,
-            sourceAttribute : VertexDataAttribute, targetAttribute : VertexDataAttribute,
-            vertexID : Int, numVertices : Int) : Void
+            target:VertexData, targetVertexID:Int, matrix:Matrix,
+            sourceAttribute:VertexDataAttribute, targetAttribute:VertexDataAttribute,
+            vertexID:Int, numVertices:Int):Void
     {
         if (sourceAttribute.format != targetAttribute.format) 
             throw new IllegalOperationError("Attribute formats differ between source and target");
@@ -297,15 +296,15 @@ class VertexData
         if (target._numVertices < targetVertexID + numVertices) 
             target._numVertices = targetVertexID + numVertices;
         
-        var i : Int;
-        var j : Int;
-        var x : Float;
-        var y : Float;
-        var sourceData : ByteArray = _rawData;
-        var targetData : ByteArray = target._rawData;
-        var sourceDelta : Int = _vertexSize - sourceAttribute.size;
-        var targetDelta : Int = target._vertexSize - targetAttribute.size;
-        var attributeSizeIn32Bits : Int = sourceAttribute.size / 4;
+        var i:Int;
+        var j:Int;
+        var x:Float;
+        var y:Float;
+        var sourceData:ByteArray = _rawData;
+        var targetData:ByteArray = target._rawData;
+        var sourceDelta:Int = _vertexSize - sourceAttribute.size;
+        var targetDelta:Int = target._vertexSize - targetAttribute.size;
+        var attributeSizeIn32Bits:Int = untyped sourceAttribute.size / 4;
         
         sourceData.position = vertexID * _vertexSize + sourceAttribute.offset;
         targetData.position = targetVertexID * target._vertexSize + targetAttribute.offset;
@@ -338,7 +337,7 @@ class VertexData
     /** Optimizes the ByteArray so that it has exactly the required capacity, without
      *  wasting any memory. If your VertexData object grows larger than the initial capacity
      *  you passed to the constructor, call this method to avoid the 4k memory problem. */
-    public function trim() : Void
+    public function trim():Void
     {
         sBytes.length = _rawData.length;
         sBytes.position = 0;
@@ -353,23 +352,25 @@ class VertexData
     
     /** Returns a string representation of the VertexData object,
      *  describing both its format and size. */
-    public function toString() : String
+    public function toString():String
     {
-        return StringTools.format("[VertexData format=\"{0}\" numVertices={1}]",
-                _format.formatString, _numVertices);
+        return StringTools.format(
+			"[VertexData format=\"{0}\" numVertices={1}]",
+            [_format.formatString, _numVertices]
+		);
     }
     
     // read / write attributes
     
     /** Reads a float value from the specified vertex and attribute. */
-    public function getFloat(vertexID : Int, attrName : String) : Float
+    public function getFloat(vertexID:Int, attrName:String):Float
     {
         _rawData.position = vertexID * _vertexSize + getAttribute(attrName).offset;
         return _rawData.readFloat();
     }
     
     /** Writes a float value to the specified vertex and attribute. */
-    public function setFloat(vertexID : Int, attrName : String, value : Float) : Void
+    public function setFloat(vertexID:Int, attrName:String, value:Float):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
@@ -379,11 +380,11 @@ class VertexData
     }
     
     /** Reads a Point from the specified vertex and attribute. */
-    public function getPoint(vertexID : Int, attrName : String, out : Point = null) : Point
+    public function getPoint(vertexID:Int, attrName:String, out:Point = null):Point
     {
         if (out == null)             out = new Point();
         
-        var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
+        var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
         _rawData.position = vertexID * _vertexSize + offset;
         out.x = _rawData.readFloat();
         out.y = _rawData.readFloat();
@@ -392,12 +393,12 @@ class VertexData
     }
     
     /** Writes the given coordinates to the specified vertex and attribute. */
-    public function setPoint(vertexID : Int, attrName : String, x : Float, y : Float) : Void
+    public function setPoint(vertexID:Int, attrName:String, x:Float, y:Float):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
         
-        var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
+        var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
         _rawData.position = vertexID * _vertexSize + offset;
         _rawData.writeFloat(x);
         _rawData.writeFloat(y);
@@ -405,7 +406,7 @@ class VertexData
     
     /** Reads a Vector3D from the specified vertex and attribute.
      *  The 'w' property of the Vector3D is ignored. */
-    public function getPoint3D(vertexID : Int, attrName : String, out : Vector3D = null) : Vector3D
+    public function getPoint3D(vertexID:Int, attrName:String, out:Vector3D = null):Vector3D
     {
         if (out == null)             out = new Vector3D();
         
@@ -418,7 +419,7 @@ class VertexData
     }
     
     /** Writes the given coordinates to the specified vertex and attribute. */
-    public function setPoint3D(vertexID : Int, attrName : String, x : Float, y : Float, z : Float) : Void
+    public function setPoint3D(vertexID:Int, attrName:String, x:Float, y:Float, z:Float):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
@@ -431,7 +432,7 @@ class VertexData
     
     /** Reads a Vector3D from the specified vertex and attribute, including the fourth
      *  coordinate ('w'). */
-    public function getPoint4D(vertexID : Int, attrName : String, out : Vector3D = null) : Vector3D
+    public function getPoint4D(vertexID:Int, attrName:String, out:Vector3D = null):Vector3D
     {
         if (out == null)             out = new Vector3D();
         
@@ -445,8 +446,8 @@ class VertexData
     }
     
     /** Writes the given coordinates to the specified vertex and attribute. */
-    public function setPoint4D(vertexID : Int, attrName : String,
-            x : Float, y : Float, z : Float, w : Float = 1.0) : Void
+    public function setPoint4D(vertexID:Int, attrName:String,
+            x:Float, y:Float, z:Float, w:Float = 1.0):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
@@ -459,41 +460,41 @@ class VertexData
     }
     
     /** Reads an RGB color from the specified vertex and attribute (no alpha). */
-    public function getColor(vertexID : Int, attrName : String = "color") : Int
+    public function getColor(vertexID:Int, attrName:String = "color"):Int
     {
-        var offset : Int = attrName == ("color") ? _colOffset : getAttribute(attrName).offset;
+        var offset:Int = attrName == ("color") ? _colOffset:getAttribute(attrName).offset;
         _rawData.position = vertexID * _vertexSize + offset;
-        var rgba : Int = switchEndian(_rawData.readUnsignedInt());
+        var rgba:Int = switchEndian(_rawData.readUnsignedInt());
         if (_premultipliedAlpha)             rgba = unmultiplyAlpha(rgba);
         return (rgba >> 8) & 0xffffff;
     }
     
     /** Writes the RGB color to the specified vertex and attribute (alpha is not changed). */
-    public function setColor(vertexID : Int, attrName : String, color : Int) : Void
+    public function setColor(vertexID:Int, attrName:String, color:Int):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
         
-        var alpha : Float = getAlpha(vertexID, attrName);
+        var alpha:Float = getAlpha(vertexID, attrName);
         colorize(attrName, color, alpha, vertexID, 1);
     }
     
     /** Reads the alpha value from the specified vertex and attribute. */
-    public function getAlpha(vertexID : Int, attrName : String = "color") : Float
+    public function getAlpha(vertexID:Int, attrName:String = "color"):Float
     {
-        var offset : Int = attrName == ("color") ? _colOffset : getAttribute(attrName).offset;
+        var offset:Int = attrName == ("color") ? _colOffset:getAttribute(attrName).offset;
         _rawData.position = vertexID * _vertexSize + offset;
-        var rgba : Int = switchEndian(_rawData.readUnsignedInt());
+        var rgba:Int = switchEndian(_rawData.readUnsignedInt());
         return (rgba & 0xff) / 255.0;
     }
     
     /** Writes the given alpha value to the specified vertex and attribute (range 0-1). */
-    public function setAlpha(vertexID : Int, attrName : String, alpha : Float) : Void
+    public function setAlpha(vertexID:Int, attrName:String, alpha:Float):Void
     {
         if (_numVertices < vertexID + 1) 
             numVertices = vertexID + 1;
         
-        var color : Int = getColor(vertexID, attrName);
+        var color:Int = getColor(vertexID, attrName);
         colorize(attrName, color, alpha, vertexID, 1);
     }
     
@@ -504,8 +505,8 @@ class VertexData
      *  If you pass an 'out' Rectangle, the result will be stored in this rectangle
      *  instead of creating a new object. To use all vertices for the calculation, set
      *  'numVertices' to '-1'. */
-    public function getBounds(attrName : String = "position", matrix : Matrix = null,
-            vertexID : Int = 0, numVertices : Int = -1, out : Rectangle = null) : Rectangle
+    public function getBounds(attrName:String = "position", matrix:Matrix = null,
+            vertexID:Int = 0, numVertices:Int = -1, out:Rectangle = null):Rectangle
     {
         if (out == null)             out = new Rectangle();
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
@@ -523,15 +524,15 @@ class VertexData
         }
         else 
         {
-            var minX : Float = Float.MAX_VALUE;
-            var maxX : Float = -Float.MAX_VALUE;
-            var minY : Float = Float.MAX_VALUE;
-            var maxY : Float = -Float.MAX_VALUE;
-            var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
-            var position : Int = vertexID * _vertexSize + offset;
-            var x : Float;
-            var y : Float;
-            var i : Int;
+            var minX:Float = Math.POSITIVE_INFINITY;
+            var maxX:Float = Math.NEGATIVE_INFINITY;
+            var minY:Float = Math.POSITIVE_INFINITY;
+            var maxY:Float = Math.NEGATIVE_INFINITY;
+            var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
+            var position:Int = vertexID * _vertexSize + offset;
+            var x:Float;
+            var y:Float;
+            var i:Int;
             
             if (matrix == null) 
             {
@@ -578,9 +579,9 @@ class VertexData
      *  <p>If you pass an 'out' Rectangle, the result will be stored in this rectangle
      *  instead of creating a new object. To use all vertices for the calculation, set
      *  'numVertices' to '-1'.</p> */
-    public function getBoundsProjected(attrName : String, matrix : Matrix3D,
-            camPos : Vector3D, vertexID : Int = 0, numVertices : Int = -1,
-            out : Rectangle = null) : Rectangle
+    public function getBoundsProjected(attrName:String, matrix:Matrix3D,
+            camPos:Vector3D, vertexID:Int = 0, numVertices:Int = -1,
+            out:Rectangle = null):Rectangle
     {
         if (out == null)             out = new Rectangle();
         if (camPos == null)             throw new ArgumentError("camPos must not be null");
@@ -599,15 +600,15 @@ class VertexData
         }
         else 
         {
-            var minX : Float = Float.MAX_VALUE;
-            var maxX : Float = -Float.MAX_VALUE;
-            var minY : Float = Float.MAX_VALUE;
-            var maxY : Float = -Float.MAX_VALUE;
-            var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
-            var position : Int = vertexID * _vertexSize + offset;
-            var x : Float;
-            var y : Float;
-            var i : Int;
+            var minX:Float = Math.POSITIVE_INFINITY;
+            var maxX:Float = Math.NEGATIVE_INFINITY;
+            var minY:Float = Math.POSITIVE_INFINITY;
+            var maxY:Float = Math.NEGATIVE_INFINITY;
+            var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
+            var position:Int = vertexID * _vertexSize + offset;
+            var x:Float;
+            var y:Float;
+            var i:Int;
             
             for (i in 0...numVertices){
                 _rawData.position = position;
@@ -638,9 +639,12 @@ class VertexData
      *  Changing this value does <strong>not</strong> modify any existing color data.
      *  If you want that, use the <code>setPremultipliedAlpha</code> method instead.
      *  @default true */
-    private function get_premultipliedAlpha() : Bool{return _premultipliedAlpha;
+    private function get_premultipliedAlpha():Bool
+	{
+		return _premultipliedAlpha;
     }
-    private function set_premultipliedAlpha(value : Bool) : Bool
+	
+    private function set_premultipliedAlpha(value:Bool):Bool
     {
         setPremultipliedAlpha(value, false);
         return value;
@@ -648,22 +652,22 @@ class VertexData
     
     /** Changes the way alpha and color values are stored. Optionally updates all existing
      *  vertices. */
-    public function setPremultipliedAlpha(value : Bool, updateData : Bool) : Void
+    public function setPremultipliedAlpha(value:Bool, updateData:Bool):Void
     {
         if (updateData && value != _premultipliedAlpha) 
         {
             for (i in 0..._numAttributes){
-                var attribute : VertexDataAttribute = _attributes[i];
+                var attribute:VertexDataAttribute = _attributes[i];
                 if (attribute.isColor) 
                 {
-                    var offset : Int = attribute.offset;
-                    var oldColor : Int;
-                    var newColor : Int;
+                    var offset:Int = attribute.offset;
+                    var oldColor:Int;
+                    var newColor:Int;
                     
                     for (j in 0..._numVertices){
                         _rawData.position = offset;
                         oldColor = switchEndian(_rawData.readUnsignedInt());
-                        newColor = (value) ? premultiplyAlpha(oldColor) : unmultiplyAlpha(oldColor);
+                        newColor = (value) ? premultiplyAlpha(oldColor):unmultiplyAlpha(oldColor);
                         
                         _rawData.position = offset;
                         _rawData.writeUnsignedInt(switchEndian(newColor));
@@ -678,9 +682,9 @@ class VertexData
     }
     
     /** Indicates if any vertices have a non-white color or are not fully opaque. */
-    public function isTinted(attrName : String = "color") : Bool
+    public function isTinted(attrName:String = "color"):Bool
     {
-        var offset : Int = attrName == ("color") ? _colOffset : getAttribute(attrName).offset;
+        var offset:Int = attrName == ("color") ? _colOffset:getAttribute(attrName).offset;
         
         for (i in 0..._numVertices){
             _rawData.position = offset;
@@ -698,17 +702,17 @@ class VertexData
     
     /** Transforms the 2D positions of subsequent vertices by multiplication with a
      *  transformation matrix. */
-    public function transformPoints(attrName : String, matrix : Matrix,
-            vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function transformPoints(attrName:String, matrix:Matrix,
+            vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
         
-        var x : Float;
-        var y : Float;
-        var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
-        var position : Int = vertexID * _vertexSize + offset;
-        var endPosition : Int = position + (numVertices * _vertexSize);
+        var x:Float;
+        var y:Float;
+        var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
+        var position:Int = vertexID * _vertexSize + offset;
+        var endPosition:Int = position + (numVertices * _vertexSize);
         
         while (position < endPosition)
         {
@@ -725,17 +729,17 @@ class VertexData
     }
     
     /** Translates the 2D positions of subsequent vertices by a certain offset. */
-    public function translatePoints(attrName : String, deltaX : Float, deltaY : Float,
-            vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function translatePoints(attrName:String, deltaX:Float, deltaY:Float,
+            vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
         
-        var x : Float;
-        var y : Float;
-        var offset : Int = attrName == ("position") ? _posOffset : getAttribute(attrName).offset;
-        var position : Int = vertexID * _vertexSize + offset;
-        var endPosition : Int = position + (numVertices * _vertexSize);
+        var x:Float;
+        var y:Float;
+        var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
+        var position:Int = vertexID * _vertexSize + offset;
+        var endPosition:Int = position + (numVertices * _vertexSize);
         
         while (position < endPosition)
         {
@@ -752,19 +756,19 @@ class VertexData
     }
     
     /** Multiplies the alpha values of subsequent vertices by a certain factor. */
-    public function scaleAlphas(attrName : String, factor : Float,
-            vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function scaleAlphas(attrName:String, factor:Float,
+            vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (factor == 1.0)             return;
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
         
-        var i : Int;
-        var offset : Int = attrName == ("color") ? _colOffset : getAttribute(attrName).offset;
-        var colorPos : Int = vertexID * _vertexSize + offset;
-        var alphaPos : Int;
-        var alpha : Float;
-        var rgba : Int;
+        var i:Int;
+        var offset:Int = attrName == ("color") ? _colOffset:getAttribute(attrName).offset;
+        var colorPos:Int = vertexID * _vertexSize + offset;
+        var alphaPos:Int;
+        var alpha:Float;
+        var rgba:Int;
         
         for (i in 0...numVertices){
             alphaPos = colorPos + 3;
@@ -775,13 +779,13 @@ class VertexData
             
             if (alpha == 1.0 || !_premultipliedAlpha) 
             {
-                _rawData[alphaPos] = as3hx.Compat.parseInt(alpha * 255.0);
+                _rawData[alphaPos] = cast(alpha * 255.0, Int);
             }
             else 
             {
                 _rawData.position = colorPos;
                 rgba = unmultiplyAlpha(switchEndian(_rawData.readUnsignedInt()));
-                rgba = (rgba & 0xffffff00) | (as3hx.Compat.parseInt(alpha * 255.0) & 0xff);
+                rgba = (rgba & 0xffffff00) | (cast (alpha * 255.0, Int) & 0xff);
                 rgba = premultiplyAlpha(rgba);
                 
                 _rawData.position = colorPos;
@@ -793,20 +797,20 @@ class VertexData
     }
     
     /** Writes the given RGB and alpha values to the specified vertices. */
-    public function colorize(attrName : String, color : Int, alpha : Float = 1.0,
-            vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function colorize(attrName:String, color:Int, alpha:Float = 1.0,
+            vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
         
-        var offset : Int = attrName == ("color") ? _colOffset : getAttribute(attrName).offset;
-        var position : Int = vertexID * _vertexSize + offset;
-        var endPosition : Int = position + (numVertices * _vertexSize);
+        var offset:Int = attrName == ("color") ? _colOffset:getAttribute(attrName).offset;
+        var position:Int = vertexID * _vertexSize + offset;
+        var endPosition:Int = position + (numVertices * _vertexSize);
         
         if (alpha > 1.0)             alpha = 1.0
         else if (alpha < 0.0)             alpha = 0.0;
         
-        var rgba : Int = ((color << 8) & 0xffffff00) | (as3hx.Compat.parseInt(alpha * 255.0) & 0xff);
+        var rgba:Int = ((color << 8) & 0xffffff00) | (cast(alpha * 255.0, Int) & 0xff);
         if (_premultipliedAlpha && alpha != 1.0)             rgba = premultiplyAlpha(rgba);
         
         _rawData.position = vertexID * _vertexSize + offset;
@@ -824,37 +828,37 @@ class VertexData
     
     /** Returns the format of a certain vertex attribute, identified by its name.
       * Typical values: <code>float1, float2, float3, float4, bytes4</code>. */
-    public function getFormat(attrName : String) : String
+    public function getFormat(attrName:String):Context3DVertexBufferFormat
     {
         return getAttribute(attrName).format;
     }
     
     /** Returns the size of a certain vertex attribute in bytes. */
-    public function getSizeInBytes(attrName : String) : Int
+    public function getSizeInBytes(attrName:String):Int
     {
         return getAttribute(attrName).size;
     }
     
     /** Returns the size of a certain vertex attribute in 32 bit units. */
-    public function getSizeIn32Bits(attrName : String) : Int
+    public function getSizeIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).size / 4;
+        return untyped getAttribute(attrName).size / 4;
     }
     
     /** Returns the offset (in bytes) of an attribute within a vertex. */
-    public function getOffsetInBytes(attrName : String) : Int
+    public function getOffsetInBytes(attrName:String):Int
     {
         return getAttribute(attrName).offset;
     }
     
     /** Returns the offset (in 32 bit units) of an attribute within a vertex. */
-    public function getOffsetIn32Bits(attrName : String) : Int
+    public function getOffsetIn32Bits(attrName:String):Int
     {
-        return getAttribute(attrName).offset / 4;
+        return untyped getAttribute(attrName).offset / 4;
     }
     
     /** Indicates if the VertexData instances contains an attribute with the specified name. */
-    public function hasAttribute(attrName : String) : Bool
+    public function hasAttribute(attrName:String):Bool
     {
         return getAttribute(attrName) != null;
     }
@@ -863,22 +867,23 @@ class VertexData
     
     /** Creates a vertex buffer object with the right size to fit the complete data.
      *  Optionally, the current data is uploaded right away. */
-    public function createVertexBuffer(upload : Bool = false,
-            bufferUsage : String = "staticDraw") : VertexBuffer3D
+    public function createVertexBuffer(upload:Bool = false,
+            bufferUsage:Context3DBufferUsage = null):VertexBuffer3D
     {
-        var context : Context3D = Starling.context;
+		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
+        var context:Context3D = Starling.Context;
         if (context == null)             throw new MissingContextError();
         if (_numVertices == 0)             return null;
         
-        var buffer : VertexBuffer3D = context.createVertexBuffer(
-                _numVertices, _vertexSize / 4, bufferUsage);
+        var buffer:VertexBuffer3D = context.createVertexBuffer(
+                _numVertices, untyped _vertexSize / 4, bufferUsage);
         
         if (upload)             uploadToVertexBuffer(buffer);
         return buffer;
     }
     
     /** Uploads the complete data (or a section of it) to the given vertex buffer. */
-    public function uploadToVertexBuffer(buffer : VertexBuffer3D, vertexID : Int = 0, numVertices : Int = -1) : Void
+    public function uploadToVertexBuffer(buffer:VertexBuffer3D, vertexID:Int = 0, numVertices:Int = -1):Void
     {
         if (numVertices < 0 || vertexID + numVertices > _numVertices) 
             numVertices = _numVertices - vertexID;
@@ -889,14 +894,14 @@ class VertexData
     
     @:meta(Inline())
 
-    @:final private function getAttribute(attrName : String) : VertexDataAttribute
+    @:final private function getAttribute(attrName:String):VertexDataAttribute
     {
-        var i : Int;
-        var attribute : VertexDataAttribute;
+        var i:Int;
+        var attribute:VertexDataAttribute;
         
         for (i in 0..._numAttributes){
             attribute = _attributes[i];
-            if (attribute.name == attrName)                 return attribute;
+            if (attribute.name == attrName) return attribute;
         }
         
         return null;
@@ -904,7 +909,7 @@ class VertexData
     
     @:meta(Inline())
 
-    private static function switchEndian(value : Int) : Int
+    private static function switchEndian(value:Int):Int
     {
         return (value & 0xff) << 24 |
         ((value >> 8) & 0xff) << 16 |
@@ -912,17 +917,17 @@ class VertexData
         ((value >> 24) & 0xff);
     }
     
-    private static function premultiplyAlpha(rgba : Int) : Int
+    private static function premultiplyAlpha(rgba:Int):Int
     {
-        var alpha : Int = rgba & 0xff;
+        var alpha:Int = rgba & 0xff;
         
         if (alpha == 0xff)             return rgba
         else 
         {
-            var factor : Float = alpha / 255.0;
-            var r : Int = ((rgba >> 24) & 0xff) * factor;
-            var g : Int = ((rgba >> 16) & 0xff) * factor;
-            var b : Int = ((rgba >> 8) & 0xff) * factor;
+            var factor:Float = alpha / 255.0;
+            var r:Int = untyped ((rgba >> 24) & 0xff) * factor;
+            var g:Int = untyped ((rgba >> 16) & 0xff) * factor;
+            var b:Int = untyped ((rgba >> 8) & 0xff) * factor;
             
             return (r & 0xff) << 24 |
             (g & 0xff) << 16 |
@@ -930,17 +935,17 @@ class VertexData
         }
     }
     
-    private static function unmultiplyAlpha(rgba : Int) : Int
+    private static function unmultiplyAlpha(rgba:Int):Int
     {
-        var alpha : Int = rgba & 0xff;
+        var alpha:Int = rgba & 0xff;
         
         if (alpha == 0xff || alpha == 0x0)             return rgba
         else 
         {
-            var factor : Float = alpha / 255.0;
-            var r : Int = ((rgba >> 24) & 0xff) / factor;
-            var g : Int = ((rgba >> 16) & 0xff) / factor;
-            var b : Int = ((rgba >> 8) & 0xff) / factor;
+            var factor:Float = alpha / 255.0;
+            var r:Int = untyped ((rgba >> 24) & 0xff) / factor;
+            var g:Int = untyped ((rgba >> 16) & 0xff) / factor;
+            var b:Int = untyped ((rgba >> 8) & 0xff) / factor;
             
             return (r & 0xff) << 24 |
             (g & 0xff) << 16 |
@@ -952,20 +957,23 @@ class VertexData
     
     /** The total number of vertices. If you make the object bigger, it will be filled up with
      *  <code>1.0</code> for all alpha values and zero for everything else. */
-    private function get_numVertices() : Int{return _numVertices;
+    private function get_numVertices():Int
+	{
+		return _numVertices;
     }
-    private function set_numVertices(value : Int) : Int
+	
+    private function set_numVertices(value:Int):Int
     {
-        if (_numVertices == value)             return;
+        if (_numVertices == value) return value;
         
         _rawData.length = value * _vertexSize;
         
         for (i in 0..._numAttributes){
-            var attribute : VertexDataAttribute = _attributes[i];
+            var attribute:VertexDataAttribute = _attributes[i];
             if (attribute.isColor) 
             {
                 // alpha values of all color-properties must be initialized with "1.0"
-                var offset : Int = attribute.offset + 3;
+                var offset:Int = attribute.offset + 3;
                 for (j in _numVertices...value){_rawData[j * _vertexSize + offset] = 0xff;
                 }
             }
@@ -976,7 +984,7 @@ class VertexData
     }
     
     /** The raw vertex data; not a copy! */
-    private function get_rawData() : ByteArray
+    private function get_rawData():ByteArray
     {
         return _rawData;
     }
@@ -987,26 +995,26 @@ class VertexData
      *  New properties will be filled up with zeros (except for colors, which will be
      *  initialized with an alpha value of 1.0). As a side-effect, the instance will also
      *  be trimmed. */
-    private function get_format() : VertexDataFormat
+    private function get_format():VertexDataFormat
     {
         return _format;
     }
     
-    private function set_format(value : VertexDataFormat) : VertexDataFormat
+    private function set_format(value:VertexDataFormat):VertexDataFormat
     {
-        if (_format == value)             return;
+        if (_format == value) return value;
         
-        var a : Int;
-        var i : Int;
-        var srcVertexSize : Int = _format.vertexSizeInBytes;
-        var tgtVertexSize : Int = value.vertexSizeInBytes;
-        var numAttributes : Int = value.numAttributes;
+        var a:Int;
+        var i:Int;
+        var srcVertexSize:Int = _format.vertexSizeInBytes;
+        var tgtVertexSize:Int = value.vertexSizeInBytes;
+        var numAttributes:Int = value.numAttributes;
         
         sBytes.length = value.vertexSizeInBytes * _numVertices;
         
         for (a in 0...numAttributes){
-            var tgtAttr : VertexDataAttribute = value.attributes[a];
-            var srcAttr : VertexDataAttribute = getAttribute(tgtAttr.name);
+            var tgtAttr:VertexDataAttribute = value.attributes[a];
+            var srcAttr:VertexDataAttribute = getAttribute(tgtAttr.name);
             
             if (srcAttr != null)   // copy attributes that exist in both targets  
             {
@@ -1017,7 +1025,7 @@ class VertexData
             }
             else if (tgtAttr.isColor)   // initialize color values with an alpha of "1.0"  
             {
-                var offset : Int = tgtAttr.offset + 3;
+                var offset:Int = tgtAttr.offset + 3;
                 for (i in 0..._numVertices){sBytes[tgtVertexSize * i + offset] = 0xff;
                 }
             }
@@ -1032,39 +1040,39 @@ class VertexData
         _attributes = _format.attributes;
         _numAttributes = _attributes.length;
         _vertexSize = _format.vertexSizeInBytes;
-        _posOffset = (_format.hasAttribute("position")) ? _format.getOffsetInBytes("position") : 0;
-        _colOffset = (_format.hasAttribute("color")) ? _format.getOffsetInBytes("color") : 0;
+        _posOffset = (_format.hasAttribute("position")) ? _format.getOffsetInBytes("position"):0;
+        _colOffset = (_format.hasAttribute("color")) ? _format.getOffsetInBytes("color"):0;
         return value;
     }
     
     /** The format string that describes the attributes of each vertex. */
-    private function get_formatString() : String
+    private function get_formatString():String
     {
         return _format.formatString;
     }
     
     /** The size (in bytes) of each vertex. */
-    private function get_vertexSizeInBytes() : Int
+    private function get_vertexSizeInBytes():Int
     {
         return _vertexSize;
     }
     
     /** The size (in 32 bit units) of each vertex. */
-    private function get_vertexSizeIn32Bits() : Int
+    private function get_vertexSizeIn32Bits():Int
     {
-        return _vertexSize / 4;
+        return untyped _vertexSize / 4;
     }
     
     /** The size (in bytes) of the raw vertex data. */
-    private function get_sizeInBytes() : Int
+    private function get_sizeInBytes():Int
     {
         return _numVertices * _vertexSize;
     }
     
     /** The size (in 32 bit units) of the raw vertex data. */
-    private function get_sizeIn32Bits() : Int
+    private function get_sizeIn32Bits():Int
     {
-        return _numVertices * _vertexSize / 4;
+        return untyped _numVertices * _vertexSize / 4;
     }
 }
 

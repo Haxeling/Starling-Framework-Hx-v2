@@ -10,19 +10,20 @@
 
 package starling.utils;
 
+import flash.display3D.Context3DProfile;
 import flash.errors.ArgumentError;
 import flash.errors.Error;
+import haxe.Timer;
 
 import flash.display.Stage3D;
-import flash.display3d.Context3D;
-import flash.display3d.Context3DMipFilter;
-import flash.display3d.Context3DRenderMode;
-import flash.display3d.Context3DTextureFilter;
-import flash.display3d.Context3DTextureFormat;
-import flash.display3d.Context3DWrapMode;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DMipFilter;
+import flash.display3D.Context3DRenderMode;
+import flash.display3D.Context3DTextureFilter;
+import flash.display3D.Context3DTextureFormat;
+import flash.display3D.Context3DWrapMode;
 import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.utils.SetTimeout;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -32,6 +33,10 @@ import starling.textures.TextureSmoothing;
 /** A utility class containing methods related to Stage3D and rendering in general. */
 class RenderUtil
 {
+	static private var profiles;
+	static private var currentProfile:Context3DProfile;
+	static private var stage3D:Stage3D;
+	static private var renderMode:Context3DRenderMode;
     /** @private */
     public function new()
     {
@@ -39,9 +44,9 @@ class RenderUtil
     }
     
     /** Clears the render context with a certain color and alpha value. */
-    public static function clear(rgb : Int = 0, alpha : Float = 0.0) : Void
+    public static function clear(rgb:Int = 0, alpha:Float = 0.0):Void
     {
-        Starling.context.clear(
+        Starling.Context.clear(
                 Color.getRed(rgb) / 255.0,
                 Color.getGreen(rgb) / 255.0,
                 Color.getBlue(rgb) / 255.0,
@@ -50,27 +55,27 @@ class RenderUtil
     
     /** Returns the flags that are required for AGAL texture lookup,
      *  including the '&lt;' and '&gt;' delimiters. */
-    public static function getTextureLookupFlags(format : String, mipMapping : Bool,
-            repeat : Bool = false,
-            smoothing : String = "bilinear") : String
+    public static function getTextureLookupFlags(format:Context3DTextureFormat, mipMapping:Bool,
+            repeat:Bool = false,
+            smoothing:String = null):String
     {
         // TODO this method can probably be removed
-        
-        var options : Array<Dynamic> = ["2d", (repeat) ? "repeat" : "clamp"];
+        if (smoothing == null) smoothing = TextureSmoothing.BILINEAR;
+        var options:Array<Dynamic> = ["2d", (repeat) ? "repeat":"clamp"];
         
         if (format == Context3DTextureFormat.COMPRESSED) 
             options.push("dxt1")
-        else if (format == "compressedAlpha") 
+        else if (format == Context3DTextureFormat.COMPRESSED_ALPHA) 
             options.push("dxt5");
         
         if (smoothing == TextureSmoothing.NONE) 
-            options.push("nearest", (mipMapping) ? "mipnearest" : "mipnone")
+            options.push("nearest", (mipMapping) ? "mipnearest":"mipnone")
         else if (smoothing == TextureSmoothing.BILINEAR) 
-            options.push("linear", (mipMapping) ? "mipnearest" : "mipnone")
+            options.push("linear", (mipMapping) ? "mipnearest":"mipnone")
         else 
-        options.push("linear", (mipMapping) ? "miplinear" : "mipnone");
+        options.push("linear", (mipMapping) ? "miplinear":"mipnone");
         
-        return "<" + options.join() + ">";
+        return "<" + options.join("") + ">";
     }
     
     /** Returns a bit field uniquely describing texture format and premultiplied alpha,
@@ -80,12 +85,12 @@ class RenderUtil
      *
      *  @return a bit field using the 3 least significant bits.
      */
-    public static function getTextureVariantBits(texture : Texture) : Int
+    public static function getTextureVariantBits(texture:Texture):Int
     {
         if (texture == null)             return 0;
         
-        var bitField : Int = 0;
-        var formatBits : Int = 0;
+        var bitField:Int = 0;
+        var formatBits:Int = 0;
         
         var _sw0_ = (texture.format);        
 
@@ -109,31 +114,31 @@ class RenderUtil
     
     /** Calls <code>setSamplerStateAt</code> at the current context,
      *  converting the given parameters to their low level counterparts. */
-    public static function setSamplerStateAt(sampler : Int, mipMapping : Bool,
-            smoothing : String = "bilinear",
-            repeat : Bool = false) : Void
+    public static function setSamplerStateAt(sampler:Int, mipMapping:Bool,
+            smoothing:String = "bilinear",
+            repeat:Bool = false):Void
     {
-        var wrap : String = (repeat) ? Context3DWrapMode.REPEAT : Context3DWrapMode.CLAMP;
-        var filter : String;
-        var mipFilter : String;
+        var wrap:Context3DWrapMode = (repeat) ? Context3DWrapMode.REPEAT:Context3DWrapMode.CLAMP;
+        var filter:Context3DTextureFilter;
+        var mipFilter:Context3DMipFilter;
         
         if (smoothing == TextureSmoothing.NONE) 
         {
             filter = Context3DTextureFilter.NEAREST;
-            mipFilter = (mipMapping) ? Context3DMipFilter.MIPNEAREST : Context3DMipFilter.MIPNONE;
+            mipFilter = (mipMapping) ? Context3DMipFilter.MIPNEAREST:Context3DMipFilter.MIPNONE;
         }
         else if (smoothing == TextureSmoothing.BILINEAR) 
         {
             filter = Context3DTextureFilter.LINEAR;
-            mipFilter = (mipMapping) ? Context3DMipFilter.MIPNEAREST : Context3DMipFilter.MIPNONE;
+            mipFilter = (mipMapping) ? Context3DMipFilter.MIPNEAREST:Context3DMipFilter.MIPNONE;
         }
         else 
         {
             filter = Context3DTextureFilter.LINEAR;
-            mipFilter = (mipMapping) ? Context3DMipFilter.MIPLINEAR : Context3DMipFilter.MIPNONE;
+            mipFilter = (mipMapping) ? Context3DMipFilter.MIPLINEAR:Context3DMipFilter.MIPNONE;
         }
         
-        Starling.context.setSamplerStateAt(sampler, wrap, filter, mipFilter);
+        Starling.Context.setSamplerStateAt(sampler, wrap, filter, mipFilter);
     }
     
     /** Creates an AGAL source string with a <code>tex</code> operation, including an options
@@ -157,11 +162,11 @@ class RenderUtil
      *  @return the AGAL source code, line break(s) included.
      */
     public static function createAGALTexOperation(
-            resultReg : String, uvReg : String, sampler : Int, texture : Texture,
-            convertToPmaIfRequired : Bool = true) : String
+            resultReg:String, uvReg:String, sampler:Int, texture:Texture,
+            convertToPmaIfRequired:Bool = true):String
     {
-        var format : String = texture.format;
-        var formatFlag : String;
+        var format:Context3DTextureFormat = texture.format;
+        var formatFlag:String;
         
         switch (format)
         {
@@ -173,7 +178,7 @@ class RenderUtil
                 formatFlag = "rgba";
         }
         
-        var operation : String = "tex " + resultReg + ", " + uvReg + ", fs" + sampler +
+        var operation:String = "tex " + resultReg + ", " + uvReg + ", fs" + sampler +
         " <2d, " + formatFlag + ">\n";
         
         if (convertToPmaIfRequired && !texture.premultipliedAlpha) 
@@ -199,68 +204,81 @@ class RenderUtil
      *                   profile automatically. This will try all known Stage3D profiles,
      *                   beginning with the most powerful.</p>
      */
-    public static function requestContext3D(stage3D : Stage3D, renderMode : String, profile : Dynamic) : Void
+    public static function requestContext3D(stage3D:Stage3D, renderMode:Context3DRenderMode, profile:Dynamic=null):Void
     {
-        var profiles : Array<Dynamic>;
-        var currentProfile : String;
+        RenderUtil.renderMode = renderMode;
+		RenderUtil.stage3D = stage3D;
+		profiles = new Array<Context3DProfile>();
         
-        if (profile == "auto") 
-            profiles = ["standardExtended", "standard", "standardConstrained", 
-                "baselineExtended", "baseline", "baselineConstrained"]
-        else if (Std.is(profile, String)) 
-            profiles = [try cast(profile, String) catch(e:Dynamic) null]
-        else if (Std.is(profile, Array)) 
-            profiles = try cast(profile, Array</*AS3HX WARNING no type*/>) catch(e:Dynamic) null
-        else 
-        throw new ArgumentError("Profile must be of type 'String' or 'Array'");
+        if (profile == null) 
+            profiles = [Context3DProfile.STANDARD, Context3DProfile.STANDARD_CONSTRAINED, 
+                Context3DProfile.BASELINE_EXTENDED, Context3DProfile.BASELINE, Context3DProfile.BASELINE_CONSTRAINED]
+        else if (Std.is(profile, Context3DProfile)) 
+            profiles = [cast(profile, Context3DProfile)];
+		else if (Std.is(profile, Array)) {
+			var d:Array<Dynamic> = cast(profile, Array<Dynamic>);
+			for (i in 0...d.length) profiles.push(cast(d, Context3DProfile));
+		}
+		else 
+        throw new ArgumentError("Profile must be of type 'Context3DProfile' or 'Array<Context3DProfile>'");
+		/*else if (Std.is(profile, String)) 
+            profiles = [cast(profile, String) catch(e:Dynamic) null]*/
+        /*else if (Std.is(profile, Array)) 
+            profiles = try cast(profile, Array<String>) catch(e:Dynamic) null*/
+        /*else 
+        throw new ArgumentError("Profile must be of type 'String' or 'Array'");*/
         
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, onCreated, false, 100);
         stage3D.addEventListener(ErrorEvent.ERROR, onError, false, 100);
         
         requestNextProfile();
         
-        function requestNextProfile() : Void
-        {
-            currentProfile = profiles.shift();
-            
-            try{execute(stage3D.requestContext3D, renderMode, currentProfile);
-            }            catch (error : Error)
-            {
-                if (profiles.length != 0)                     setTimeout(requestNextProfile, 1)
-                else throw error;
-            }
-        };
         
-        function onCreated(event : Event) : Void
-        {
-            var context : Context3D = stage3D.context3D;
-            
-            if (renderMode == Context3DRenderMode.AUTO && profiles.length != 0 &&
-                context.driverInfo.indexOf("Software") != -1) 
-            {
-                onError(event);
-            }
-            else 
-            {
-                onFinished();
-            }
-        };
-        
-        function onError(event : Event) : Void
-        {
-            if (profiles.length != 0) 
-            {
-                event.stopImmediatePropagation();
-                setTimeout(requestNextProfile, 1);
-            }
-            else onFinished();
-        };
-        
-        function onFinished() : Void
-        {
-            stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
-            stage3D.removeEventListener(ErrorEvent.ERROR, onError);
-        };
     }
+	
+	private static function requestNextProfile():Void
+	{
+		currentProfile = profiles.shift();
+		
+		try{Execute.call(stage3D.requestContext3D, [renderMode, currentProfile]);
+		}            catch (error:Error)
+		{
+			if (profiles.length != 0) {
+				Timer.delay(requestNextProfile, 1);
+			}
+			else throw error;
+		}
+	};
+	
+	private static function onCreated(event:Event):Void
+	{
+		var context:Context3D = stage3D.context3D;
+		
+		if (renderMode == Context3DRenderMode.AUTO && profiles.length != 0 &&
+			context.driverInfo.indexOf("Software") != -1) 
+		{
+			onError(event);
+		}
+		else 
+		{
+			onFinished();
+		}
+	};
+	
+	private static function onError(event:Event):Void
+	{
+		if (profiles.length != 0) 
+		{
+			event.stopImmediatePropagation();
+			Timer.delay(requestNextProfile, 1);
+		}
+		else onFinished();
+	};
+	
+	private static function onFinished():Void
+	{
+		stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onCreated);
+		stage3D.removeEventListener(ErrorEvent.ERROR, onError);
+	};
 }
 

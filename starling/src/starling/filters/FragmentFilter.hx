@@ -10,6 +10,7 @@
 
 package starling.filters;
 
+import haxe.Constraints.Function;
 import starling.filters.ITexturePool;
 import starling.filters.TexturePool;
 
@@ -18,7 +19,6 @@ import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 import starling.core.Starling;
-import starling.core.StarlingInternal;
 import starling.display.DisplayObject;
 import starling.display.Quad;
 import starling.display.Stage;
@@ -84,23 +84,23 @@ import starling.utils.RectangleUtil;
  */
 class FragmentFilter extends EventDispatcher
 {
-    private var target(get, never) : DisplayObject;
-    private var effect(get, never) : FilterEffect;
-    private var vertexData(get, never) : VertexData;
-    private var indexData(get, never) : IndexData;
-    public var padding(get, set) : Padding;
+    private var target(get, never):DisplayObject;
+    private var effect(get, never):FilterEffect;
+    private var vertexData(get, never):VertexData;
+    private var indexData(get, never):IndexData;
+    public var padding(get, set):Padding;
 
-    private var _quad : Quad;
-    private var _target : DisplayObject;
-    private var _effect : FilterEffect;
-    private var _vertexData : VertexData;
-    private var _indexData : IndexData;
-    private var _token : BatchToken;
-    private var _padding : Padding;
-    private var _pool : TexturePool;
+    private var _quad:Quad;
+    private var _target:DisplayObject;
+    private var _effect:FilterEffect;
+    private var _vertexData:VertexData;
+    private var _indexData:IndexData;
+    private var _token:BatchToken;
+    private var _padding:Padding;
+    private var _pool:TexturePool;
     
     // helper objects
-    private static var sMatrix : Matrix = new Matrix();
+    private static var sMatrix:Matrix = new Matrix();
     
     /** Creates a new instance. The base class' implementation just draws the unmodified
      *  input texture. */
@@ -108,25 +108,25 @@ class FragmentFilter extends EventDispatcher
     {
         super();
         // Handle lost context (using conventional Flash event for weak listener support)
-        Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
+        Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
                 onContextCreated, false, 0, true);
     }
     
     /** Disposes all resources that have been created by the filter. */
-    public function dispose() : Void
+    public function dispose():Void
     {
-        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+        Starling.Current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
         if (_pool != null)             _pool.dispose();
         if (_effect != null)             _effect.dispose();
-        if (_quad != null && _quad.texture)             _quad.texture.dispose();
+        if (_quad != null && _quad.texture != null) _quad.texture.dispose();
         if (_quad != null)             _quad.dispose();
         
         _effect = null;
         _quad = null;
     }
     
-    private function onContextCreated(event : Dynamic) : Void
+    private function onContextCreated(event:Dynamic):Void
     {
         setRequiresRedraw();
     }
@@ -134,7 +134,7 @@ class FragmentFilter extends EventDispatcher
     /** Renders the filtered target object. Most users will never have to call this manually;
      *  it's executed automatically in the rendering process of the filtered display object.
      */
-    public function render(painter : Painter) : Void
+    public function render(painter:Painter):Void
     {
         if (_target == null) 
             throw new IllegalOperationError("Cannot render filter without target");
@@ -146,10 +146,10 @@ class FragmentFilter extends EventDispatcher
         else {_pool.putTexture(_quad.texture);_quad.texture = null;
         }
         
-        var bounds : Rectangle = Pool.getRectangle();
-        var root : DisplayObject = _target.root;
-        var stage : Stage = root.stage;
-        var stageBounds : Rectangle;
+        var bounds:Rectangle = Pool.getRectangle();
+        var root:DisplayObject = _target.root;
+        var stage:Stage = root.stage;
+        var stageBounds:Rectangle;
         
         if (_target == root)             stage.getStageBounds(_target, bounds)
         else 
@@ -173,8 +173,8 @@ class FragmentFilter extends EventDispatcher
         
         _pool.setSize(bounds.width, bounds.height);
         
-        var input : Texture = _pool.getTexture();
-        var frameID : Int = painter.frameID;
+        var input:Texture = _pool.getTexture();
+        var frameID:Int = painter.frameID;
         
         // By temporarily setting the frameID to zero, the render cache is effectively
         // disabled while we draw the target object. That is necessary because we rewind the
@@ -234,12 +234,12 @@ class FragmentFilter extends EventDispatcher
      *  not need them any longer. Ownership of both input textures and returned texture
      *  lies at the caller; only temporary textures should be put into the pool.</p>
      */
-    public function process(painter : Painter, pool : ITexturePool,
-            input0 : Texture = null, input1 : Texture = null,
-            input2 : Texture = null, input3 : Texture = null) : Texture
+    public function process(painter:Painter, pool:ITexturePool,
+            input0:Texture = null, input1:Texture = null,
+            input2:Texture = null, input3:Texture = null):Texture
     {
-        var output : Texture = pool.getTexture();
-        var effect : FilterEffect = this.effect;
+        var output:Texture = pool.getTexture();
+        var effect:FilterEffect = this.effect;
         
         painter.state.renderTarget = output;
         painter.prepareToDraw();
@@ -261,14 +261,14 @@ class FragmentFilter extends EventDispatcher
      *  Must be overridden by all subclasses that do any rendering on their own (instead
      *  of just forwarding processing to other filters).
      */
-    private function createEffect() : FilterEffect
+    private function createEffect():FilterEffect
     {
         return new FilterEffect();
     }
     
     // enter frame event
     
-    override public function addEventListener(type : String, listener : Function) : Void
+    override public function addEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null) 
             _target.addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -276,7 +276,7 @@ class FragmentFilter extends EventDispatcher
         super.addEventListener(type, listener);
     }
     
-    override public function removeEventListener(type : String, listener : Function) : Void
+    override public function removeEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && _target != null) 
             _target.removeEventListener(type, onEnterFrame);
@@ -284,7 +284,7 @@ class FragmentFilter extends EventDispatcher
         super.removeEventListener(type, listener);
     }
     
-    private function onEnterFrame(event : Event) : Void
+    private function onEnterFrame(event:Event):Void
     {
         dispatchEvent(event);
     }
@@ -292,13 +292,13 @@ class FragmentFilter extends EventDispatcher
     // properties
     
     /** The target display object the filter is assigned to. */
-    private function get_target() : DisplayObject
+    private function get_target():DisplayObject
     {
         return _target;
     }
     
     /** The effect instance returning the FilterEffect created via <code>createEffect</code>. */
-    private function get_effect() : FilterEffect
+    private function get_effect():FilterEffect
     {
         if (_effect == null)             _effect = createEffect();
         return _effect;
@@ -306,7 +306,7 @@ class FragmentFilter extends EventDispatcher
     
     /** The VertexData used to render the effect. Per default, uses the format provided
      *  by the effect, and contains four vertices enclosing the target object. */
-    private function get_vertexData() : VertexData
+    private function get_vertexData():VertexData
     {
         if (_vertexData == null)             _vertexData = new VertexData(effect.vertexFormat, 4);
         return _vertexData;
@@ -314,7 +314,7 @@ class FragmentFilter extends EventDispatcher
     
     /** The IndexData used to render the effect. Per default, references a quad (two triangles)
      *  of four vertices. */
-    private function get_indexData() : IndexData
+    private function get_indexData():IndexData
     {
         if (_indexData == null) 
         {
@@ -327,7 +327,7 @@ class FragmentFilter extends EventDispatcher
     
     /** Call this method when any of the filter's properties changes.
      *  This will make sure the filter is redrawn in the next frame. */
-    private function setRequiresRedraw() : Void
+    private function setRequiresRedraw():Void
     {
         dispatchEventWith(Event.CHANGE);
         if (_target != null)             _target.setRequiresRedraw();
@@ -335,13 +335,13 @@ class FragmentFilter extends EventDispatcher
     
     /** Called when assigning a target display object.
      *  Override to plug in class-specific logic. */
-    private function onTargetAssigned(target : DisplayObject) : Void
+    private function onTargetAssigned(target:DisplayObject):Void
     {
     }
     
     /** Padding can extend the size of the filter texture in all directions.
      *  That's useful when the filter "grows" the bounds of the object in any direction. */
-    private function get_padding() : Padding
+    private function get_padding():Padding
     {
         if (_padding == null) 
         {
@@ -352,7 +352,7 @@ class FragmentFilter extends EventDispatcher
         return _padding;
     }
     
-    private function set_padding(value : Padding) : Padding
+    private function set_padding(value:Padding):Padding
     {
         padding.copyFrom(value);
         return value;
@@ -361,11 +361,12 @@ class FragmentFilter extends EventDispatcher
     // internal methods
     
     /** @private */
-    private function setTarget(target : DisplayObject) : Void
+	 @:allow(starling.display)
+    private function setTarget(target:DisplayObject):Void
     {
         if (target != _target) 
         {
-            var prevTarget : DisplayObject = _target;
+            var prevTarget:DisplayObject = _target;
             _target = target;
             
             if (target == null) 

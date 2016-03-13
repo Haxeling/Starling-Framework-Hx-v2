@@ -19,11 +19,11 @@ import utils.MenuButton;
 
 class RenderTextureScene extends Scene
 {
-    private var _renderTexture : RenderTexture;
-    private var _canvas : Image;
-    private var _brush : Image;
-    private var _button : Button;
-    private var _colors : Dictionary;
+    private var _renderTexture:RenderTexture;
+    private var _canvas:Image;
+    private var _brush:Image;
+    private var _button:Button;
+    private var _colors:Dictionary;
     
     public function new()
     {
@@ -40,7 +40,7 @@ class RenderTextureScene extends Scene
         _brush.pivotY = _brush.height / 2;
         _brush.blendMode = BlendMode.NORMAL;
         
-        var infoText : TextField = new TextField(256, 128, "Touch the screen\nto draw!");
+        var infoText:TextField = new TextField(256, 128, "Touch the screen\nto draw!");
         infoText.format.size = 24;
         infoText.x = Constants.CenterX - infoText.width / 2;
         infoText.y = Constants.CenterY - infoText.height / 2;
@@ -53,15 +53,15 @@ class RenderTextureScene extends Scene
         addChild(_button);
     }
     
-    private function onTouch(event : TouchEvent) : Void
+    private function onTouch(event:TouchEvent):Void
     {
         // touching the canvas will draw a brush texture. The 'drawBundled' method is not
         // strictly necessary, but it's faster when you are drawing with several fingers
         // simultaneously.
         
-        _renderTexture.drawBundled(function() : Void
+        _renderTexture.drawBundled(function():Void
                 {
-                    var touches : Array<Touch> = event.getTouches(_canvas);
+                    var touches:Array<Touch> = event.getTouches(_canvas);
                     
                     for (touch in touches)
                     {
@@ -71,7 +71,7 @@ class RenderTextureScene extends Scene
                         if (touch.phase == TouchPhase.HOVER || touch.phase == TouchPhase.ENDED) 
                             continue;
                         
-                        var location : Point = touch.getLocation(_canvas);
+                        var location:Point = touch.getLocation(_canvas);
                         _brush.x = location.x;
                         _brush.y = location.y;
                         _brush.color = _colors[touch.id];
@@ -82,7 +82,7 @@ class RenderTextureScene extends Scene
                 });
     }
     
-    private function onButtonTriggered() : Void
+    private function onButtonTriggered():Void
     {
         if (_brush.blendMode == BlendMode.NORMAL) 
         {
@@ -96,7 +96,7 @@ class RenderTextureScene extends Scene
         }
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _renderTexture.dispose();
         super.dispose();

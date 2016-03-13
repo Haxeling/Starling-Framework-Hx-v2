@@ -12,11 +12,11 @@ import utils.MenuButton;
 
 class BlendModeScene extends Scene
 {
-    private var _button : Button;
-    private var _image : Image;
-    private var _infoText : TextField;
+    private var _button:Button;
+    private var _image:Image;
+    private var _infoText:TextField;
     
-    private var _blendModes : Array<Dynamic> = [
+    private var _blendModes:Array<Dynamic> = [
         BlendMode.NORMAL, 
         BlendMode.MULTIPLY, 
         BlendMode.SCREEN, 
@@ -47,9 +47,9 @@ class BlendModeScene extends Scene
         onButtonTriggered();
     }
     
-    private function onButtonTriggered() : Void
+    private function onButtonTriggered():Void
     {
-        var blendMode : String = try cast(_blendModes.shift(), String) catch(e:Dynamic) null;
+        var blendMode:String = try cast(_blendModes.shift(), String) catch(e:Dynamic) null;
         _blendModes.push(blendMode);
         
         _infoText.text = blendMode;

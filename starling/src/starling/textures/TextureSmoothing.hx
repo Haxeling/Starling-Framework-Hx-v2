@@ -22,16 +22,16 @@ class TextureSmoothing
     }
     
     /** No smoothing, also called "Nearest Neighbor". Pixels will scale up as big rectangles. */
-    public static inline var NONE : String = "none";
+    public static var NONE:String = "none";
     
     /** Bilinear filtering. Creates smooth transitions between pixels. */
-    public static inline var BILINEAR : String = "bilinear";
+    public static var BILINEAR:String = "bilinear";
     
     /** Trilinear filtering. Highest quality by taking the next mip map level into account. */
-    public static inline var TRILINEAR : String = "trilinear";
+    public static var TRILINEAR:String = "trilinear";
     
     /** Determines whether a smoothing value is valid. */
-    public static function isValid(smoothing : String) : Bool
+    public static function isValid(smoothing:String):Bool
     {
         return smoothing == NONE || smoothing == BILINEAR || smoothing == TRILINEAR;
     }

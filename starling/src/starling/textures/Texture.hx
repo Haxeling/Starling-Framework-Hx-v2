@@ -10,17 +10,18 @@
 
 package starling.textures;
 
+import flash.display3D.Context3DProfile;
 import flash.errors.ArgumentError;
-import starling.textures.AssetClass;
+import haxe.Constraints.Function;
 import starling.textures.TextureOptions;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
-import flash.display3d.Context3D;
-import flash.display3d.Context3DTextureFormat;
-import flash.display3d.textures.RectangleTexture;
-import flash.display3d.textures.TextureBase;
-import flash.display3d.textures.VideoTexture;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DTextureFormat;
+import flash.display3D.textures.RectangleTexture;
+import flash.display3D.textures.TextureBase;
+import flash.display3D.textures.VideoTexture;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
@@ -127,34 +128,34 @@ import starling.utils.SystemUtil;
  */
 class Texture
 {
-    public var frame(get, never) : Rectangle;
-    public var frameWidth(get, never) : Float;
-    public var frameHeight(get, never) : Float;
-    public var width(get, never) : Float;
-    public var height(get, never) : Float;
-    public var nativeWidth(get, never) : Float;
-    public var nativeHeight(get, never) : Float;
-    public var scale(get, never) : Float;
-    public var base(get, never) : TextureBase;
-    public var root(get, never) : ConcreteTexture;
-    public var format(get, never) : String;
-    public var mipMapping(get, never) : Bool;
-    public var premultipliedAlpha(get, never) : Bool;
-    public var transformationMatrix(get, never) : Matrix;
-    public var transformationMatrixToRoot(get, never) : Matrix;
-    public static var maxSize(get, never) : Int;
+    public var frame(get, never):Rectangle;
+    public var frameWidth(get, never):Float;
+    public var frameHeight(get, never):Float;
+    public var width(get, never):Float;
+    public var height(get, never):Float;
+    public var nativeWidth(get, never):Float;
+    public var nativeHeight(get, never):Float;
+    public var scale(get, never):Float;
+    public var base(get, never):TextureBase;
+    public var root(get, never):ConcreteTexture;
+    public var format(get, never):Context3DTextureFormat;
+    public var mipMapping(get, never):Bool;
+    public var premultipliedAlpha(get, never):Bool;
+    public var transformationMatrix(get, never):Matrix;
+    public var transformationMatrixToRoot(get, never):Matrix;
+    public static var maxSize(get, never):Int;
 
     // helper objects
-    private static var sDefaultOptions : TextureOptions = new TextureOptions();
-    private static var sRectangle : Rectangle = new Rectangle();
-    private static var sMatrix : Matrix = new Matrix();
-    private static var sPoint : Point = new Point();
+    private static var sDefaultOptions:TextureOptions = new TextureOptions();
+    private static var sRectangle:Rectangle = new Rectangle();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sPoint:Point = new Point();
     
     /** @private */
     public function new()
     {
         if (Capabilities.isDebugger &&
-            Type.getClassName(this) == "starling.textures::Texture") 
+            Type.getClassName(Type.getClass(this)) == "starling.textures::Texture") 
         {
             throw new AbstractClassError();
         }
@@ -164,7 +165,7 @@ class Texture
      *  SubTextures (created with 'Texture.fromTexture') just reference other textures and
      *  and do not take up resources themselves; this is also true for textures from an
      *  atlas. */
-    public function dispose() : Void
+    public function dispose():Void
     {
         // override in subclasses
         
@@ -177,7 +178,7 @@ class Texture
      *  @param options  Specifies options about the texture settings, e.g. the scale factor.
      *                  If left empty, the default options will be used.
      */
-    public static function fromData(data : Dynamic, options : TextureOptions = null) : Texture
+    public static function fromData(data:Dynamic, options:TextureOptions = null):Texture
     {
         if (Std.is(data, Bitmap))             data = (try cast(data, Bitmap) catch(e:Dynamic) null).bitmapData;
         if (options == null)             options = sDefaultOptions;
@@ -212,8 +213,8 @@ class Texture
      *                  If left empty, the default options will be used. Note that not all
      *                  options are supported by all texture types.
      */
-    public static function fromTextureBase(base : TextureBase, width : Int, height : Int,
-            options : TextureOptions = null) : ConcreteTexture
+    public static function fromTextureBase(base:TextureBase, width:Int, height:Int,
+            options:TextureOptions = null):ConcreteTexture
     {
         if (options == null)             options = sDefaultOptions;
         
@@ -235,7 +236,7 @@ class Texture
             return new ConcreteVideoTexture(try cast(base, VideoTexture) catch(e:Dynamic) null, options.scale);
         }
         else 
-        throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(base));
+        throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(Type.getClass(base)));
     }
     
     /** Creates a texture object from an embedded asset class. Textures created with this
@@ -250,18 +251,19 @@ class Texture
      *  @param scale    the scale factor of the created texture.
      *  @param format   the context3D texture format to use. Ignored for ATF data.
      */
-    public static function fromEmbeddedAsset(assetClass : Class<Dynamic>, mipMapping : Bool = false,
-            optimizeForRenderToTexture : Bool = false,
-            scale : Float = 1, format : String = "bgra") : Texture
+    public static function fromEmbeddedAsset(assetClass:Class<Dynamic>, mipMapping:Bool = false,
+            optimizeForRenderToTexture:Bool = false,
+            scale:Float = 1, format:Context3DTextureFormat = null):Texture
     {
-        var texture : Texture;
-        var asset : Dynamic = Type.createInstance(assetClass, []);
+		if (format == null) format = Context3DTextureFormat.BGRA;
+        var texture:Texture;
+        var asset:Dynamic = Type.createInstance(assetClass, []);
         
         if (Std.is(asset, Bitmap)) 
         {
             texture = Texture.fromBitmap(try cast(asset, Bitmap) catch(e:Dynamic) null, mipMapping,
                             optimizeForRenderToTexture, scale, format);
-            texture.root.onRestore = function() : Void
+            texture.root.onRestore = function():Void
                     {
                         texture.root.uploadBitmap(Type.createInstance(assetClass, []));
                     };
@@ -269,7 +271,7 @@ class Texture
         else if (Std.is(asset, ByteArray)) 
         {
             texture = Texture.fromAtfData(try cast(asset, ByteArray) catch(e:Dynamic) null, scale, mipMapping, null);
-            texture.root.onRestore = function() : Void
+            texture.root.onRestore = function():Void
                     {
                         texture.root.uploadAtfData(Type.createInstance(assetClass, []));
                     };
@@ -297,10 +299,11 @@ class Texture
      *                  compressed formats to save memory (at the price of reduced image
      *                  quality).
      */
-    public static function fromBitmap(bitmap : Bitmap, generateMipMaps : Bool = false,
-            optimizeForRenderToTexture : Bool = false,
-            scale : Float = 1, format : String = "bgra") : Texture
+    public static function fromBitmap(bitmap:Bitmap, generateMipMaps:Bool = false,
+            optimizeForRenderToTexture:Bool = false,
+            scale:Float = 1, format:Context3DTextureFormat = null):Texture
     {
+		if (format == null) format = Context3DTextureFormat.BGRA;
         return fromBitmapData(bitmap.bitmapData, generateMipMaps, optimizeForRenderToTexture,
                 scale, format);
     }
@@ -319,16 +322,17 @@ class Texture
      *                  compressed formats to save memory (at the price of reduced image
      *                  quality).
      */
-    public static function fromBitmapData(data : BitmapData, generateMipMaps : Bool = false,
-            optimizeForRenderToTexture : Bool = false,
-            scale : Float = 1, format : String = "bgra") : Texture
+    public static function fromBitmapData(data:BitmapData, generateMipMaps:Bool = false,
+            optimizeForRenderToTexture:Bool = false,
+            scale:Float = 1, format:Context3DTextureFormat = null):Texture
     {
-        var texture : Texture = Texture.empty(data.width / scale, data.height / scale, true,
+		if (format == null) format = Context3DTextureFormat.BGRA;
+        var texture:Texture = Texture.empty(data.width / scale, data.height / scale, true,
                 generateMipMaps, optimizeForRenderToTexture, scale,
                 format);
         
         texture.root.uploadBitmapData(data);
-        texture.root.onRestore = function() : Void
+        texture.root.onRestore = function():Void
                 {
                     texture.root.uploadBitmapData(data);
                 };
@@ -351,21 +355,21 @@ class Texture
      *                    has been executed. This is the expected function definition:
      *                    <code>function(texture:Texture):void;</code>
      */
-    public static function fromAtfData(data : ByteArray, scale : Float = 1, useMipMaps : Bool = true,
-            async : Function = null) : Texture
+    public static function fromAtfData(data:ByteArray, scale:Float = 1, useMipMaps:Bool = true,
+            async:Function = null):Texture
     {
-        var context : Context3D = Starling.context;
+        var context:Context3D = Starling.Context;
         if (context == null)             throw new MissingContextError();
         
-        var atfData : AtfData = new AtfData(data);
-        var nativeTexture : flash.display3d.textures.Texture = context.createTexture(
+        var atfData:AtfData = new AtfData(data);
+        var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
                 atfData.width, atfData.height, atfData.format, false);
-        var concreteTexture : ConcreteTexture = new ConcretePotTexture(nativeTexture, 
+        var concreteTexture:ConcreteTexture = new ConcretePotTexture(nativeTexture, 
         atfData.format, atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1, 
         false, false, scale);
         
         concreteTexture.uploadAtfData(data, 0, async);
-        concreteTexture.onRestore = function() : Void
+        concreteTexture.onRestore = function():Void
                 {
                     concreteTexture.uploadAtfData(data, 0);
                 };
@@ -401,13 +405,13 @@ class Texture
      *  @param onComplete will be executed when the texture is ready. Contains a parameter
      *                 of type 'Texture'.
      */
-    public static function fromNetStream(stream : NetStream, scale : Float = 1,
-            onComplete : Function = null) : Texture
+    public static function fromNetStream(stream:NetStream, scale:Float = 1,
+            onComplete:Function = null):Texture
     {
         // workaround for bug in NetStream class:
         if (stream.client == stream && !(Lambda.has(stream, "onMetaData"))) 
             stream.client = {
-                    onMetaData : function(md : Dynamic) : Void{
+                    onMetaData:function(md:Dynamic):Void{
                     }
 
                 };
@@ -434,25 +438,25 @@ class Texture
      *  @param onComplete will be executed when the texture is ready. May contain a parameter
      *                 of type 'Texture'.
      */
-    public static function fromCamera(camera : Camera, scale : Float = 1,
-            onComplete : Function = null) : Texture
+    public static function fromCamera(camera:Camera, scale:Float = 1,
+            onComplete:Function = null):Texture
     {
         return fromVideoAttachment("Camera", camera, scale, onComplete);
     }
     
-    private static function fromVideoAttachment(type : String, attachment : Dynamic,
-            scale : Float, onComplete : Function) : Texture
+    private static function fromVideoAttachment(type:String, attachment:Dynamic,
+            scale:Float, onComplete:Function):Texture
     {
         if (!SystemUtil.supportsVideoTexture) 
             throw new NotSupportedError("Video Textures are not supported on this platform");
         
-        var context : Context3D = Starling.context;
+        var context:Context3D = Starling.Context;
         if (context == null)             throw new MissingContextError();
         
-        var base : VideoTexture = context.createVideoTexture();
-        var texture : ConcreteTexture = new ConcreteVideoTexture(base, scale);
+        var base:VideoTexture = context.createVideoTexture();
+        var texture:ConcreteTexture = new ConcreteVideoTexture(base, scale);
         texture.attachVideo(type, attachment, onComplete);
-        texture.onRestore = function() : Void
+        texture.onRestore = function():Void
                 {
                     texture.root.attachVideo(type, attachment);
                 };
@@ -467,19 +471,20 @@ class Texture
      *  @param color   the RGB color the texture will be filled up
      *  @param alpha   the alpha value that will be used for every pixel
      *  @param optimizeForRenderToTexture  indicates if this texture will be used as render target
-     *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
+     *  @param scale   if you omit this parameter, 'Starling.ContentScaleFactor' will be used.
      *  @param format  the context3D texture format to use. Pass one of the packed or
      *                 compressed formats to save memory.
      */
-    public static function fromColor(width : Float, height : Float,
-            color : Int = 0xffffff, alpha : Float = 1.0,
-            optimizeForRenderToTexture : Bool = false,
-            scale : Float = -1, format : String = "bgra") : Texture
+    public static function fromColor(width:Float, height:Float,
+            color:Int = 0xffffff, alpha:Float = 1.0,
+            optimizeForRenderToTexture:Bool = false,
+            scale:Float = -1, format:Context3DTextureFormat = null):Texture
     {
-        var texture : Texture = Texture.empty(width, height, true, false,
+		if (format == null) format = Context3DTextureFormat.BGRA;
+        var texture:Texture = Texture.empty(width, height, true, false,
                 optimizeForRenderToTexture, scale, format);
         texture.root.clear(color, alpha);
-        texture.root.onRestore = function() : Void
+        texture.root.onRestore = function():Void
                 {
                     texture.root.clear(color, alpha);
                 };
@@ -499,31 +504,30 @@ class Texture
      *                 bitmap data, this decides if mipmaps will be created; when you upload ATF
      *                 data, this decides if mipmaps inside the ATF file will be displayed.
      *  @param optimizeForRenderToTexture  indicates if this texture will be used as render target
-     *  @param scale   if you omit this parameter, 'Starling.contentScaleFactor' will be used.
+     *  @param scale   if you omit this parameter, 'Starling.ContentScaleFactor' will be used.
      *  @param format  the context3D texture format to use. Pass one of the packed or
      *                 compressed formats to save memory (at the price of reduced image quality).
      */
-    public static function empty(width : Float, height : Float, premultipliedAlpha : Bool = true,
-            mipMapping : Bool = false, optimizeForRenderToTexture : Bool = false,
-            scale : Float = -1, format : String = "bgra") : Texture
+    public static function empty(width:Float, height:Float, premultipliedAlpha:Bool = true, mipMapping:Bool = false, optimizeForRenderToTexture:Bool = false, scale:Float = -1, format:Context3DTextureFormat=null):Texture
     {
-        if (scale <= 0)             scale = Starling.contentScaleFactor;
-        
-        var actualWidth : Int;
-        var actualHeight : Int;
-        var nativeTexture : TextureBase;
-        var concreteTexture : ConcreteTexture;
-        var context : Context3D = Starling.context;
+        if (scale <= 0) scale = Starling.ContentScaleFactor;
+        if (format == null) format = Context3DTextureFormat.BGRA;
+		
+        var actualWidth:Int;
+        var actualHeight:Int;
+        var nativeTexture:TextureBase;
+        var concreteTexture:ConcreteTexture;
+        var context:Context3D = Starling.Context;
         
         if (context == null)             throw new MissingContextError();
         
-        var origWidth : Float = width * scale;
-        var origHeight : Float = height * scale;
-        var useRectTexture : Bool = !mipMapping &&
-        Starling.current.profile != "baselineConstrained" &&
-        format.indexOf("compressed") == -1;
-        
-        if (useRectTexture) 
+        var origWidth:Float = width * scale;
+        var origHeight:Float = height * scale;
+        var useRectTexture:Bool = !mipMapping && Starling.Current.profile !=  Context3DProfile.BASELINE_CONSTRAINED && (format == Context3DTextureFormat.COMPRESSED || format == Context3DTextureFormat.COMPRESSED_ALPHA);
+		trace("check");
+		//format.indexOf("compressed") == -1;
+       
+		if (useRectTexture) 
         {
             actualWidth = Math.ceil(origWidth - 0.000000001);  // avoid floating point errors  
             actualHeight = Math.ceil(origHeight - 0.000000001);
@@ -568,8 +572,8 @@ class Texture
      *  @param rotated  If true, the SubTexture will show the parent region rotated by
      *                  90 degrees (CCW).
      */
-    public static function fromTexture(texture : Texture, region : Rectangle = null,
-            frame : Rectangle = null, rotated : Bool = false) : Texture
+    public static function fromTexture(texture:Texture, region:Rectangle = null,
+            frame:Rectangle = null, rotated:Bool = false):Texture
     {
         return new SubTexture(texture, region, false, frame, rotated);
     }
@@ -585,13 +589,13 @@ class Texture
      *                     vertices at the correct position within the given bounds,
      *                     distorted appropriately.
      */
-    public function setupVertexPositions(vertexData : VertexData, vertexID : Int = 0,
-            attrName : String = "position",
-            bounds : Rectangle = null) : Void
+    public function setupVertexPositions(vertexData:VertexData, vertexID:Int = 0,
+            attrName:String = "position",
+            bounds:Rectangle = null):Void
     {
-        var frame : Rectangle = this.frame;
-        var width : Float = this.width;
-        var height : Float = this.height;
+        var frame:Rectangle = this.frame;
+        var width:Float = this.width;
+        var height:Float = this.height;
         
         if (frame != null) 
             sRectangle.setTo(-frame.x, -frame.y, width, height)
@@ -605,8 +609,8 @@ class Texture
         
         if (bounds != null) 
         {
-            var scaleX : Float = bounds.width / frameWidth;
-            var scaleY : Float = bounds.height / frameHeight;
+            var scaleX:Float = bounds.width / frameWidth;
+            var scaleY:Float = bounds.height / frameHeight;
             
             if (scaleX != 1.0 || scaleY != 1.0) 
             {
@@ -625,8 +629,8 @@ class Texture
      *  @param vertexID    the start position within the VertexData instance.
      *  @param attrName    the attribute name referencing the vertex positions.
      */
-    public function setupTextureCoordinates(vertexData : VertexData, vertexID : Int = 0,
-            attrName : String = "texCoords") : Void
+    public function setupTextureCoordinates(vertexData:VertexData, vertexID:Int = 0,
+            attrName:String = "texCoords"):Void
     {
         setTexCoords(vertexData, vertexID, attrName, 0.0, 0.0);
         setTexCoords(vertexData, vertexID + 1, attrName, 1.0, 0.0);
@@ -636,7 +640,7 @@ class Texture
     
     /** Transforms the given texture coordinates from the local coordinate system
      *  into the root texture's coordinate system. */
-    public function localToGlobal(u : Float, v : Float, out : Point = null) : Point
+    public function localToGlobal(u:Float, v:Float, out:Point = null):Point
     {
         if (out == null)             out = new Point();
         if (this == root)             out.setTo(u, v)
@@ -646,7 +650,7 @@ class Texture
     
     /** Transforms the given texture coordinates from the root texture's coordinate system
      *  to the local coordinate system. */
-    public function globalToLocal(u : Float, v : Float, out : Point = null) : Point
+    public function globalToLocal(u:Float, v:Float, out:Point = null):Point
     {
         if (out == null)             out = new Point();
         if (this == root)             out.setTo(u, v)
@@ -663,8 +667,8 @@ class Texture
     /** Writes the given texture coordinates to a VertexData instance after transforming
      *  them into the root texture's coordinate system. That way, the texture coordinates
      *  can be used directly to sample the texture in the fragment shader. */
-    public function setTexCoords(vertexData : VertexData, vertexID : Int, attrName : String,
-            u : Float, v : Float) : Void
+    public function setTexCoords(vertexData:VertexData, vertexID:Int, attrName:String,
+            u:Float, v:Float):Void
     {
         localToGlobal(u, v, sPoint);
         vertexData.setPoint(vertexID, attrName, sPoint.x, sPoint.y);
@@ -673,8 +677,8 @@ class Texture
     /** Reads a pair of texture coordinates from the given VertexData instance and transforms
      *  them into the current texture's coordinate system. (Remember, the VertexData instance
      *  will always contain the coordinates in the root texture's coordinate system!) */
-    public function getTexCoords(vertexData : VertexData, vertexID : Int,
-            attrName : String = "texCoords", out : Point = null) : Point
+    public function getTexCoords(vertexData:VertexData, vertexID:Int,
+            attrName:String = "texCoords", out:Point = null):Point
     {
         if (out == null)             out = new Point();
         vertexData.getPoint(vertexID, attrName, out);
@@ -685,81 +689,96 @@ class Texture
     
     /** The texture frame if it has one (see class description), otherwise <code>null</code>.
      *  <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-    private function get_frame() : Rectangle{return null;
+    private function get_frame():Rectangle {
+		return null;
     }
     
     /** The height of the texture in points, taking into account the frame rectangle
      *  (if there is one). */
-    private function get_frameWidth() : Float{return (frame != null) ? frame.width : width;
+    private function get_frameWidth():Float {
+		return (frame != null) ? frame.width:width;
     }
     
     /** The width of the texture in points, taking into account the frame rectangle
      *  (if there is one). */
-    private function get_frameHeight() : Float{return (frame != null) ? frame.height : height;
+    private function get_frameHeight():Float {
+		return (frame != null) ? frame.height:height;
     }
     
     /** The width of the texture in points. */
-    private function get_width() : Float{return 0;
+    private function get_width():Float {
+		return 0;
     }
     
     /** The height of the texture in points. */
-    private function get_height() : Float{return 0;
+    private function get_height():Float {
+		return 0;
     }
     
     /** The width of the texture in pixels (without scale adjustment). */
-    private function get_nativeWidth() : Float{return 0;
+    private function get_nativeWidth():Float {
+		return 0;
     }
     
     /** The height of the texture in pixels (without scale adjustment). */
-    private function get_nativeHeight() : Float{return 0;
+    private function get_nativeHeight():Float {
+		return 0;
     }
     
     /** The scale factor, which influences width and height properties. */
-    private function get_scale() : Float{return 1.0;
+    private function get_scale():Float {
+		return 1.0;
     }
     
     /** The Stage3D texture object the texture is based on. */
-    private function get_base() : TextureBase{return null;
+    private function get_base():TextureBase {
+		return null;
     }
     
     /** The concrete texture the texture is based on. */
-    private function get_root() : ConcreteTexture{return null;
+    private function get_root():ConcreteTexture {
+		return null;
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. */
-    private function get_format() : String{return Context3DTextureFormat.BGRA;
+    private function get_format():Context3DTextureFormat {
+		return Context3DTextureFormat.BGRA;
     }
     
     /** Indicates if the texture contains mip maps. */
-    private function get_mipMapping() : Bool{return false;
+    private function get_mipMapping():Bool {
+		return false;
     }
     
     /** Indicates if the alpha values are premultiplied into the RGB values. */
-    private function get_premultipliedAlpha() : Bool{return false;
+    private function get_premultipliedAlpha():Bool {
+		return false;
     }
     
     /** The matrix that is used to transform the texture coordinates into the coordinate
      *  space of the parent texture, if there is one. @default null
      *
      *  <p>CAUTION: not a copy, but the actual object! Never modify this matrix!</p> */
-    private function get_transformationMatrix() : Matrix{return null;
+    private function get_transformationMatrix():Matrix {
+		return null;
     }
     
     /** The matrix that is used to transform the texture coordinates into the coordinate
      *  space of the root texture, if this instance is not the root. @default null
      *
      *  <p>CAUTION: not a copy, but the actual object! Never modify this matrix!</p> */
-    private function get_transformationMatrixToRoot() : Matrix{return null;
+    private function get_transformationMatrixToRoot():Matrix {
+		return null;
     }
     
     /** Returns the maximum size constraint (for both width and height) for textures in the
      *  current Context3D profile. */
-    private static function get_maxSize() : Int
+    private static function get_maxSize():Int
     {
-        var target : Starling = Starling.current;
-        var profile : String = (target != null) ? target.profile : "baseline";
+        var target:Starling = Starling.Current;
+        var profile:Context3DProfile = (target != null) ? target.profile:Context3DProfile.BASELINE;
         
-        if (profile == "baseline" || profile == "baselineConstrained") 
+        if (profile == Context3DProfile.BASELINE || profile == Context3DProfile.BASELINE_CONSTRAINED) 
             return 2048
         else 
         return 4096;

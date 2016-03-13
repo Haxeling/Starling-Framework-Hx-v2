@@ -19,22 +19,22 @@ import utils.MenuButton;
 
 class BenchmarkScene extends Scene
 {
-    private static inline var FRAME_TIME_WINDOW_SIZE : Int = 10;
-    private static inline var MAX_FAIL_COUNT : Int = 100;
+    private static var FRAME_TIME_WINDOW_SIZE:Int = 10;
+    private static var MAX_FAIL_COUNT:Int = 100;
     
-    private var _startButton : Button;
-    private var _resultText : TextField;
-    private var _statusText : TextField;
-    private var _container : Sprite;
-    private var _objectPool : Array<DisplayObject>;
-    private var _objectTexture : Texture;
+    private var _startButton:Button;
+    private var _resultText:TextField;
+    private var _statusText:TextField;
+    private var _container:Sprite;
+    private var _objectPool:Array<DisplayObject>;
+    private var _objectTexture:Texture;
     
-    private var _frameCount : Int;
-    private var _failCount : Int;
-    private var _started : Bool;
-    private var _frameTimes : Array<Float>;
-    private var _targetFps : Int;
-    private var _phase : Int;
+    private var _frameCount:Int;
+    private var _failCount:Int;
+    private var _started:Bool;
+    private var _frameTimes:Array<Float>;
+    private var _targetFps:Int;
+    private var _phase:Int;
     
     public function new()
     {
@@ -68,7 +68,7 @@ class BenchmarkScene extends Scene
         addEventListener(Event.ENTER_FRAME, onEnterFrame);
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         removeEventListener(Event.ENTER_FRAME, onEnterFrame);
         _startButton.removeEventListener(Event.TRIGGERED, onStartButtonTriggered);
@@ -79,13 +79,13 @@ class BenchmarkScene extends Scene
         super.dispose();
     }
     
-    private function onStartButtonTriggered() : Void
+    private function onStartButtonTriggered():Void
     {
         trace("Starting benchmark");
         
         _startButton.visible = false;
         _started = true;
-        _targetFps = Starling.current.nativeStage.frameRate;
+        _targetFps = Starling.Current.nativeStage.frameRate;
         _frameCount = 0;
         _failCount = 0;
         _phase = 0;
@@ -100,7 +100,7 @@ class BenchmarkScene extends Scene
         }
     }
     
-    private function onEnterFrame(event : EnterFrameEvent, passedTime : Float) : Void
+    private function onEnterFrame(event:EnterFrameEvent, passedTime:Float):Void
     {
         if (!_started)             return;
         
@@ -111,7 +111,7 @@ class BenchmarkScene extends Scene
         for (i in 0...FRAME_TIME_WINDOW_SIZE){_frameTimes[i] += passedTime;
         }
         
-        var measuredFps : Float = FRAME_TIME_WINDOW_SIZE / _frameTimes.shift();
+        var measuredFps:Float = FRAME_TIME_WINDOW_SIZE / _frameTimes.shift();
         
         if (_phase == 0) 
         {
@@ -149,14 +149,14 @@ class BenchmarkScene extends Scene
             _statusText.text = Std.string(_container.numChildren) + " objects";
     }
     
-    private function addTestObjects(count : Int) : Void
+    private function addTestObjects(count:Int):Void
     {
-        var scale : Float = 1.0 / _container.scale;
+        var scale:Float = 1.0 / _container.scale;
         
         for (i in 0...count){
-            var egg : DisplayObject = getObjectFromPool();
-            var distance : Float = (100 + Math.random() * 100) * scale;
-            var angle : Float = Math.random() * Math.PI * 2.0;
+            var egg:DisplayObject = getObjectFromPool();
+            var distance:Float = (100 + Math.random() * 100) * scale;
+            var angle:Float = Math.random() * Math.PI * 2.0;
             
             egg.x = Math.cos(angle) * distance;
             egg.y = Math.sin(angle) * distance;
@@ -167,9 +167,9 @@ class BenchmarkScene extends Scene
         }
     }
     
-    private function removeTestObjects(count : Int) : Void
+    private function removeTestObjects(count:Int):Void
     {
-        var numChildren : Int = _container.numChildren;
+        var numChildren:Int = _container.numChildren;
         
         if (count >= numChildren) 
             count = numChildren;
@@ -178,13 +178,13 @@ class BenchmarkScene extends Scene
         }
     }
     
-    private function getObjectFromPool() : DisplayObject
+    private function getObjectFromPool():DisplayObject
     {
         // we pool mainly to avoid any garbage collection while the benchmark is running
         
         if (_objectPool.length == 0) 
         {
-            var image : Image = new Image(_objectTexture);
+            var image:Image = new Image(_objectTexture);
             image.alignPivot();
             image.pixelSnapping = false;  // slightly faster (and doesn't work here, anyway)  
             return image;
@@ -193,19 +193,19 @@ class BenchmarkScene extends Scene
         return _objectPool.pop();
     }
     
-    private function putObjectToPool(object : DisplayObject) : Void
+    private function putObjectToPool(object:DisplayObject):Void
     {
         _objectPool[_objectPool.length] = object;
     }
     
-    private function benchmarkComplete() : Void
+    private function benchmarkComplete():Void
     {
         _started = false;
         _startButton.visible = true;
         
-        var fps : Int = Starling.current.nativeStage.frameRate;
-        var numChildren : Int = _container.numChildren;
-        var resultString : String = StringTools.format("Result:\n{0} objects\nwith {1} fps",
+        var fps:Int = Starling.Current.nativeStage.frameRate;
+        var numChildren:Int = _container.numChildren;
+        var resultString:String = StringTools.format("Result:\n{0} objects\nwith {1} fps",
                 numChildren, fps);
         trace(resultString.replace(new EReg('\\n', "g"), " "));
         
@@ -220,7 +220,7 @@ class BenchmarkScene extends Scene
         _frameTimes.length = 0;
         _statusText.text = "";
         
-        var i : Int = numChildren - 1;
+        var i:Int = numChildren - 1;
         while (i >= 0){putObjectToPool(_container.removeChildAt(i));
             --i;
         }

@@ -15,7 +15,7 @@ import starling.text.TextFormat;
 import starling.text.TextOptions;
 import starling.text.TrueTypeCompositor;
 
-import flash.display3d.Context3DTextureFormat;
+import flash.display3D.Context3DTextureFormat;
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
@@ -79,52 +79,52 @@ import starling.utils.RectangleUtil;
  */
 class TextField extends DisplayObjectContainer
 {
-    private var isHorizontalAutoSize(get, never) : Bool;
-    private var isVerticalAutoSize(get, never) : Bool;
-    public var textBounds(get, never) : Rectangle;
-    public var text(get, set) : String;
-    public var format(get, set) : TextFormat;
-    public var border(get, set) : Bool;
-    public var autoScale(get, set) : Bool;
-    public var autoSize(get, set) : String;
-    public var wordWrap(get, set) : Bool;
-    public var batchable(get, set) : Bool;
-    public var isHtmlText(get, set) : Bool;
-    public static var defaultTextureFormat(get, set) : String;
-    private static var bitmapFonts(get, never) : Dictionary;
+    private var isHorizontalAutoSize(get, never):Bool;
+    private var isVerticalAutoSize(get, never):Bool;
+    public var textBounds(get, never):Rectangle;
+    public var text(get, set):String;
+    public var format(get, set):TextFormat;
+    public var border(get, set):Bool;
+    public var autoScale(get, set):Bool;
+    public var autoSize(get, set):String;
+    public var wordWrap(get, set):Bool;
+    public var batchable(get, set):Bool;
+    public var isHtmlText(get, set):Bool;
+    public static var defaultTextureFormat(get, set):Context3DTextureFormat;
+    private static var bitmapFonts(get, never):Map<String, Dynamic>;
 
     // the name container with the registered bitmap fonts
-    private static inline var BITMAP_FONT_DATA_NAME : String = "starling.display.TextField.BitmapFonts";
+    private static var BITMAP_FONT_DATA_NAME:String = "starling.display.TextField.BitmapFonts";
     
-    private var _text : String;
-    private var _options : TextOptions;
-    private var _format : TextFormat;
-    private var _autoSize : String;
-    private var _textBounds : Rectangle;
-    private var _hitArea : Rectangle;
-    private var _compositor : ITextCompositor;
-    private var _requiresRecomposition : Bool;
-    private var _border : DisplayObjectContainer;
-    private var _meshBatch : MeshBatch;
+    private var _text:String;
+    private var _options:TextOptions;
+    private var _format:TextFormat;
+    private var _autoSize:String;
+    private var _textBounds:Rectangle;
+    private var _hitArea:Rectangle;
+    private var _compositor:ITextCompositor;
+    private var _requiresRecomposition:Bool;
+    private var _border:DisplayObjectContainer;
+    private var _meshBatch:MeshBatch;
     
     // helper objects
-    private static var sMatrix : Matrix = new Matrix();
-    private static var sTrueTypeCompositor : TrueTypeCompositor = new TrueTypeCompositor();
-    private static var sDefaultTextureFormat : String = Context3DTextureFormat.BGRA_PACKED;
-    private var _helperFormat : TextFormat = new TextFormat();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sTrueTypeCompositor:TrueTypeCompositor = new TrueTypeCompositor();
+    private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA_PACKED;
+    private var _helperFormat:TextFormat = new TextFormat();
     
     /** Create a new text field with the given properties. */
-    public function new(width : Int, height : Int, text : String = "", format : TextFormat = null)
+    public function new(width:Int, height:Int, text:String = "", format:TextFormat = null)
     {
         super();
-        _text = (text != null) ? text : "";
+        _text = (text != null) ? text:"";
         _autoSize = TextFieldAutoSize.NONE;
         _hitArea = new Rectangle(0, 0, width, height);
         _requiresRecomposition = true;
         _compositor = sTrueTypeCompositor;
         _options = new TextOptions();
         
-        _format = (format != null) ? format.clone() : new TextFormat();
+        _format = (format != null) ? format.clone():new TextFormat();
         _format.addEventListener(Event.CHANGE, setRequiresRecomposition);
         
         _meshBatch = new MeshBatch();
@@ -133,7 +133,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** Disposes the underlying texture data. */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _format.removeEventListener(Event.CHANGE, setRequiresRecomposition);
         _compositor.clearMeshBatch(_meshBatch);
@@ -142,7 +142,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
         if (_requiresRecomposition)             recompose();
         super.render(painter);
@@ -150,14 +150,14 @@ class TextField extends DisplayObjectContainer
     
     /** Forces the text contents to be composed right away.
      *  Normally, it will only do so lazily, i.e. before being rendered. */
-    private function recompose() : Void
+    private function recompose():Void
     {
         if (_requiresRecomposition) 
         {
             _compositor.clearMeshBatch(_meshBatch);
             
-            var font : String = _format.font;
-            var bitmapFont : BitmapFont = getBitmapFont(font);
+            var font:String = _format.font;
+            var bitmapFont:BitmapFont = getBitmapFont(font);
             
             if (bitmapFont == null && font == BitmapFont.MINI) 
             {
@@ -165,7 +165,7 @@ class TextField extends DisplayObjectContainer
                 registerBitmapFont(bitmapFont);
             }
             
-            _compositor = (bitmapFont != null) ? bitmapFont : sTrueTypeCompositor;
+            _compositor = (bitmapFont != null) ? bitmapFont:sTrueTypeCompositor;
             
             updateText();
             updateBorder();
@@ -176,11 +176,11 @@ class TextField extends DisplayObjectContainer
     
     // font and border rendering
     
-    private function updateText() : Void
+    private function updateText():Void
     {
-        var width : Float = _hitArea.width;
-        var height : Float = _hitArea.height;
-        var format : TextFormat = _helperFormat;
+        var width:Float = _hitArea.width;
+        var height:Float = _hitArea.height;
+        var format:TextFormat = _helperFormat;
         
         // By working on a copy of the TextFormat, we make sure that modifications done
         // within the 'fillMeshBatch' method do not cause any side effects.
@@ -193,7 +193,7 @@ class TextField extends DisplayObjectContainer
         if (isHorizontalAutoSize)             width = 100000;
         if (isVerticalAutoSize)             height = 100000;
         
-        _options.textureScale = Starling.contentScaleFactor;
+        _options.textureScale = Starling.ContentScaleFactor;
         _options.textureFormat = sDefaultTextureFormat;
         _compositor.fillMeshBatch(_meshBatch, width, height, _text, format, _options);
         
@@ -220,17 +220,17 @@ class TextField extends DisplayObjectContainer
         }
     }
     
-    private function updateBorder() : Void
+    private function updateBorder():Void
     {
         if (_border == null)             return;
         
-        var width : Float = _hitArea.width;
-        var height : Float = _hitArea.height;
+        var width:Float = _hitArea.width;
+        var height:Float = _hitArea.height;
         
-        var topLine : Quad = try cast(_border.getChildAt(0), Quad) catch(e:Dynamic) null;
-        var rightLine : Quad = try cast(_border.getChildAt(1), Quad) catch(e:Dynamic) null;
-        var bottomLine : Quad = try cast(_border.getChildAt(2), Quad) catch(e:Dynamic) null;
-        var leftLine : Quad = try cast(_border.getChildAt(3), Quad) catch(e:Dynamic) null;
+        var topLine:Quad = try cast(_border.getChildAt(0), Quad) catch(e:Dynamic) null;
+        var rightLine:Quad = try cast(_border.getChildAt(1), Quad) catch(e:Dynamic) null;
+        var bottomLine:Quad = try cast(_border.getChildAt(2), Quad) catch(e:Dynamic) null;
+        var leftLine:Quad = try cast(_border.getChildAt(3), Quad) catch(e:Dynamic) null;
         
         topLine.width = width;topLine.height = 1;
         bottomLine.width = width;bottomLine.height = 1;
@@ -241,7 +241,7 @@ class TextField extends DisplayObjectContainer
         topLine.color = rightLine.color = bottomLine.color = leftLine.color = _format.color;
     }
     
-    private function setRequiresRecomposition() : Void
+    private function setRequiresRecomposition():Void
     {
         _requiresRecomposition = true;
         setRequiresRedraw();
@@ -249,20 +249,20 @@ class TextField extends DisplayObjectContainer
     
     // properties
     
-    private function get_isHorizontalAutoSize() : Bool
+    private function get_isHorizontalAutoSize():Bool
     {
         return _autoSize == TextFieldAutoSize.HORIZONTAL ||
         _autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
     }
     
-    private function get_isVerticalAutoSize() : Bool
+    private function get_isVerticalAutoSize():Bool
     {
         return _autoSize == TextFieldAutoSize.VERTICAL ||
         _autoSize == TextFieldAutoSize.BOTH_DIRECTIONS;
     }
     
     /** Returns the bounds of the text within the text field. */
-    private function get_textBounds() : Rectangle
+    private function get_textBounds():Rectangle
     {
         if (_requiresRecomposition)             recompose();
         if (_textBounds == null)             _textBounds = _meshBatch.getBounds(_meshBatch);
@@ -270,7 +270,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function getBounds(targetSpace : DisplayObject, out : Rectangle = null) : Rectangle
+    override public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
     {
         if (_requiresRecomposition)             recompose();
         getTransformationMatrix(targetSpace, sMatrix);
@@ -278,7 +278,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function hitTest(localPoint : Point) : DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (!visible || !touchable || !hitTestMask(localPoint))             return null
         else if (_hitArea.containsPoint(localPoint))             return this
@@ -286,7 +286,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_width(value : Float) : Float
+    override private function set_width(value:Float):Float
     {
         // different to ordinary display objects, changing the size of the text field should
         // not change the scaling, but make the texture bigger/smaller, while the size
@@ -298,7 +298,7 @@ class TextField extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override private function set_height(value : Float) : Float
+    override private function set_height(value:Float):Float
     {
         _hitArea.height = value;
         setRequiresRecomposition();
@@ -306,9 +306,12 @@ class TextField extends DisplayObjectContainer
     }
     
     /** The displayed text. */
-    private function get_text() : String{return _text;
+    private function get_text():String
+	{
+		return _text;
     }
-    private function set_text(value : String) : String
+	
+    private function set_text(value:String):String
     {
         if (value == null)             value = "";
         if (_text != value) 
@@ -332,9 +335,12 @@ class TextField extends DisplayObjectContainer
      *
      *  @default Verdana, 12 pt, black, centered
      */
-    private function get_format() : TextFormat{return _format;
+    private function get_format():TextFormat
+	{
+		return _format;
     }
-    private function set_format(value : TextFormat) : TextFormat
+	
+    private function set_format(value:TextFormat):TextFormat
     {
         if (value == null)             throw new ArgumentError("format cannot be null");
         _format.copyFrom(value);
@@ -343,9 +349,12 @@ class TextField extends DisplayObjectContainer
     
     /** Draws a border around the edges of the text field. Useful for visual debugging.
      *  @default false */
-    private function get_border() : Bool{return _border != null;
+    private function get_border():Bool
+	{
+		return _border != null;
     }
-    private function set_border(value : Bool) : Bool
+	
+    private function set_border(value:Bool):Bool
     {
         if (value && _border == null) 
         {
@@ -367,9 +376,12 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates whether the font size is automatically reduced if the complete text does
      *  not fit into the TextField. @default false */
-    private function get_autoScale() : Bool{return _options.autoScale;
+    private function get_autoScale():Bool
+	{
+		return _options.autoScale;
     }
-    private function set_autoScale(value : Bool) : Bool
+	
+    private function set_autoScale(value:Bool):Bool
     {
         if (_options.autoScale != value) 
         {
@@ -382,9 +394,12 @@ class TextField extends DisplayObjectContainer
     /** Specifies the type of auto-sizing the TextField will do.
      *  Note that any auto-sizing will implicitly deactivate all auto-scaling.
      *  @default none */
-    private function get_autoSize() : String{return _autoSize;
+    private function get_autoSize():String
+	{
+		return _autoSize;
     }
-    private function set_autoSize(value : String) : String
+	
+    private function set_autoSize(value:String):String
     {
         if (_autoSize != value) 
         {
@@ -396,9 +411,12 @@ class TextField extends DisplayObjectContainer
     
     /** Indicates if the text should be wrapped at word boundaries if it does not fit into
      *  the TextField otherwise. @default true */
-    private function get_wordWrap() : Bool{return _options.wordWrap;
+    private function get_wordWrap():Bool
+	{
+		return _options.wordWrap;
     }
-    private function set_wordWrap(value : Bool) : Bool
+	
+    private function set_wordWrap(value:Bool):Bool
     {
         if (value != _options.wordWrap) 
         {
@@ -417,9 +435,12 @@ class TextField extends DisplayObjectContainer
      *
      *  @default true
      */
-    private function get_batchable() : Bool{return _meshBatch.batchable;
+    private function get_batchable():Bool
+	{
+		return _meshBatch.batchable;
     }
-    private function set_batchable(value : Bool) : Bool
+	
+    private function set_batchable(value:Bool):Bool
     {
         _meshBatch.batchable = value;
         return value;
@@ -429,9 +450,12 @@ class TextField extends DisplayObjectContainer
      *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
      *  Clickable hyperlinks and external images are not supported. Only works for
      *  TrueType fonts! @default false */
-    private function get_isHtmlText() : Bool{return _options.isHtmlText;
+    private function get_isHtmlText():Bool
+	{
+		return _options.isHtmlText;
     }
-    private function set_isHtmlText(value : Bool) : Bool
+	
+    private function set_isHtmlText(value:Bool):Bool
     {
         if (_options.isHtmlText != value) 
         {
@@ -445,9 +469,10 @@ class TextField extends DisplayObjectContainer
      *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
      *  compromise between quality and memory consumption; use <pre>BGRA</pre> for
      *  the highest quality. */
-    private static function get_defaultTextureFormat() : String{return sDefaultTextureFormat;
+    private static function get_defaultTextureFormat():Context3DTextureFormat {
+		return sDefaultTextureFormat;
     }
-    private static function set_defaultTextureFormat(value : String) : String
+    private static function set_defaultTextureFormat(value:Context3DTextureFormat):Context3DTextureFormat
     {
         sDefaultTextureFormat = value;
         return value;
@@ -457,59 +482,54 @@ class TextField extends DisplayObjectContainer
      *  The font is identified by its <code>name</code> (not case sensitive).
      *  Per default, the <code>name</code> property of the bitmap font will be used, but you
      *  can pass a custom name, as well. @return the name of the font. */
-    public static function registerBitmapFont(bitmapFont : BitmapFont, name : String = null) : String
+    public static function registerBitmapFont(bitmapFont:BitmapFont, name:String = null):String
     {
         if (name == null)             name = bitmapFont.name;
-        bitmapFonts[convertToLowerCase(name)] = bitmapFont;
+        bitmapFonts.set(convertToLowerCase(name), bitmapFont);
         return name;
     }
     
     /** Unregisters the bitmap font and, optionally, disposes it. */
-    public static function unregisterBitmapFont(name : String, dispose : Bool = true) : Void
+    public static function unregisterBitmapFont(name:String, dispose:Bool = true):Void
     {
         name = convertToLowerCase(name);
         
-        if (dispose && Reflect.field(bitmapFonts, name) != null) 
-            Reflect.field(bitmapFonts, name).dispose();
+        if (dispose && bitmapFonts.exists(name))
+			cast(bitmapFonts.get(name), BitmapFont).dispose();
         
-        ;
+		bitmapFonts.remove(name);
     }
     
     /** Returns a registered bitmap font (or null, if the font has not been registered).
      *  The name is not case sensitive. */
-    public static function getBitmapFont(name : String) : BitmapFont
+    public static function getBitmapFont(name:String):BitmapFont
     {
-        return bitmapFonts[convertToLowerCase(name)];
+        return bitmapFonts.get(convertToLowerCase(name));
     }
     
     /** Stores the currently available bitmap fonts. Since a bitmap font will only work
      *  in one Stage3D context, they are saved in Starling's 'contextData' property. */
-    private static function get_bitmapFonts() : Dictionary
+    private static function get_bitmapFonts():Map<String, Dynamic>
     {
-        var fonts : Dictionary = try cast(Starling.painter.sharedData[BITMAP_FONT_DATA_NAME], Dictionary) catch(e:Dynamic) null;
-        
-        if (fonts == null) 
+        if (!Starling.Painter.sharedData.exists(BITMAP_FONT_DATA_NAME)) 
         {
-            fonts = new Dictionary();
-            Starling.painter.sharedData[BITMAP_FONT_DATA_NAME] = fonts;
+            Starling.Painter.sharedData.set(BITMAP_FONT_DATA_NAME, new Map<String, Dynamic>());
         }
         
-        return fonts;
+        return Starling.Painter.sharedData.get(BITMAP_FONT_DATA_NAME);
     }
     
     // optimization for 'toLowerCase' calls
     
-    private static var sStringCache : Dictionary = new Dictionary();
+    private static var sStringCache = new Map<String, String>();
     
-    private static function convertToLowerCase(string : String) : String
+    private static function convertToLowerCase(string:String):String
     {
-        var result : String = sStringCache[String];
-        if (result == null) 
-        {
-            result = String.toLowerCase();
-            sStringCache[String] = result;
-        }
-        return result;
+		if (!sStringCache.exists(string))
+		{
+			sStringCache.set(string, string.toLowerCase());
+		}
+		return sStringCache.get(string);
     }
 }
 

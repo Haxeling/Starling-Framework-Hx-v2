@@ -47,51 +47,51 @@ import starling.utils.RectangleUtil;
  */
 class Button extends DisplayObjectContainer
 {
-    public var state(get, set) : String;
-    public var scaleWhenDown(get, set) : Float;
-    public var scaleWhenOver(get, set) : Float;
-    public var alphaWhenDown(get, set) : Float;
-    public var alphaWhenDisabled(get, set) : Float;
-    public var enabled(get, set) : Bool;
-    public var text(get, set) : String;
-    public var textFormat(get, set) : TextFormat;
-    public var upState(get, set) : Texture;
-    public var downState(get, set) : Texture;
-    public var overState(get, set) : Texture;
-    public var disabledState(get, set) : Texture;
-    public var textBounds(get, set) : Rectangle;
-    public var color(get, set) : Int;
-    public var textureSmoothing(get, set) : String;
-    public var overlay(get, never) : Sprite;
-    public var scale9Grid(get, set) : Rectangle;
+    public var state(get, set):String;
+    public var scaleWhenDown(get, set):Float;
+    public var scaleWhenOver(get, set):Float;
+    public var alphaWhenDown(get, set):Float;
+    public var alphaWhenDisabled(get, set):Float;
+    public var enabled(get, set):Bool;
+    public var text(get, set):String;
+    public var textFormat(get, set):TextFormat;
+    public var upState(get, set):Texture;
+    public var downState(get, set):Texture;
+    public var overState(get, set):Texture;
+    public var disabledState(get, set):Texture;
+    public var textBounds(get, set):Rectangle;
+    public var color(get, set):Int;
+    public var textureSmoothing(get, set):String;
+    public var overlay(get, never):Sprite;
+    public var scale9Grid(get, set):Rectangle;
 
-    private static inline var MAX_DRAG_DIST : Float = 50;
+    private static var MAX_DRAG_DIST:Float = 50;
     
-    private var _upState : Texture;
-    private var _downState : Texture;
-    private var _overState : Texture;
-    private var _disabledState : Texture;
+    private var _upState:Texture;
+    private var _downState:Texture;
+    private var _overState:Texture;
+    private var _disabledState:Texture;
     
-    private var _contents : Sprite;
-    private var _body : Image;
-    private var _textField : TextField;
-    private var _textBounds : Rectangle;
-    private var _overlay : Sprite;
+    private var _contents:Sprite;
+    private var _body:Image;
+    private var _textField:TextField;
+    private var _textBounds:Rectangle;
+    private var _overlay:Sprite;
     
-    private var _scaleWhenDown : Float;
-    private var _scaleWhenOver : Float;
-    private var _alphaWhenDown : Float;
-    private var _alphaWhenDisabled : Float;
-    private var _useHandCursor : Bool;
-    private var _enabled : Bool;
-    private var _state : String;
-    private var _triggerBounds : Rectangle;
+    private var _scaleWhenDown:Float;
+    private var _scaleWhenOver:Float;
+    private var _alphaWhenDown:Float;
+    private var _alphaWhenDisabled:Float;
+    private var _useHandCursor:Bool;
+    private var _enabled:Bool;
+    private var _state:String;
+    private var _triggerBounds:Rectangle;
     
     /** Creates a button with a set of state-textures and (optionally) some text.
      *  Any state that is left 'null' will display the up-state texture. Beware that all
      *  state textures should have the same dimensions. */
-    public function new(upState : Texture, text : String = "", downState : Texture = null,
-            overState : Texture = null, disabledState : Texture = null)
+    public function new(upState:Texture, text:String = "", downState:Texture = null,
+            overState:Texture = null, disabledState:Texture = null)
     {
         super();
         if (upState == null)             throw new ArgumentError("Texture 'upState' cannot be null");
@@ -103,9 +103,9 @@ class Button extends DisplayObjectContainer
         
         _state = ButtonState.UP;
         _body = new Image(upState);
-        _scaleWhenDown = (downState != null) ? 1.0 : 0.9;
+        _scaleWhenDown = (downState != null) ? 1.0:0.9;
         _scaleWhenOver = _alphaWhenDown = 1.0;
-        _alphaWhenDisabled = (disabledState != null) ? 1.0 : 0.5;
+        _alphaWhenDisabled = (disabledState != null) ? 1.0:0.5;
         _enabled = true;
         _useHandCursor = true;
         _textBounds = new Rectangle(0, 0, _body.width, _body.height);
@@ -121,7 +121,7 @@ class Button extends DisplayObjectContainer
     }
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         // text field might be disconnected from parent, so we have to dispose it manually
         if (_textField != null) 
@@ -133,15 +133,15 @@ class Button extends DisplayObjectContainer
     /** Readjusts the dimensions of the button according to its current state texture.
      *  Call this method to synchronize button and texture size after assigning a texture
      *  with a different size. */
-    public function readjustSize() : Void
+    public function readjustSize():Void
     {
-        var prevWidth : Float = _body.width;
-        var prevHeight : Float = _body.height;
+        var prevWidth:Float = _body.width;
+        var prevHeight:Float = _body.height;
         
         _body.readjustSize();
         
-        var scaleX : Float = _body.width / prevWidth;
-        var scaleY : Float = _body.height / prevHeight;
+        var scaleX:Float = _body.width / prevWidth;
+        var scaleY:Float = _body.height / prevHeight;
         
         _textBounds.x *= scaleX;
         _textBounds.y *= scaleY;
@@ -151,7 +151,7 @@ class Button extends DisplayObjectContainer
         if (_textField != null)             createTextField();
     }
     
-    private function createTextField() : Void
+    private function createTextField():Void
     {
         if (_textField == null) 
         {
@@ -167,13 +167,13 @@ class Button extends DisplayObjectContainer
         _textField.y = _textBounds.y;
     }
     
-    private function onTouch(event : TouchEvent) : Void
+    private function onTouch(event:TouchEvent):Void
     {
         Mouse.cursor = ((_useHandCursor && _enabled && event.interactsWith(this))) ? 
-                MouseCursor.BUTTON : MouseCursor.AUTO;
+                MouseCursor.BUTTON:MouseCursor.AUTO;
         
-        var touch : Touch = event.getTouch(this);
-        var isWithinBounds : Bool;
+        var touch:Touch = event.getTouch(this);
+        var isWithinBounds:Bool;
         
         if (!_enabled) 
         {
@@ -218,9 +218,12 @@ class Button extends DisplayObjectContainer
     
     /** The current state of the button. The corresponding strings are found
      *  in the ButtonState class. */
-    private function get_state() : String{return _state;
+    private function get_state():String
+	{
+		return _state;
     }
-    private function set_state(value : String) : String
+	
+    private function set_state(value:String):String
     {
         _state = value;
         _contents.x = _contents.y = 0;
@@ -250,58 +253,84 @@ class Button extends DisplayObjectContainer
         return value;
     }
     
-    private function setStateTexture(texture : Texture) : Void
+    private function setStateTexture(texture:Texture):Void
     {
-        _body.texture = (texture != null) ? texture : _upState;
+        _body.texture = (texture != null) ? texture:_upState;
     }
     
     /** The scale factor of the button on touch. Per default, a button without a down state
      *  texture will be made slightly smaller, while a button with a down state texture
      *  remains unscaled. */
-    private function get_scaleWhenDown() : Float{return _scaleWhenDown;
+    private function get_scaleWhenDown():Float
+	{
+		return _scaleWhenDown;
     }
-    private function set_scaleWhenDown(value : Float) : Float{_scaleWhenDown = value;
+	
+    private function set_scaleWhenDown(value:Float):Float
+	{
+		_scaleWhenDown = value;
         return value;
     }
     
     /** The scale factor of the button while the mouse cursor hovers over it. @default 1.0 */
-    private function get_scaleWhenOver() : Float{return _scaleWhenOver;
+    private function get_scaleWhenOver():Float
+	{
+		return _scaleWhenOver;
     }
-    private function set_scaleWhenOver(value : Float) : Float{_scaleWhenOver = value;
+	
+    private function set_scaleWhenOver(value:Float):Float
+	{
+		_scaleWhenOver = value;
         return value;
     }
     
     /** The alpha value of the button on touch. @default 1.0 */
-    private function get_alphaWhenDown() : Float{return _alphaWhenDown;
+    private function get_alphaWhenDown():Float
+	{
+		return _alphaWhenDown;
     }
-    private function set_alphaWhenDown(value : Float) : Float{_alphaWhenDown = value;
+	
+    private function set_alphaWhenDown(value:Float):Float
+	{
+		_alphaWhenDown = value;
         return value;
     }
     
     /** The alpha value of the button when it is disabled. @default 0.5 */
-    private function get_alphaWhenDisabled() : Float{return _alphaWhenDisabled;
+    private function get_alphaWhenDisabled():Float
+	{
+		return _alphaWhenDisabled;
     }
-    private function set_alphaWhenDisabled(value : Float) : Float{_alphaWhenDisabled = value;
+	
+    private function set_alphaWhenDisabled(value:Float):Float
+	{
+		_alphaWhenDisabled = value;
         return value;
     }
     
     /** Indicates if the button can be triggered. */
-    private function get_enabled() : Bool{return _enabled;
+    private function get_enabled():Bool
+	{
+		return _enabled;
     }
-    private function set_enabled(value : Bool) : Bool
+	
+    private function set_enabled(value:Bool):Bool
     {
         if (_enabled != value) 
         {
             _enabled = value;
-            state = (value) ? ButtonState.UP : ButtonState.DISABLED;
+            state = (value) ? ButtonState.UP:ButtonState.DISABLED;
         }
         return value;
     }
     
     /** The text that is displayed on the button. */
-    private function get_text() : String{return (_textField != null) ? _textField.text : "";
+    private function get_text():String
+	{
+		return (_textField != null) ? _textField.text:"";
     }
-    private function set_text(value : String) : String
+	
+    private function set_text(value:String):String
     {
         if (value.length == 0) 
         {
@@ -323,13 +352,13 @@ class Button extends DisplayObjectContainer
     }
     
     /** The format of the button's TextField. */
-    private function get_textFormat() : TextFormat
+    private function get_textFormat():TextFormat
     {
-        if (_textField == null)             createTextField();
+        if (_textField == null) createTextField();
         return _textField.format;
     }
     
-    private function set_textFormat(value : TextFormat) : TextFormat
+    private function set_textFormat(value:TextFormat):TextFormat
     {
         if (_textField == null)             createTextField();
         _textField.format = value;
@@ -337,9 +366,12 @@ class Button extends DisplayObjectContainer
     }
     
     /** The texture that is displayed when the button is not being touched. */
-    private function get_upState() : Texture{return _upState;
+    private function get_upState():Texture
+	{
+		return _upState;
     }
-    private function set_upState(value : Texture) : Texture
+	
+    private function set_upState(value:Texture):Texture
     {
         if (value == null) 
             throw new ArgumentError("Texture 'upState' cannot be null");
@@ -359,40 +391,49 @@ class Button extends DisplayObjectContainer
     }
     
     /** The texture that is displayed while the button is touched. */
-    private function get_downState() : Texture{return _downState;
+    private function get_downState():Texture
+	{
+		return _downState;
     }
-    private function set_downState(value : Texture) : Texture
+	
+    private function set_downState(value:Texture):Texture
     {
         if (_downState != value) 
         {
             _downState = value;
-            if (_state == ButtonState.DOWN)                 setStateTexture(value);
+            if (_state == ButtonState.DOWN) setStateTexture(value);
         }
         return value;
     }
     
     /** The texture that is displayed while mouse hovers over the button. */
-    private function get_overState() : Texture{return _overState;
+    private function get_overState():Texture
+	{
+		return _overState;
     }
-    private function set_overState(value : Texture) : Texture
+	
+    private function set_overState(value:Texture):Texture
     {
         if (_overState != value) 
         {
             _overState = value;
-            if (_state == ButtonState.OVER)                 setStateTexture(value);
+            if (_state == ButtonState.OVER) setStateTexture(value);
         }
         return value;
     }
     
     /** The texture that is displayed when the button is disabled. */
-    private function get_disabledState() : Texture{return _disabledState;
+    private function get_disabledState():Texture
+	{
+		return _disabledState;
     }
-    private function set_disabledState(value : Texture) : Texture
+	
+    private function set_disabledState(value:Texture):Texture
     {
         if (_disabledState != value) 
         {
             _disabledState = value;
-            if (_state == ButtonState.DISABLED)                 setStateTexture(value);
+            if (_state == ButtonState.DISABLED) setStateTexture(value);
         }
         return value;
     }
@@ -400,9 +441,12 @@ class Button extends DisplayObjectContainer
     /** The bounds of the button's TextField. Allows moving the text to a custom position.
      *  CAUTION: not a copy, but the actual object! Text will only update on re-assignment.
      */
-    private function get_textBounds() : Rectangle{return _textBounds;
+    private function get_textBounds():Rectangle
+	{
+		return _textBounds;
     }
-    private function set_textBounds(value : Rectangle) : Rectangle
+	
+    private function set_textBounds(value:Rectangle):Rectangle
     {
         _textBounds.copyFrom(value);
         createTextField();
@@ -411,22 +455,32 @@ class Button extends DisplayObjectContainer
     
     /** The color of the button's state image. Just like every image object, each pixel's
      *  color is multiplied with this value. @default white */
-    private function get_color() : Int{return _body.color;
+    private function get_color():Int
+	{
+		return _body.color;
     }
-    private function set_color(value : Int) : Int{_body.color = value;
+	
+    private function set_color(value:Int):Int
+	{
+		_body.color = value;
         return value;
     }
     
     /** The smoothing type used for the button's state image. */
-    private function get_textureSmoothing() : String{return _body.textureSmoothing;
+    private function get_textureSmoothing():String
+	{
+		return _body.textureSmoothing;
     }
-    private function set_textureSmoothing(value : String) : String{_body.textureSmoothing = value;
+	
+    private function set_textureSmoothing(value:String):String
+	{
+		_body.textureSmoothing = value;
         return value;
     }
     
     /** The overlay sprite is displayed on top of the button contents. It scales with the
      *  button when pressed. Use it to add additional objects to the button (e.g. an icon). */
-    private function get_overlay() : Sprite
+    private function get_overlay():Sprite
     {
         if (_overlay == null) 
             _overlay = new Sprite();
@@ -437,34 +491,39 @@ class Button extends DisplayObjectContainer
     
     /** Indicates if the mouse cursor should transform into a hand while it's over the button. 
      *  @default true */
-    override private function get_useHandCursor() : Bool{return _useHandCursor;
+    override private function get_useHandCursor():Bool
+	{
+		return _useHandCursor;
     }
-    override private function set_useHandCursor(value : Bool) : Bool{_useHandCursor = value;
+	
+    override private function set_useHandCursor(value:Bool):Bool
+	{
+		_useHandCursor = value;
         return value;
     }
     
     /** @private */
-    override private function set_width(value : Float) : Float
+    override private function set_width(value:Float):Float
     {
-        var scaleX : Float = value / _body.width;
+        var scaleX:Float = value / _body.width;
         
         _body.width = value;
         _textBounds.x *= scaleX;
         _textBounds.width *= scaleX;
         
-        if (_textField != null)             _textField.width = value;
+        if (_textField != null) _textField.width = value;
         return value;
     }
     
-    override private function set_height(value : Float) : Float
+    override private function set_height(value:Float):Float
     {
-        var scaleY : Float = value / _body.height;
+        var scaleY:Float = value / _body.height;
         
         _body.height = value;
         _textBounds.y *= scaleY;
         _textBounds.height *= scaleY;
         
-        if (_textField != null)             _textField.height = value;
+        if (_textField != null) _textField.height = value;
         return value;
     }
     
@@ -475,9 +534,12 @@ class Button extends DisplayObjectContainer
      *  @see Image#scale9Grid
      *  @default null
      */
-    private function get_scale9Grid() : Rectangle{return _body.scale9Grid;
+    private function get_scale9Grid():Rectangle
+	{
+		return _body.scale9Grid;
     }
-    private function set_scale9Grid(value : Rectangle) : Rectangle{_body.scale9Grid = value;
+	
+    private function set_scale9Grid(value:Rectangle):Rectangle{_body.scale9Grid = value;
         return value;
     }
 }

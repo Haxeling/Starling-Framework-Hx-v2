@@ -11,30 +11,33 @@
 package starling.textures;
 
 
+import flash.display3D.Context3DTextureFormat;
+import haxe.Constraints.Function;
 import starling.core.Starling;
 
 /** The TextureOptions class specifies options for loading textures with the
  *  <code>Texture.fromData</code> and <code>Texture.fromTextureBase</code> methods. */
 class TextureOptions
 {
-    public var scale(get, set) : Float;
-    public var format(get, set) : String;
-    public var mipMapping(get, set) : Bool;
-    public var optimizeForRenderToTexture(get, set) : Bool;
-    public var onReady(get, set) : Function;
-    public var premultipliedAlpha(get, set) : Bool;
+    public var scale(get, set):Float;
+    public var format(get, set):Context3DTextureFormat;
+    public var mipMapping(get, set):Bool;
+    public var optimizeForRenderToTexture(get, set):Bool;
+    public var onReady(get, set):Function;
+    public var premultipliedAlpha(get, set):Bool;
 
-    private var _scale : Float;
-    private var _format : String;
-    private var _mipMapping : Bool;
-    private var _optimizeForRenderToTexture : Bool = false;
-    private var _premultipliedAlpha : Bool;
-    private var _onReady : Function = null;
+    private var _scale:Float;
+    private var _format:Context3DTextureFormat;
+    private var _mipMapping:Bool;
+    private var _optimizeForRenderToTexture:Bool = false;
+    private var _premultipliedAlpha:Bool;
+    private var _onReady:Function = null;
     
     /** Creates a new instance with the given options. */
-    public function new(scale : Float = 1.0, mipMapping : Bool = false,
-            format : String = "bgra", premultipliedAlpha : Bool = true)
+    public function new(scale:Float = 1.0, mipMapping:Bool = false,
+            format:Context3DTextureFormat = null, premultipliedAlpha:Bool = true)
     {
+		if (format == null) format = Context3DTextureFormat.BGRA;
         _scale = scale;
         _format = format;
         _mipMapping = mipMapping;
@@ -42,9 +45,9 @@ class TextureOptions
     }
     
     /** Creates a clone of the TextureOptions object with the exact same properties. */
-    public function clone() : TextureOptions
+    public function clone():TextureOptions
     {
-        var clone : TextureOptions = new TextureOptions(_scale, _mipMapping, _format);
+        var clone:TextureOptions = new TextureOptions(_scale, _mipMapping, _format);
         clone._optimizeForRenderToTexture = _optimizeForRenderToTexture;
         clone._onReady = _onReady;
         return clone;
@@ -52,34 +55,52 @@ class TextureOptions
     
     /** The scale factor, which influences width and height properties. If you pass '-1',
      *  the current global content scale factor will be used. @default 1.0 */
-    private function get_scale() : Float{return _scale;
+    private function get_scale():Float
+	{
+		return _scale;
     }
-    private function set_scale(value : Float) : Float
+	
+    private function set_scale(value:Float):Float
     {
-        _scale = value > (0) ? value : Starling.contentScaleFactor;
+        _scale = value > (0) ? value:Starling.ContentScaleFactor;
         return value;
     }
     
     /** The <code>Context3DTextureFormat</code> of the underlying texture data. Only used
      *  for textures that are created from Bitmaps; the format of ATF files is set when they
      *  are created. @default BGRA */
-    private function get_format() : String{return _format;
+    private function get_format():Context3DTextureFormat
+	{
+		return _format;
     }
-    private function set_format(value : String) : String{_format = value;
+	
+    private function set_format(value:Context3DTextureFormat):Context3DTextureFormat
+	{
+		_format = value;
         return value;
     }
     
     /** Indicates if the texture contains mip maps. @default false */
-    private function get_mipMapping() : Bool{return _mipMapping;
+    private function get_mipMapping():Bool
+	{
+		return _mipMapping;
     }
-    private function set_mipMapping(value : Bool) : Bool{_mipMapping = value;
+	
+    private function set_mipMapping(value:Bool):Bool
+	{
+		_mipMapping = value;
         return value;
     }
     
     /** Indicates if the texture will be used as render target. */
-    private function get_optimizeForRenderToTexture() : Bool{return _optimizeForRenderToTexture;
+    private function get_optimizeForRenderToTexture():Bool
+	{
+		return _optimizeForRenderToTexture;
     }
-    private function set_optimizeForRenderToTexture(value : Bool) : Bool{_optimizeForRenderToTexture = value;
+	
+    private function set_optimizeForRenderToTexture(value:Bool):Bool
+	{
+		_optimizeForRenderToTexture = value;
         return value;
     }
     
@@ -94,9 +115,14 @@ class TextureOptions
      *
      *  @default null
      */
-    private function get_onReady() : Function{return _onReady;
+    private function get_onReady():Function
+	{
+		return _onReady;
     }
-    private function set_onReady(value : Function) : Function{_onReady = value;
+	
+    private function set_onReady(value:Function):Function
+	{
+		_onReady = value;
         return value;
     }
     
@@ -104,9 +130,14 @@ class TextureOptions
      *  true for textures created from BitmapData and false for textures created from ATF data.
      *  This property will only be read by the <code>Texture.fromTextureBase</code> factory
      *  method. @default true */
-    private function get_premultipliedAlpha() : Bool{return _premultipliedAlpha;
+    private function get_premultipliedAlpha():Bool
+	{
+		return _premultipliedAlpha;
     }
-    private function set_premultipliedAlpha(value : Bool) : Bool{_premultipliedAlpha = value;
+	
+    private function set_premultipliedAlpha(value:Bool):Bool
+	{
+		_premultipliedAlpha = value;
         return value;
     }
 }

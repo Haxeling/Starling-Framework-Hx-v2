@@ -11,13 +11,12 @@
 package starling.display;
 
 import flash.errors.ArgumentError;
-import starling.display.SDefaultStyle;
+import openfl.errors.Error;
 
 import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 
-import starling.core.StarlingInternal;
 import starling.rendering.IndexData;
 import starling.rendering.MeshStyle;
 import starling.rendering.Painter;
@@ -47,34 +46,34 @@ import starling.utils.MeshUtil;
  */
 class Mesh extends DisplayObject
 {
-    private var vertexData(get, never) : VertexData;
-    private var indexData(get, never) : IndexData;
-    public var style(get, set) : MeshStyle;
-    public var texture(get, set) : Texture;
-    public var color(get, set) : Int;
-    public var textureSmoothing(get, set) : String;
-    public var pixelSnapping(get, set) : Bool;
-    public var numVertices(get, never) : Int;
-    public var numIndices(get, never) : Int;
-    public var numTriangles(get, never) : Int;
-    public var vertexFormat(get, never) : VertexDataFormat;
-    public static var defaultStyle(get, set) : Class<Dynamic>;
+    private var vertexData(get, never):VertexData;
+    private var indexData(get, never):IndexData;
+    public var style(get, set):MeshStyle;
+    public var texture(get, set):Texture;
+    public var color(get, set):Int;
+    public var textureSmoothing(get, set):String;
+    public var pixelSnapping(get, set):Bool;
+    public var numVertices(get, set):Int;
+    public var numIndices(get, set):Int;
+    public var numTriangles(get, never):Int;
+    public var vertexFormat(get, never):VertexDataFormat;
+    public static var defaultStyle(get, set):Class<Dynamic>;
 
     /** @private */@:allow(starling.display)
-    private var _style : MeshStyle;
+    private var _style:MeshStyle;
     /** @private */@:allow(starling.display)
-    private var _vertexData : VertexData;
+    private var _vertexData:VertexData;
     /** @private */@:allow(starling.display)
-    private var _indexData : IndexData;
+    private var _indexData:IndexData;
     
-    private var _pixelSnapping : Bool;
-    private static var sDefaultStyle : Class<Dynamic> = MeshStyle;
+    private var _pixelSnapping:Bool;
+    private static var sDefaultStyle:Class<Dynamic> = MeshStyle;
     
     /** Creates a new mesh with the given vertices and indices.
      *  If you don't pass a style, an instance of <code>MeshStyle</code> will be created
      *  for you. Note that the format of the vertex data will be matched to the
      *  given style right away. */
-    public function new(vertexData : VertexData, indexData : IndexData, style : MeshStyle = null)
+    public function new(vertexData:VertexData, indexData:IndexData, style:MeshStyle = null)
     {
         super();
         if (vertexData == null)             throw new ArgumentError("VertexData must not be null");
@@ -88,7 +87,7 @@ class Mesh extends DisplayObject
     }
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _vertexData.clear();
         _indexData.clear();
@@ -97,20 +96,20 @@ class Mesh extends DisplayObject
     }
     
     /** @inheritDoc */
-    override public function hitTest(localPoint : Point) : DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (!visible || !touchable || !hitTestMask(localPoint))             return null
-        else return (MeshUtil.containsPoint(_vertexData, _indexData, localPoint)) ? this : null;
+        else return (MeshUtil.containsPoint(_vertexData, _indexData, localPoint)) ? this:null;
     }
     
     /** @inheritDoc */
-    override public function getBounds(targetSpace : DisplayObject, out : Rectangle = null) : Rectangle
+    override public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
     {
         return MeshUtil.calculateBounds(_vertexData, this, targetSpace, out);
     }
     
     /** @inheritDoc */
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
         if (_pixelSnapping) 
             snapToPixels(painter.state.modelviewMatrix, painter.pixelSize);
@@ -118,19 +117,19 @@ class Mesh extends DisplayObject
         painter.batchMesh(this);
     }
     
-    private function snapToPixels(matrix : Matrix, pixelSize : Float) : Void
+    private function snapToPixels(matrix:Matrix, pixelSize:Float):Void
     {
         // Snapping only makes sense if the object is unscaled and rotated only by
         // multiples of 90 degrees. If that's the case can be found out by looking
         // at the modelview matrix.
         
-        var E : Float = 0.0001;
+        var E:Float = 0.0001;
         
-        var doSnap : Bool = false;
-        var aSq : Float;
-        var bSq : Float;
-        var cSq : Float;
-        var dSq : Float;
+        var doSnap:Bool = false;
+        var aSq:Float;
+        var bSq:Float;
+        var cSq:Float;
+        var dSq:Float;
         
         if (matrix.b + E > 0 && matrix.b - E < 0 && matrix.c + E > 0 && matrix.c - E < 0) 
         {
@@ -168,11 +167,11 @@ class Mesh extends DisplayObject
      *  @param mergeWithPredecessor  if enabled, all attributes of the previous style will be
      *                               be copied to the new one, if possible.
      */
-    public function setStyle(meshStyle : MeshStyle = null, mergeWithPredecessor : Bool = true) : Void
+    public function setStyle(meshStyle:MeshStyle = null, mergeWithPredecessor:Bool = true):Void
     {
-        if (meshStyle == null)             meshStyle = try cast(Type.createInstance(sDefaultStyle, []), MeshStyle) catch(e:Dynamic) null
-        else if (meshStyle == _style)             return
-        else if (meshStyle.target)             meshStyle.target.setStyle();
+        if (meshStyle == null) meshStyle = try cast(Type.createInstance(sDefaultStyle, []), MeshStyle) catch(e:Dynamic) null
+        else if (meshStyle == _style) return;
+        else if (meshStyle.target != null) meshStyle.target.setStyle();
         
         if (_style != null) 
         {
@@ -187,37 +186,37 @@ class Mesh extends DisplayObject
     // vertex manipulation
     
     /** Returns the alpha value of the vertex at the specified index. */
-    public function getVertexAlpha(vertexID : Int) : Float
+    public function getVertexAlpha(vertexID:Int):Float
     {
         return _style.getVertexAlpha(vertexID);
     }
     
     /** Sets the alpha value of the vertex at the specified index to a certain value. */
-    public function setVertexAlpha(vertexID : Int, alpha : Float) : Void
+    public function setVertexAlpha(vertexID:Int, alpha:Float):Void
     {
         _style.setVertexAlpha(vertexID, alpha);
     }
     
     /** Returns the RGB color of the vertex at the specified index. */
-    public function getVertexColor(vertexID : Int) : Int
+    public function getVertexColor(vertexID:Int):Int
     {
         return _style.getVertexColor(vertexID);
     }
     
     /** Sets the RGB color of the vertex at the specified index to a certain value. */
-    public function setVertexColor(vertexID : Int, color : Int) : Void
+    public function setVertexColor(vertexID:Int, color:Int):Void
     {
         _style.setVertexColor(vertexID, color);
     }
     
     /** Returns the texture coordinates of the vertex at the specified index. */
-    public function getTexCoords(vertexID : Int, out : Point = null) : Point
+    public function getTexCoords(vertexID:Int, out:Point = null):Point
     {
         return _style.getTexCoords(vertexID, out);
     }
     
     /** Sets the texture coordinates of the vertex at the specified index to the given values. */
-    public function setTexCoords(vertexID : Int, u : Float, v : Float) : Void
+    public function setTexCoords(vertexID:Int, u:Float, v:Float):Void
     {
         _style.setTexCoords(vertexID, u, v);
     }
@@ -226,12 +225,16 @@ class Mesh extends DisplayObject
     
     /** The vertex data describing all vertices of the mesh.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    private function get_vertexData() : VertexData{return _vertexData;
+    private function get_vertexData():VertexData
+	{
+		return _vertexData;
     }
     
     /** The index data describing how the vertices are interconnected.
      *  Any change requires a call to <code>setRequiresRedraw</code>. */
-    private function get_indexData() : IndexData{return _indexData;
+    private function get_indexData():IndexData
+	{
+		return _indexData;
     }
     
     /** The style that is used to render the mesh. Styles (which are always subclasses of
@@ -242,34 +245,52 @@ class Mesh extends DisplayObject
      *
      *  @default MeshStyle
      */
-    private function get_style() : MeshStyle{return _style;
+    private function get_style():MeshStyle
+	{
+		return _style;
     }
-    private function set_style(value : MeshStyle) : MeshStyle
+	
+    private function set_style(value:MeshStyle):MeshStyle
     {
         setStyle(value);
         return value;
     }
     
     /** The texture that is mapped to the mesh (or <code>null</code>, if there is none). */
-    private function get_texture() : Texture{return _style.texture;
+    private function get_texture():Texture
+	{
+		return _style.texture;
     }
-    private function set_texture(value : Texture) : Texture{_style.texture = value;
+	
+    private function set_texture(value:Texture):Texture
+	{
+		_style.texture = value;
         return value;
     }
     
     /** Changes the color of all vertices to the same value.
      *  The getter simply returns the color of the first vertex. */
-    private function get_color() : Int{return _style.color;
+    private function get_color():Int
+	{
+		return _style.color;
     }
-    private function set_color(value : Int) : Int{_style.color = value;
+	
+    private function set_color(value:Int):Int
+	{
+		_style.color = value;
         return value;
     }
     
     /** The smoothing filter that is used for the texture.
      *  @default bilinear */
-    private function get_textureSmoothing() : String{return _style.textureSmoothing;
+    private function get_textureSmoothing():String
+	{
+		return _style.textureSmoothing;
     }
-    private function set_textureSmoothing(value : String) : String{_style.textureSmoothing = value;
+	
+    private function set_textureSmoothing(value:String):String
+	{
+		_style.textureSmoothing = value;
         return value;
     }
     
@@ -277,27 +298,56 @@ class Mesh extends DisplayObject
      *  can prevent the object from looking blurry when it's not exactly aligned with the
      *  pixels of the screen. For this to work, the object must be unscaled and may only
      *  be rotated by multiples of 90 degrees. @default true */
-    private function get_pixelSnapping() : Bool{return _pixelSnapping;
+    private function get_pixelSnapping():Bool
+	{
+		return _pixelSnapping;
     }
-    private function set_pixelSnapping(value : Bool) : Bool{_pixelSnapping = value;
+	
+    private function set_pixelSnapping(value:Bool):Bool
+	{
+		_pixelSnapping = value;
         return value;
     }
     
     /** The total number of vertices in the mesh. */
-    private function get_numVertices() : Int{return _vertexData.numVertices;
+    private function get_numVertices():Int {
+		return _vertexData.numVertices;
     }
     
     /** The total number of indices referencing vertices. */
-    private function get_numIndices() : Int{return _indexData.numIndices;
+    private function get_numIndices():Int {
+		return _indexData.numIndices;
+    }
+	
+	/** The total number of vertices in the mesh. If you change this to a smaller value,
+     *  the surplus will be deleted. Make sure that no indices reference those deleted
+     *  vertices! */
+    private function set_numVertices(value:Int):Int
+    {
+        throw new Error("Only available in MeshBatch");
+        return 0;
+    }
+    
+    /** The total number of indices in the mesh. If you change this to a smaller value,
+     *  the surplus will be deleted. Always make sure that the number of indices
+     *  is a multiple of three! */
+    private function set_numIndices(value:Int):Int
+    {
+         throw new Error("Only available in MeshBatch");
+        return 0;
     }
     
     /** The total number of triangles in this mesh.
      *  (In other words: the number of indices divided by three.) */
-    private function get_numTriangles() : Int{return _indexData.numTriangles;
+    private function get_numTriangles():Int
+	{
+		return _indexData.numTriangles;
     }
     
     /** The format used to store the vertices. */
-    private function get_vertexFormat() : VertexDataFormat{return _style.vertexFormat;
+    private function get_vertexFormat():VertexDataFormat
+	{
+		return _style.vertexFormat;
     }
     
     // static properties
@@ -305,12 +355,14 @@ class Mesh extends DisplayObject
     /** The default style used for meshes if no specific style is provided. The default is
      *  <code>starling.rendering.MeshStyle</code>, and any assigned class must be a subclass
      *  of the same. */
-    private static function get_defaultStyle() : Class<Dynamic>{return sDefaultStyle;
+    private static function get_defaultStyle():Class<Dynamic>
+	{
+		return sDefaultStyle;
     }
-    private static function set_defaultStyle(value : Class<Dynamic>) : Class<Dynamic>
+	
+    private static function set_defaultStyle(value:Class<Dynamic>):Class<Dynamic>
     {
         sDefaultStyle = value;
         return value;
     }
 }
-

@@ -23,15 +23,15 @@ import starling.textures.Texture;
 /** The TouchMarker is used internally to mark touches created through "simulateMultitouch". */
 class TouchMarker extends Sprite
 {
-    private var realMarker(get, never) : Image;
-    private var mockMarker(get, never) : Image;
-    public var realX(get, never) : Float;
-    public var realY(get, never) : Float;
-    public var mockX(get, never) : Float;
-    public var mockY(get, never) : Float;
+    private var realMarker(get, never):Image;
+    private var mockMarker(get, never):Image;
+    public var realX(get, never):Float;
+    public var realY(get, never):Float;
+    public var mockX(get, never):Float;
+    public var mockY(get, never):Float;
 
-    private var _center : Point;
-    private var _texture : Texture;
+    private var _center:Point;
+    private var _texture:Texture;
     
     @:allow(starling.events)
     private function new()
@@ -41,7 +41,7 @@ class TouchMarker extends Sprite
         _texture = createTexture();
         
         for (i in 0...2){
-            var marker : Image = new Image(_texture);
+            var marker:Image = new Image(_texture);
             marker.pivotX = _texture.width / 2;
             marker.pivotY = _texture.height / 2;
             marker.touchable = false;
@@ -49,13 +49,13 @@ class TouchMarker extends Sprite
         }
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _texture.dispose();
         super.dispose();
     }
     
-    public function moveMarker(x : Float, y : Float, withCenter : Bool = false) : Void
+    public function moveMarker(x:Float, y:Float, withCenter:Bool = false):Void
     {
         if (withCenter) 
         {
@@ -69,21 +69,21 @@ class TouchMarker extends Sprite
         mockMarker.y = 2 * _center.y - y;
     }
     
-    public function moveCenter(x : Float, y : Float) : Void
+    public function moveCenter(x:Float, y:Float):Void
     {
         _center.x = x;
         _center.y = y;
         moveMarker(realX, realY);
     }
     
-    private function createTexture() : Texture
+    private function createTexture():Texture
     {
-        var scale : Float = Starling.contentScaleFactor;
-        var radius : Float = 12 * scale;
-        var width : Int = 32 * scale;
-        var height : Int = 32 * scale;
-        var thickness : Float = 1.5 * scale;
-        var shape : Shape = new Shape();
+        var scale:Float = Starling.ContentScaleFactor;
+        var radius:Float = 12 * scale;
+        var width:Int = untyped 32 * scale;
+        var height:Int = untyped 32 * scale;
+        var thickness:Float = 1.5 * scale;
+        var shape:Shape = new Shape();
         
         // draw dark outline
         shape.graphics.lineStyle(thickness, 0x0, 0.3);
@@ -95,24 +95,39 @@ class TouchMarker extends Sprite
         shape.graphics.drawCircle(width / 2, height / 2, radius);
         shape.graphics.endFill();
         
-        var bmpData : BitmapData = new BitmapData(width, height, true, 0x0);
+        var bmpData:BitmapData = new BitmapData(width, height, true, 0x0);
         bmpData.draw(shape);
         
         return Texture.fromBitmapData(bmpData, false, false, scale);
     }
     
-    private function get_realMarker() : Image{return try cast(getChildAt(0), Image) catch(e:Dynamic) null;
+    private function get_realMarker():Image
+	{
+		return try cast(getChildAt(0), Image) catch(e:Dynamic) null;
     }
-    private function get_mockMarker() : Image{return try cast(getChildAt(1), Image) catch(e:Dynamic) null;
+	
+    private function get_mockMarker():Image
+	{
+		return try cast(getChildAt(1), Image) catch(e:Dynamic) null;
     }
     
-    private function get_realX() : Float{return realMarker.x;
+    private function get_realX():Float
+	{
+		return realMarker.x;
     }
-    private function get_realY() : Float{return realMarker.y;
+	
+    private function get_realY():Float
+	{
+		return realMarker.y;
     }
     
-    private function get_mockX() : Float{return mockMarker.x;
+    private function get_mockX():Float
+	{
+		return mockMarker.x;
     }
-    private function get_mockY() : Float{return mockMarker.y;
+	
+    private function get_mockY():Float
+	{
+		return mockMarker.y;
     }
 }

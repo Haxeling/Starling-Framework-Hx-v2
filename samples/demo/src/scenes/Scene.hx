@@ -10,7 +10,7 @@ import utils.MenuButton;
 
 class Scene extends Sprite
 {
-    private var _backButton : Button;
+    private var _backButton:Button;
     
     public function new()
     {

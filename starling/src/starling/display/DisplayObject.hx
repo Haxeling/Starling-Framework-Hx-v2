@@ -11,6 +11,7 @@
 package starling.display;
 
 import flash.errors.ArgumentError;
+import haxe.Constraints.Function;
 import starling.display.DisplayObjectContainer;
 import starling.display.Stage;
 
@@ -26,7 +27,6 @@ import flash.ui.MouseCursor;
 
 
 import starling.core.Starling;
-import starling.core.StarlingInternal;
 import starling.errors.AbstractClassError;
 import starling.errors.AbstractMethodError;
 import starling.events.Event;
@@ -143,98 +143,98 @@ import starling.utils.MatrixUtil;
  */
 class DisplayObject extends EventDispatcher
 {
-    private var isMask(get, never) : Bool;
-    private var supportsRenderCache(get, never) : Bool;
-    public var transformationMatrix(get, set) : Matrix;
-    public var transformationMatrix3D(get, never) : Matrix3D;
-    public var is3D(get, never) : Bool;
-    public var useHandCursor(get, set) : Bool;
-    public var bounds(get, never) : Rectangle;
-    public var width(get, set) : Float;
-    public var height(get, set) : Float;
-    public var x(get, set) : Float;
-    public var y(get, set) : Float;
-    public var pivotX(get, set) : Float;
-    public var pivotY(get, set) : Float;
-    public var scaleX(get, set) : Float;
-    public var scaleY(get, set) : Float;
-    public var scale(get, set) : Float;
-    public var skewX(get, set) : Float;
-    public var skewY(get, set) : Float;
-    public var rotation(get, set) : Float;
-    public var alpha(get, set) : Float;
-    public var visible(get, set) : Bool;
-    public var touchable(get, set) : Bool;
-    public var blendMode(get, set) : String;
-    public var name(get, set) : String;
-    public var filter(get, set) : FragmentFilter;
-    public var mask(get, set) : DisplayObject;
-    public var parent(get, never) : DisplayObjectContainer;
-    public var base(get, never) : DisplayObject;
-    public var root(get, never) : DisplayObject;
-    public var stage(get, never) : Stage;
+    private var isMask(get, never):Bool;
+    private var supportsRenderCache(get, never):Bool;
+    public var transformationMatrix(get, set):Matrix;
+    public var transformationMatrix3D(get, never):Matrix3D;
+    public var is3D(get, never):Bool;
+    public var useHandCursor(get, set):Bool;
+    public var bounds(get, never):Rectangle;
+    public var width(get, set):Float;
+    public var height(get, set):Float;
+    public var x(get, set):Float;
+    public var y(get, set):Float;
+    public var pivotX(get, set):Float;
+    public var pivotY(get, set):Float;
+    public var scaleX(get, set):Float;
+    public var scaleY(get, set):Float;
+    public var scale(get, set):Float;
+    public var skewX(get, set):Float;
+    public var skewY(get, set):Float;
+    public var rotation(get, set):Float;
+    public var alpha(get, set):Float;
+    public var visible(get, set):Bool;
+    public var touchable(get, set):Bool;
+    public var blendMode(get, set):String;
+    public var name(get, set):String;
+    public var filter(get, set):FragmentFilter;
+    public var mask(get, set):DisplayObject;
+    public var parent(get, never):DisplayObjectContainer;
+    public var base(get, never):DisplayObject;
+    public var root(get, never):DisplayObject;
+    public var stage(get, never):Stage;
 
     // private members
     
-    private var _x : Float;
-    private var _y : Float;
-    private var _pivotX : Float;
-    private var _pivotY : Float;
-    private var _scaleX : Float;
-    private var _scaleY : Float;
-    private var _skewX : Float;
-    private var _skewY : Float;
-    private var _rotation : Float;
-    private var _alpha : Float;
-    private var _visible : Bool;
-    private var _touchable : Bool;
-    private var _blendMode : String;
-    private var _name : String;
-    private var _useHandCursor : Bool;
-    private var _parent : DisplayObjectContainer;
-    private var _transformationMatrix : Matrix;
-    private var _transformationMatrix3D : Matrix3D;
-    private var _orientationChanged : Bool;
-    private var _is3D : Bool;
-    private var _isMask : Bool;
+    private var _x:Float;
+    private var _y:Float;
+    private var _pivotX:Float;
+    private var _pivotY:Float;
+    private var _scaleX:Float;
+    private var _scaleY:Float;
+    private var _skewX:Float;
+    private var _skewY:Float;
+    private var _rotation:Float;
+    private var _alpha:Float;
+    private var _visible:Bool;
+    private var _touchable:Bool;
+    private var _blendMode:String;
+    private var _name:String;
+    private var _useHandCursor:Bool;
+    private var _parent:DisplayObjectContainer;
+    private var _transformationMatrix:Matrix;
+    private var _transformationMatrix3D:Matrix3D;
+    private var _orientationChanged:Bool;
+    private var _is3D:Bool;
+    private var _isMask:Bool;
     
     // internal members (for fast access on rendering)
     
     /** @private */@:allow(starling.display)
-    private var _lastParentOrSelfChangeFrameID : Int;
+    private var _lastParentOrSelfChangeFrameID:Int;
     /** @private */@:allow(starling.display)
-    private var _lastChildChangeFrameID : Int;
+    private var _lastChildChangeFrameID:Int;
     /** @private */@:allow(starling.display)
-    private var _tokenFrameID : Int;
+    private var _tokenFrameID:Int;
     /** @private */@:allow(starling.display)
-    private var _pushToken : BatchToken = new BatchToken();
+    private var _pushToken:BatchToken = new BatchToken();
     /** @private */@:allow(starling.display)
-    private var _popToken : BatchToken = new BatchToken();
+    private var _popToken:BatchToken = new BatchToken();
     /** @private */@:allow(starling.display)
-    private var _hasVisibleArea : Bool;
+    private var _hasVisibleArea:Bool;
     /** @private */@:allow(starling.display)
-    private var _filter : FragmentFilter;
+    private var _filter:FragmentFilter;
     /** @private */@:allow(starling.display)
-    private var _mask : DisplayObject;
+    private var _mask:DisplayObject;
     
     // helper objects
     
-    private static var sAncestors : Array<DisplayObject> = [];
-    private static var sHelperPoint : Point = new Point();
-    private static var sHelperPoint3D : Vector3D = new Vector3D();
-    private static var sHelperPointAlt3D : Vector3D = new Vector3D();
-    private static var sHelperRect : Rectangle = new Rectangle();
-    private static var sHelperMatrix : Matrix = new Matrix();
-    private static var sHelperMatrixAlt : Matrix = new Matrix();
-    private static var sHelperMatrix3D : Matrix3D = new Matrix3D();
-    private static var sHelperMatrixAlt3D : Matrix3D = new Matrix3D();
+    private static var sAncestors:Array<DisplayObject> = [];
+    private static var sHelperPoint:Point = new Point();
+    private static var sHelperPoint3D:Vector3D = new Vector3D();
+    private static var sHelperPointAlt3D:Vector3D = new Vector3D();
+    private static var sHelperRect:Rectangle = new Rectangle();
+    private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperMatrixAlt:Matrix = new Matrix();
+    private static var sHelperMatrix3D:Matrix3D = new Matrix3D();
+    private static var sHelperMatrixAlt3D:Matrix3D = new Matrix3D();
     
     /** @private */
     public function new()
     {
         super();
         if (Capabilities.isDebugger &&
-            Type.getClassName(this) == "starling.display::DisplayObject") 
+            Type.getClassName(Type.getClass(this)) == "starling.display::DisplayObject") 
         {
             throw new AbstractClassError();
         }
@@ -248,7 +248,7 @@ class DisplayObject extends EventDispatcher
     
     /** Disposes all resources of the display object. 
       * GPU buffers are released, event listeners are removed, filters and masks are disposed. */
-    public function dispose() : Void
+    public function dispose():Void
     {
         if (_filter != null)             _filter.dispose();
         if (_mask != null)             _mask.dispose();
@@ -257,7 +257,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Removes the object from its parent, if it has one, and optionally disposes it. */
-    public function removeFromParent(dispose : Bool = false) : Void
+    public function removeFromParent(dispose:Bool = false):Void
     {
         if (_parent != null)             _parent.removeChild(this, dispose)
         else if (dispose)             this.dispose();
@@ -266,11 +266,10 @@ class DisplayObject extends EventDispatcher
     /** Creates a matrix that represents the transformation from the local coordinate system 
      *  to another. If you pass an <code>out</code>-matrix, the result will be stored in this
      *  matrix instead of creating a new object. */
-    public function getTransformationMatrix(targetSpace : DisplayObject,
-            out : Matrix = null) : Matrix
+    public function getTransformationMatrix(targetSpace:DisplayObject, out:Matrix = null):Matrix
     {
-        var commonParent : DisplayObject;
-        var currentObject : DisplayObject;
+        var commonParent:DisplayObject;
+        var currentObject:DisplayObject;
         
         if (out != null)             out.identity()
         else out = new Matrix();
@@ -298,7 +297,6 @@ class DisplayObject extends EventDispatcher
             
             return out;
         }
-        // 1. find a common parent of this and the target space
         else if (targetSpace._parent == this)   // optimization  
         {
             targetSpace.getTransformationMatrix(this, out);
@@ -307,9 +305,8 @@ class DisplayObject extends EventDispatcher
             return out;
         }
         
-        
-        
-        
+		// 1. find a common parent of this and the target space
+		
         commonParent = findCommonParent(this, targetSpace);
         
         // 2. move up from this to common parent
@@ -322,10 +319,9 @@ class DisplayObject extends EventDispatcher
         }
         
         if (commonParent == targetSpace) 
-            return out  // 3. now move up from target until we reach the common parent  ;
-        
-        
-        
+            return out;
+			
+		// 3. now move up from target until we reach the common parent  ;
         
         sHelperMatrix.identity();
         currentObject = targetSpace;
@@ -333,10 +329,9 @@ class DisplayObject extends EventDispatcher
         {
             sHelperMatrix.concat(currentObject.transformationMatrix);
             currentObject = currentObject._parent;
-        }  // 4. now combine the two matrices  
-        
-        
-        
+        }
+		
+		// 4. now combine the two matrices  
         
         sHelperMatrix.invert();
         out.concat(sHelperMatrix);
@@ -347,43 +342,41 @@ class DisplayObject extends EventDispatcher
     /** Returns a rectangle that completely encloses the object as it appears in another 
      *  coordinate system. If you pass an <code>out</code>-rectangle, the result will be
      *  stored in this rectangle instead of creating a new object. */
-    public function getBounds(targetSpace : DisplayObject, out : Rectangle = null) : Rectangle
+    public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
     {
         throw new AbstractMethodError();
     }
     
     /** Returns the object that is found topmost beneath a point in local coordinates, or nil
      *  if the test fails. Untouchable and invisible objects will cause the test to fail. */
-    public function hitTest(localPoint : Point) : DisplayObject
+    public function hitTest(localPoint:Point):DisplayObject
     {
         // on a touch test, invisible or untouchable objects cause the test to fail
-        if (!_visible || !_touchable)             return null  // if we've got a mask and the hit occurs outside, fail  ;
-        
-        
-        
-        if (_mask != null && !hitTestMask(localPoint))             return null  // otherwise, check bounding box  ;
-        
-        
-        
-        if (getBounds(this, sHelperRect).containsPoint(localPoint))             return this
+        if (!_visible || !_touchable)             return null;
+		
+		// if we've got a mask and the hit occurs outside, fail  ;
+        if (_mask != null && !hitTestMask(localPoint))             return null;
+		
+		// otherwise, check bounding box  ;
+        if (getBounds(this, sHelperRect).containsPoint(localPoint)) return this;
         else return null;
     }
     
     /** Checks if a certain point is inside the display object's mask. If there is no mask,
      *  this method always returns <code>true</code> (because having no mask is equivalent
      *  to having one that's infinitely big). */
-    public function hitTestMask(localPoint : Point) : Bool
+    public function hitTestMask(localPoint:Point):Bool
     {
         if (_mask != null) 
         {
-            if (_mask.stage)                 getTransformationMatrix(_mask, sHelperMatrixAlt)
+            if (_mask.stage != null) getTransformationMatrix(_mask, sHelperMatrixAlt)
             else 
             {
                 sHelperMatrixAlt.copyFrom(_mask.transformationMatrix);
                 sHelperMatrixAlt.invert();
             }
             
-            var helperPoint : Point = localPoint == (sHelperPoint != null) ? new Point() : sHelperPoint;
+			var helperPoint:Point = localPoint == sHelperPoint ? new Point() : sHelperPoint;
             MatrixUtil.transformPoint(sHelperMatrixAlt, localPoint, helperPoint);
             return _mask.hitTest(helperPoint) != null;
         }
@@ -393,7 +386,7 @@ class DisplayObject extends EventDispatcher
     /** Transforms a point from the local coordinate system to global (stage) coordinates.
      *  If you pass an <code>out</code>-point, the result will be stored in this point instead
      *  of creating a new object. */
-    public function localToGlobal(localPoint : Point, out : Point = null) : Point
+    public function localToGlobal(localPoint:Point, out:Point = null):Point
     {
         if (is3D) 
         {
@@ -410,7 +403,7 @@ class DisplayObject extends EventDispatcher
     /** Transforms a point from global (stage) coordinates to the local coordinate system.
      *  If you pass an <code>out</code>-point, the result will be stored in this point instead
      *  of creating a new object. */
-    public function globalToLocal(globalPoint : Point, out : Point = null) : Point
+    public function globalToLocal(globalPoint:Point, out:Point = null):Point
     {
         if (is3D) 
         {
@@ -432,17 +425,17 @@ class DisplayObject extends EventDispatcher
      *  @param painter Captures the current render state and provides utility functions
      *                 for rendering.
      */
-    public function render(painter : Painter) : Void
+    public function render(painter:Painter):Void
     {
         throw new AbstractMethodError();
     }
     
     /** Moves the pivot point to a certain position within the local coordinate system
      *  of the object. If you pass no arguments, it will be centered. */
-    public function alignPivot(horizontalAlign : String = "center",
-            verticalAlign : String = "center") : Void
+    public function alignPivot(horizontalAlign:String = "center",
+            verticalAlign:String = "center"):Void
     {
-        var bounds : Rectangle = getBounds(this, sHelperRect);
+        var bounds:Rectangle = getBounds(this, sHelperRect);
         setOrientationChanged();
         
         if (horizontalAlign == Align.LEFT)             _pivotX = bounds.x
@@ -462,11 +455,11 @@ class DisplayObject extends EventDispatcher
      *  to another. This method supports three dimensional objects created via 'Sprite3D'.
      *  If you pass an <code>out</code>-matrix, the result will be stored in this matrix
      *  instead of creating a new object. */
-    public function getTransformationMatrix3D(targetSpace : DisplayObject,
-            out : Matrix3D = null) : Matrix3D
+    public function getTransformationMatrix3D(targetSpace:DisplayObject,
+            out:Matrix3D = null):Matrix3D
     {
-        var commonParent : DisplayObject;
-        var currentObject : DisplayObject;
+        var commonParent:DisplayObject;
+        var currentObject:DisplayObject;
         
         if (out != null)             out.identity()
         else out = new Matrix3D();
@@ -518,10 +511,8 @@ class DisplayObject extends EventDispatcher
         }
         
         if (commonParent == targetSpace) 
-            return out  // 3. now move up from target until we reach the common parent  ;
-        
-        
-        
+            return out;
+		// 3. now move up from target until we reach the common parent  ;
         
         sHelperMatrix3D.identity();
         currentObject = targetSpace;
@@ -545,9 +536,9 @@ class DisplayObject extends EventDispatcher
      *
      *  <p>If you pass an <code>out</code>-point, the result will be stored in this point
      *  instead of creating a new object.</p> */
-    public function local3DToGlobal(localPoint : Vector3D, out : Point = null) : Point
+    public function local3DToGlobal(localPoint:Vector3D, out:Point = null):Point
     {
-        var stage : Stage = this.stage;
+        var stage:Stage = this.stage;
         if (stage == null)             throw new IllegalOperationError("Object not connected to stage");
         
         getTransformationMatrix3D(stage, sHelperMatrixAlt3D);
@@ -558,9 +549,9 @@ class DisplayObject extends EventDispatcher
     /** Transforms a point from global (stage) coordinates to the 3D local coordinate system.
      *  If you pass an <code>out</code>-vector, the result will be stored in this vector
      *  instead of creating a new object. */
-    public function globalToLocal3D(globalPoint : Point, out : Vector3D = null) : Vector3D
+    public function globalToLocal3D(globalPoint:Point, out:Vector3D = null):Vector3D
     {
-        var stage : Stage = this.stage;
+        var stage:Stage = this.stage;
         if (stage == null)             throw new IllegalOperationError("Object not connected to stage");
         
         getTransformationMatrix3D(stage, sHelperMatrixAlt3D);
@@ -573,10 +564,10 @@ class DisplayObject extends EventDispatcher
     
     /** @private */
     @:allow(starling.display)
-    private function setParent(value : DisplayObjectContainer) : Void
+    private function setParent(value:DisplayObjectContainer):Void
     {
         // check for a recursion
-        var ancestor : DisplayObject = value;
+        var ancestor:DisplayObject = value;
         while (ancestor != this && ancestor != null)
         ancestor = ancestor._parent;
         
@@ -589,14 +580,14 @@ class DisplayObject extends EventDispatcher
     
     /** @private */
     @:allow(starling.display)
-    private function setIs3D(value : Bool) : Void
+    private function setIs3D(value:Bool):Void
     {
         _is3D = value;
     }
     
     /** @private */
     @:allow(starling.display)
-    private function get_isMask() : Bool
+    private function get_isMask():Bool
     {
         return _isMask;
     }
@@ -614,15 +605,15 @@ class DisplayObject extends EventDispatcher
      *  it may override <code>supportsRenderCache</code>. That way, the object will be
      *  redrawn automatically each frame.</p>
      */
-    public function setRequiresRedraw() : Void
+    public function setRequiresRedraw():Void
     {
-        var parent : DisplayObject = _parent;
-        var frameID : Int = Starling.frameID;
+        var parent:DisplayObject = _parent;
+        var frameID:Int = Starling.FrameID;
         
         _hasVisibleArea = _alpha != 0.0 && _visible && !_isMask && _scaleX != 0.0 && _scaleY != 0.0;
         _lastParentOrSelfChangeFrameID = frameID;
         
-        while (parent && parent._lastChildChangeFrameID != frameID)
+        while (parent != null && parent._lastChildChangeFrameID != frameID)
         {
             parent._lastChildChangeFrameID = frameID;
             parent = parent._parent;
@@ -639,14 +630,14 @@ class DisplayObject extends EventDispatcher
      *  still be cached! This just means that batching is interrupted at this object when
      *  the display tree is traversed.</p>
      */
-    private function get_supportsRenderCache() : Bool
+    private function get_supportsRenderCache():Bool
     {
         return _mask == null;
     }
     
     /** Must be called when support for the render cache changes. The actual value is read
      *  from the <code>supportsRenderCache</code> property. */
-    private function updateSupportsRenderCache() : Void
+    private function updateSupportsRenderCache():Void
     {
         if (supportsRenderCache) 
             removeEventListener(Event.ENTER_FRAME, onEnterFrameWithoutRenderCache)
@@ -654,7 +645,7 @@ class DisplayObject extends EventDispatcher
         addEventListener(Event.ENTER_FRAME, onEnterFrameWithoutRenderCache);
     }
     
-    private function onEnterFrameWithoutRenderCache() : Void
+    private function onEnterFrameWithoutRenderCache():Void
     {
         // by wrapping 'setRequiresRedraw' in a private method, we can make sure that no
         // subclasses are messing with this event handler.
@@ -664,28 +655,28 @@ class DisplayObject extends EventDispatcher
     
     // helpers
     
-    private function setOrientationChanged() : Void
+    private function setOrientationChanged():Void
     {
         _orientationChanged = true;
         setRequiresRedraw();
     }
     
-    private static function findCommonParent(object1 : DisplayObject,
-            object2 : DisplayObject) : DisplayObject
+    private static function findCommonParent(object1:DisplayObject,
+            object2:DisplayObject):DisplayObject
     {
-        var currentObject : DisplayObject = object1;
+        var currentObject:DisplayObject = object1;
         
-        while (currentObject)
+        while (currentObject != null)
         {
             sAncestors[sAncestors.length] = currentObject;  // avoiding 'push'  
             currentObject = currentObject._parent;
         }
         
         currentObject = object2;
-        while (currentObject && Lambda.indexOf(sAncestors, currentObject) == -1)
+        while (currentObject != null && Lambda.indexOf(sAncestors, currentObject) == -1)
         currentObject = currentObject._parent;
-        
-        sAncestors.length = 0;
+		
+        sAncestors.splice(0, sAncestors.length);
         
         if (currentObject != null)             return currentObject
         else throw new ArgumentError("Object not connected to target");
@@ -694,7 +685,7 @@ class DisplayObject extends EventDispatcher
     // stage event handling
     
     /** @private */
-    override public function dispatchEvent(event : Event) : Void
+    override public function dispatchEvent(event:Event):Void
     {
         if (event.type == Event.REMOVED_FROM_STAGE && stage == null) 
             return
@@ -712,20 +703,20 @@ class DisplayObject extends EventDispatcher
     // dispose and (c) there might be multiple listeners for this event.
     
     /** @inheritDoc */
-    override public function addEventListener(type : String, listener : Function) : Void
+    override public function addEventListener(type:String, listener:Function):Void
     {
         if (type == Event.ENTER_FRAME && !hasEventListener(type)) 
         {
             addEventListener(Event.ADDED_TO_STAGE, addEnterFrameListenerToStage);
             addEventListener(Event.REMOVED_FROM_STAGE, removeEnterFrameListenerFromStage);
-            if (this.stage)                 addEnterFrameListenerToStage();
+            if (this.stage != null) addEnterFrameListenerToStage();
         }
         
         super.addEventListener(type, listener);
     }
     
     /** @inheritDoc */
-    override public function removeEventListener(type : String, listener : Function) : Void
+    override public function removeEventListener(type:String, listener:Function):Void
     {
         super.removeEventListener(type, listener);
         
@@ -738,7 +729,7 @@ class DisplayObject extends EventDispatcher
     }
     
     /** @inheritDoc */
-    override public function removeEventListeners(type : String = null) : Void
+    override public function removeEventListeners(type:String = null):Void
     {
         if ((type == null || type == Event.ENTER_FRAME) && hasEventListener(Event.ENTER_FRAME)) 
         {
@@ -750,14 +741,14 @@ class DisplayObject extends EventDispatcher
         super.removeEventListeners(type);
     }
     
-    private function addEnterFrameListenerToStage() : Void
+    private function addEnterFrameListenerToStage():Void
     {
-        Starling.current.stage.addEnterFrameListener(this);
+        Starling.Current.stage.addEnterFrameListener(this);
     }
     
-    private function removeEnterFrameListenerFromStage() : Void
+    private function removeEnterFrameListenerFromStage():Void
     {
-        Starling.current.stage.removeEnterFrameListener(this);
+        Starling.Current.stage.removeEnterFrameListener(this);
     }
     
     // properties
@@ -771,7 +762,7 @@ class DisplayObject extends EventDispatcher
      *  properties.</p>
      * 
      *  <p>CAUTION: not a copy, but the actual object!</p> */
-    private function get_transformationMatrix() : Matrix
+    private function get_transformationMatrix():Matrix
     {
         if (_orientationChanged) 
         {
@@ -788,14 +779,14 @@ class DisplayObject extends EventDispatcher
                 }
                 else 
                 {
-                    var cos : Float = Math.cos(_rotation);
-                    var sin : Float = Math.sin(_rotation);
-                    var a : Float = _scaleX * cos;
-                    var b : Float = _scaleX * sin;
-                    var c : Float = _scaleY * -sin;
-                    var d : Float = _scaleY * cos;
-                    var tx : Float = _x - _pivotX * a - _pivotY * c;
-                    var ty : Float = _y - _pivotX * b - _pivotY * d;
+                    var cos:Float = Math.cos(_rotation);
+                    var sin:Float = Math.sin(_rotation);
+                    var a:Float = _scaleX * cos;
+                    var b:Float = _scaleX * sin;
+                    var c:Float = _scaleY * -sin;
+                    var d:Float = _scaleY * cos;
+                    var tx:Float = _x - _pivotX * a - _pivotY * c;
+                    var ty:Float = _y - _pivotX * b - _pivotY * d;
                     
                     _transformationMatrix.setTo(a, b, c, d, tx, ty);
                 }
@@ -820,9 +811,9 @@ class DisplayObject extends EventDispatcher
         return _transformationMatrix;
     }
     
-    private function set_transformationMatrix(matrix : Matrix) : Matrix
+    private function set_transformationMatrix(matrix:Matrix):Matrix
     {
-        var PI_Q : Float = Math.PI / 4.0;
+        var PI_Q:Float = Math.PI / 4.0;
         
         setRequiresRedraw();
         _orientationChanged = false;
@@ -839,8 +830,8 @@ class DisplayObject extends EventDispatcher
         if (_skewX != _skewX)             _skewX = 0.0;
         if (_skewY != _skewY)             _skewY = 0.0;
         
-        _scaleY = ((_skewX > -PI_Q && _skewX < PI_Q)) ? matrix.d / Math.cos(_skewX) : -matrix.c / Math.sin(_skewX);
-        _scaleX = ((_skewY > -PI_Q && _skewY < PI_Q)) ? matrix.a / Math.cos(_skewY) : matrix.b / Math.sin(_skewY);
+        _scaleY = ((_skewX > -PI_Q && _skewX < PI_Q)) ? matrix.d / Math.cos(_skewX):-matrix.c / Math.sin(_skewX);
+        _scaleX = ((_skewY > -PI_Q && _skewY < PI_Q)) ? matrix.a / Math.cos(_skewY):matrix.b / Math.sin(_skewY);
         
         if (MathUtil.isEquivalent(_skewX, _skewY)) 
         {
@@ -860,7 +851,7 @@ class DisplayObject extends EventDispatcher
      *  matrix. Only the 'Sprite3D' class supports real 3D transformations.</p>
      *
      *  <p>CAUTION: not a copy, but the actual object!</p> */
-    private function get_transformationMatrix3D() : Matrix3D
+    private function get_transformationMatrix3D():Matrix3D
     {
         // this method needs to be overridden in 3D-supporting subclasses (like Sprite3D).
         
@@ -871,16 +862,21 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Indicates if this object or any of its parents is a 'Sprite3D' object. */
-    private function get_is3D() : Bool{return _is3D;
+    private function get_is3D():Bool
+	{
+		return _is3D;
     }
     
     /** Indicates if the mouse cursor should transform into a hand while it's over the sprite.
      *  @default false */
-    private function get_useHandCursor() : Bool{return _useHandCursor;
+    private function get_useHandCursor():Bool
+	{
+		return _useHandCursor;
     }
-    private function set_useHandCursor(value : Bool) : Bool
+	
+    private function set_useHandCursor(value:Bool):Bool
     {
-        if (value == _useHandCursor)             return;
+        if (value == _useHandCursor) return value;
         _useHandCursor = value;
         
         if (_useHandCursor) 
@@ -890,13 +886,13 @@ class DisplayObject extends EventDispatcher
         return value;
     }
     
-    private function onTouch(event : TouchEvent) : Void
+    private function onTouch(event:TouchEvent):Void
     {
-        Mouse.cursor = (event.interactsWith(this)) ? MouseCursor.BUTTON : MouseCursor.AUTO;
+        Mouse.cursor = (event.interactsWith(this)) ? MouseCursor.BUTTON:MouseCursor.AUTO;
     }
     
     /** The bounds of the object relative to the local coordinates of the parent. */
-    private function get_bounds() : Rectangle
+    private function get_bounds():Rectangle
     {
         return getBounds(_parent);
     }
@@ -904,15 +900,18 @@ class DisplayObject extends EventDispatcher
     /** The width of the object in pixels.
      *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
      *  be accurate until the object is part of the display list. */
-    private function get_width() : Float{return getBounds(_parent, sHelperRect).width;
+    private function get_width():Float
+	{
+		return getBounds(_parent, sHelperRect).width;
     }
-    private function set_width(value : Float) : Float
+	
+    private function set_width(value:Float):Float
     {
         // this method calls 'this.scaleX' instead of changing _scaleX directly.
         // that way, subclasses reacting on size changes need to override only the scaleX method.
         
         scaleX = 1.0;
-        var actualWidth : Float = width;
+        var actualWidth:Float = width;
         if (actualWidth != 0.0)             scaleX = value / actualWidth;
         return value;
     }
@@ -920,20 +919,26 @@ class DisplayObject extends EventDispatcher
     /** The height of the object in pixels.
      *  Note that for objects in a 3D space (connected to a Sprite3D), this value might not
      *  be accurate until the object is part of the display list. */
-    private function get_height() : Float{return getBounds(_parent, sHelperRect).height;
+    private function get_height():Float
+	{
+		return getBounds(_parent, sHelperRect).height;
     }
-    private function set_height(value : Float) : Float
+	
+    private function set_height(value:Float):Float
     {
         scaleY = 1.0;
-        var actualHeight : Float = height;
+        var actualHeight:Float = height;
         if (actualHeight != 0.0)             scaleY = value / actualHeight;
         return value;
     }
     
     /** The x coordinate of the object relative to the local coordinates of the parent. */
-    private function get_x() : Float{return _x;
+    private function get_x():Float
+	{
+		return _x;
     }
-    private function set_x(value : Float) : Float
+	
+    private function set_x(value:Float):Float
     {
         if (_x != value) 
         {
@@ -944,9 +949,12 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The y coordinate of the object relative to the local coordinates of the parent. */
-    private function get_y() : Float{return _y;
+    private function get_y():Float
+	{
+		return _y;
     }
-    private function set_y(value : Float) : Float
+	
+    private function set_y(value:Float):Float
     {
         if (_y != value) 
         {
@@ -957,9 +965,12 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The x coordinate of the object's origin in its own coordinate space (default: 0). */
-    private function get_pivotX() : Float{return _pivotX;
+    private function get_pivotX():Float
+	{
+		return _pivotX;
     }
-    private function set_pivotX(value : Float) : Float
+	
+    private function set_pivotX(value:Float):Float
     {
         if (_pivotX != value) 
         {
@@ -970,9 +981,12 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The y coordinate of the object's origin in its own coordinate space (default: 0). */
-    private function get_pivotY() : Float{return _pivotY;
+    private function get_pivotY():Float
+	{
+		return _pivotY;
     }
-    private function set_pivotY(value : Float) : Float
+	
+    private function set_pivotY(value:Float):Float
     {
         if (_pivotY != value) 
         {
@@ -984,9 +998,12 @@ class DisplayObject extends EventDispatcher
     
     /** The horizontal scale factor. '1' means no scale, negative values flip the object.
      *  @default 1 */
-    private function get_scaleX() : Float{return _scaleX;
+    private function get_scaleX():Float
+	{
+		return _scaleX;
     }
-    private function set_scaleX(value : Float) : Float
+	
+    private function set_scaleX(value:Float):Float
     {
         if (_scaleX != value) 
         {
@@ -998,9 +1015,12 @@ class DisplayObject extends EventDispatcher
     
     /** The vertical scale factor. '1' means no scale, negative values flip the object.
      *  @default 1 */
-    private function get_scaleY() : Float{return _scaleY;
+    private function get_scaleY():Float
+	{
+		return _scaleY;
     }
-    private function set_scaleY(value : Float) : Float
+	
+    private function set_scaleY(value:Float):Float
     {
         if (_scaleY != value) 
         {
@@ -1012,16 +1032,24 @@ class DisplayObject extends EventDispatcher
     
     /** Sets both 'scaleX' and 'scaleY' to the same value. The getter simply returns the
      *  value of 'scaleX' (even if the scaling values are different). @default 1 */
-    private function get_scale() : Float{return scaleX;
+    private function get_scale():Float
+	{
+		return scaleX;
     }
-    private function set_scale(value : Float) : Float{scaleX = scaleY = value;
+	
+    private function set_scale(value:Float):Float
+	{
+		scaleX = scaleY = value;
         return value;
     }
     
     /** The horizontal skew angle in radians. */
-    private function get_skewX() : Float{return _skewX;
+    private function get_skewX():Float
+	{
+		return _skewX;
     }
-    private function set_skewX(value : Float) : Float
+	
+    private function set_skewX(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
         
@@ -1034,9 +1062,12 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The vertical skew angle in radians. */
-    private function get_skewY() : Float{return _skewY;
+    private function get_skewY():Float
+	{
+		return _skewY;
     }
-    private function set_skewY(value : Float) : Float
+	
+    private function set_skewY(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
         
@@ -1050,9 +1081,12 @@ class DisplayObject extends EventDispatcher
     
     /** The rotation of the object in radians. (In Starling, all angles are measured 
      *  in radians.) */
-    private function get_rotation() : Float{return _rotation;
+    private function get_rotation():Float
+	{
+		return _rotation;
     }
-    private function set_rotation(value : Float) : Float
+	
+    private function set_rotation(value:Float):Float
     {
         value = MathUtil.normalizeAngle(value);
         
@@ -1065,22 +1099,28 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The opacity of the object. 0 = transparent, 1 = opaque. @default 1 */
-    private function get_alpha() : Float{return _alpha;
+    private function get_alpha():Float
+	{
+		return _alpha;
     }
-    private function set_alpha(value : Float) : Float
+	
+    private function set_alpha(value:Float):Float
     {
         if (value != _alpha) 
         {
-            _alpha = value < (0.0) ? 0.0 : (value > (1.0) ? 1.0 : value);
+            _alpha = value < (0.0) ? 0.0:(value > (1.0) ? 1.0:value);
             setRequiresRedraw();
         }
         return value;
     }
     
     /** The visibility of the object. An invisible object will be untouchable. */
-    private function get_visible() : Bool{return _visible;
+    private function get_visible():Bool
+	{
+		return _visible;
     }
-    private function set_visible(value : Bool) : Bool
+	
+    private function set_visible(value:Bool):Bool
     {
         if (value != _visible) 
         {
@@ -1091,18 +1131,26 @@ class DisplayObject extends EventDispatcher
     }
     
     /** Indicates if this object (and its children) will receive touch events. */
-    private function get_touchable() : Bool{return _touchable;
+    private function get_touchable():Bool
+	{
+		return _touchable;
     }
-    private function set_touchable(value : Bool) : Bool{_touchable = value;
+	
+    private function set_touchable(value:Bool):Bool
+	{
+		_touchable = value;
         return value;
     }
     
     /** The blend mode determines how the object is blended with the objects underneath. 
      *   @default auto
      *   @see starling.display.BlendMode */
-    private function get_blendMode() : String{return _blendMode;
+    private function get_blendMode():String
+	{
+		return _blendMode;
     }
-    private function set_blendMode(value : String) : String
+	
+    private function set_blendMode(value:String):String
     {
         if (value != _blendMode) 
         {
@@ -1114,9 +1162,14 @@ class DisplayObject extends EventDispatcher
     
     /** The name of the display object (default: null). Used by 'getChildByName()' of 
      *  display object containers. */
-    private function get_name() : String{return _name;
+    private function get_name():String
+	{
+		return _name;
     }
-    private function set_name(value : String) : String{_name = value;
+	
+    private function set_name(value:String):String
+	{
+		_name = value;
         return value;
     }
     
@@ -1126,14 +1179,17 @@ class DisplayObject extends EventDispatcher
      *  performance reasons). Furthermore, when you set this property to 'null' or
      *  assign a different filter, the previous filter is NOT disposed automatically
      *  (since you might want to reuse it). */
-    private function get_filter() : FragmentFilter{return _filter;
+    private function get_filter():FragmentFilter
+	{
+		return _filter;
     }
-    private function set_filter(value : FragmentFilter) : FragmentFilter
+	
+    private function set_filter(value:FragmentFilter):FragmentFilter
     {
         if (value != _filter) 
         {
-            if (_filter != null)                 _filter.setTarget(null);
-            if (value != null)                 value.setTarget(this);
+            if (_filter != null) _filter.setTarget(null);
+            if (value != null) value.setTarget(this);
             
             _filter = value;
             setRequiresRedraw();
@@ -1165,13 +1221,16 @@ class DisplayObject extends EventDispatcher
      *  @see Canvas
      *  @default null
      */
-    private function get_mask() : DisplayObject{return _mask;
+    private function get_mask():DisplayObject
+	{
+		return _mask;
     }
-    private function set_mask(value : DisplayObject) : DisplayObject
+	
+    private function set_mask(value:DisplayObject):DisplayObject
     {
         if (_mask != value) 
         {
-            if (_mask != null)                 _mask._isMask = false;
+            if (_mask != null) _mask._isMask = false;
             if (value != null) 
             {
                 value._isMask = true;
@@ -1186,26 +1245,28 @@ class DisplayObject extends EventDispatcher
     }
     
     /** The display object container that contains this display object. */
-    private function get_parent() : DisplayObjectContainer{return _parent;
+    private function get_parent():DisplayObjectContainer
+	{
+		return _parent;
     }
     
     /** The topmost object in the display tree the object is part of. */
-    private function get_base() : DisplayObject
+    private function get_base():DisplayObject
     {
-        var currentObject : DisplayObject = this;
-        while (currentObject._parent)currentObject = currentObject._parent;
+        var currentObject:DisplayObject = this;
+        while (currentObject._parent != null) currentObject = currentObject._parent;
         return currentObject;
     }
     
     /** The root object the display object is connected to (i.e. an instance of the class 
      *  that was passed to the Starling constructor), or null if the object is not connected
      *  to the stage. */
-    private function get_root() : DisplayObject
+    private function get_root():DisplayObject
     {
-        var currentObject : DisplayObject = this;
-        while (currentObject._parent)
+        var currentObject:DisplayObject = this;
+        while (currentObject._parent != null)
         {
-            if (Std.is(currentObject._parent, Stage))                 return currentObject
+            if (Std.is(currentObject._parent, Stage)) return currentObject
             else currentObject = currentObject.parent;
         }
         
@@ -1214,7 +1275,9 @@ class DisplayObject extends EventDispatcher
     
     /** The stage the display object is connected to, or null if it is not connected 
      *  to the stage. */
-    private function get_stage() : Stage{return try cast(this.base, Stage) catch(e:Dynamic) null;
+    private function get_stage():Stage
+	{
+		return try cast(this.base, Stage) catch(e:Dynamic) null;
     }
 }
 

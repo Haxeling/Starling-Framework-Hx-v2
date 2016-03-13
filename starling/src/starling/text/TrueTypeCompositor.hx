@@ -11,6 +11,7 @@
 package starling.text;
 
 
+import flash.display3D.Context3DTextureFormat;
 import flash.geom.Matrix;
 import flash.text.AntiAliasType;
 import flash.text.TextField;
@@ -31,10 +32,10 @@ import flash.display.BitmapData;
 class TrueTypeCompositor implements ITextCompositor
 {
     // helpers
-    private static var sHelperMatrix : Matrix = new Matrix();
-    private static var sHelperQuad : Quad = new Quad(100, 100);
-    private static var sNativeTextField : flash.text.TextField = new flash.text.TextField();
-    private static var sNativeFormat : flash.text.TextFormat = new flash.text.TextFormat();
+    private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperQuad:Quad = new Quad(100, 100);
+    private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
+    private static var sNativeFormat:flash.text.TextFormat = new flash.text.TextFormat();
     
     /** Creates a new TrueTypeCompositor instance. */
     @:allow(starling.text)
@@ -43,17 +44,17 @@ class TrueTypeCompositor implements ITextCompositor
     }
     
     /** @inheritDoc */
-    public function fillMeshBatch(meshBatch : MeshBatch, width : Float, height : Float, text : String,
-            format : TextFormat, options : TextOptions = null) : Void
+    public function fillMeshBatch(meshBatch:MeshBatch, width:Float, height:Float, text:String,
+            format:TextFormat, options:TextOptions = null):Void
     {
         if (text == null || text == "")             return;
         
-        var texture : Texture;
-        var textureFormat : String = options.textureFormat;
-        var bitmapData : BitmapDataEx = renderText(width, height, text, format, options);
+        var texture:Texture;
+        var textureFormat:Context3DTextureFormat = options.textureFormat;
+        var bitmapData:BitmapDataEx = renderText(width, height, text, format, options);
         
         texture = Texture.fromBitmapData(bitmapData, false, false, bitmapData.scale, textureFormat);
-        texture.root.onRestore = function() : Void
+        texture.root.onRestore = function():Void
                 {
                     bitmapData = renderText(width, height, text, format, options);
                     texture.root.uploadBitmapData(bitmapData);
@@ -67,12 +68,12 @@ class TrueTypeCompositor implements ITextCompositor
         sHelperQuad.texture = texture;
         sHelperQuad.readjustSize();
         
-        if (format.horizontalAlign == Align.LEFT)             sHelperQuad.x = 0
-        else if (format.horizontalAlign == Align.CENTER)             sHelperQuad.x = as3hx.Compat.parseInt((width - texture.width) / 2)
+        if (format.horizontalAlign == Align.LEFT) sHelperQuad.x = 0
+        else if (format.horizontalAlign == Align.CENTER) sHelperQuad.x = untyped ((width - texture.width) / 2)
         else sHelperQuad.x = width - texture.width;
         
-        if (format.verticalAlign == Align.TOP)             sHelperQuad.y = 0
-        else if (format.verticalAlign == Align.CENTER)             sHelperQuad.y = as3hx.Compat.parseInt((height - texture.height) / 2)
+        if (format.verticalAlign == Align.TOP) sHelperQuad.y = 0
+        else if (format.verticalAlign == Align.CENTER) sHelperQuad.y = untyped ((height - texture.height) / 2)
         else sHelperQuad.y = height - texture.height;
         
         meshBatch.addMesh(sHelperQuad);
@@ -81,22 +82,22 @@ class TrueTypeCompositor implements ITextCompositor
     }
     
     /** @inheritDoc */
-    public function clearMeshBatch(meshBatch : MeshBatch) : Void
+    public function clearMeshBatch(meshBatch:MeshBatch):Void
     {
         meshBatch.clear();
-        if (meshBatch.texture)             meshBatch.texture.dispose();
+        if (meshBatch.texture != null) meshBatch.texture.dispose();
     }
     
-    private function renderText(width : Float, height : Float, text : String,
-            format : TextFormat, options : TextOptions) : BitmapDataEx
+    private function renderText(width:Float, height:Float, text:String,
+            format:TextFormat, options:TextOptions):BitmapDataEx
     {
-        var scaledWidth : Float = width * options.textureScale;
-        var scaledHeight : Float = height * options.textureScale;
-        var hAlign : String = format.horizontalAlign;
+        var scaledWidth:Float = width * options.textureScale;
+        var scaledHeight:Float = height * options.textureScale;
+        var hAlign:String = format.horizontalAlign;
         
         format.toNativeFormat(sNativeFormat);
         
-        sNativeFormat.size = Std.parseFloat(sNativeFormat.size) * options.textureScale;
+        sNativeFormat.size = untyped sNativeFormat.size * options.textureScale;
         sNativeTextField.defaultTextFormat = sNativeFormat;
         sNativeTextField.width = scaledWidth;
         sNativeTextField.height = scaledHeight;
@@ -116,14 +117,14 @@ class TrueTypeCompositor implements ITextCompositor
         
         if (options.autoScale) 
             autoScaleNativeTextField(sNativeTextField, sNativeFormat,
-                scaledWidth, scaledHeight, text, options.isHtmlText);
+                untyped scaledWidth, untyped scaledHeight, text, options.isHtmlText);
         
-        var textWidth : Float = sNativeTextField.textWidth;
-        var textHeight : Float = sNativeTextField.textHeight;
-        var bitmapWidth : Int = Math.ceil(textWidth) + 4;
-        var bitmapHeight : Int = Math.ceil(textHeight) + 4;
-        var maxTextureSize : Int = Texture.maxSize;
-        var minTextureSize : Int = 1;
+        var textWidth:Float = sNativeTextField.textWidth;
+        var textHeight:Float = sNativeTextField.textHeight;
+        var bitmapWidth:Int = Math.ceil(textWidth) + 4;
+        var bitmapHeight:Int = Math.ceil(textHeight) + 4;
+        var maxTextureSize:Int = Texture.maxSize;
+        var minTextureSize:Int = 1;
         
         // check for invalid texture sizes
         if (bitmapWidth < minTextureSize)             bitmapWidth = 1;
@@ -135,7 +136,7 @@ class TrueTypeCompositor implements ITextCompositor
         }
         else 
         {
-            var offsetX : Float = 0.0;
+            var offsetX:Float = 0.0;
             
             if (hAlign == Align.RIGHT)                 offsetX = scaledWidth - textWidth - 4
             // finally: draw TextField to bitmap data
@@ -143,7 +144,7 @@ class TrueTypeCompositor implements ITextCompositor
             
             
             
-            var bitmapData : BitmapDataEx = new BitmapDataEx(bitmapWidth, bitmapHeight);
+            var bitmapData:BitmapDataEx = new BitmapDataEx(bitmapWidth, bitmapHeight);
             sHelperMatrix.setTo(1, 0, 0, 1, -offsetX, 0);
             bitmapData.draw(sNativeTextField, sHelperMatrix);
             bitmapData.scale = options.textureScale;
@@ -152,12 +153,12 @@ class TrueTypeCompositor implements ITextCompositor
         }
     }
     
-    private function autoScaleNativeTextField(textField : flash.text.TextField,
-            textFormat : flash.text.TextFormat,
-            maxTextWidth : Int, maxTextHeight : Int,
-            text : String, isHtmlText : Bool) : Void
+    private function autoScaleNativeTextField(textField:flash.text.TextField,
+            textFormat:flash.text.TextFormat,
+            maxTextWidth:Int, maxTextHeight:Int,
+            text:String, isHtmlText:Bool):Void
     {
-        var size : Float = Std.parseFloat(textFormat.size);
+        var size:Float = untyped textFormat.size;
         
         while (textField.textWidth > maxTextWidth || textField.textHeight > maxTextHeight)
         {
@@ -176,18 +177,20 @@ class TrueTypeCompositor implements ITextCompositor
 
 class BitmapDataEx extends BitmapData
 {
-    public var scale(get, set) : Float;
+    public var scale(get, set):Float;
 
-    private var _scale : Float = 1.0;
+    private var _scale:Float = 1.0;
     
-    private function new(width : Int, height : Int, transparent : Bool = true, fillColor : Int = 0x0)
+    private function new(width:Int, height:Int, transparent:Bool = true, fillColor:Int = 0x0)
     {
         super(width, height, transparent, fillColor);
     }
     
-    private function get_scale() : Float{return _scale;
+    private function get_scale():Float
+	{
+		return _scale;
     }
-    private function set_scale(value : Float) : Float{_scale = value;
+    private function set_scale(value:Float):Float{_scale = value;
         return value;
     }
 }

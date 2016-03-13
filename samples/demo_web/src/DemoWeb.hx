@@ -24,9 +24,9 @@ import utils.ProgressBar;
 
 class DemoWeb extends Sprite
 {
-    private var _starling : Starling;
-    private var _background : Bitmap;
-    private var _progressBar : ProgressBar;
+    private var _starling:Starling;
+    private var _background:Bitmap;
+    private var _progressBar:ProgressBar;
     
     public function new()
     {
@@ -35,13 +35,13 @@ class DemoWeb extends Sprite
         else addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
     }
     
-    private function onAddedToStage(event : Dynamic) : Void
+    private function onAddedToStage(event:Dynamic):Void
     {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         start();
     }
     
-    private function start() : Void
+    private function start():Void
     {
         // We develop the game in a *fixed* coordinate system of 320x480. The game might
         // then run on a device with a different resolution; for that case, we zoom the
@@ -52,7 +52,7 @@ class DemoWeb extends Sprite
         _starling = new Starling(Game, stage, null, null, "auto", "auto");
         _starling.simulateMultitouch = true;
         _starling.enableErrorChecking = Capabilities.isDebugger;
-        _starling.addEventListener(Event.ROOT_CREATED, function() : Void
+        _starling.addEventListener(Event.ROOT_CREATED, function():Void
                 {
                     loadAssets(startGame);
                 });
@@ -61,12 +61,12 @@ class DemoWeb extends Sprite
         initElements();
     }
     
-    private function loadAssets(onComplete : Function) : Void
+    private function loadAssets(onComplete:Function):Void
     {
         // Our assets are loaded and managed by the 'AssetManager'. To use that class,
         // we first have to enqueue pointers to all assets we want it to load.
         
-        var assets : AssetManager = new AssetManager();
+        var assets:AssetManager = new AssetManager();
         
         assets.verbose = Capabilities.isDebugger;
         assets.enqueue(EmbeddedAssets);
@@ -75,7 +75,7 @@ class DemoWeb extends Sprite
         // has not loaded them yet. This happens in the "loadQueue" method; and since this
         // will take a while, we'll update the progress bar accordingly.
         
-        assets.loadQueue(function(ratio : Float) : Void
+        assets.loadQueue(function(ratio:Float):Void
                 {
                     _progressBar.ratio = ratio;
                     if (ratio == 1) 
@@ -89,14 +89,14 @@ class DemoWeb extends Sprite
                 });
     }
     
-    private function startGame(assets : AssetManager) : Void
+    private function startGame(assets:AssetManager):Void
     {
-        var game : Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
+        var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
         game.start(assets);
         setTimeout(removeElements, 150);
     }
     
-    private function initElements() : Void
+    private function initElements():Void
     {
         // Add background image.
         
@@ -112,7 +112,7 @@ class DemoWeb extends Sprite
         addChild(_progressBar);
     }
     
-    private function removeElements() : Void
+    private function removeElements():Void
     {
         if (_background != null) 
         {

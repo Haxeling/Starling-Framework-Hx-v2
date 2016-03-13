@@ -10,12 +10,14 @@
 
 package starling.textures;
 
+import flash.display3D.Context3DTextureFormat;
 import flash.errors.Error;
+import haxe.Constraints.Function;
 import starling.textures.Texture;
 
 import flash.display.Bitmap;
 import flash.display.BitmapData;
-import flash.display3d.textures.TextureBase;
+import flash.display3D.textures.TextureBase;
 import flash.media.Camera;
 import flash.net.NetStream;
 import flash.system.Capabilities;
@@ -44,19 +46,19 @@ import starling.utils.Execute;
  */
 class ConcreteTexture extends Texture
 {
-    public var optimizedForRenderTexture(get, never) : Bool;
-    public var onRestore(get, set) : Function;
+    public var optimizedForRenderTexture(get, never):Bool;
+    public var onRestore(get, set):Function;
 
-    private var _base : TextureBase;
-    private var _format : String;
-    private var _width : Int;
-    private var _height : Int;
-    private var _mipMapping : Bool;
-    private var _premultipliedAlpha : Bool;
-    private var _optimizedForRenderTexture : Bool;
-    private var _scale : Float;
-    private var _onRestore : Function;
-    private var _dataUploaded : Bool;
+    private var _base:TextureBase;
+    private var _format:Context3DTextureFormat;
+    private var _width:Int;
+    private var _height:Int;
+    private var _mipMapping:Bool;
+    private var _premultipliedAlpha:Bool;
+    private var _optimizedForRenderTexture:Bool;
+    private var _scale:Float;
+    private var _onRestore:Function;
+    private var _dataUploaded:Bool;
     
     /** @private
      *
@@ -67,18 +69,18 @@ class ConcreteTexture extends Texture
      *  <p>Note that <code>width</code> and <code>height</code> are expected in pixels,
      *  i.e. they do not take the scale factor into account.</p>
      */
-    public function new(base : TextureBase, format : String, width : Int, height : Int,
-            mipMapping : Bool, premultipliedAlpha : Bool,
-            optimizedForRenderTexture : Bool = false, scale : Float = 1)
+    public function new(base:TextureBase, format:Context3DTextureFormat, width:Int, height:Int,
+            mipMapping:Bool, premultipliedAlpha:Bool,
+            optimizedForRenderTexture:Bool = false, scale:Float = 1)
     {
         super();
         if (Capabilities.isDebugger &&
-            Type.getClassName(this) == "starling.textures::ConcreteTexture") 
+            Type.getClassName(Type.getClass(this)) == "starling.textures::ConcreteTexture") 
         {
             throw new AbstractClassError();
         }
         
-        _scale = scale <= (0) ? 1.0 : scale;
+        _scale = scale <= (0) ? 1.0:scale;
         _base = base;
         _format = format;
         _width = width;
@@ -91,7 +93,7 @@ class ConcreteTexture extends Texture
     }
     
     /** Disposes the TextureBase object. */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         if (_base != null)             _base.dispose();
         
@@ -104,7 +106,7 @@ class ConcreteTexture extends Texture
     /** Uploads a bitmap to the texture. The existing contents will be replaced.
      *  If the size of the bitmap does not match the size of the texture, the bitmap will be
      *  cropped or filled up with transparent pixels */
-    public function uploadBitmap(bitmap : Bitmap) : Void
+    public function uploadBitmap(bitmap:Bitmap):Void
     {
         uploadBitmapData(bitmap.bitmapData);
     }
@@ -112,7 +114,7 @@ class ConcreteTexture extends Texture
     /** Uploads bitmap data to the texture. The existing contents will be replaced.
      *  If the size of the bitmap does not match the size of the texture, the bitmap will be
      *  cropped or filled up with transparent pixels */
-    public function uploadBitmapData(data : BitmapData) : Void
+    public function uploadBitmapData(data:BitmapData):Void
     {
         throw new NotSupportedError();
     }
@@ -127,37 +129,37 @@ class ConcreteTexture extends Texture
      *  upload is complete, at which time the callback function will be executed. This is the
      *  expected function definition: <code>function(texture:Texture):void;</code></p>
      */
-    public function uploadAtfData(data : ByteArray, offset : Int = 0, async : Dynamic = null) : Void
+    public function uploadAtfData(data:ByteArray, offset:Int = 0, async:Dynamic = null):Void
     {
         throw new NotSupportedError();
     }
     
     /** Specifies a video stream to be rendered within the texture. */
-    public function attachNetStream(netStream : NetStream, onComplete : Function = null) : Void
+    public function attachNetStream(netStream:NetStream, onComplete:Function = null):Void
     {
         attachVideo("NetStream", netStream, onComplete);
     }
     
     /** Specifies a video stream from a camera to be rendered within the texture. */
-    public function attachCamera(camera : Camera, onComplete : Function = null) : Void
+    public function attachCamera(camera:Camera, onComplete:Function = null):Void
     {
         attachVideo("Camera", camera, onComplete);
     }
     
     /** @private */
     @:allow(starling.textures)
-    private function attachVideo(type : String, attachment : Dynamic, onComplete : Function = null) : Void
+    private function attachVideo(type:String, attachment:Dynamic, onComplete:Function = null):Void
     {
         throw new NotSupportedError();
     }
     
     // texture backup (context loss)
     
-    private function onContextCreated() : Void
+    private function onContextCreated():Void
     {
         _dataUploaded = false;
         _base = createBase();  // recreate the underlying texture  
-        execute(_onRestore, this);  // restore contents  
+        Execute.call(_onRestore, [this]);  // restore contents  
         
         // if no texture has been uploaded above, we init the texture with transparent pixels.
         if (!_dataUploaded)             clear();
@@ -167,21 +169,23 @@ class ConcreteTexture extends Texture
      *  as the one that was passed to the constructor. You have to upload new data before the
      *  texture becomes usable again. Beware: this method does <strong>not</strong> dispose
      *  the current base. */
-    private function createBase() : TextureBase
+    private function createBase():TextureBase
     {
         throw new AbstractMethodError();
     }
     
     /** Clears the texture with a certain color and alpha value. The previous contents of the
      *  texture is wiped out. */
-    public function clear(color : Int = 0x0, alpha : Float = 0.0) : Void
+    public function clear(color:Int = 0x0, alpha:Float = 0.0):Void
     {
         if (_premultipliedAlpha && alpha < 1.0) 
-            color = Color.rgb(Color.getRed(color) * alpha,
-                        Color.getGreen(color) * alpha,
-                        Color.getBlue(color) * alpha);
+            color = Color.rgb(
+				untyped Color.getRed(color) * alpha,
+				untyped Color.getGreen(color) * alpha,
+				untyped Color.getBlue(color) * alpha
+			);
         
-        var painter : Painter = Starling.painter;
+        var painter:Painter = Starling.Painter;
         painter.pushState();
         painter.state.renderTarget = this;
         
@@ -190,14 +194,14 @@ class ConcreteTexture extends Texture
         // (while it *does* work on iOS + Android).
         
         try{painter.clear(color, alpha);
-        }        catch (e : Error){ };
+        }        catch (e:Error){ };
         
         painter.popState();
         setDataUploaded();
     }
     
     /** Notifies the instance that the base texture may now be used for rendering. */
-    private function setDataUploaded() : Void
+    private function setDataUploaded():Void
     {
         _dataUploaded = true;
     }
@@ -205,7 +209,9 @@ class ConcreteTexture extends Texture
     // properties
     
     /** Indicates if the base texture was optimized for being used in a render texture. */
-    private function get_optimizedForRenderTexture() : Bool{return _optimizedForRenderTexture;
+    private function get_optimizedForRenderTexture():Bool
+	{
+		return _optimizedForRenderTexture;
     }
     
     /** The function that you provide here will be called after a context loss.
@@ -220,58 +226,81 @@ class ConcreteTexture extends Texture
      *      texture.root.uploadFromBitmap(new EmbeddedBitmap());
      *  };</listing>
      */
-    private function get_onRestore() : Function{return _onRestore;
+    private function get_onRestore():Function
+	{
+		return _onRestore;
     }
-    private function set_onRestore(value : Function) : Function
+	
+    private function set_onRestore(value:Function):Function
     {
-        Starling.current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+        Starling.Current.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         
         if (value != null) 
         {
             _onRestore = value;
-            Starling.current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+            Starling.Current.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         }
         else _onRestore = null;
         return value;
     }
     
     /** @inheritDoc */
-    override private function get_base() : TextureBase{return _base;
+    override private function get_base():TextureBase
+	{
+		return _base;
     }
     
     /** @inheritDoc */
-    override private function get_root() : ConcreteTexture{return this;
+    override private function get_root():ConcreteTexture
+	{
+		return this;
     }
     
     /** @inheritDoc */
-    override private function get_format() : String{return _format;
+    override private function get_format():Context3DTextureFormat
+	{
+		return _format;
     }
     
     /** @inheritDoc */
-    override private function get_width() : Float{return _width / _scale;
+    override private function get_width():Float
+	{
+		return _width / _scale;
     }
     
     /** @inheritDoc */
-    override private function get_height() : Float{return _height / _scale;
+    override private function get_height():Float
+	{
+		return _height / _scale;
     }
     
     /** @inheritDoc */
-    override private function get_nativeWidth() : Float{return _width;
+    override private function get_nativeWidth():Float
+	{
+		return _width;
     }
     
     /** @inheritDoc */
-    override private function get_nativeHeight() : Float{return _height;
+    override private function get_nativeHeight():Float
+	{
+		return _height;
     }
     
     /** The scale factor, which influences width and height properties. */
-    override private function get_scale() : Float{return _scale;
+    override private function get_scale():Float
+	{
+		return _scale;
     }
     
     /** @inheritDoc */
-    override private function get_mipMapping() : Bool{return _mipMapping;
+    override private function get_mipMapping():Bool
+	{
+		return _mipMapping;
     }
     
     /** @inheritDoc */
-    override private function get_premultipliedAlpha() : Bool{return _premultipliedAlpha;
+    override private function get_premultipliedAlpha():Bool
+	{
+		return _premultipliedAlpha;
     }
 }

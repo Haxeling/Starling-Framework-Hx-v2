@@ -13,7 +13,7 @@ package starling.textures;
 import starling.textures.SubTexture;
 import starling.textures.Texture;
 
-import flash.display3d.textures.TextureBase;
+import flash.display3D.textures.TextureBase;
 import flash.errors.IllegalOperationError;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
@@ -69,22 +69,22 @@ import starling.utils.Execute;
  */
 class RenderTexture extends SubTexture
 {
-    private var isDoubleBuffered(get, never) : Bool;
-    public var isPersistent(get, never) : Bool;
-    public static var useDoubleBuffering(get, set) : Bool;
+    private var isDoubleBuffered(get, never):Bool;
+    public var isPersistent(get, never):Bool;
+    public static var useDoubleBuffering(get, set):Bool;
 
-    private static var USE_DOUBLE_BUFFERING_DATA_NAME : String = 
+    private static var USE_DOUBLE_BUFFERING_DATA_NAME:String = 
         "starling.textures.RenderTexture.useDoubleBuffering";
     
-    private var _activeTexture : Texture;
-    private var _bufferTexture : Texture;
-    private var _helperImage : Image;
-    private var _drawing : Bool;
-    private var _bufferReady : Bool;
-    private var _isPersistent : Bool;
+    private var _activeTexture:Texture;
+    private var _bufferTexture:Texture;
+    private var _helperImage:Image;
+    private var _drawing:Bool;
+    private var _bufferReady:Bool;
+    private var _isPersistent:Bool;
     
     // helper object
-    private static var sClipRect : Rectangle = new Rectangle();
+    private static var sClipRect:Rectangle = new Rectangle();
     
     /** Creates a new RenderTexture with a certain size (in points). If the texture is
      *  persistent, its contents remains intact after each draw call, allowing you to use the
@@ -94,8 +94,8 @@ class RenderTexture extends SubTexture
      *  hardware, it does not make a difference. For more information, have a look at the
      *  documentation of the <code>useDoubleBuffering</code> property.</p>
      */
-    public function new(width : Int, height : Int, persistent : Bool = true,
-            scale : Float = -1, format : String = "bgra")
+    public function new(width:Int, height:Int, persistent:Bool = true,
+            scale:Float = -1, format:String = "bgra")
     {
         _isPersistent = persistent;
         _activeTexture = Texture.empty(width, height, true, false, true, scale, format);
@@ -113,7 +113,7 @@ class RenderTexture extends SubTexture
     }
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _activeTexture.dispose();
         
@@ -137,8 +137,8 @@ class RenderTexture extends SubTexture
      *  @param antiAliasing Only supported on Desktop.
      *                      Values range from 0 (no anti-aliasing) to 4 (best quality).
      */
-    public function draw(object : DisplayObject, matrix : Matrix = null, alpha : Float = 1.0,
-            antiAliasing : Int = 0) : Void
+    public function draw(object:DisplayObject, matrix:Matrix = null, alpha:Float = 1.0,
+            antiAliasing:Int = 0):Void
     {
         if (object == null)             return;
         
@@ -156,24 +156,24 @@ class RenderTexture extends SubTexture
      *  @param drawingBlock  a callback with the form: <pre>function():void;</pre>
      *  @param antiAliasing  Only supported beginning with AIR 13, and only on Desktop.
      *                       Values range from 0 (no antialiasing) to 4 (best quality). */
-    public function drawBundled(drawingBlock : Function, antiAliasing : Int = 0) : Void
+    public function drawBundled(drawingBlock:Function, antiAliasing:Int = 0):Void
     {
         renderBundled(drawingBlock, null, null, 1.0, antiAliasing);
     }
     
-    private function render(object : DisplayObject, matrix : Matrix = null, alpha : Float = 1.0) : Void
+    private function render(object:DisplayObject, matrix:Matrix = null, alpha:Float = 1.0):Void
     {
-        var painter : Painter = Starling.painter;
-        var state : RenderState = painter.state;
-        var filter : FragmentFilter = object.filter;
-        var mask : DisplayObject = object.mask;
+        var painter:Painter = Starling.Painter;
+        var state:RenderState = painter.state;
+        var filter:FragmentFilter = object.filter;
+        var mask:DisplayObject = object.mask;
         
         painter.pushState();
         
         state.alpha *= alpha;
         state.setModelviewMatricesToIdentity();
         state.blendMode = object.blendMode == (BlendMode.AUTO) ? 
-                BlendMode.NORMAL : object.blendMode;
+                BlendMode.NORMAL:object.blendMode;
         
         if (matrix != null)             state.transformModelviewMatrix(matrix)
         else state.transformModelviewMatrix(object.transformationMatrix);
@@ -188,20 +188,20 @@ class RenderTexture extends SubTexture
         painter.popState();
     }
     
-    private function renderBundled(renderBlock : Function, object : DisplayObject = null,
-            matrix : Matrix = null, alpha : Float = 1.0,
-            antiAliasing : Int = 0) : Void
+    private function renderBundled(renderBlock:Function, object:DisplayObject = null,
+            matrix:Matrix = null, alpha:Float = 1.0,
+            antiAliasing:Int = 0):Void
     {
-        var painter : Painter = Starling.painter;
-        var state : RenderState = painter.state;
+        var painter:Painter = Starling.Painter;
+        var state:RenderState = painter.state;
         
-        if (!Starling.current.contextValid)             return  // switch buffers  ;
+        if (!Starling.Current.contextValid)             return  // switch buffers  ;
         
         
         
         if (isDoubleBuffered) 
         {
-            var tmpTexture : Texture = _activeTexture;
+            var tmpTexture:Texture = _activeTexture;
             _activeTexture = _bufferTexture;
             _bufferTexture = tmpTexture;
             _helperImage.texture = _bufferTexture;
@@ -209,7 +209,7 @@ class RenderTexture extends SubTexture
         
         painter.pushState();
         
-        var rootTexture : Texture = _activeTexture.root;
+        var rootTexture:Texture = _activeTexture.root;
         state.setProjectionMatrix(0, 0, rootTexture.width, rootTexture.height, width, height);
         
         // limit drawing to relevant area
@@ -242,7 +242,7 @@ class RenderTexture extends SubTexture
     
     /** Clears the render texture with a certain color and alpha value. Call without any
      *  arguments to restore full transparency. */
-    public function clear(color : Int = 0, alpha : Float = 0.0) : Void
+    public function clear(color:Int = 0, alpha:Float = 0.0):Void
     {
         _activeTexture.root.clear(color, alpha);
         _bufferReady = true;
@@ -253,19 +253,27 @@ class RenderTexture extends SubTexture
     /** Indicates if the render texture is using double buffering. This might be necessary for
      *  persistent textures, depending on the runtime version and the value of
      *  'forceDoubleBuffering'. */
-    private function get_isDoubleBuffered() : Bool{return _bufferTexture != null;
+    private function get_isDoubleBuffered():Bool
+	{
+		return _bufferTexture != null;
     }
     
     /** Indicates if the texture is persistent over multiple draw calls. */
-    private function get_isPersistent() : Bool{return _isPersistent;
+    private function get_isPersistent():Bool
+	{
+		return _isPersistent;
     }
     
     /** @inheritDoc */
-    override private function get_base() : TextureBase{return _activeTexture.base;
+    override private function get_base():TextureBase
+	{
+		return _activeTexture.base;
     }
     
     /** @inheritDoc */
-    override private function get_root() : ConcreteTexture{return _activeTexture.root;
+    override private function get_root():ConcreteTexture
+	{
+		return _activeTexture.root;
     }
     
     /** Indicates if new persistent textures should use double buffering. Single buffering
@@ -277,12 +285,12 @@ class RenderTexture extends SubTexture
      *
      *  @default true for "baseline" and "baselineConstrained", false otherwise
      */
-    private static function get_useDoubleBuffering() : Bool
+    private static function get_useDoubleBuffering():Bool
     {
-        if (Starling.current) 
+        if (Starling.Current) 
         {
-            var painter : Painter = Starling.painter;
-            var sharedData : Dictionary = painter.sharedData;
+            var painter:Painter = Starling.Painter;
+            var sharedData:Dictionary = painter.sharedData;
             
             if (Lambda.has(sharedData, USE_DOUBLE_BUFFERING_DATA_NAME)) 
             {
@@ -290,8 +298,8 @@ class RenderTexture extends SubTexture
             }
             else 
             {
-                var profile : String = (painter.profile) ? painter.profile : "baseline";
-                var value : Bool = profile == "baseline" || profile == "baselineConstrained";
+                var profile:String = (painter.profile) ? painter.profile:"baseline";
+                var value:Bool = profile == "baseline" || profile == "baselineConstrained";
                 Reflect.setField(sharedData, USE_DOUBLE_BUFFERING_DATA_NAME, value);
                 return value;
             }
@@ -299,12 +307,12 @@ class RenderTexture extends SubTexture
         else return false;
     }
     
-    private static function set_useDoubleBuffering(value : Bool) : Bool
+    private static function set_useDoubleBuffering(value:Bool):Bool
     {
-        if (Starling.current == null) 
+        if (Starling.Current == null) 
             throw new IllegalOperationError("Starling not yet initialized")
         else 
-        Starling.painter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
+        Starling.Painter.sharedData[USE_DOUBLE_BUFFERING_DATA_NAME] = value;
         return value;
     }
 }

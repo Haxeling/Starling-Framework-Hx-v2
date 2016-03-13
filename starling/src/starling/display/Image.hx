@@ -43,20 +43,20 @@ import starling.textures.Texture;
  */
 class Image extends Quad
 {
-    public var scale9Grid(get, set) : Rectangle;
-    public var tileGrid(get, set) : Rectangle;
+    public var scale9Grid(get, set):Rectangle;
+    public var tileGrid(get, set):Rectangle;
 
-    private var _scale9Grid : Rectangle;
-    private var _tileGrid : Rectangle;
+    private var _scale9Grid:Rectangle;
+    private var _tileGrid:Rectangle;
     
     // helper objects
-    private static var s9Grid : Rectangle = new Rectangle();
-    private static var sBounds : Rectangle = new Rectangle();
-    private static var sHorizSizes : Array<Float> = new Array<Float>();
-    private static var sVertSizes : Array<Float> = new Array<Float>();
+    private static var s9Grid:Rectangle = new Rectangle();
+    private static var sBounds:Rectangle = new Rectangle();
+    private static var sHorizSizes:Array<Float> = new Array<Float>();
+    private static var sVertSizes:Array<Float> = new Array<Float>();
     
     /** Creates an image with a texture mapped onto it. */
-    public function new(texture : Texture)
+    public function new(texture:Texture)
     {
         super(100, 100);
         this.texture = texture;
@@ -84,9 +84,12 @@ class Image extends Quad
      *
      *  @default null
      */
-    private function get_scale9Grid() : Rectangle{return _scale9Grid;
+    private function get_scale9Grid():Rectangle
+	{
+		return _scale9Grid;
     }
-    private function set_scale9Grid(value : Rectangle) : Rectangle
+	
+    private function set_scale9Grid(value:Rectangle):Rectangle
     {
         if (value != null) 
         {
@@ -127,13 +130,16 @@ class Image extends Quad
      *
      *  @default null
      */
-    private function get_tileGrid() : Rectangle{return _tileGrid;
+    private function get_tileGrid():Rectangle
+	{
+		return _tileGrid;
     }
-    private function set_tileGrid(value : Rectangle) : Rectangle
+	
+    private function set_tileGrid(value:Rectangle):Rectangle
     {
         if (value != null) 
         {
-            if (_tileGrid == null)                 _tileGrid = value.clone()
+            if (_tileGrid == null) _tileGrid = value.clone()
             else _tileGrid.copyFrom(value);
             
             _scale9Grid = null;
@@ -145,7 +151,7 @@ class Image extends Quad
     }
     
     /** @private */
-    override private function setupVertices() : Void
+    override private function setupVertices():Void
     {
         if (texture != null && _scale9Grid != null)             setupScale9Grid()
         else if (texture != null && _tileGrid != null)             setupTileGrid()
@@ -153,7 +159,7 @@ class Image extends Quad
     }
     
     /** @private */
-    override private function set_scaleX(value : Float) : Float
+    override private function set_scaleX(value:Float):Float
     {
         super.scaleX = value;
         if (texture != null && (_scale9Grid != null || _tileGrid != null))             setupVertices();
@@ -161,7 +167,7 @@ class Image extends Quad
     }
     
     /** @private */
-    override private function set_scaleY(value : Float) : Float
+    override private function set_scaleY(value:Float):Float
     {
         super.scaleY = value;
         if (texture != null && (_scale9Grid != null || _tileGrid != null))             setupVertices();
@@ -169,7 +175,7 @@ class Image extends Quad
     }
     
     /** @private */
-    override private function set_texture(value : Texture) : Texture
+    override private function set_texture(value:Texture):Texture
     {
         if (value != texture) 
         {
@@ -181,24 +187,24 @@ class Image extends Quad
     
     // vertex setup
     
-    private function setupScale9Grid() : Void
+    private function setupScale9Grid():Void
     {
         s9Grid.copyFrom(_scale9Grid);
         
-        var texture : Texture = this.texture;
-        var frame : Rectangle = texture.frame;
-        var absScaleX : Float = scaleX > (0) ? scaleX : -scaleX;
-        var absScaleY : Float = scaleY > (0) ? scaleY : -scaleY;
-        var invScaleX : Float = 1.0 / absScaleX;
-        var invScaleY : Float = 1.0 / absScaleY;
-        var vertexData : VertexData = this.vertexData;
-        var indexData : IndexData = this.indexData;
-        var prevNumVertices : Int = vertexData.numVertices;
-        var startX : Float = 0.0;
-        var startY : Float = 0.0;
-        var col : Float;
-        var row : Float;
-        var correction : Float;
+        var texture:Texture = this.texture;
+        var frame:Rectangle = texture.frame;
+        var absScaleX:Float = scaleX > (0) ? scaleX:-scaleX;
+        var absScaleY:Float = scaleY > (0) ? scaleY:-scaleY;
+        var invScaleX:Float = 1.0 / absScaleX;
+        var invScaleY:Float = 1.0 / absScaleY;
+        var vertexData:VertexData = this.vertexData;
+        var indexData:IndexData = this.indexData;
+        var prevNumVertices:Int = vertexData.numVertices;
+        var startX:Float = 0.0;
+        var startY:Float = 0.0;
+        var col:Float;
+        var row:Float;
+        var correction:Float;
         
         indexData.numIndices = 0;
         vertexData.numVertices = 16;
@@ -246,9 +252,9 @@ class Image extends Quad
         
         
         
-        var posX : Float;
-        var posY : Float = startY;
-        var vertexID : Int = 0;
+        var posX:Float;
+        var posY:Float = startY;
+        var vertexID:Int = 0;
         
         for (row in 0...4){
             posX = startX;
@@ -264,8 +270,8 @@ class Image extends Quad
         
         
         
-        var paddingLeft : Float = (frame != null) ? -frame.x : 0;
-        var paddingTop : Float = (frame != null) ? -frame.y : 0;
+        var paddingLeft:Float = (frame != null) ? -frame.x:0;
+        var paddingTop:Float = (frame != null) ? -frame.y:0;
         
         sHorizSizes[0] = (_scale9Grid.x - paddingLeft) / texture.width;
         sHorizSizes[1] = _scale9Grid.width / texture.width;
@@ -306,8 +312,8 @@ class Image extends Quad
         
         if (prevNumVertices != vertexData.numVertices) 
         {
-            var color : Int = (prevNumVertices != 0) ? vertexData.getColor(0) : 0xffffff;
-            var alpha : Float = (prevNumVertices != 0) ? vertexData.getAlpha(0) : 1.0;
+            var color:Int = (prevNumVertices != 0) ? vertexData.getColor(0):0xffffff;
+            var alpha:Float = (prevNumVertices != 0) ? vertexData.getAlpha(0):1.0;
             
             vertexData.colorize("color", color, alpha);
             vertexData.trim();
@@ -317,56 +323,56 @@ class Image extends Quad
         setRequiresRedraw();
     }
     
-    private function setupTileGrid() : Void
+    private function setupTileGrid():Void
     {
         // calculate the grid of vertices simulating a repeating / tiled texture.
         // again, texture frames make this somewhat more complicated than one would think.
         
-        var texture : Texture = this.texture;
-        var frame : Rectangle = texture.frame;
-        var vertexData : VertexData = this.vertexData;
-        var indexData : IndexData = this.indexData;
-        var bounds : Rectangle = getBounds(this, sBounds);
-        var prevNumVertices : Int = vertexData.numVertices;
-        var color : Int = (prevNumVertices != 0) ? vertexData.getColor(0) : 0xffffff;
-        var alpha : Float = (prevNumVertices != 0) ? vertexData.getAlpha(0) : 1.0;
-        var invScaleX : Float = scaleX > (0) ? 1.0 / scaleX : -1.0 / scaleX;
-        var invScaleY : Float = scaleY > (0) ? 1.0 / scaleY : -1.0 / scaleY;
-        var frameWidth : Float = _tileGrid.width > (0) ? _tileGrid.width : texture.frameWidth;
-        var frameHeight : Float = _tileGrid.height > (0) ? _tileGrid.height : texture.frameHeight;
+        var texture:Texture = this.texture;
+        var frame:Rectangle = texture.frame;
+        var vertexData:VertexData = this.vertexData;
+        var indexData:IndexData = this.indexData;
+        var bounds:Rectangle = getBounds(this, sBounds);
+        var prevNumVertices:Int = vertexData.numVertices;
+        var color:Int = (prevNumVertices != 0) ? vertexData.getColor(0):0xffffff;
+        var alpha:Float = (prevNumVertices != 0) ? vertexData.getAlpha(0):1.0;
+        var invScaleX:Float = scaleX > (0) ? 1.0 / scaleX:-1.0 / scaleX;
+        var invScaleY:Float = scaleY > (0) ? 1.0 / scaleY:-1.0 / scaleY;
+        var frameWidth:Float = _tileGrid.width > (0) ? _tileGrid.width:texture.frameWidth;
+        var frameHeight:Float = _tileGrid.height > (0) ? _tileGrid.height:texture.frameHeight;
         
         frameWidth *= invScaleX;
         frameHeight *= invScaleY;
         
-        var tileX : Float = (frame != null) ? -frame.x * (frameWidth / frame.width) : 0;
-        var tileY : Float = (frame != null) ? -frame.y * (frameHeight / frame.height) : 0;
-        var tileWidth : Float = texture.width * (frameWidth / texture.frameWidth);
-        var tileHeight : Float = texture.height * (frameHeight / texture.frameHeight);
-        var modX : Float = (_tileGrid.x * invScaleX) % frameWidth;
-        var modY : Float = (_tileGrid.y * invScaleY) % frameHeight;
+        var tileX:Float = (frame != null) ? -frame.x * (frameWidth / frame.width):0;
+        var tileY:Float = (frame != null) ? -frame.y * (frameHeight / frame.height):0;
+        var tileWidth:Float = texture.width * (frameWidth / texture.frameWidth);
+        var tileHeight:Float = texture.height * (frameHeight / texture.frameHeight);
+        var modX:Float = (_tileGrid.x * invScaleX) % frameWidth;
+        var modY:Float = (_tileGrid.y * invScaleY) % frameHeight;
         
         if (modX < 0)             modX += frameWidth;
         if (modY < 0)             modY += frameHeight;
         
-        var startX : Float = modX + tileX;
-        var startY : Float = modY + tileY;
+        var startX:Float = modX + tileX;
+        var startY:Float = modY + tileY;
         
         if (startX > (frameWidth - tileWidth))             startX -= frameWidth;
         if (startY > (frameHeight - tileHeight))             startY -= frameHeight;
         
-        var posLeft : Float;
-        var posRight : Float;
-        var posTop : Float;
-        var posBottom : Float;
-        var texLeft : Float;
-        var texRight : Float;
-        var texTop : Float;
-        var texBottom : Float;
-        var posAttrName : String = "position";
-        var texAttrName : String = "texCoords";
-        var currentX : Float;
-        var currentY : Float = startY;
-        var vertexID : Int = 0;
+        var posLeft:Float;
+        var posRight:Float;
+        var posTop:Float;
+        var posBottom:Float;
+        var texLeft:Float;
+        var texRight:Float;
+        var texTop:Float;
+        var texBottom:Float;
+        var posAttrName:String = "position";
+        var texAttrName:String = "texCoords";
+        var currentX:Float;
+        var currentY:Float = startY;
+        var vertexID:Int = 0;
         
         indexData.numIndices = 0;
         
@@ -378,10 +384,10 @@ class Image extends Quad
             {
                 indexData.addQuad(vertexID, vertexID + 1, vertexID + 2, vertexID + 3);
                 
-                posLeft = currentX < (0) ? 0 : currentX;
-                posTop = currentY < (0) ? 0 : currentY;
-                posRight = currentX + tileWidth > (bounds.width) ? bounds.width : currentX + tileWidth;
-                posBottom = currentY + tileHeight > (bounds.height) ? bounds.height : currentY + tileHeight;
+                posLeft = currentX < (0) ? 0:currentX;
+                posTop = currentY < (0) ? 0:currentY;
+                posRight = currentX + tileWidth > (bounds.width) ? bounds.width:currentX + tileWidth;
+                posBottom = currentY + tileHeight > (bounds.height) ? bounds.height:currentY + tileHeight;
                 
                 vertexData.setPoint(vertexID, posAttrName, posLeft, posTop);
                 vertexData.setPoint(vertexID + 1, posAttrName, posRight, posTop);

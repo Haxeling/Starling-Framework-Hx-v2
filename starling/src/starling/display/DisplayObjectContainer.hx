@@ -12,6 +12,7 @@ package starling.display;
 
 import flash.errors.ArgumentError;
 import flash.errors.RangeError;
+import haxe.Constraints.Function;
 
 import flash.geom.Matrix;
 import flash.geom.Point;
@@ -19,7 +20,6 @@ import flash.geom.Rectangle;
 import flash.system.Capabilities;
 
 
-import starling.core.StarlingInternal;
 import starling.errors.AbstractClassError;
 import starling.events.Event;
 import starling.filters.FragmentFilter;
@@ -68,20 +68,20 @@ import starling.utils.MatrixUtil;
  */
 class DisplayObjectContainer extends DisplayObject
 {
-    public var numChildren(get, never) : Int;
-    public var touchGroup(get, set) : Bool;
+    public var numChildren(get, never):Int;
+    public var touchGroup(get, set):Bool;
 
     // members
     
-    private var _children : Array<DisplayObject>;
-    private var _touchGroup : Bool;
+    private var _children:Array<DisplayObject>;
+    private var _touchGroup:Bool;
     
     // helper objects
-    private static var sHelperMatrix : Matrix = new Matrix();
-    private static var sHelperPoint : Point = new Point();
-    private static var sBroadcastListeners : Array<DisplayObject> = [];
-    private static var sSortBuffer : Array<DisplayObject> = [];
-    private static var sCacheToken : BatchToken = new BatchToken();
+    private static var sHelperMatrix:Matrix = new Matrix();
+    private static var sHelperPoint:Point = new Point();
+    private static var sBroadcastListeners:Array<DisplayObject> = [];
+    private static var sSortBuffer:Array<DisplayObject> = [];
+    private static var sCacheToken:BatchToken = new BatchToken();
     
     // construction
     
@@ -90,7 +90,7 @@ class DisplayObjectContainer extends DisplayObject
     {
         super();
         if (Capabilities.isDebugger &&
-            Type.getClassName(this) == "starling.display::DisplayObjectContainer") 
+            Type.getClassName(Type.getClass(this)) == "starling.display::DisplayObjectContainer") 
         {
             throw new AbstractClassError();
         }
@@ -99,9 +99,9 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Disposes the resources of all children. */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
-        var i : Int = _children.length - 1;
+        var i:Int = _children.length - 1;
         while (i >= 0){_children[i].dispose();
             --i;
         }
@@ -112,15 +112,15 @@ class DisplayObjectContainer extends DisplayObject
     // child management
     
     /** Adds a child to the container. It will be at the frontmost position. */
-    public function addChild(child : DisplayObject) : DisplayObject
+    public function addChild(child:DisplayObject):DisplayObject
     {
         return addChildAt(child, _children.length);
     }
     
     /** Adds a child to the container at a certain index. */
-    public function addChildAt(child : DisplayObject, index : Int) : DisplayObject
+    public function addChildAt(child:DisplayObject, index:Int):DisplayObject
     {
-        var numChildren : Int = _children.length;
+        var numChildren:Int = _children.length;
         
         if (index >= 0 && index <= numChildren) 
         {
@@ -132,7 +132,7 @@ class DisplayObjectContainer extends DisplayObject
             }
             else 
             {
-                _children.insertAt(index, child);
+                _children.insert(index, child);
                 
                 child.removeFromParent();
                 child.setParent(this);
@@ -140,7 +140,7 @@ class DisplayObjectContainer extends DisplayObject
                 
                 if (stage != null) 
                 {
-                    var container : DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
+                    var container:DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
                     if (container != null)                         container.broadcastEventWith(Event.ADDED_TO_STAGE)
                     else child.dispatchEventWith(Event.ADDED_TO_STAGE);
                 }
@@ -156,34 +156,34 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Removes a child from the container. If the object is not a child, nothing happens. 
      *  If requested, the child will be disposed right away. */
-    public function removeChild(child : DisplayObject, dispose : Bool = false) : DisplayObject
+    public function removeChild(child:DisplayObject, dispose:Bool = false):DisplayObject
     {
-        var childIndex : Int = getChildIndex(child);
+        var childIndex:Int = getChildIndex(child);
         if (childIndex != -1)             removeChildAt(childIndex, dispose);
         return child;
     }
     
     /** Removes a child at a certain index. The index positions of any display objects above
      *  the child are decreased by 1. If requested, the child will be disposed right away. */
-    public function removeChildAt(index : Int, dispose : Bool = false) : DisplayObject
+    public function removeChildAt(index:Int, dispose:Bool = false):DisplayObject
     {
         if (index >= 0 && index < _children.length) 
         {
             setRequiresRedraw();
             
-            var child : DisplayObject = _children[index];
+            var child:DisplayObject = _children[index];
             child.dispatchEventWith(Event.REMOVED, true);
             
             if (stage != null) 
             {
-                var container : DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
+                var container:DisplayObjectContainer = try cast(child, DisplayObjectContainer) catch(e:Dynamic) null;
                 if (container != null)                     container.broadcastEventWith(Event.REMOVED_FROM_STAGE)
                 else child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
             }
             
             child.setParent(null);
             index = Lambda.indexOf(_children, child);  // index might have changed by event handler  
-            if (index >= 0)                 _children.removeAt(index);
+            if (index >= 0)                 _children.splice(index, 1);
             if (dispose)                 child.dispose();
             
             return child;
@@ -196,7 +196,7 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Removes a range of children from the container (endIndex included). 
      *  If no arguments are given, all children will be removed. */
-    public function removeChildren(beginIndex : Int = 0, endIndex : Int = -1, dispose : Bool = false) : Void
+    public function removeChildren(beginIndex:Int = 0, endIndex:Int = -1, dispose:Bool = false):Void
     {
         if (endIndex < 0 || endIndex >= numChildren) 
             endIndex = numChildren - 1;
@@ -207,9 +207,9 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Returns a child object at a certain index. If you pass a negative index,
      *  '-1' will return the last child, '-2' the second to last child, etc. */
-    public function getChildAt(index : Int) : DisplayObject
+    public function getChildAt(index:Int):DisplayObject
     {
-        var numChildren : Int = _children.length;
+        var numChildren:Int = _children.length;
         
         if (index < 0) 
             index = numChildren + index;
@@ -221,9 +221,9 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Returns a child object with a certain name (non-recursively). */
-    public function getChildByName(name : String) : DisplayObject
+    public function getChildByName(name:String):DisplayObject
     {
-        var numChildren : Int = _children.length;
+        var numChildren:Int = _children.length;
         for (i in 0...numChildren){if (_children[i].name == name)                 return _children[i];
         }
         
@@ -231,37 +231,37 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Returns the index of a child within the container, or "-1" if it is not found. */
-    public function getChildIndex(child : DisplayObject) : Int
+    public function getChildIndex(child:DisplayObject):Int
     {
         return Lambda.indexOf(_children, child);
     }
     
     /** Moves a child to a certain index. Children at and after the replaced position move up.*/
-    public function setChildIndex(child : DisplayObject, index : Int) : Void
+    public function setChildIndex(child:DisplayObject, index:Int):Void
     {
-        var oldIndex : Int = getChildIndex(child);
-        if (oldIndex == index)             return;
-        if (oldIndex == -1)             throw new ArgumentError("Not a child of this container");
+        var oldIndex:Int = getChildIndex(child);
+        if (oldIndex == index) return;
+        if (oldIndex == -1) throw new ArgumentError("Not a child of this container");
         
-        _children.removeAt(oldIndex);
-        _children.insertAt(index, child);
+        _children.splice(oldIndex, 1);
+        _children.insert(index, child);
         setRequiresRedraw();
     }
     
     /** Swaps the indexes of two children. */
-    public function swapChildren(child1 : DisplayObject, child2 : DisplayObject) : Void
+    public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void
     {
-        var index1 : Int = getChildIndex(child1);
-        var index2 : Int = getChildIndex(child2);
-        if (index1 == -1 || index2 == -1)             throw new ArgumentError("Not a child of this container");
+        var index1:Int = getChildIndex(child1);
+        var index2:Int = getChildIndex(child2);
+        if (index1 == -1 || index2 == -1) throw new ArgumentError("Not a child of this container");
         swapChildrenAt(index1, index2);
     }
     
     /** Swaps the indexes of two children. */
-    public function swapChildrenAt(index1 : Int, index2 : Int) : Void
+    public function swapChildrenAt(index1:Int, index2:Int):Void
     {
-        var child1 : DisplayObject = getChildAt(index1);
-        var child2 : DisplayObject = getChildAt(index2);
+        var child1:DisplayObject = getChildAt(index1);
+        var child2:DisplayObject = getChildAt(index2);
         _children[index1] = child2;
         _children[index2] = child1;
         setRequiresRedraw();
@@ -269,20 +269,20 @@ class DisplayObjectContainer extends DisplayObject
     
     /** Sorts the children according to a given function (that works just like the sort function
      *  of the Vector class). */
-    public function sortChildren(compareFunction : Function) : Void
+    public function sortChildren(compareFunction:Function):Void
     {
-        sSortBuffer.length = _children.length;
+        sSortBuffer.splice(_children.length, sSortBuffer.length - _children.length);
         mergeSort(_children, compareFunction, 0, _children.length, sSortBuffer);
-        sSortBuffer.length = 0;
+        sSortBuffer.splice(0, sSortBuffer.length);
         setRequiresRedraw();
     }
     
     /** Determines if a certain object is a child of the container (recursively). */
-    public function contains(child : DisplayObject) : Bool
+    public function contains(child:DisplayObject):Bool
     {
-        while (child)
+        while (child != null)
         {
-            if (child == this)                 return true
+            if (child == this) return true;
             else child = child.parent;
         }
         return false;
@@ -291,11 +291,11 @@ class DisplayObjectContainer extends DisplayObject
     // other methods
     
     /** @inheritDoc */
-    override public function getBounds(targetSpace : DisplayObject, out : Rectangle = null) : Rectangle
+    override public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
     {
-        if (out == null)             out = new Rectangle();
+        if (out == null) out = new Rectangle();
         
-        var numChildren : Int = _children.length;
+        var numChildren:Int = _children.length;
         
         if (numChildren == 0) 
         {
@@ -309,18 +309,18 @@ class DisplayObjectContainer extends DisplayObject
         }
         else 
         {
-            var minX : Float = Float.MAX_VALUE;
-            var maxX : Float = -Float.MAX_VALUE;
-            var minY : Float = Float.MAX_VALUE;
-            var maxY : Float = -Float.MAX_VALUE;
+            var minX:Float = Math.POSITIVE_INFINITY;
+            var maxX:Float = Math.NEGATIVE_INFINITY;
+            var minY:Float = Math.POSITIVE_INFINITY;
+            var maxY:Float = Math.NEGATIVE_INFINITY;
             
             for (i in 0...numChildren){
                 _children[i].getBounds(targetSpace, out);
                 
-                if (minX > out.x)                     minX = out.x;
-                if (maxX < out.right)                     maxX = out.right;
-                if (minY > out.y)                     minY = out.y;
-                if (maxY < out.bottom)                     maxY = out.bottom;
+                if (minX > out.x) minX = out.x;
+                if (maxX < out.right) maxX = out.right;
+                if (minY > out.y) minY = out.y;
+                if (maxY < out.bottom) maxY = out.bottom;
             }
             
             out.setTo(minX, minY, maxX - minX, maxY - minY);
@@ -330,19 +330,19 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** @inheritDoc */
-    override public function hitTest(localPoint : Point) : DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (!visible || !touchable || !hitTestMask(localPoint))             return null;
         
-        var target : DisplayObject = null;
-        var localX : Float = localPoint.x;
-        var localY : Float = localPoint.y;
-        var numChildren : Int = _children.length;
+        var target:DisplayObject = null;
+        var localX:Float = localPoint.x;
+        var localY:Float = localPoint.y;
+        var numChildren:Int = _children.length;
         
-        var i : Int = numChildren - 1;
+        var i:Int = numChildren - 1;
         while (i >= 0){  // front to back!  
             {
-                var child : DisplayObject = _children[i];
+                var child:DisplayObject = _children[i];
                 if (child.isMask)                     {--i;continue;
                 };
                 
@@ -352,7 +352,7 @@ class DisplayObjectContainer extends DisplayObject
                 MatrixUtil.transformCoords(sHelperMatrix, localX, localY, sHelperPoint);
                 target = child.hitTest(sHelperPoint);
                 
-                if (target != null)                     return (_touchGroup) ? this : target;
+                if (target != null)                     return (_touchGroup) ? this:target;
             }
             --i;
         }
@@ -361,14 +361,14 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** @inheritDoc */
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
-        var numChildren : Int = _children.length;
-        var frameID : Int = painter.frameID;
-        var selfOrParentChanged : Bool = _lastParentOrSelfChangeFrameID == frameID;
+        var numChildren:Int = _children.length;
+        var frameID:Int = painter.frameID;
+        var selfOrParentChanged:Bool = _lastParentOrSelfChangeFrameID == frameID;
         
         for (i in 0...numChildren){
-            var child : DisplayObject = _children[i];
+            var child:DisplayObject = _children[i];
             
             if (child._hasVisibleArea) 
             {
@@ -387,8 +387,8 @@ class DisplayObjectContainer extends DisplayObject
                 }
                 else 
                 {
-                    var mask : DisplayObject = child._mask;
-                    var filter : FragmentFilter = child._filter;
+                    var mask:DisplayObject = child._mask;
+                    var filter:FragmentFilter = child._filter;
                     
                     painter.pushState(child._pushToken);
                     painter.setStateTo(child.transformationMatrix, child.alpha, child.blendMode);
@@ -409,69 +409,68 @@ class DisplayObjectContainer extends DisplayObject
     }
     
     /** Dispatches an event on all children (recursively). The event must not bubble. */
-    public function broadcastEvent(event : Event) : Void
+    public function broadcastEvent(event:Event):Void
     {
         if (event.bubbles) 
-            throw new ArgumentError("Broadcast of bubbling events is prohibited")  // care that the static helper vector does not get corrupted.    // And since another listener could call this method internally, we have to take    // Thus, we collect them in a list and iterate over that list instead.    // The event listeners might modify the display tree, which could make the loop crash.  ;
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        var fromIndex : Int = sBroadcastListeners.length;
+            throw new ArgumentError("Broadcast of bubbling events is prohibited");
+			
+		// care that the static helper vector does not get corrupted.    // And since another listener could call this method internally, we have to take    // Thus, we collect them in a list and iterate over that list instead.    // The event listeners might modify the display tree, which could make the loop crash.
+        var fromIndex:Int = sBroadcastListeners.length;
         getChildEventListeners(this, event.type, sBroadcastListeners);
-        var toIndex : Int = sBroadcastListeners.length;
+        var toIndex:Int = sBroadcastListeners.length;
         
         for (i in fromIndex...toIndex){sBroadcastListeners[i].dispatchEvent(event);
         }
         
-        sBroadcastListeners.length = fromIndex;
+        sBroadcastListeners.splice(fromIndex, sBroadcastListeners.length-fromIndex);
     }
     
     /** Dispatches an event with the given parameters on all children (recursively). 
      *  The method uses an internal pool of event objects to avoid allocations. */
-    public function broadcastEventWith(eventType : String, data : Dynamic = null) : Void
+    public function broadcastEventWith(eventType:String, data:Dynamic = null):Void
     {
-        var event : Event = Event.fromPool(eventType, false, data);
+        var event:Event = Event.fromPool(eventType, false, data);
         broadcastEvent(event);
         Event.toPool(event);
     }
     
     /** The number of children of this container. */
-    private function get_numChildren() : Int{return _children.length;
+    private function get_numChildren():Int
+	{
+		return _children.length;
     }
     
     /** If a container is a 'touchGroup', it will act as a single touchable object.
      *  Touch events will have the container as target, not the touched child.
      *  (Similar to 'mouseChildren' in the classic display list, but with inverted logic.)
      *  @default false */
-    private function get_touchGroup() : Bool{return _touchGroup;
+    private function get_touchGroup():Bool
+	{
+		return _touchGroup;
     }
-    private function set_touchGroup(value : Bool) : Bool{_touchGroup = value;
+	
+    private function set_touchGroup(value:Bool):Bool
+	{
+		_touchGroup = value;
         return value;
     }
     
     // helpers
     
-    private static function mergeSort(input : Array<DisplayObject>, compareFunc : Function,
-            startIndex : Int, length : Int,
-            buffer : Array<DisplayObject>) : Void
+    private static function mergeSort(input:Array<DisplayObject>, compareFunc:Function,
+            startIndex:Int, length:Int,
+            buffer:Array<DisplayObject>):Void
     {
         // This is a port of the C++ merge sort algorithm shown here:
         // http://www.cprogramming.com/tutorial/computersciencetheory/mergesort.html
         
         if (length > 1) 
         {
-            var i : Int;
-            var endIndex : Int = startIndex + length;
-            var halfLength : Int = length / 2;
-            var l : Int = startIndex;  // current position in the left subvector  
-            var r : Int = startIndex + halfLength;  // current position in the right subvector  
+            var i:Int;
+            var endIndex:Int = startIndex + length;
+            var halfLength:Int = untyped length / 2;
+            var l:Int = startIndex;  // current position in the left subvector  
+            var r:Int = startIndex + halfLength;  // current position in the right subvector  
             
             // sort each subvector
             mergeSort(input, compareFunc, startIndex, halfLength, buffer);
@@ -498,27 +497,29 @@ class DisplayObjectContainer extends DisplayObject
             
             
             
-            for (i in startIndex...endIndex){input[i] = buffer[as3hx.Compat.parseInt(i - startIndex)];
+            for (i in startIndex...endIndex){input[i] = buffer[cast(i - startIndex, Int)];
             }
         }
     }
     
     /** @private */
     @:allow(starling.display)
-    private function getChildEventListeners(object : DisplayObject, eventType : String,
-            listeners : Array<DisplayObject>) : Void
+    private function getChildEventListeners(object:DisplayObject, eventType:String,
+            listeners:Array<DisplayObject>):Void
     {
-        var container : DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
+        var container:DisplayObjectContainer = try cast(object, DisplayObjectContainer) catch(e:Dynamic) null;
         
         if (object.hasEventListener(eventType)) 
-            listeners[listeners.length] = object  // avoiding 'push'  ;
-        
+            listeners[listeners.length] = object;
+		
+		// avoiding 'push'
         if (container != null) 
         {
-            var children : Array<DisplayObject> = container._children;
-            var numChildren : Int = children.length;
+            var children:Array<DisplayObject> = container._children;
+            var numChildren:Int = children.length;
             
-            for (i in 0...numChildren){getChildEventListeners(children[i], eventType, listeners);
+            for (i in 0...numChildren) {
+				getChildEventListeners(children[i], eventType, listeners);
             }
         }
     }

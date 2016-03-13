@@ -17,7 +17,7 @@ import flash.errors.Error;
 class NotSupportedError extends Error
 {
     /** Creates a new NotSupportedError object. */
-    public function new(message : Dynamic = "", id : Dynamic = 0)
+    public function new(message:Dynamic = "", id:Dynamic = 0)
     {
         super(message, id);
     }

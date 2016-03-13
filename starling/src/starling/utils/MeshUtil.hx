@@ -27,9 +27,9 @@ import starling.rendering.VertexData;
 class MeshUtil
 {
     // helper objects
-    private static var sPoint3D : Vector3D = new Vector3D();
-    private static var sMatrix : Matrix = new Matrix();
-    private static var sMatrix3D : Matrix3D = new Matrix3D();
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sMatrix3D:Matrix3D = new Matrix3D();
     
     /** @private */
     public function new()
@@ -38,15 +38,15 @@ class MeshUtil
     
     /** Determines if a point is inside a mesh that is spawned up by the given
      *  vertex- and index-data. */
-    public static function containsPoint(vertexData : VertexData, indexData : IndexData,
-            point : Point) : Bool
+    public static function containsPoint(vertexData:VertexData, indexData:IndexData,
+            point:Point):Bool
     {
-        var i : Int;
-        var result : Bool = false;
-        var numIndices : Int = indexData.numIndices;
-        var p0 : Point = Pool.getPoint();
-        var p1 : Point = Pool.getPoint();
-        var p2 : Point = Pool.getPoint();
+        var i:Int;
+        var result:Bool = false;
+        var numIndices:Int = indexData.numIndices;
+        var p0:Point = Pool.getPoint();
+        var p1:Point = Pool.getPoint();
+        var p2:Point = Pool.getPoint();
         
         i = 0;
         while (i < numIndices){
@@ -70,14 +70,14 @@ class MeshUtil
     }
     
     /** Calculates the bounds of the given vertices in the target coordinate system. */
-    public static function calculateBounds(vertexData : VertexData,
-            sourceSpace : DisplayObject,
-            targetSpace : DisplayObject,
-            out : Rectangle = null) : Rectangle
+    public static function calculateBounds(vertexData:VertexData,
+            sourceSpace:DisplayObject,
+            targetSpace:DisplayObject,
+            out:Rectangle = null):Rectangle
     {
         if (out == null)             out = new Rectangle();
         
-        var stage : Stage = sourceSpace.stage;
+        var stage:Stage = sourceSpace.stage;
         
         if (sourceSpace.is3D && stage != null) 
         {

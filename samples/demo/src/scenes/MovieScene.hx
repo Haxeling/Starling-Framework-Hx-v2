@@ -11,16 +11,16 @@ import starling.textures.Texture;
 
 class MovieScene extends Scene
 {
-    private var _movie : MovieClip;
+    private var _movie:MovieClip;
     
     public function new()
     {
         super();
-        var frames : Array<Texture> = Game.assets.getTextures("flight");
+        var frames:Array<Texture> = Game.assets.getTextures("flight");
         _movie = new MovieClip(frames, 15);
         
         // add sounds
-        var stepSound : Sound = Game.assets.getSound("wing_flap");
+        var stepSound:Sound = Game.assets.getSound("wing_flap");
         _movie.setFrameSound(2, stepSound);
         
         // move the clip to the center and add it to the stage
@@ -34,17 +34,17 @@ class MovieScene extends Scene
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
     
-    private function onAddedToStage() : Void
+    private function onAddedToStage():Void
     {
         Starling.juggler.add(_movie);
     }
     
-    private function onRemovedFromStage() : Void
+    private function onRemovedFromStage():Void
     {
         Starling.juggler.remove(_movie);
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);

@@ -11,8 +11,9 @@
 package starling.rendering;
 
 
-import flash.display3d.Context3D;
-import flash.display3d.IndexBuffer3D;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DBufferUsage;
+import flash.display3D.IndexBuffer3D;
 import flash.errors.EOFError;
 import flash.utils.ByteArray;
 import flash.utils.Endian;
@@ -61,25 +62,25 @@ import starling.utils.StringUtil;
  */
 class IndexData
 {
-    public var numIndices(get, set) : Int;
-    public var numTriangles(get, set) : Int;
-    public var numQuads(get, set) : Int;
-    public var indexSizeInBytes(get, never) : Int;
-    public var useQuadLayout(get, set) : Bool;
-    public var rawData(get, never) : ByteArray;
+    public var numIndices(get, set):Int;
+    public var numTriangles(get, set):Int;
+    public var numQuads(get, set):Int;
+    public var indexSizeInBytes(get, never):Int;
+    public var useQuadLayout(get, set):Bool;
+    public var rawData(get, never):ByteArray;
 
     /** The number of bytes per index element. */
-    private static inline var INDEX_SIZE : Int = 2;
+    private static var INDEX_SIZE:Int = 2;
     
-    private var _rawData : ByteArray;
-    private var _numIndices : Int;
-    private var _initialCapacity : Int;
-    private var _useQuadLayout : Bool;
+    private var _rawData:ByteArray;
+    private var _numIndices:Int;
+    private var _initialCapacity:Int;
+    private var _useQuadLayout:Bool;
     
     // helper objects
-    private static var sVector : Array<Int> = [];
-    private static var sTrimData : ByteArray = new ByteArray();
-    private static var sQuadData : ByteArray = new ByteArray();
+    private static var sVector:Array<Int> = [];
+    private static var sTrimData:ByteArray = new ByteArray();
+    private static var sQuadData:ByteArray = new ByteArray();
     
     /** Creates an empty IndexData instance with the given capacity (in indices).
      *
@@ -99,7 +100,7 @@ class IndexData
      *  <p>Thus, be sure to always make a generous educated guess, depending on the planned
      *  usage of your IndexData instances.</p>
      */
-    public function new(initialCapacity : Int = 48)
+    public function new(initialCapacity:Int = 48)
     {
         _numIndices = 0;
         _initialCapacity = initialCapacity;
@@ -108,7 +109,7 @@ class IndexData
     
     /** Explicitly frees up the memory used by the ByteArray, thus removing all indices.
      *  Quad layout will be restored (until adding data violating that layout). */
-    public function clear() : Void
+    public function clear():Void
     {
         if (_rawData != null) 
             _rawData.clear();
@@ -118,9 +119,9 @@ class IndexData
     }
     
     /** Creates a duplicate of the IndexData object. */
-    public function clone() : IndexData
+    public function clone():IndexData
     {
-        var clone : IndexData = new IndexData(_numIndices);
+        var clone:IndexData = new IndexData(_numIndices);
         
         if (!_useQuadLayout) 
         {
@@ -139,15 +140,15 @@ class IndexData
      *  <p>By passing a non-zero <code>offset</code>, you can raise all copied indices
      *  by that value in the target object.</p>
      */
-    public function copyTo(target : IndexData, targetIndexID : Int = 0, offset : Int = 0,
-            indexID : Int = 0, numIndices : Int = -1) : Void
+    public function copyTo(target:IndexData, targetIndexID:Int = 0, offset:Int = 0,
+            indexID:Int = 0, numIndices:Int = -1):Void
     {
         if (numIndices < 0 || indexID + numIndices > _numIndices) 
             numIndices = _numIndices - indexID;
         
-        var sourceData : ByteArray;
-        var targetData : ByteArray;
-        var newNumIndices : Int = targetIndexID + numIndices;
+        var sourceData:ByteArray;
+        var targetData:ByteArray;
+        var newNumIndices:Int = targetIndexID + numIndices;
         
         if (target._numIndices < newNumIndices) 
         {
@@ -159,10 +160,10 @@ class IndexData
         {
             if (target._useQuadLayout) 
             {
-                var keepsQuadLayout : Bool = true;
-                var distance : Int = targetIndexID - indexID;
-                var distanceInQuads : Int = distance / 6;
-                var offsetInQuads : Int = offset / 4;
+                var keepsQuadLayout:Bool = true;
+                var distance:Int = targetIndexID - indexID;
+                var distanceInQuads:Int = Math.floor(distance / 6);
+                var offsetInQuads:Int = Math.floor(offset / 4);
                 
                 // This code is executed very often. If it turns out that both IndexData
                 // instances use a quad layout, we don't need to do anything here.
@@ -183,13 +184,13 @@ class IndexData
                 }
                 else 
                 {
-                    for (i in 0...numIndices){keepsQuadLayout &&=
-                        getBasicQuadIndexAt(indexID + i) + offset ==
-                        getBasicQuadIndexAt(targetIndexID + i);
-                    }
+					trace("fix &&= on line 186");
+                    /*for (i in 0...numIndices) {
+						keepsQuadLayout &&= getBasicQuadIndexAt(indexID + i) + offset == getBasicQuadIndexAt(targetIndexID + i);
+                    }*/
                 }
                 
-                if (keepsQuadLayout)                     return
+                if (keepsQuadLayout) return;
                 else target.switchToGenericData();
             }
             
@@ -198,7 +199,7 @@ class IndexData
             
             if ((offset & 3) == 0)   // => offset % 4 == 0  
             {
-                indexID += 6 * offset / 4;
+                indexID += Math.floor(6 * offset / 4);
                 offset = 0;
                 ensureQuadDataCapacity(indexID + numIndices);
             }
@@ -223,9 +224,9 @@ class IndexData
             // by reading junks of 32 instead of 16 bits, we can spare half the time
             while (numIndices > 1)
             {
-                var indexAB : Int = sourceData.readUnsignedInt();
-                var indexA : Int = ((indexAB & 0xffff0000) >> 16) + offset;
-                var indexB : Int = ((indexAB & 0x0000ffff)) + offset;
+                var indexAB:Int = sourceData.readUnsignedInt();
+                var indexA:Int = ((indexAB & 0xffff0000) >> 16) + offset;
+                var indexB:Int = ((indexAB & 0x0000ffff)) + offset;
                 targetData.writeUnsignedInt(indexA << 16 | indexB);
                 numIndices -= 2;
             }
@@ -236,7 +237,7 @@ class IndexData
     }
     
     /** Sets an index at the specified position. */
-    public function setIndex(indexID : Int, index : Int) : Void
+    public function setIndex(indexID:Int, index:Int):Void
     {
         if (_numIndices < indexID + 1) 
             numIndices = indexID + 1;
@@ -252,7 +253,7 @@ class IndexData
     }
     
     /** Reads the index from the specified position. */
-    public function getIndex(indexID : Int) : Int
+    public function getIndex(indexID:Int):Int
     {
         if (_useQuadLayout) 
         {
@@ -269,12 +270,12 @@ class IndexData
     }
     
     /** Adds an offset to all indices in the specified range. */
-    public function offsetIndices(offset : Int, indexID : Int = 0, numIndices : Int = -1) : Void
+    public function offsetIndices(offset:Int, indexID:Int = 0, numIndices:Int = -1):Void
     {
         if (numIndices < 0 || indexID + numIndices > _numIndices) 
             numIndices = _numIndices - indexID;
         
-        var endIndex : Int = indexID + numIndices;
+        var endIndex:Int = indexID + numIndices;
         
         for (i in indexID...endIndex){setIndex(i, getIndex(i) + offset);
         }
@@ -282,14 +283,14 @@ class IndexData
     
     /** Appends three indices representing a triangle. Reference the vertices clockwise,
      *  as this defines the front side of the triangle. */
-    public function addTriangle(a : Int, b : Int, c : Int) : Void
+    public function addTriangle(a:Int, b:Int, c:Int):Void
     {
         if (_useQuadLayout) 
         {
             if (a == getBasicQuadIndexAt(_numIndices)) 
             {
-                var oddTriangleID : Bool = (_numIndices & 1) != 0;
-                var evenTriangleID : Bool = !oddTriangleID;
+                var oddTriangleID:Bool = (_numIndices & 1) != 0;
+                var evenTriangleID:Bool = !oddTriangleID;
                 
                 if ((evenTriangleID && b == a + 1 && c == b + 1) ||
                     (oddTriangleID && c == a + 1 && b == c + 1)) 
@@ -322,7 +323,7 @@ class IndexData
      *  <p>To make sure the indices will follow the basic quad layout, make sure each
      *  parameter increments the one before it (e.g. <code>0, 1, 2, 3</code>).</p>
      */
-    public function addQuad(a : Int, b : Int, c : Int, d : Int) : Void
+    public function addQuad(a:Int, b:Int, c:Int, d:Int):Void
     {
         if (_useQuadLayout) 
         {
@@ -348,12 +349,12 @@ class IndexData
     
     /** Creates a vector containing all indices. If you pass an existing vector to the method,
      *  its contents will be overwritten. */
-    public function toVector(out : Array<Int> = null) : Array<Int>
+    public function toVector(out:Array<Int> = null):Array<Int>
     {
         if (out == null)             out = new Array<Int>()
-        else out.length = _numIndices;
+        else out.splice(_numIndices, out.length - _numIndices);
         
-        var rawData : ByteArray = (_useQuadLayout) ? sQuadData : _rawData;
+        var rawData:ByteArray = (_useQuadLayout) ? sQuadData:_rawData;
         rawData.position = 0;
         
         for (i in 0..._numIndices){out[i] = rawData.readUnsignedShort();
@@ -364,18 +365,20 @@ class IndexData
     
     /** Returns a string representation of the IndexData object,
      *  including a comma-separated list of all indices. */
-    public function toString() : String
+    public function toString():String
     {
-        var String : String = StringTools.format("[IndexData numIndices={0} indices=\"{1}\"]",
-                _numIndices, toVector(sVector).join());
-        
-        sVector.length = 0;
-        return String;
+		var string:String = StringUtil.format(
+			"[IndexData numIndices={0} indices=\"{1}\"]",
+			[_numIndices, toVector(sVector).join("")]
+		);
+		
+		sVector.splice(0, sVector.length);
+		return string;
     }
     
     // private helpers
     
-    private function switchToGenericData() : Void
+    private function switchToGenericData():Void
     {
         if (_useQuadLayout) 
         {
@@ -397,13 +400,13 @@ class IndexData
     /** Makes sure that the ByteArray containing the normalized, basic quad data contains at
      *  least <code>numIndices</code> indices. The array might grow, but it will never be
      *  made smaller. */
-    private function ensureQuadDataCapacity(numIndices : Int) : Void
+    private function ensureQuadDataCapacity(numIndices:Int):Void
     {
-        if (sQuadData.length >= numIndices * INDEX_SIZE)             return;
+        if (sQuadData.length >= numIndices * INDEX_SIZE) return;
         
-        var i : Int;
-        var oldNumQuads : Int = sQuadData.length / 12;
-        var newNumQuads : Int = Math.ceil(numIndices / 6);
+        var i:Int;
+        var oldNumQuads:Int = Math.floor(sQuadData.length / 12);
+        var newNumQuads:Int = Math.ceil(numIndices / 6);
         
         sQuadData.endian = Endian.LITTLE_ENDIAN;
         sQuadData.position = sQuadData.length;
@@ -419,11 +422,11 @@ class IndexData
     }
     
     /** Returns the index that's expected at this position if following basic quad layout. */
-    private static function getBasicQuadIndexAt(indexID : Int) : Int
+    private static function getBasicQuadIndexAt(indexID:Int):Int
     {
-        var quadID : Int = indexID / 6;
-        var posInQuad : Int = indexID - quadID * 6;  // => indexID % 6  
-        var offset : Int;
+        var quadID:Int = Math.floor(indexID / 6);
+        var posInQuad:Int = indexID - quadID * 6;  // => indexID % 6  
+        var offset:Int;
         
         if (posInQuad == 0)             offset = 0
         else if (posInQuad == 1 || posInQuad == 3)             offset = 1
@@ -437,21 +440,22 @@ class IndexData
     
     /** Creates an index buffer object with the right size to fit the complete data.
      *  Optionally, the current data is uploaded right away. */
-    public function createIndexBuffer(upload : Bool = false,
-            bufferUsage : String = "staticDraw") : IndexBuffer3D
+    public function createIndexBuffer(upload:Bool = false,
+            bufferUsage:Context3DBufferUsage = null):IndexBuffer3D
     {
-        var context : Context3D = Starling.context;
+		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
+        var context:Context3D = Starling.Context;
         if (context == null)             throw new MissingContextError();
         if (_numIndices == 0)             return null;
         
-        var buffer : IndexBuffer3D = context.createIndexBuffer(_numIndices, bufferUsage);
+        var buffer:IndexBuffer3D = context.createIndexBuffer(_numIndices, bufferUsage);
         
         if (upload)             uploadToIndexBuffer(buffer);
         return buffer;
     }
     
     /** Uploads the complete data (or a section of it) to the given index buffer. */
-    public function uploadToIndexBuffer(buffer : IndexBuffer3D, indexID : Int = 0, numIndices : Int = -1) : Void
+    public function uploadToIndexBuffer(buffer:IndexBuffer3D, indexID:Int = 0, numIndices:Int = -1):Void
     {
         if (numIndices < 0 || indexID + numIndices > _numIndices) 
             numIndices = _numIndices - indexID;
@@ -463,9 +467,9 @@ class IndexData
     /** Optimizes the ByteArray so that it has exactly the required capacity, without
      *  wasting any memory. If your IndexData object grows larger than the initial capacity
      *  you passed to the constructor, call this method to avoid the 4k memory problem. */
-    public function trim() : Void
+    public function trim():Void
     {
-        if (_useQuadLayout)             return;
+        if (_useQuadLayout) return;
         
         sTrimData.length = _rawData.length;
         sTrimData.position = 0;
@@ -487,9 +491,10 @@ class IndexData
      *  up with zeroes.</p>
      *
      *  <p>If you set the number of indices to zero, quad layout will be restored.</p> */
-    private function get_numIndices() : Int{return _numIndices;
+    private function get_numIndices():Int {
+		return _numIndices;
     }
-    private function set_numIndices(value : Int) : Int
+    private function set_numIndices(value:Int):Int
     {
         if (value != _numIndices) 
         {
@@ -504,22 +509,27 @@ class IndexData
     
     /** The number of triangles that can be spawned up with the contained indices.
      *  (In other words: the number of indices divided by three.) */
-    private function get_numTriangles() : Int{return _numIndices / 3;
+    private function get_numTriangles():Int {
+		return Math.floor(_numIndices / 3);
     }
-    private function set_numTriangles(value : Int) : Int{numIndices = value * 3;
+    private function set_numTriangles(value:Int):Int {
+		numIndices = value * 3;
         return value;
     }
     
     /** The number of quads that can be spawned up with the contained indices.
      *  (In other words: the number of triangles divided by two.) */
-    private function get_numQuads() : Int{return _numIndices / 6;
+    private function get_numQuads():Int {
+		return Math.floor(_numIndices / 6);
     }
-    private function set_numQuads(value : Int) : Int{numIndices = value * 6;
+    private function set_numQuads(value:Int):Int {
+		numIndices = value * 6;
         return value;
     }
     
     /** The number of bytes required for each index value. */
-    private function get_indexSizeInBytes() : Int{return INDEX_SIZE;
+    private function get_indexSizeInBytes():Int {
+		return INDEX_SIZE;
     }
     
     /** Indicates if all indices are following the basic quad layout.
@@ -537,9 +547,10 @@ class IndexData
      *
      *  @default true
      */
-    private function get_useQuadLayout() : Bool{return _useQuadLayout;
+    private function get_useQuadLayout():Bool {
+		return _useQuadLayout;
     }
-    private function set_useQuadLayout(value : Bool) : Bool
+    private function set_useQuadLayout(value:Bool):Bool
     {
         if (value != _useQuadLayout) 
         {
@@ -556,7 +567,7 @@ class IndexData
     
     /** The raw index data; not a copy! Beware: the referenced ByteArray may change any time.
      *  Never store a reference to it, and never modify its contents manually. */
-    private function get_rawData() : ByteArray
+    private function get_rawData():ByteArray
     {
         if (_useQuadLayout)             return sQuadData
         else return _rawData;

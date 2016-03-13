@@ -10,11 +10,12 @@
 
 package starling.textures;
 
+import flash.display3D.Context3DTextureFormat;
 import starling.textures.ConcreteTexture;
 
 import flash.display.BitmapData;
-import flash.display3d.textures.RectangleTexture;
-import flash.display3d.textures.TextureBase;
+import flash.display3D.textures.RectangleTexture;
+import flash.display3D.textures.TextureBase;
 
 import starling.core.Starling;
 
@@ -24,34 +25,34 @@ import starling.core.Starling;
  *  For internal use only. */
 class ConcreteRectangleTexture extends ConcreteTexture
 {
-    private var rectangleBase(get, never) : RectangleTexture;
+    private var rectangleBase(get, never):RectangleTexture;
 
     /** Creates a new instance with the given parameters. */
     @:allow(starling.textures)
-    private function new(base : RectangleTexture, format : String,
-            width : Int, height : Int, premultipliedAlpha : Bool,
-            optimizedForRenderTexture : Bool = false,
-            scale : Float = 1)
+    private function new(base:RectangleTexture, format:Context3DTextureFormat,
+            width:Int, height:Int, premultipliedAlpha:Bool,
+            optimizedForRenderTexture:Bool = false,
+            scale:Float = 1)
     {
         super(base, format, width, height, false, premultipliedAlpha,
                 optimizedForRenderTexture, scale);
     }
     
     /** @inheritDoc */
-    override public function uploadBitmapData(data : BitmapData) : Void
+    override public function uploadBitmapData(data:BitmapData):Void
     {
         rectangleBase.uploadFromBitmapData(data);
         setDataUploaded();
     }
     
     /** @inheritDoc */
-    override private function createBase() : TextureBase
+    override private function createBase():TextureBase
     {
-        return Starling.context.createRectangleTexture(
-                nativeWidth, nativeHeight, format, optimizedForRenderTexture);
+        return Starling.Context.createRectangleTexture(
+                untyped nativeWidth, untyped nativeHeight, format, optimizedForRenderTexture);
     }
     
-    private function get_rectangleBase() : RectangleTexture
+    private function get_rectangleBase():RectangleTexture
     {
         return try cast(base, RectangleTexture) catch(e:Dynamic) null;
     }

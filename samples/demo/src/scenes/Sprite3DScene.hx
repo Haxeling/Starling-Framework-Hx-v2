@@ -1,7 +1,7 @@
 package scenes;
 
 
-import flash.display3d.Context3DTriangleFace;
+import flash.display3D.Context3DTriangleFace;
 
 import starling.core.Starling;
 import starling.display.Image;
@@ -12,12 +12,12 @@ import starling.textures.Texture;
 
 class Sprite3DScene extends Scene
 {
-    private var _cube : Sprite3D;
+    private var _cube:Sprite3D;
     
     public function new()
     {
         super();
-        var texture : Texture = Game.assets.getTexture("gamua-logo");
+        var texture:Texture = Game.assets.getTexture("gamua-logo");
         
         _cube = createCube(texture);
         _cube.x = Constants.CenterX;
@@ -30,58 +30,58 @@ class Sprite3DScene extends Scene
         addEventListener(Event.REMOVED_FROM_STAGE, stop);
     }
     
-    private function start() : Void
+    private function start():Void
     {
         Starling.juggler.tween(_cube, 6, {
-                    rotationX : 2 * Math.PI,
-                    repeatCount : 0,
+                    rotationX:2 * Math.PI,
+                    repeatCount:0,
 
                 });
         Starling.juggler.tween(_cube, 7, {
-                    rotationY : 2 * Math.PI,
-                    repeatCount : 0,
+                    rotationY:2 * Math.PI,
+                    repeatCount:0,
 
                 });
         Starling.juggler.tween(_cube, 8, {
-                    rotationZ : 2 * Math.PI,
-                    repeatCount : 0,
+                    rotationZ:2 * Math.PI,
+                    repeatCount:0,
 
                 });
     }
     
-    private function stop() : Void
+    private function stop():Void
     {
         Starling.juggler.removeTweens(_cube);
     }
     
-    private function createCube(texture : Texture) : Sprite3D
+    private function createCube(texture:Texture):Sprite3D
     {
-        var offset : Float = texture.width / 2;
+        var offset:Float = texture.width / 2;
         
-        var front : Sprite3D = createSidewall(texture, 0xff0000);
+        var front:Sprite3D = createSidewall(texture, 0xff0000);
         front.z = -offset;
         
-        var back : Sprite3D = createSidewall(texture, 0x00ff00);
+        var back:Sprite3D = createSidewall(texture, 0x00ff00);
         back.rotationX = Math.PI;
         back.z = offset;
         
-        var top : Sprite3D = createSidewall(texture, 0x0000ff);
+        var top:Sprite3D = createSidewall(texture, 0x0000ff);
         top.y = -offset;
         top.rotationX = Math.PI / -2.0;
         
-        var bottom : Sprite3D = createSidewall(texture, 0xffff00);
+        var bottom:Sprite3D = createSidewall(texture, 0xffff00);
         bottom.y = offset;
         bottom.rotationX = Math.PI / 2.0;
         
-        var left : Sprite3D = createSidewall(texture, 0xff00ff);
+        var left:Sprite3D = createSidewall(texture, 0xff00ff);
         left.x = -offset;
         left.rotationY = Math.PI / 2.0;
         
-        var right : Sprite3D = createSidewall(texture, 0x00ffff);
+        var right:Sprite3D = createSidewall(texture, 0x00ffff);
         right.x = offset;
         right.rotationY = Math.PI / -2.0;
         
-        var cube : Sprite3D = new Sprite3D();
+        var cube:Sprite3D = new Sprite3D();
         cube.addChild(front);
         cube.addChild(back);
         cube.addChild(top);
@@ -92,19 +92,19 @@ class Sprite3DScene extends Scene
         return cube;
     }
     
-    private function createSidewall(texture : Texture, color : Int = 0xffffff) : Sprite3D
+    private function createSidewall(texture:Texture, color:Int = 0xffffff):Sprite3D
     {
-        var image : Image = new Image(texture);
+        var image:Image = new Image(texture);
         image.color = color;
         image.alignPivot();
         
-        var sprite : Sprite3D = new Sprite3D();
+        var sprite:Sprite3D = new Sprite3D();
         sprite.addChild(image);
         
         return sprite;
     }
     
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
         // Starling does not make any depth-tests, so we use a trick in order to only show
         // the front quads: we're activating backface culling, i.e. we hide triangles at which

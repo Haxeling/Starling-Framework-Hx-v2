@@ -35,8 +35,8 @@ import starling.textures.Texture;
  */
 
 import flash.display.BitmapDataChannel;
-import flash.display3d.Context3D;
-import flash.display3d.Context3DProgramType;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DProgramType;
 import flash.geom.Matrix3D;
 
 
@@ -48,19 +48,19 @@ import starling.utils.RenderUtil;
 
 class DisplacementMapFilter extends FragmentFilter
 {
-    public var componentX(get, set) : Int;
-    public var componentY(get, set) : Int;
-    public var scaleX(get, set) : Float;
-    public var scaleY(get, set) : Float;
-    public var mapTexture(get, set) : Texture;
-    public var mapPoint(get, set) : Point;
-    public var mapRepeat(get, set) : Bool;
-    private var dispEffect(get, never) : DisplacementMapEffect;
+    public var componentX(get, set):Int;
+    public var componentY(get, set):Int;
+    public var scaleX(get, set):Float;
+    public var scaleY(get, set):Float;
+    public var mapTexture(get, set):Texture;
+    public var mapPoint(get, set):Point;
+    public var mapRepeat(get, set):Bool;
+    private var dispEffect(get, never):DisplacementMapEffect;
 
     /** Creates a new displacement map filter that uses the provided map texture. */
-    public function new(mapTexture : Texture, mapPoint : Point = null,
-            componentX : Int = 0, componentY : Int = 0,
-            scaleX : Float = 0.0, scaleY : Float = 0.0)
+    public function new(mapTexture:Texture, mapPoint:Point = null,
+            componentX:Int = 0, componentY:Int = 0,
+            scaleX:Float = 0.0, scaleY:Float = 0.0)
     {
         super();
         this.mapTexture = mapTexture;
@@ -72,30 +72,30 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** @private */
-    override public function process(painter : Painter, pool : ITexturePool,
-            input0 : Texture = null, input1 : Texture = null,
-            input2 : Texture = null, input3 : Texture = null) : Texture
+    override public function process(painter:Painter, pool:ITexturePool,
+            input0:Texture = null, input1:Texture = null,
+            input2:Texture = null, input3:Texture = null):Texture
     {
         updateVertexData(input0, mapTexture);
         return super.process(painter, pool, input0);
     }
     
     /** @private */
-    override private function createEffect() : FilterEffect
+    override private function createEffect():FilterEffect
     {
         return new DisplacementMapEffect();
     }
     
-    private function updateVertexData(inputTexture : Texture, mapTexture : Texture) : Void
+    private function updateVertexData(inputTexture:Texture, mapTexture:Texture):Void
     {
         // The size of input texture and map texture may be different. We need to calculate
         // the right values for the texture coordinates at the filter vertices.
         
-        var scale : Float = Starling.contentScaleFactor;
-        var mapX : Float = (dispEffect.mapPoint.x + padding.left) / mapTexture.width;
-        var mapY : Float = (dispEffect.mapPoint.y + padding.top) / mapTexture.height;
-        var maxU : Float = inputTexture.root.nativeWidth / (mapTexture.width * scale);
-        var maxV : Float = inputTexture.root.nativeHeight / (mapTexture.height * scale);
+        var scale:Float = Starling.ContentScaleFactor;
+        var mapX:Float = (dispEffect.mapPoint.x + padding.left) / mapTexture.width;
+        var mapY:Float = (dispEffect.mapPoint.y + padding.top) / mapTexture.height;
+        var maxU:Float = inputTexture.root.nativeWidth / (mapTexture.width * scale);
+        var maxV:Float = inputTexture.root.nativeHeight / (mapTexture.height * scale);
         
         mapTexture.setTexCoords(vertexData, 0, "mapTexCoords", -mapX, -mapY);
         mapTexture.setTexCoords(vertexData, 1, "mapTexCoords", -mapX + maxU, -mapY);
@@ -103,10 +103,10 @@ class DisplacementMapFilter extends FragmentFilter
         mapTexture.setTexCoords(vertexData, 3, "mapTexCoords", -mapX + maxU, -mapY + maxV);
     }
     
-    private function updatePadding() : Void
+    private function updatePadding():Void
     {
-        var paddingX : Float = Math.ceil(Math.abs(dispEffect.scaleX) / 2);
-        var paddingY : Float = Math.ceil(Math.abs(dispEffect.scaleY) / 2);
+        var paddingX:Float = Math.ceil(Math.abs(dispEffect.scaleX) / 2);
+        var paddingY:Float = Math.ceil(Math.abs(dispEffect.scaleY) / 2);
         
         padding.setTo(paddingX, paddingX, paddingY, paddingY);
     }
@@ -115,9 +115,12 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** Describes which color channel to use in the map image to displace the x result.
      *  Possible values are constants from the BitmapDataChannel class. */
-    private function get_componentX() : Int{return dispEffect.componentX;
+    private function get_componentX():Int
+	{
+		return dispEffect.componentX;
     }
-    private function set_componentX(value : Int) : Int
+	
+    private function set_componentX(value:Int):Int
     {
         if (dispEffect.componentX != value) 
         {
@@ -129,9 +132,12 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** Describes which color channel to use in the map image to displace the y result.
      *  Possible values are constants from the BitmapDataChannel class. */
-    private function get_componentY() : Int{return dispEffect.componentY;
+    private function get_componentY():Int
+	{
+		return dispEffect.componentY;
     }
-    private function set_componentY(value : Int) : Int
+	
+    private function set_componentY(value:Int):Int
     {
         if (dispEffect.componentY != value) 
         {
@@ -142,9 +148,12 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** The multiplier used to scale the x displacement result from the map calculation. */
-    private function get_scaleX() : Float{return dispEffect.scaleX;
+    private function get_scaleX():Float
+	{
+		return dispEffect.scaleX;
     }
-    private function set_scaleX(value : Float) : Float
+	
+    private function set_scaleX(value:Float):Float
     {
         if (dispEffect.scaleX != value) 
         {
@@ -155,9 +164,12 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** The multiplier used to scale the y displacement result from the map calculation. */
-    private function get_scaleY() : Float{return dispEffect.scaleY;
+    private function get_scaleY():Float
+	{
+		return dispEffect.scaleY;
     }
-    private function set_scaleY(value : Float) : Float
+	
+    private function set_scaleY(value:Float):Float
     {
         if (dispEffect.scaleY != value) 
         {
@@ -168,9 +180,12 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** The texture that will be used to calculate displacement. */
-    private function get_mapTexture() : Texture{return dispEffect.mapTexture;
+    private function get_mapTexture():Texture
+	{
+		return dispEffect.mapTexture;
     }
-    private function set_mapTexture(value : Texture) : Texture
+	
+    private function set_mapTexture(value:Texture):Texture
     {
         if (dispEffect.mapTexture != value) 
         {
@@ -182,9 +197,12 @@ class DisplacementMapFilter extends FragmentFilter
     
     /** A value that contains the offset of the upper-left corner of the target display
      *  object from the upper-left corner of the map image. */
-    private function get_mapPoint() : Point{return dispEffect.mapPoint;
+    private function get_mapPoint():Point
+	{
+		return dispEffect.mapPoint;
     }
-    private function set_mapPoint(value : Point) : Point
+	
+    private function set_mapPoint(value:Point):Point
     {
         dispEffect.mapPoint = value;
         setRequiresRedraw();
@@ -192,9 +210,12 @@ class DisplacementMapFilter extends FragmentFilter
     }
     
     /** Indicates how the pixels of the map texture will be wrapped at the edge. */
-    private function get_mapRepeat() : Bool{return dispEffect.mapRepeat;
+    private function get_mapRepeat():Bool
+	{
+		return dispEffect.mapRepeat;
     }
-    private function set_mapRepeat(value : Bool) : Bool
+	
+    private function set_mapRepeat(value:Bool):Bool
     {
         if (dispEffect.mapRepeat != value) 
         {
@@ -204,7 +225,7 @@ class DisplacementMapFilter extends FragmentFilter
         return value;
     }
     
-    private function get_dispEffect() : DisplacementMapEffect
+    private function get_dispEffect():DisplacementMapEffect
     {
         return try cast(this.effect, DisplacementMapEffect) catch(e:Dynamic) null;
     }
@@ -215,29 +236,29 @@ class DisplacementMapFilter extends FragmentFilter
 
 class DisplacementMapEffect extends FilterEffect
 {
-    public var componentX(get, set) : Int;
-    public var componentY(get, set) : Int;
-    public var scaleX(get, set) : Float;
-    public var scaleY(get, set) : Float;
-    public var mapTexture(get, set) : Texture;
-    public var mapPoint(get, set) : Point;
-    public var mapRepeat(get, set) : Bool;
+    public var componentX(get, set):Int;
+    public var componentY(get, set):Int;
+    public var scaleX(get, set):Float;
+    public var scaleY(get, set):Float;
+    public var mapTexture(get, set):Texture;
+    public var mapPoint(get, set):Point;
+    public var mapRepeat(get, set):Bool;
 
-    public static var VERTEX_FORMAT : VertexDataFormat = 
+    public static var VERTEX_FORMAT:VertexDataFormat = 
         VertexDataFormat.fromString("position:float2, texCoords:float2, mapTexCoords:float2");
     
-    private var _mapTexture : Texture;
-    private var _mapPoint : Point;
-    private var _mapRepeat : Bool;
-    private var _componentX : Int;
-    private var _componentY : Int;
-    private var _scaleX : Float;
-    private var _scaleY : Float;
+    private var _mapTexture:Texture;
+    private var _mapPoint:Point;
+    private var _mapRepeat:Bool;
+    private var _componentX:Int;
+    private var _componentY:Int;
+    private var _scaleX:Float;
+    private var _scaleY:Float;
     
     // helper objects
-    private static var sOneHalf : Array<Float> = [0.5, 0.5, 0.5, 0.5];
-    private static var sMatrix : Matrix3D = new Matrix3D();
-    private static var sMatrixData : Array<Float> = 
+    private static var sOneHalf:Array<Float> = [0.5, 0.5, 0.5, 0.5];
+    private static var sMatrix:Matrix3D = new Matrix3D();
+    private static var sMatrixData:Array<Float> = 
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     
     public function new()
@@ -248,7 +269,7 @@ class DisplacementMapEffect extends FilterEffect
         _scaleX = _scaleY = 0;
     }
     
-    override private function createProgram() : Program
+    override private function createProgram():Program
     {
         if (_mapTexture != null) 
         {
@@ -257,7 +278,7 @@ class DisplacementMapEffect extends FilterEffect
             // va1:   input texture coords
             // va2:   map texture coords
             
-            var vertexShader : String = [
+            var vertexShader:String = [
                     "m44  op, va0, vc0",   // 4x4 matrix transform to output space  
                     "mov  v0, va1",   // pass input texture coordinates to fragment program  
                     "mov  v1, va2"  // pass map texture coordinates to fragment program  ].join("\n");
@@ -267,7 +288,7 @@ class DisplacementMapEffect extends FilterEffect
             // fc0:   OneHalf
             // fc1-4: matrix
             
-            var fragmentShader : String = [
+            var fragmentShader:String = [
                     tex("ft0", "v1", 1, _mapTexture, false),   // read map texture  
                     "sub ft1, ft0, fc0",   // subtract 0.5 -> range [-0.5, 0.5]  
                     "m44 ft2, ft1, fc1",   // multiply matrix with displacement values  
@@ -279,7 +300,7 @@ class DisplacementMapEffect extends FilterEffect
         else return super.createProgram();
     }
     
-    override private function beforeDraw(context : Context3D) : Void
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
         
@@ -302,7 +323,7 @@ class DisplacementMapEffect extends FilterEffect
         }
     }
     
-    override private function afterDraw(context : Context3D) : Void
+    override private function afterDraw(context:Context3D):Void
     {
         if (_mapTexture != null) 
         {
@@ -313,21 +334,21 @@ class DisplacementMapEffect extends FilterEffect
         super.afterDraw(context);
     }
     
-    override private function get_vertexFormat() : VertexDataFormat
+    override private function get_vertexFormat():VertexDataFormat
     {
         return VERTEX_FORMAT;
     }
     
     /** This matrix maps RGBA values of the map texture to UV-offsets in the input texture. */
-    private function getMapMatrix(out : Matrix3D) : Matrix3D
+    private function getMapMatrix(out:Matrix3D):Matrix3D
     {
         if (out == null)             out = new Matrix3D();
         
-        var columnX : Int;
-        var columnY : Int;
-        var scale : Float = Starling.contentScaleFactor;
-        var textureWidth : Float = texture.root.nativeWidth;
-        var textureHeight : Float = texture.root.nativeHeight;
+        var columnX:Int;
+        var columnY:Int;
+        var scale:Float = Starling.ContentScaleFactor;
+        var textureWidth:Float = texture.root.nativeWidth;
+        var textureHeight:Float = texture.root.nativeHeight;
         
         for (i in 0...16){sMatrixData[i] = 0;
         }
@@ -350,8 +371,8 @@ class DisplacementMapEffect extends FilterEffect
         return out;
     }
     
-    private static function tex(resultReg : String, uvReg : String, sampler : Int, texture : Texture,
-            convertToPmaIfRequired : Bool = true) : String
+    private static function tex(resultReg:String, uvReg:String, sampler:Int, texture:Texture,
+            convertToPmaIfRequired:Bool = true):String
     {
         return RenderUtil.createAGALTexOperation(resultReg, uvReg, sampler, texture,
                 convertToPmaIfRequired);
@@ -359,48 +380,81 @@ class DisplacementMapEffect extends FilterEffect
     
     // properties
     
-    private function get_componentX() : Int{return _componentX;
+    private function get_componentX():Int
+	{
+		return _componentX;
     }
-    private function set_componentX(value : Int) : Int{_componentX = value;
+	
+    private function set_componentX(value:Int):Int
+	{
+		_componentX = value;
         return value;
     }
     
-    private function get_componentY() : Int{return _componentY;
+    private function get_componentY():Int
+	{
+		return _componentY;
     }
-    private function set_componentY(value : Int) : Int{_componentY = value;
+	
+    private function set_componentY(value:Int):Int
+	{
+		_componentY = value;
         return value;
     }
     
-    private function get_scaleX() : Float{return _scaleX;
+    private function get_scaleX():Float
+	{
+		return _scaleX;
     }
-    private function set_scaleX(value : Float) : Float{_scaleX = value;
+	
+    private function set_scaleX(value:Float):Float
+	{
+		_scaleX = value;
         return value;
     }
     
-    private function get_scaleY() : Float{return _scaleY;
+    private function get_scaleY():Float
+	{
+		return _scaleY;
     }
-    private function set_scaleY(value : Float) : Float{_scaleY = value;
+	
+    private function set_scaleY(value:Float):Float
+	{
+		_scaleY = value;
         return value;
     }
     
-    private function get_mapTexture() : Texture{return _mapTexture;
+    private function get_mapTexture():Texture
+	{
+		return _mapTexture;
     }
-    private function set_mapTexture(value : Texture) : Texture{_mapTexture = value;
+	
+    private function set_mapTexture(value:Texture):Texture
+	{
+		_mapTexture = value;
         return value;
     }
     
-    private function get_mapPoint() : Point{return _mapPoint;
+    private function get_mapPoint():Point
+	{
+		return _mapPoint;
     }
-    private function set_mapPoint(value : Point) : Point
+	
+    private function set_mapPoint(value:Point):Point
     {
         if (value != null)             _mapPoint.setTo(value.x, value.y)
         else _mapPoint.setTo(0, 0);
         return value;
     }
     
-    private function get_mapRepeat() : Bool{return _mapRepeat;
+    private function get_mapRepeat():Bool
+	{
+		return _mapRepeat;
     }
-    private function set_mapRepeat(value : Bool) : Bool{_mapRepeat = value;
+	
+    private function set_mapRepeat(value:Bool):Bool
+	{
+		_mapRepeat = value;
         return value;
     }
 }

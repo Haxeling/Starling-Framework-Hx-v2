@@ -15,22 +15,22 @@ class TextScene extends Scene
         init();
     }
     
-    private function init() : Void
+    private function init():Void
     {
         // TrueType fonts
         
-        var offset : Int = 10;
-        var ttFont : String = "Ubuntu";
-        var ttFontSize : Int = 19;
+        var offset:Int = 10;
+        var ttFont:String = "Ubuntu";
+        var ttFontSize:Int = 19;
         
-        var colorTF : TextField = new TextField(300, 80, 
+        var colorTF:TextField = new TextField(300, 80, 
         "TextFields can have a border and a color. They can be aligned in different ways, ...");
         colorTF.format = new TextFormat(ttFont, ttFontSize, 0x33399);
         colorTF.x = colorTF.y = offset;
         colorTF.border = true;
         addChild(colorTF);
         
-        var leftTF : TextField = new TextField(145, 80, "... e.g.\ntop-left ...");
+        var leftTF:TextField = new TextField(145, 80, "... e.g.\ntop-left ...");
         leftTF.format = new TextFormat(ttFont, ttFontSize, 0x993333);
         leftTF.format.horizontalAlign = Align.LEFT;
         leftTF.format.verticalAlign = Align.TOP;
@@ -39,7 +39,7 @@ class TextScene extends Scene
         leftTF.border = true;
         addChild(leftTF);
         
-        var rightTF : TextField = new TextField(145, 80, "... or\nbottom right ...");
+        var rightTF:TextField = new TextField(145, 80, "... or\nbottom right ...");
         rightTF.format = new TextFormat(ttFont, ttFontSize, 0x208020);
         rightTF.format.horizontalAlign = Align.RIGHT;
         rightTF.format.verticalAlign = Align.BOTTOM;
@@ -48,7 +48,7 @@ class TextScene extends Scene
         rightTF.y = leftTF.y;
         addChild(rightTF);
         
-        var fontTF : TextField = new TextField(300, 80, 
+        var fontTF:TextField = new TextField(300, 80, 
         "... or centered. Embedded fonts are detected automatically and " +
         "<font color='#208080'>support</font> " +
         "<font color='#993333'>basic</font> " +
@@ -74,7 +74,7 @@ class TextScene extends Scene
         // Look at the file "Assets.as" to see how this is done.
         // After that, you can use them just like a conventional TrueType font.
         
-        var bmpFontTF : TextField = new TextField(300, 150, 
+        var bmpFontTF:TextField = new TextField(300, 150, 
         "It is very easy to use Bitmap fonts,\nas well!");
         bmpFontTF.format.font = "Desyrel";
         bmpFontTF.format.size = BitmapFont.NATIVE_SIZE;  // native bitmap font size, no scaling  

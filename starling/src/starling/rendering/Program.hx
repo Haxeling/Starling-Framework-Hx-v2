@@ -11,13 +11,12 @@
 package starling.rendering;
 
 
-import com.adobe.utils.AGALMiniAssembler;
-
-import flash.display3d.Context3D;
-import flash.display3d.Context3DProgramType;
-import flash.display3d.Program3D;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DProgramType;
+import flash.display3D.Program3D;
 import flash.events.Event;
 import flash.utils.ByteArray;
+import openfl.utils.AGALMiniAssembler;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -36,33 +35,33 @@ import starling.errors.MissingContextError;
  */
 class Program
 {
-    private var _vertexShader : ByteArray;
-    private var _fragmentShader : ByteArray;
-    private var _program3D : Program3D;
+    private var _vertexShader:ByteArray;
+    private var _fragmentShader:ByteArray;
+    private var _program3D:Program3D;
     
-    private static var sAssembler : AGALMiniAssembler = new AGALMiniAssembler();
+    private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
     
     /** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
-    public function new(vertexShader : ByteArray, fragmentShader : ByteArray)
+    public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
     {
         _vertexShader = vertexShader;
         _fragmentShader = fragmentShader;
         
         // Handle lost context (using conventional Flash event for weak listener support)
-        Starling.current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
+        Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
                 onContextCreated, false, 0, true);
     }
     
     /** Disposes the internal Program3D instance. */
-    public function dispose() : Void
+    public function dispose():Void
     {
-        Starling.current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
+        Starling.Current.stage3D.removeEventListener(Event.CONTEXT3D_CREATE, onContextCreated);
         disposeProgram();
     }
     
     /** Creates a new Program instance from AGAL assembly language. */
-    public static function fromSource(vertexShader : String, fragmentShader : String,
-            agalVersion : Int = 1) : Program
+    public static function fromSource(vertexShader:String, fragmentShader:String,
+            agalVersion:Int = 1):Program
     {
         return new Program(
         sAssembler.assemble(Context3DProgramType.VERTEX, vertexShader, agalVersion), 
@@ -71,11 +70,11 @@ class Program
     
     /** Activates the program on the given context. If you don't pass a context, the current
      *  Starling context will be used. */
-    public function activate(context : Context3D = null) : Void
+    public function activate(context:Context3D = null):Void
     {
         if (context == null) 
         {
-            context = Starling.context;
+            context = Starling.Context;
             if (context == null)                 throw new MissingContextError();
         }
         
@@ -88,12 +87,12 @@ class Program
         context.setProgram(_program3D);
     }
     
-    private function onContextCreated(event : Event) : Void
+    private function onContextCreated(event:Event):Void
     {
         disposeProgram();
     }
     
-    private function disposeProgram() : Void
+    private function disposeProgram():Void
     {
         if (_program3D != null) 
         {

@@ -17,7 +17,7 @@ package starling.utils;
 @:final class ClassForRad2deg
 {
     /** Converts an angle from radians into degrees. */
-    public function rad2deg(rad : Float) : Float
+    public function rad2deg(rad:Float):Float
     {
         return rad / Math.PI * 180.0;
     }

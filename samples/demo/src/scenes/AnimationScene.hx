@@ -16,11 +16,11 @@ import utils.MenuButton;
 
 class AnimationScene extends Scene
 {
-    private var _startButton : Button;
-    private var _delayButton : Button;
-    private var _egg : Image;
-    private var _transitionLabel : TextField;
-    private var _transitions : Array<Dynamic>;
+    private var _startButton:Button;
+    private var _delayButton:Button;
+    private var _egg:Image;
+    private var _transitionLabel:TextField;
+    private var _transitions:Array<Dynamic>;
     
     public function new()
     {
@@ -56,7 +56,7 @@ class AnimationScene extends Scene
         addChild(_transitionLabel);
     }
     
-    private function resetEgg() : Void
+    private function resetEgg():Void
     {
         _egg.x = 20;
         _egg.y = 100;
@@ -64,26 +64,26 @@ class AnimationScene extends Scene
         _egg.rotation = 0.0;
     }
     
-    private function onStartButtonTriggered() : Void
+    private function onStartButtonTriggered():Void
     {
         _startButton.enabled = false;
         resetEgg();
         
         // get next transition style from array and enqueue it at the end
-        var transition : String = _transitions.shift();
+        var transition:String = _transitions.shift();
         _transitions.push(transition);
         
         // to animate any numeric property of an arbitrary object (not just display objects!),
         // you can create a 'Tween'. One tween object animates one target for a certain time,
         // a with certain transition function.
-        var tween : Tween = new Tween(_egg, 2.0, transition);
+        var tween:Tween = new Tween(_egg, 2.0, transition);
         
         // you can animate any property as long as it's numeric (int, uint, Number).
         // it is animated from it's current value to a target value.
         tween.animate("rotation", deg2rad(90));  // conventional 'animate' call  
         tween.moveTo(300, 360);  // convenience method for animating 'x' and 'y'  
         tween.scaleTo(0.5);  // convenience method for 'scaleX' and 'scaleY'  
-        tween.onComplete = function() : Void{_startButton.enabled = true;
+        tween.onComplete = function():Void{_startButton.enabled = true;
                 };
         
         // the tween alone is useless -- for an animation to be carried out, it has to be
@@ -97,12 +97,12 @@ class AnimationScene extends Scene
         _transitionLabel.text = transition;
         _transitionLabel.alpha = 1.0;
         
-        var hideTween : Tween = new Tween(_transitionLabel, 2.0, Transitions.EASE_IN);
+        var hideTween:Tween = new Tween(_transitionLabel, 2.0, Transitions.EASE_IN);
         hideTween.animate("alpha", 0.0);
         Starling.juggler.add(hideTween);
     }
     
-    private function onDelayButtonTriggered() : Void
+    private function onDelayButtonTriggered():Void
     {
         _delayButton.enabled = false;
         
@@ -112,16 +112,16 @@ class AnimationScene extends Scene
         
         Starling.juggler.delayCall(colorizeEgg, 1.0, true);
         Starling.juggler.delayCall(colorizeEgg, 2.0, false);
-        Starling.juggler.delayCall(function() : Void{_delayButton.enabled = true;
+        Starling.juggler.delayCall(function():Void{_delayButton.enabled = true;
                 }, 2.0);
     }
     
-    private function colorizeEgg(colorize : Bool) : Void
+    private function colorizeEgg(colorize:Bool):Void
     {
-        _egg.color = (colorize) ? Color.RED : Color.WHITE;
+        _egg.color = (colorize) ? Color.RED:Color.WHITE;
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _startButton.removeEventListener(Event.TRIGGERED, onStartButtonTriggered);
         _delayButton.removeEventListener(Event.TRIGGERED, onDelayButtonTriggered);

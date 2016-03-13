@@ -10,8 +10,6 @@
 
 package starling.display;
 
-import starling.display.MeshStyleType;
-
 import flash.geom.Matrix;
 
 import starling.rendering.IndexData;
@@ -46,26 +44,24 @@ import starling.utils.MeshSubset;
  */
 class MeshBatch extends Mesh
 {
-    public var numVertices(never, set) : Int;
-    public var numIndices(never, set) : Int;
-    public var batchable(get, set) : Bool;
+    public var batchable(get, set):Bool;
 
     /** The maximum number of vertices that fit into one MeshBatch. */
-    public static inline var MAX_NUM_VERTICES : Int = 65535;
+    public static var MAX_NUM_VERTICES:Int = 65535;
     
-    private var _effect : MeshEffect;
-    private var _batchable : Bool;
-    private var _vertexSyncRequired : Bool;
-    private var _indexSyncRequired : Bool;
+    private var _effect:MeshEffect;
+    private var _batchable:Bool;
+    private var _vertexSyncRequired:Bool;
+    private var _indexSyncRequired:Bool;
     
     // helper object
-    private static var sFullMeshSubset : MeshSubset = new MeshSubset();
+    private static var sFullMeshSubset:MeshSubset = new MeshSubset();
     
     /** Creates a new, empty MeshBatch instance. */
     public function new()
     {
-        var vertexData : VertexData = new VertexData();
-        var indexData : IndexData = new IndexData();
+        var vertexData:VertexData = new VertexData();
+        var indexData:IndexData = new IndexData();
         
         super(vertexData, indexData);
         
@@ -75,37 +71,37 @@ class MeshBatch extends Mesh
     // display object overrides
     
     /** @inheritDoc */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         if (_effect != null)             _effect.dispose();
         super.dispose();
     }
     
     /** @inheritDoc */
-    override private function get_supportsRenderCache() : Bool
+    override private function get_supportsRenderCache():Bool
     {
         return _batchable && super.supportsRenderCache;
     }
     
-    private function setVertexAndIndexDataChanged() : Void
+    private function setVertexAndIndexDataChanged():Void
     {
         _vertexSyncRequired = _indexSyncRequired = true;
     }
     
-    private function syncVertexBuffer() : Void
+    private function syncVertexBuffer():Void
     {
         _effect.uploadVertexData(_vertexData);
         _vertexSyncRequired = false;
     }
     
-    private function syncIndexBuffer() : Void
+    private function syncIndexBuffer():Void
     {
         _effect.uploadIndexData(_indexData);
         _indexSyncRequired = false;
     }
     
     /** Removes all geometry. */
-    public function clear() : Void
+    public function clear():Void
     {
         _vertexData.numVertices = 0;
         _indexData.numIndices = 0;
@@ -126,16 +122,16 @@ class MeshBatch extends Mesh
      *                   without transforming them in any way (no matter the value of the
      *                   <code>matrix</code> parameter).
      */
-    public function addMesh(mesh : Mesh, matrix : Matrix = null, alpha : Float = 1.0,
-            subset : MeshSubset = null, ignoreTransformations : Bool = false) : Void
+    public function addMesh(mesh:Mesh, matrix:Matrix = null, alpha:Float = 1.0,
+            subset:MeshSubset = null, ignoreTransformations:Bool = false):Void
     {
         if (ignoreTransformations)             matrix = null
         else if (matrix == null)             matrix = mesh.transformationMatrix;
         if (subset == null)             subset = sFullMeshSubset;
         
-        var targetVertexID : Int = _vertexData.numVertices;
-        var targetIndexID : Int = _indexData.numIndices;
-        var meshStyle : MeshStyle = mesh._style;
+        var targetVertexID:Int = _vertexData.numVertices;
+        var targetIndexID:Int = _indexData.numIndices;
+        var meshStyle:MeshStyle = mesh._style;
         
         if (targetVertexID == 0) 
             setupFor(mesh);
@@ -159,12 +155,12 @@ class MeshBatch extends Mesh
      *  For the latter, indices are aligned in groups of 6 (one quad requires six indices),
      *  and the vertices in groups of 4 (one vertex for every corner).</p>
      */
-    public function addMeshAt(mesh : Mesh, indexID : Int, vertexID : Int) : Void
+    public function addMeshAt(mesh:Mesh, indexID:Int, vertexID:Int):Void
     {
-        var numIndices : Int = mesh.numIndices;
-        var numVertices : Int = mesh.numVertices;
-        var matrix : Matrix = mesh.transformationMatrix;
-        var meshStyle : MeshStyle = mesh._style;
+        var numIndices:Int = mesh.numIndices;
+        var numVertices:Int = mesh.numVertices;
+        var matrix:Matrix = mesh.transformationMatrix;
+        var meshStyle:MeshStyle = mesh._style;
         
         if (_vertexData.numVertices == 0) 
             setupFor(mesh);
@@ -178,10 +174,10 @@ class MeshBatch extends Mesh
         _indexSyncRequired = _vertexSyncRequired = true;
     }
     
-    private function setupFor(mesh : Mesh) : Void
+    private function setupFor(mesh:Mesh):Void
     {
-        var meshStyle : MeshStyle = mesh._style;
-        var meshStyleType : Class<Dynamic> = meshStyle.type;
+        var meshStyle:MeshStyle = mesh._style;
+        var meshStyleType:Class<Dynamic> = meshStyle.type;
         
         if (_style.type != meshStyleType) 
             setStyle(try cast(Type.createInstance(meshStyleType, []), MeshStyle) catch(e:Dynamic) null, false);
@@ -197,9 +193,9 @@ class MeshBatch extends Mesh
      *  @param mesh         the mesh to add to the batch.
      *  @param numVertices  if <code>-1</code>, <code>mesh.numVertices</code> will be used
      */
-    public function canAddMesh(mesh : Mesh, numVertices : Int = -1) : Bool
+    public function canAddMesh(mesh:Mesh, numVertices:Int = -1):Bool
     {
-        var currentNumVertices : Int = _vertexData.numVertices;
+        var currentNumVertices:Int = _vertexData.numVertices;
         
         if (currentNumVertices == 0)             return true;
         if (numVertices < 0)             numVertices = mesh.numVertices;
@@ -211,7 +207,7 @@ class MeshBatch extends Mesh
     
     /** If the <code>batchable</code> property is enabled, this method will add the batch
      *  to the painter's current batch. Otherwise, this will actually do the drawing. */
-    override public function render(painter : Painter) : Void
+    override public function render(painter:Painter):Void
     {
         if (_vertexData.numVertices == 0) 
         {
@@ -237,8 +233,8 @@ class MeshBatch extends Mesh
     }
     
     /** @inheritDoc */
-    override public function setStyle(meshStyle : MeshStyle = null,
-            mergeWithPredecessor : Bool = true) : Void
+    override public function setStyle(meshStyle:MeshStyle = null,
+            mergeWithPredecessor:Bool = true):Void
     {
         super.setStyle(meshStyle, mergeWithPredecessor);
         
@@ -252,7 +248,7 @@ class MeshBatch extends Mesh
     /** The total number of vertices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Make sure that no indices reference those deleted
      *  vertices! */
-    private function set_numVertices(value : Int) : Int
+    override private function set_numVertices(value:Int):Int
     {
         _vertexData.numVertices = value;
         _vertexSyncRequired = true;
@@ -262,7 +258,7 @@ class MeshBatch extends Mesh
     /** The total number of indices in the mesh. If you change this to a smaller value,
      *  the surplus will be deleted. Always make sure that the number of indices
      *  is a multiple of three! */
-    private function set_numIndices(value : Int) : Int
+    override private function set_numIndices(value:Int):Int
     {
         _indexData.numIndices = value;
         _indexSyncRequired = true;
@@ -279,9 +275,10 @@ class MeshBatch extends Mesh
      *
      *  @default true
      */
-    private function get_batchable() : Bool{return _batchable;
+    private function get_batchable():Bool {
+		return _batchable;
     }
-    private function set_batchable(value : Bool) : Bool
+    private function set_batchable(value:Bool):Bool
     {
         if (value != _batchable)   // self-rendering must disrupt the render cache  
         {

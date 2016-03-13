@@ -23,10 +23,10 @@ interface ITexturePool
     /** Gets a texture from the pool, or creates a new one (cleared and ready to be used
      *  as render target). Its size is dictated by the bounds of the target display object
      *  plus padding. */
-    function getTexture() : Texture;
+    function getTexture():Texture;
     
     /** Puts a texture back into the pool to be reused later (or to be disposed
      *  with the pool). */
-    function putTexture(texture : Texture) : Void;
+    function putTexture(texture:Texture):Void;
 }
 

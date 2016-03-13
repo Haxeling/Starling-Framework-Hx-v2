@@ -22,11 +22,11 @@ import starling.errors.AbstractClassError;
 class MatrixUtil
 {
     // helper objects
-    private static var sRawData : Array<Float> = 
+    private static var sRawData:Array<Float> = 
         [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-    private static var sRawData2 : Array<Float> = new Array<Float>();
-    private static var sPoint3D : Vector3D = new Vector3D();
-    private static var sMatrixData : Array<Float> = 
+    private static var sRawData2:Array<Float> = new Array<Float>();
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sMatrixData:Array<Float> = 
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     
     /** @private */
@@ -36,7 +36,7 @@ class MatrixUtil
     
     /** Converts a 2D matrix to a 3D matrix. If you pass an <code>out</code>-matrix,
      *  the result will be stored in this matrix instead of creating a new object. */
-    public static function convertTo3D(matrix : Matrix, out : Matrix3D = null) : Matrix3D
+    public static function convertTo3D(matrix:Matrix, out:Matrix3D = null):Matrix3D
     {
         if (out == null)             out = new Matrix3D();
         
@@ -53,7 +53,7 @@ class MatrixUtil
     
     /** Converts a 3D matrix to a 2D matrix. Beware that this will work only for a 3D matrix
      *  describing a pure 2D transformation. */
-    public static function convertTo2D(matrix3D : Matrix3D, out : Matrix = null) : Matrix
+    public static function convertTo2D(matrix3D:Matrix3D, out:Matrix = null):Matrix
     {
         if (out == null)             out = new Matrix();
         
@@ -69,16 +69,16 @@ class MatrixUtil
     }
     
     /** Determines if the matrix is an identity matrix. */
-    public static function isIdentity(matrix : Matrix) : Bool
+    public static function isIdentity(matrix:Matrix):Bool
     {
         return matrix.a == 1.0 && matrix.b == 0.0 && matrix.c == 0.0 && matrix.d == 1.0 &&
         matrix.tx == 0.0 && matrix.ty == 0.0;
     }
     
     /** Determines if the 3D matrix is an identity matrix. */
-    public static function isIdentity3D(matrix : Matrix3D) : Bool
+    public static function isIdentity3D(matrix:Matrix3D):Bool
     {
-        var data : Array<Float> = sRawData2;
+        var data:Array<Float> = sRawData2;
         matrix.copyRawDataTo(data);
         
         return data[0] == 1.0 && data[1] == 0.0 && data[2] == 0.0 && data[3] == 0.0 &&
@@ -88,15 +88,15 @@ class MatrixUtil
     }
     
     /** Transform a point with the given matrix. */
-    public static function transformPoint(matrix : Matrix, point : Point,
-            out : Point = null) : Point
+    public static function transformPoint(matrix:Matrix, point:Point,
+            out:Point = null):Point
     {
         return transformCoords(matrix, point.x, point.y, out);
     }
     
     /** Transforms a 3D point with the given matrix. */
-    public static function transformPoint3D(matrix : Matrix3D, point : Vector3D,
-            out : Vector3D = null) : Vector3D
+    public static function transformPoint3D(matrix:Matrix3D, point:Vector3D,
+            out:Vector3D = null):Vector3D
     {
         return transformCoords3D(matrix, point.x, point.y, point.z, out);
     }
@@ -104,8 +104,8 @@ class MatrixUtil
     /** Uses a matrix to transform 2D coordinates into a different space. If you pass an
      *  <code>out</code>-point, the result will be stored in this point instead of creating
      *  a new object. */
-    public static function transformCoords(matrix : Matrix, x : Float, y : Float,
-            out : Point = null) : Point
+    public static function transformCoords(matrix:Matrix, x:Float, y:Float,
+            out:Point = null):Point
     {
         if (out == null)             out = new Point();
         
@@ -118,8 +118,8 @@ class MatrixUtil
     /** Uses a matrix to transform 3D coordinates into a different space. If you pass a
      *  'resultVector', the result will be stored in this vector3D instead of creating a
      *  new object. */
-    public static function transformCoords3D(matrix : Matrix3D, x : Float, y : Float, z : Float,
-            out : Vector3D = null) : Vector3D
+    public static function transformCoords3D(matrix:Matrix3D, x:Float, y:Float, z:Float,
+            out:Vector3D = null):Vector3D
     {
         if (out == null)             out = new Vector3D();
         
@@ -140,12 +140,12 @@ class MatrixUtil
      *  |     0            0       1 |
      *  </pre>
      */
-    public static function skew(matrix : Matrix, skewX : Float, skewY : Float) : Void
+    public static function skew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {
-        var sinX : Float = Math.sin(skewX);
-        var cosX : Float = Math.cos(skewX);
-        var sinY : Float = Math.sin(skewY);
-        var cosY : Float = Math.cos(skewY);
+        var sinX:Float = Math.sin(skewX);
+        var cosX:Float = Math.cos(skewX);
+        var sinY:Float = Math.sin(skewY);
+        var cosY:Float = Math.cos(skewY);
         
         matrix.setTo(matrix.a * cosY - matrix.b * sinX,
                 matrix.a * sinY + matrix.b * cosX,
@@ -156,7 +156,7 @@ class MatrixUtil
     }
     
     /** Prepends a matrix to 'base' by multiplying it with another matrix. */
-    public static function prependMatrix(base : Matrix, prep : Matrix) : Void
+    public static function prependMatrix(base:Matrix, prep:Matrix):Void
     {
         base.setTo(base.a * prep.a + base.c * prep.b,
                 base.b * prep.a + base.d * prep.b,
@@ -167,14 +167,14 @@ class MatrixUtil
     }
     
     /** Prepends an incremental translation to a Matrix object. */
-    public static function prependTranslation(matrix : Matrix, tx : Float, ty : Float) : Void
+    public static function prependTranslation(matrix:Matrix, tx:Float, ty:Float):Void
     {
         matrix.tx += matrix.a * tx + matrix.c * ty;
         matrix.ty += matrix.b * tx + matrix.d * ty;
     }
     
     /** Prepends an incremental scale change to a Matrix object. */
-    public static function prependScale(matrix : Matrix, sx : Float, sy : Float) : Void
+    public static function prependScale(matrix:Matrix, sx:Float, sy:Float):Void
     {
         matrix.setTo(matrix.a * sx, matrix.b * sx,
                 matrix.c * sy, matrix.d * sy,
@@ -182,10 +182,10 @@ class MatrixUtil
     }
     
     /** Prepends an incremental rotation to a Matrix object (angle in radians). */
-    public static function prependRotation(matrix : Matrix, angle : Float) : Void
+    public static function prependRotation(matrix:Matrix, angle:Float):Void
     {
-        var sin : Float = Math.sin(angle);
-        var cos : Float = Math.cos(angle);
+        var sin:Float = Math.sin(angle);
+        var cos:Float = Math.cos(angle);
         
         matrix.setTo(matrix.a * cos + matrix.c * sin, matrix.b * cos + matrix.d * sin,
                 matrix.c * cos - matrix.a * sin, matrix.d * cos - matrix.b * sin,
@@ -200,12 +200,12 @@ class MatrixUtil
      *  |     0            0       1 |
      *  </pre>
      */
-    public static function prependSkew(matrix : Matrix, skewX : Float, skewY : Float) : Void
+    public static function prependSkew(matrix:Matrix, skewX:Float, skewY:Float):Void
     {
-        var sinX : Float = Math.sin(skewX);
-        var cosX : Float = Math.cos(skewX);
-        var sinY : Float = Math.sin(skewY);
-        var cosY : Float = Math.cos(skewY);
+        var sinX:Float = Math.sin(skewX);
+        var cosX:Float = Math.cos(skewX);
+        var sinY:Float = Math.sin(skewY);
+        var cosY:Float = Math.cos(skewY);
         
         matrix.setTo(matrix.a * cosY + matrix.c * sinY,
                 matrix.b * cosY + matrix.d * sinY,
@@ -216,8 +216,8 @@ class MatrixUtil
     
     /** Converts a Matrix3D instance to a String, which is useful when debugging. Per default,
      *  the raw data is displayed transposed, so that the columns are displayed vertically. */
-    public static function toString3D(matrix : Matrix3D, transpose : Bool = true,
-            precision : Int = 3) : String
+    public static function toString3D(matrix:Matrix3D, transpose:Bool = true,
+            precision:Int = 3):String
     {
         if (transpose)             matrix.transpose();
         matrix.copyRawDataTo(sRawData2);
@@ -227,7 +227,7 @@ class MatrixUtil
     }
     
     /** Converts a Matrix instance to a String, which is useful when debugging. */
-    public static function toString(matrix : Matrix, precision : Int = 3) : String
+    public static function toString(matrix:Matrix, precision:Int = 3):String
     {
         sRawData2[0] = matrix.a;sRawData2[1] = matrix.c;sRawData2[2] = matrix.tx;
         sRawData2[3] = matrix.b;sRawData2[4] = matrix.d;sRawData2[5] = matrix.ty;
@@ -235,28 +235,28 @@ class MatrixUtil
         return "[Matrix rawData=\n" + formatRawData(sRawData2, 3, 2, precision) + "\n]";
     }
     
-    private static function formatRawData(data : Array<Float>, numCols : Int, numRows : Int,
-            precision : Int, indent : String = "  ") : String
+    private static function formatRawData(data:Array<Float>, numCols:Int, numRows:Int,
+            precision:Int, indent:String = "  "):String
     {
-        var result : String = indent;
-        var numValues : Int = numCols * numRows;
-        var highestValue : Float = 0.0;
-        var valueString : String;
-        var value : Float;
+        var result:String = indent;
+        var numValues:Int = numCols * numRows;
+        var highestValue:Float = 0.0;
+        var valueString:String;
+        var value:Float;
         
         for (i in 0...numValues){
             value = Math.abs(data[i]);
             if (value > highestValue)                 highestValue = value;
         }
         
-        var numChars : Int = highestValue.toFixed(precision).length + 1;
+        var numChars:Int = FloatUtil.toFixed(highestValue, precision).length + 1;
         
         for (y in 0...numRows){
             for (x in 0...numCols){
                 value = data[numCols * y + x];
-                valueString = value.toFixed(precision);
+                valueString = FloatUtil.toFixed(value, precision);
                 
-                while (valueString.length < numChars)valueString = " " + valueString;
+				while (valueString.length < numChars)valueString = " " + valueString;
                 
                 result += valueString;
                 if (x != numCols - 1)                     result += ", ";
@@ -282,9 +282,9 @@ class MatrixUtil
      *  of the stage, with a field of view of 1.0 rad.</p>
      */
     public static function createPerspectiveProjectionMatrix(
-            x : Float, y : Float, width : Float, height : Float,
-            stageWidth : Float = 0, stageHeight : Float = 0, cameraPos : Vector3D = null,
-            out : Matrix3D = null) : Matrix3D
+            x:Float, y:Float, width:Float, height:Float,
+            stageWidth:Float = 0, stageHeight:Float = 0, cameraPos:Vector3D = null,
+            out:Matrix3D = null):Matrix3D
     {
         if (out == null)             out = new Matrix3D();
         if (stageWidth <= 0)             stageWidth = width;
@@ -297,13 +297,13 @@ class MatrixUtil
                     stageWidth / Math.tan(0.5) * 0.5);
         }
         
-        var focalLength : Float = Math.abs(cameraPos.z);
-        var offsetX : Float = cameraPos.x - stageWidth / 2;
-        var offsetY : Float = cameraPos.y - stageHeight / 2;
-        var far : Float = focalLength * 20;
-        var near : Float = 1;
-        var scaleX : Float = stageWidth / width;
-        var scaleY : Float = stageHeight / height;
+        var focalLength:Float = Math.abs(cameraPos.z);
+        var offsetX:Float = cameraPos.x - stageWidth / 2;
+        var offsetY:Float = cameraPos.y - stageHeight / 2;
+        var far:Float = focalLength * 20;
+        var near:Float = 1;
+        var scaleX:Float = stageWidth / width;
+        var scaleY:Float = stageHeight / height;
         
         // set up general perspective
         sMatrixData[0] = 2 * focalLength / stageWidth;  // 0,0  
@@ -329,7 +329,7 @@ class MatrixUtil
     
     /** Creates a orthographic projection matrix suitable for 2D rendering. */
     public static function createOrthographicProjectionMatrix(
-            x : Float, y : Float, width : Float, height : Float, out : Matrix = null) : Matrix
+            x:Float, y:Float, width:Float, height:Float, out:Matrix = null):Matrix
     {
         if (out == null)             out = new Matrix();
         

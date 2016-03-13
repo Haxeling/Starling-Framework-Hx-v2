@@ -22,14 +22,14 @@ class ButtonState
     }
     
     /** The button's default state. */
-    public static inline var UP : String = "up";
+    public static var UP:String = "up";
     
     /** The button is pressed. */
-    public static inline var DOWN : String = "down";
+    public static var DOWN:String = "down";
     
     /** The mouse hovers over the button. */
-    public static inline var OVER : String = "over";
+    public static var OVER:String = "over";
     
     /** The button was disabled altogether. */
-    public static inline var DISABLED : String = "disabled";
+    public static var DISABLED:String = "disabled";
 }

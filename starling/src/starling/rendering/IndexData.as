@@ -174,10 +174,11 @@ package starling.rendering
                     }
                     else
                     {
-                        for (var i:int=0; i<numIndices; ++i)
+						trace("FIX &&= on line 178");
+                        /*for (var i:int=0; i<numIndices; ++i)
                             keepsQuadLayout &&=
                                 getBasicQuadIndexAt(indexID + i) + offset ==
-                                getBasicQuadIndexAt(targetIndexID + i);
+                                getBasicQuadIndexAt(targetIndexID + i);*/
                     }
 
                     if (keepsQuadLayout) return;

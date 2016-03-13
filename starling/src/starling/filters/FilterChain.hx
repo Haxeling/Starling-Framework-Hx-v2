@@ -25,12 +25,12 @@ import starling.utils.Padding;
  */
 class FilterChain extends FragmentFilter
 {
-    public var numFilters(get, never) : Int;
+    public var numFilters(get, never):Int;
 
-    private var _filters : Array<FragmentFilter>;
+    private var _filters:Array<FragmentFilter>;
     
     // helpers
-    private static var sPadding : Padding = new Padding();
+    private static var sPadding:Padding = new Padding();
     
     /** Creates a new chain with the given filters. */
     public function new()
@@ -39,7 +39,7 @@ class FilterChain extends FragmentFilter
         _filters = [];
         
         for (i in 0...len){
-            var filter : FragmentFilter = try cast(args[i], FragmentFilter) catch(e:Dynamic) null;
+            var filter:FragmentFilter = try cast(args[i], FragmentFilter) catch(e:Dynamic) null;
             if (filter != null)                 addFilterAt(filter, i)
             else throw new ArgumentError("pass only fragment filters to the constructor");
         }
@@ -48,7 +48,7 @@ class FilterChain extends FragmentFilter
     }
     
     /** Disposes the filter chain itself as well as all contained filters. */
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         for (filter in _filters)
         filter.dispose();
@@ -59,20 +59,20 @@ class FilterChain extends FragmentFilter
     }
     
     /** @private */
-    override private function setRequiresRedraw() : Void
+    override private function setRequiresRedraw():Void
     {
         updatePadding();
         super.setRequiresRedraw();
     }
     
     /** @private */
-    override public function process(painter : Painter, pool : ITexturePool,
-            input0 : Texture = null, input1 : Texture = null,
-            input2 : Texture = null, input3 : Texture = null) : Texture
+    override public function process(painter:Painter, pool:ITexturePool,
+            input0:Texture = null, input1:Texture = null,
+            input2:Texture = null, input3:Texture = null):Texture
     {
-        var numFilters : Int = _filters.length;
-        var outTexture : Texture = input0;
-        var inTexture : Texture;
+        var numFilters:Int = _filters.length;
+        var outTexture:Texture = input0;
+        var inTexture:Texture;
         
         for (i in 0...numFilters){
             inTexture = outTexture;
@@ -86,20 +86,20 @@ class FilterChain extends FragmentFilter
     
     /** Returns the filter at a certain index. If you pass a negative index,
      *  '-1' will return the last filter, '-2' the second to last filter, etc. */
-    public function getFilterAt(index : Int) : FragmentFilter
+    public function getFilterAt(index:Int):FragmentFilter
     {
         if (index < 0)             index += numFilters;
         return _filters[index];
     }
     
     /** Adds a filter to the chain. It will be appended at the very end. */
-    public function addFilter(filter : FragmentFilter) : Void
+    public function addFilter(filter:FragmentFilter):Void
     {
         addFilterAt(filter, _filters.length);
     }
     
     /** Adds a filter to the chain at the given index. */
-    public function addFilterAt(filter : FragmentFilter, index : Int) : Void
+    public function addFilterAt(filter:FragmentFilter, index:Int):Void
     {
         _filters.insertAt(index, filter);
         filter.addEventListener(Event.CHANGE, setRequiresRedraw);
@@ -108,18 +108,18 @@ class FilterChain extends FragmentFilter
     
     /** Removes a filter from the chain. If the filter is not part of the chain,
      *  nothing happens. If requested, the filter will be disposed right away. */
-    public function removeFilter(filter : FragmentFilter, dispose : Bool = false) : FragmentFilter
+    public function removeFilter(filter:FragmentFilter, dispose:Bool = false):FragmentFilter
     {
-        var filterIndex : Int = getFilterIndex(filter);
+        var filterIndex:Int = getFilterIndex(filter);
         if (filterIndex != -1)             removeFilterAt(filterIndex, dispose);
         return filter;
     }
     
     /** Removes the filter at a certain index. The indices of any subsequent filters
      *  are decremented. If requested, the filter will be disposed right away. */
-    public function removeFilterAt(index : Int, dispose : Bool = false) : FragmentFilter
+    public function removeFilterAt(index:Int, dispose:Bool = false):FragmentFilter
     {
-        var filter : FragmentFilter = try cast(_filters.removeAt(index), FragmentFilter) catch(e:Dynamic) null;
+        var filter:FragmentFilter = try cast(_filters.removeAt(index), FragmentFilter) catch(e:Dynamic) null;
         filter.removeEventListener(Event.CHANGE, setRequiresRedraw);
         if (dispose)             filter.dispose();
         setRequiresRedraw();
@@ -127,18 +127,18 @@ class FilterChain extends FragmentFilter
     }
     
     /** Returns the index of a filter within the chain, or "-1" if it is not found. */
-    public function getFilterIndex(filter : FragmentFilter) : Int
+    public function getFilterIndex(filter:FragmentFilter):Int
     {
         return Lambda.indexOf(_filters, filter);
     }
     
-    private function updatePadding() : Void
+    private function updatePadding():Void
     {
         sPadding.setTo();
         
         for (filter in _filters)
         {
-            var padding : Padding = filter.padding;
+            var padding:Padding = filter.padding;
             if (padding.left > sPadding.left)                 sPadding.left = padding.left;
             if (padding.right > sPadding.right)                 sPadding.right = padding.right;
             if (padding.top > sPadding.top)                 sPadding.top = padding.top;
@@ -149,7 +149,9 @@ class FilterChain extends FragmentFilter
     }
     
     /** Indicates the current chain length. */
-    private function get_numFilters() : Int{return _filters.length;
+    private function get_numFilters():Int
+	{
+		return _filters.length;
     }
 }
 

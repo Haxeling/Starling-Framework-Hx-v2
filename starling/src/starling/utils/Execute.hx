@@ -9,25 +9,29 @@
 // =================================================================================================
 
 package starling.utils;
+import haxe.Constraints.Function;
 
 
 /**
  * Class for execute
  */
-@:final class ClassForExecute
+@:final class Execute
 {
     /** Executes a function with the specified arguments. If the argument count does not match
      *  the function, the argument list is cropped / filled up with <code>null</code> values. */
-    public function execute(func : Function) : Void
+    public static function call(func:Function, args:Array<Dynamic>):Void
     {
         if (func != null) 
         {
-            var i : Int;
-            var maxNumArgs : Int = func.length;
-            
-            for (i in args.length...maxNumArgs){args[i] = null;
-            }
-            
+			#if flash
+				var maxNumArgs:Int = Reflect.getProperty(func, "length");
+			#else 
+				var maxNumArgs:Int = args.length;
+			#end
+			
+			for (i in args.length...maxNumArgs)
+                args[i] = null;
+				
             // In theory, the 'default' case would always work,
             // but we want to avoid the 'slice' allocations.
             
@@ -41,7 +45,6 @@ package starling.utils;
                 case 5:func(args[0], args[1], args[2], args[3], args[4]);
                 case 6:func(args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:func(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-                default:func.apply(null, args.substring(0, maxNumArgs));
             }
         }
     }

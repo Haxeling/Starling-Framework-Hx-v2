@@ -30,31 +30,31 @@ import starling.utils.Align;
  */
 class TextFormat extends EventDispatcher
 {
-    public var font(get, set) : String;
-    public var size(get, set) : Float;
-    public var color(get, set) : Int;
-    public var bold(get, set) : Bool;
-    public var italic(get, set) : Bool;
-    public var underline(get, set) : Bool;
-    public var horizontalAlign(get, set) : String;
-    public var verticalAlign(get, set) : String;
-    public var kerning(get, set) : Bool;
-    public var leading(get, set) : Float;
+    public var font(get, set):String;
+    public var size(get, set):Float;
+    public var color(get, set):Int;
+    public var bold(get, set):Bool;
+    public var italic(get, set):Bool;
+    public var underline(get, set):Bool;
+    public var horizontalAlign(get, set):String;
+    public var verticalAlign(get, set):String;
+    public var kerning(get, set):Bool;
+    public var leading(get, set):Float;
 
-    private var _font : String;
-    private var _size : Float;
-    private var _color : Int;
-    private var _bold : Bool;
-    private var _italic : Bool;
-    private var _underline : Bool;
-    private var _horizontalAlign : String;
-    private var _verticalAlign : String;
-    private var _kerning : Bool;
-    private var _leading : Float;
+    private var _font:String;
+    private var _size:Float;
+    private var _color:Int;
+    private var _bold:Bool;
+    private var _italic:Bool;
+    private var _underline:Bool;
+    private var _horizontalAlign:String;
+    private var _verticalAlign:String;
+    private var _kerning:Bool;
+    private var _leading:Float;
     
     /** Creates a new TextFormat instance with the given properties. */
-    public function new(font : String = "Verdana", size : Float = 12, color : Int = 0x0,
-            horizontalAlign : String = "center", verticalAlign : String = "center")
+    public function new(font:String = "Verdana", size:Float = 12, color:Int = 0x0,
+            horizontalAlign:String = "center", verticalAlign:String = "center")
     {
         super();
         _font = font;
@@ -67,7 +67,7 @@ class TextFormat extends EventDispatcher
     }
     
     /** Copies all properties from another TextFormat instance. */
-    public function copyFrom(format : starling.text.TextFormat) : Void
+    public function copyFrom(format:starling.text.TextFormat):Void
     {
         _font = format._font;
         _size = format._size;
@@ -84,16 +84,16 @@ class TextFormat extends EventDispatcher
     }
     
     /** Creates a clone of this instance. */
-    public function clone() : starling.text.TextFormat
+    public function clone():starling.text.TextFormat
     {
-        var clone : starling.text.TextFormat = new starling.text.TextFormat();
+        var clone:starling.text.TextFormat = new starling.text.TextFormat();
         clone.copyFrom(this);
         return clone;
     }
     
     /** Sets the most common properties at once. */
-    public function setTo(font : String = "Verdana", size : Float = 12, color : Int = 0x0,
-            horizontalAlign : String = "center", verticalAlign : String = "center") : Void
+    public function setTo(font:String = "Verdana", size:Float = 12, color:Int = 0x0,
+            horizontalAlign:String = "center", verticalAlign:String = "center"):Void
     {
         _font = font;
         _size = size;
@@ -105,28 +105,31 @@ class TextFormat extends EventDispatcher
     }
     
     /** Converts the Starling TextFormat instance to a Flash TextFormat. */
-    public function toNativeFormat(out : flash.text.TextFormat = null) : flash.text.TextFormat
+    public function toNativeFormat(out:flash.text.TextFormat = null):flash.text.TextFormat
     {
-        if (out == null)             out = new flash.text.TextFormat();
+        if (out == null) out = new flash.text.TextFormat();
         
         out.font = _font;
-        out.size = _size;
+        out.size = untyped _size;
         out.color = _color;
         out.bold = _bold;
         out.italic = _italic;
         out.underline = _underline;
         out.align = _horizontalAlign;
         out.kerning = _kerning;
-        out.leading = _leading;
+        out.leading = untyped _leading;
         
         return out;
     }
     
     /** The name of the font. TrueType fonts will be looked up from embedded fonts and
      *  system fonts; bitmap fonts must be registered at the TextField class first. */
-    private function get_font() : String{return _font;
+    private function get_font():String
+	{
+		return _font;
     }
-    private function set_font(value : String) : String
+	
+    private function set_font(value:String):String
     {
         if (value != _font) 
         {
@@ -138,9 +141,12 @@ class TextFormat extends EventDispatcher
     
     /** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for
      *  the original size. */
-    private function get_size() : Float{return _size;
+    private function get_size():Float
+	{
+		return _size;
     }
-    private function set_size(value : Float) : Float
+	
+    private function set_size(value:Float):Float
     {
         if (value != _size) 
         {
@@ -153,9 +159,12 @@ class TextFormat extends EventDispatcher
     /** The color of the text. Note that bitmap fonts should be exported in plain white so
      *  that tinting works correctly. If your bitmap font contains colors, set this property
      *  to <code>Color.WHITE</code> to get the desired result. @default black */
-    private function get_color() : Int{return _color;
+    private function get_color():Int
+	{
+		return _color;
     }
-    private function set_color(value : Int) : Int
+	
+    private function set_color(value:Int):Int
     {
         if (value != _color) 
         {
@@ -166,9 +175,12 @@ class TextFormat extends EventDispatcher
     }
     
     /** Indicates whether the text is bold. @default false */
-    private function get_bold() : Bool{return _bold;
+    private function get_bold():Bool
+	{
+		return _bold;
     }
-    private function set_bold(value : Bool) : Bool
+	
+    private function set_bold(value:Bool):Bool
     {
         if (value != _bold) 
         {
@@ -179,9 +191,12 @@ class TextFormat extends EventDispatcher
     }
     
     /** Indicates whether the text is italicized. @default false */
-    private function get_italic() : Bool{return _italic;
+    private function get_italic():Bool
+	{
+		return _italic;
     }
-    private function set_italic(value : Bool) : Bool
+	
+    private function set_italic(value:Bool):Bool
     {
         if (value != _italic) 
         {
@@ -192,9 +207,12 @@ class TextFormat extends EventDispatcher
     }
     
     /** Indicates whether the text is underlined. @default false */
-    private function get_underline() : Bool{return _underline;
+    private function get_underline():Bool
+	{
+		return _underline;
     }
-    private function set_underline(value : Bool) : Bool
+	
+    private function set_underline(value:Bool):Bool
     {
         if (value != _underline) 
         {
@@ -206,9 +224,12 @@ class TextFormat extends EventDispatcher
     
     /** The horizontal alignment of the text. @default center
      *  @see starling.utils.Align */
-    private function get_horizontalAlign() : String{return _horizontalAlign;
+    private function get_horizontalAlign():String
+	{
+		return _horizontalAlign;
     }
-    private function set_horizontalAlign(value : String) : String
+	
+    private function set_horizontalAlign(value:String):String
     {
         if (!Align.isValidHorizontal(value)) 
             throw new ArgumentError("Invalid horizontal alignment");
@@ -223,9 +244,12 @@ class TextFormat extends EventDispatcher
     
     /** The vertical alignment of the text. @default center
      *  @see starling.utils.Align */
-    private function get_verticalAlign() : String{return _verticalAlign;
+    private function get_verticalAlign():String
+	{
+		return _verticalAlign;
     }
-    private function set_verticalAlign(value : String) : String
+	
+    private function set_verticalAlign(value:String):String
     {
         if (!Align.isValidVertical(value)) 
             throw new ArgumentError("Invalid vertical alignment");
@@ -240,9 +264,12 @@ class TextFormat extends EventDispatcher
     
     /** Indicates whether kerning is enabled. Kerning adjusts the pixels between certain
      *  character pairs to improve readability. @default true */
-    private function get_kerning() : Bool{return _kerning;
+    private function get_kerning():Bool
+	{
+		return _kerning;
     }
-    private function set_kerning(value : Bool) : Bool
+	
+    private function set_kerning(value:Bool):Bool
     {
         if (value != _kerning) 
         {
@@ -253,9 +280,12 @@ class TextFormat extends EventDispatcher
     }
     
     /** The amount of vertical space (called 'leading') between lines. @default 0 */
-    private function get_leading() : Float{return _leading;
+    private function get_leading():Float
+	{
+		return _leading;
     }
-    private function set_leading(value : Float) : Float
+	
+    private function set_leading(value:Float):Float
     {
         if (value != _leading) 
         {

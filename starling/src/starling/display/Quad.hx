@@ -53,20 +53,20 @@ import starling.utils.RectangleUtil;
  */
 class Quad extends Mesh
 {
-    private var _bounds : Rectangle;
+    private var _bounds:Rectangle;
     
     // helper objects
-    private static var sPoint3D : Vector3D = new Vector3D();
-    private static var sMatrix : Matrix = new Matrix();
-    private static var sMatrix3D : Matrix3D = new Matrix3D();
+    private static var sPoint3D:Vector3D = new Vector3D();
+    private static var sMatrix:Matrix = new Matrix();
+    private static var sMatrix3D:Matrix3D = new Matrix3D();
     
     /** Creates a quad with a certain size and color. */
-    public function new(width : Float, height : Float, color : Int = 0xffffff)
+    public function new(width:Float, height:Float, color:Int = 0xffffff)
     {
         _bounds = new Rectangle(0, 0, width, height);
         
-        var vertexData : VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
-        var indexData : IndexData = new IndexData(6);
+        var vertexData:VertexData = new VertexData(MeshStyle.VERTEX_FORMAT, 4);
+        var indexData:IndexData = new IndexData(6);
         
         super(vertexData, indexData);
         
@@ -78,13 +78,13 @@ class Quad extends Mesh
     }
     
     /** Sets up vertex- and index-data according to the current settings. */
-    private function setupVertices() : Void
+    private function setupVertices():Void
     {
-        var posAttr : String = "position";
-        var texAttr : String = "texCoords";
-        var texture : Texture = style.texture;
-        var vertexData : VertexData = this.vertexData;
-        var indexData : IndexData = this.indexData;
+        var posAttr:String = "position";
+        var texAttr:String = "texCoords";
+        var texture:Texture = style.texture;
+        var vertexData:VertexData = this.vertexData;
+        var indexData:IndexData = this.indexData;
         
         indexData.numIndices = 0;
         indexData.addQuad(0, 1, 2, 3);
@@ -112,7 +112,7 @@ class Quad extends Mesh
     }
     
     /** @inheritDoc */
-    override public function getBounds(targetSpace : DisplayObject, out : Rectangle = null) : Rectangle
+    override public function getBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
     {
         if (out == null)             out = new Rectangle();
         
@@ -122,8 +122,8 @@ class Quad extends Mesh
         }
         else if (targetSpace == parent && rotation == 0.0)   // optimization  
         {
-            var scaleX : Float = this.scaleX;
-            var scaleY : Float = this.scaleY;
+            var scaleX:Float = this.scaleX;
+            var scaleY:Float = this.scaleY;
             
             out.setTo(x - pivotX * scaleX, y - pivotY * scaleY,
                     _bounds.width * scaleX, _bounds.height * scaleY);
@@ -149,7 +149,7 @@ class Quad extends Mesh
     }
     
     /** @inheritDoc */
-    override public function hitTest(localPoint : Point) : DisplayObject
+    override public function hitTest(localPoint:Point):DisplayObject
     {
         if (!visible || !touchable || !hitTestMask(localPoint))             return null
         else if (_bounds.containsPoint(localPoint))             return this
@@ -160,10 +160,10 @@ class Quad extends Mesh
      *  synchronize quad and texture size after assigning a texture with a different size.
      *  You can also force a certain width and height by passing positive, non-zero
      *  values for width and height. */
-    public function readjustSize(width : Float = -1, height : Float = -1) : Void
+    public function readjustSize(width:Float = -1, height:Float = -1):Void
     {
-        if (width <= 0)             width = (texture != null) ? texture.frameWidth : _bounds.width;
-        if (height <= 0)             height = (texture != null) ? texture.frameHeight : _bounds.height;
+        if (width <= 0)             width = (texture != null) ? texture.frameWidth:_bounds.width;
+        if (height <= 0)             height = (texture != null) ? texture.frameHeight:_bounds.height;
         
         if (width != _bounds.width || height != _bounds.height) 
         {
@@ -174,9 +174,9 @@ class Quad extends Mesh
     
     /** Creates a quad from the given texture.
      *  The quad will have the same size as the texture. */
-    public static function fromTexture(texture : Texture) : Quad
+    public static function fromTexture(texture:Texture):Quad
     {
-        var quad : Quad = new Quad(100, 100);
+        var quad:Quad = new Quad(100, 100);
         quad.texture = texture;
         quad.readjustSize();
         return quad;
@@ -196,7 +196,7 @@ class Quad extends Mesh
      *  objects can make use of a texture frame, only a property on the Quad class can do that.
      *  </p>
      */
-    override private function set_texture(value : Texture) : Texture
+    override private function set_texture(value:Texture):Texture
     {
         if (value != texture) 
         {

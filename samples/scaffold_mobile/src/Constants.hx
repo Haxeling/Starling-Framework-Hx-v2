@@ -15,6 +15,6 @@ class Constants
     // set the "aspectRatio" element in the config XML to "landscape". (You'll also have to
     // update the background, startup- and "Default" graphics accordingly.)
     
-    public static inline var STAGE_WIDTH : Int = 320;
-    public static inline var STAGE_HEIGHT : Int = 480;
+    public static var STAGE_WIDTH:Int = 320;
+    public static var STAGE_HEIGHT:Int = 480;
 }

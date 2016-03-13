@@ -8,7 +8,7 @@ import starling.display.Button;
 /** A simple button that uses "scale9grid" with a single texture. */
 class MenuButton extends Button
 {
-    public function new(text : String, width : Float = 128, height : Float = 32)
+    public function new(text:String, width:Float = 128, height:Float = 32)
     {
         super(Game.assets.getTexture("button"), text);
         

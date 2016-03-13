@@ -18,16 +18,18 @@ class StringUtil
 {
     /** @private */
     public function new()
-    {throw new AbstractClassError();
+    {
+		throw new AbstractClassError();
     }
     
     /** Formats a String in .Net-style, with curly braces ("{0}"). Does not support any
      *  number formatting options yet. */
-    public static function format(format : String) : String
+    public static function format(format:String, args:Array<Dynamic>):String
     {
         // TODO: add number formatting options
         
-        for (i in 0...args.length){format = format.replace(new RegExp("\\{" + i + "\\}", "g"), args[i]);
+        for (i in 0...args.length) {
+			format = format.split("\\{" + i + "\\}").join(args[i]);
         }
         
         return format;
@@ -41,7 +43,7 @@ class StringUtil
      *  @return The input string, but with a master string only one character larger than it.
      *  @author Jackson Dunstan, JacksonDunstan.com
      */
-    public static function clean(string : String) : String
+    public static function clean(string:String):String
     {
         return ("_" + String).substr(1);
     }
@@ -51,15 +53,17 @@ class StringUtil
      *  <p>Beware: this method does not make a proper Unicode white-space check,
      *  but simply trims all character codes of '0x20' or below.</p>
      */
-    public static function trimStart(string : String) : String
+    public static function trimStart(string:String):String
     {
-        var pos : Int;
-        var length : Int = String.length;
-        
-        for (pos in 0...length){if (String.charCodeAt(pos) > 0x20)                 break;
-        }
-        
-        return String.substring(pos, length);
+        var pos:Int = 0;
+		var length:Int = string.length;
+		
+		for (i in 0...length) {
+			pos = i;
+			if (string.charCodeAt(pos) > 0x20) break;
+		}
+
+		return string.substring(pos, length);
     }
     
     /** Removes all trailing white-space and control characters from the given String.
@@ -67,14 +71,14 @@ class StringUtil
      *  <p>Beware: this method does not make a proper Unicode white-space check,
      *  but simply trims all character codes of '0x20' or below.</p>
      */
-    public static function trimEnd(string : String) : String
+    public static function trimEnd(string:String):String
     {
-        var pos : Int = String.length - 1;
-        while (pos >= 0){if (String.charCodeAt(pos) > 0x20)                 break;
+        var pos:Int = string.length - 1;
+        while (pos >= 0){if (string.charCodeAt(pos) > 0x20)                 break;
             --pos;
         }
         
-        return String.substring(0, pos + 1);
+        return string.substring(0, pos + 1);
     }
     
     /** Removes all leading and trailing white-space and control characters from the given
@@ -83,21 +87,21 @@ class StringUtil
      *  <p>Beware: this method does not make a proper Unicode white-space check,
      *  but simply trims all character codes of '0x20' or below.</p>
      */
-    public static function trim(string : String) : String
+    public static function trim(string:String):String
     {
-        var startPos : Int;
-        var endPos : Int;
-        var length : Int = String.length;
+        var startPos:Int;
+        var endPos:Int;
+        var length:Int = string.length;
         
-        for (startPos in 0...length){if (String.charCodeAt(startPos) > 0x20)                 break;
+        for (startPos in 0...length){if (string.charCodeAt(startPos) > 0x20)                 break;
         }
         
-        endPos = String.length - 1;
-        while (endPos >= startPos){if (String.charCodeAt(endPos) > 0x20)                 break;
+        endPos = string.length - 1;
+        while (endPos >= startPos){if (string.charCodeAt(endPos) > 0x20)                 break;
             --endPos;
         }
         
-        return String.substring(startPos, endPos + 1);
+        return string.substring(startPos, endPos + 1);
     }
 }
 

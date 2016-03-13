@@ -34,12 +34,12 @@ import utils.ProgressBar;
 
 class DemoMobile extends Sprite
 {
-    private inline var StageWidth : Int = 320;
-    private inline var StageHeight : Int = 480;
+    private var StageWidth:Int = 320;
+    private var StageHeight:Int = 480;
     
-    private var _starling : Starling;
-    private var _background : Loader;
-    private var _progressBar : ProgressBar;
+    private var _starling:Starling;
+    private var _background:Loader;
+    private var _progressBar:ProgressBar;
     
     public function new()
     {
@@ -48,11 +48,11 @@ class DemoMobile extends Sprite
         // then run on a device with a different resolution; for that case, we zoom the
         // viewPort to the optimal size for any display and load the optimal textures.
         
-        var iOS : Bool = SystemUtil.platform == "IOS";
-        var stageSize : Rectangle = new Rectangle(0, 0, StageWidth, StageHeight);
-        var screenSize : Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
-        var viewPort : Rectangle = RectangleUtil.fit(stageSize, screenSize, ScaleMode.SHOW_ALL, iOS);
-        var scaleFactor : Int = viewPort.width < (480) ? 1 : 2;  // midway between 320 and 640  
+        var iOS:Bool = SystemUtil.platform == "IOS";
+        var stageSize:Rectangle = new Rectangle(0, 0, StageWidth, StageHeight);
+        var screenSize:Rectangle = new Rectangle(0, 0, stage.fullScreenWidth, stage.fullScreenHeight);
+        var viewPort:Rectangle = RectangleUtil.fit(stageSize, screenSize, ScaleMode.SHOW_ALL, iOS);
+        var scaleFactor:Int = viewPort.width < (480) ? 1:2;  // midway between 320 and 640  
         
         Starling.multitouchEnabled = true;  // useful on mobile devices  
         
@@ -61,7 +61,7 @@ class DemoMobile extends Sprite
         _starling.stage.stageHeight = StageHeight;  // <- same size on all devices!  
         _starling.enableErrorChecking = Capabilities.isDebugger;
         _starling.simulateMultitouch = false;
-        _starling.addEventListener(starling.events.Event.ROOT_CREATED, function() : Void
+        _starling.addEventListener(starling.events.Event.ROOT_CREATED, function():Void
                 {
                     loadAssets(scaleFactor, startGame);
                 });
@@ -75,21 +75,21 @@ class DemoMobile extends Sprite
         if (!SystemUtil.isDesktop) 
         {
             NativeApplication.nativeApplication.addEventListener(
-                    flash.events.Event.ACTIVATE, function(e : Dynamic) : Void{_starling.start();
+                    flash.events.Event.ACTIVATE, function(e:Dynamic):Void{_starling.start();
                     });
             NativeApplication.nativeApplication.addEventListener(
-                    flash.events.Event.DEACTIVATE, function(e : Dynamic) : Void{_starling.stop(true);
+                    flash.events.Event.DEACTIVATE, function(e:Dynamic):Void{_starling.stop(true);
                     });
         }
     }
     
-    private function loadAssets(scaleFactor : Int, onComplete : Function) : Void
+    private function loadAssets(scaleFactor:Int, onComplete:Function):Void
     {
         // Our assets are loaded and managed by the 'AssetManager'. To use that class,
         // we first have to enqueue pointers to all assets we want it to load.
         
-        var appDir : File = File.applicationDirectory;
-        var assets : AssetManager = new AssetManager(scaleFactor);
+        var appDir:File = File.applicationDirectory;
+        var assets:AssetManager = new AssetManager(scaleFactor);
         
         assets.verbose = Capabilities.isDebugger;
         assets.enqueue(
@@ -102,7 +102,7 @@ class DemoMobile extends Sprite
         // has not loaded them yet. This happens in the "loadQueue" method; and since this
         // will take a while, we'll update the progress bar accordingly.
         
-        assets.loadQueue(function(ratio : Float) : Void
+        assets.loadQueue(function(ratio:Float):Void
                 {
                     _progressBar.ratio = ratio;
                     if (ratio == 1) 
@@ -116,21 +116,21 @@ class DemoMobile extends Sprite
                 });
     }
     
-    private function startGame(assets : AssetManager) : Void
+    private function startGame(assets:AssetManager):Void
     {
-        var game : Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
+        var game:Game = try cast(_starling.root, Game) catch(e:Dynamic) null;
         game.start(assets);
         setTimeout(removeElements, 150);
     }
     
-    private function initElements(scaleFactor : Int) : Void
+    private function initElements(scaleFactor:Int):Void
     {
         // Add background image. By using "loadBytes", we can avoid any flickering.
         
-        var bgPath : String = StringTools.format("textures/{0}x/background.jpg", scaleFactor);
-        var bgFile : File = File.applicationDirectory.resolvePath(bgPath);
-        var bytes : ByteArray = new ByteArray();
-        var stream : FileStream = new FileStream();
+        var bgPath:String = StringTools.format("textures/{0}x/background.jpg", scaleFactor);
+        var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
+        var bytes:ByteArray = new ByteArray();
+        var stream:FileStream = new FileStream();
         stream.open(bgFile, FileMode.READ);
         stream.readBytes(bytes, 0, stream.bytesAvailable);
         stream.close();
@@ -142,7 +142,7 @@ class DemoMobile extends Sprite
         _starling.nativeOverlay.addChild(_background);
         
         _background.contentLoaderInfo.addEventListener(flash.events.Event.COMPLETE,
-                function(e : Dynamic) : Void
+                function(e:Dynamic):Void
                 {
                     (try cast(_background.content, Bitmap) catch(e:Dynamic) null).smoothing = true;
                 });
@@ -155,7 +155,7 @@ class DemoMobile extends Sprite
         _starling.nativeOverlay.addChild(_progressBar);
     }
     
-    private function removeElements() : Void
+    private function removeElements():Void
     {
         if (_background != null) 
         {

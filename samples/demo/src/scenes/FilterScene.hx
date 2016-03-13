@@ -23,11 +23,11 @@ import utils.MenuButton;
 
 class FilterScene extends Scene
 {
-    private var _button : Button;
-    private var _image : Image;
-    private var _infoText : TextField;
-    private var _filterInfos : Array<Dynamic>;
-    private var _displacementMap : Texture;
+    private var _button:Button;
+    private var _image:Image;
+    private var _infoText:TextField;
+    private var _filterInfos:Array<Dynamic>;
+    private var _displacementMap:Texture;
     
     public function new()
     {
@@ -53,22 +53,22 @@ class FilterScene extends Scene
         onButtonTriggered();
     }
     
-    override public function dispose() : Void
+    override public function dispose():Void
     {
         _displacementMap.dispose();
         super.dispose();
     }
     
-    private function onButtonTriggered() : Void
+    private function onButtonTriggered():Void
     {
-        var filterInfo : Array<Dynamic> = try cast(_filterInfos.shift(), Array</*AS3HX WARNING no type*/>) catch(e:Dynamic) null;
+        var filterInfo:Array<Dynamic> = try cast(_filterInfos.shift(), Array</*AS3HX WARNING no type*/>) catch(e:Dynamic) null;
         _filterInfos.push(filterInfo);
         
         _infoText.text = filterInfo[0];
         _image.filter = filterInfo[1];
     }
     
-    private function initFilters() : Void
+    private function initFilters():Void
     {
         _filterInfos = [
                 ["Identity", new FragmentFilter()], 
@@ -78,44 +78,44 @@ class FilterScene extends Scene
         
         _displacementMap = createDisplacementMap(_image.width, _image.height);
         
-        var displacementFilter : DisplacementMapFilter = new DisplacementMapFilter(
+        var displacementFilter:DisplacementMapFilter = new DisplacementMapFilter(
         _displacementMap, null, BitmapDataChannel.RED, BitmapDataChannel.GREEN, 25, 25);
         _filterInfos.push(["Displacement Map", displacementFilter]);
         
-        var invertFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var invertFilter:ColorMatrixFilter = new ColorMatrixFilter();
         invertFilter.invert();
         _filterInfos.push(["Invert", invertFilter]);
         
-        var grayscaleFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var grayscaleFilter:ColorMatrixFilter = new ColorMatrixFilter();
         grayscaleFilter.adjustSaturation(-1);
         _filterInfos.push(["Grayscale", grayscaleFilter]);
         
-        var saturationFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var saturationFilter:ColorMatrixFilter = new ColorMatrixFilter();
         saturationFilter.adjustSaturation(1);
         _filterInfos.push(["Saturation", saturationFilter]);
         
-        var contrastFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var contrastFilter:ColorMatrixFilter = new ColorMatrixFilter();
         contrastFilter.adjustContrast(0.75);
         _filterInfos.push(["Contrast", contrastFilter]);
         
-        var brightnessFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var brightnessFilter:ColorMatrixFilter = new ColorMatrixFilter();
         brightnessFilter.adjustBrightness(-0.25);
         _filterInfos.push(["Brightness", brightnessFilter]);
         
-        var hueFilter : ColorMatrixFilter = new ColorMatrixFilter();
+        var hueFilter:ColorMatrixFilter = new ColorMatrixFilter();
         hueFilter.adjustHue(1);
         _filterInfos.push(["Hue", hueFilter]);
         
-        var chain : FilterChain = new FilterChain(hueFilter, new DropShadowFilter());
+        var chain:FilterChain = new FilterChain(hueFilter, new DropShadowFilter());
         _filterInfos.push(["Hue + Shadow", chain]);
     }
     
-    private function createDisplacementMap(width : Float, height : Float) : Texture
+    private function createDisplacementMap(width:Float, height:Float):Texture
     {
-        var scale : Float = Starling.contentScaleFactor;
-        var map : BitmapData = new BitmapData(width * scale, height * scale, false);
+        var scale:Float = Starling.ContentScaleFactor;
+        var map:BitmapData = new BitmapData(width * scale, height * scale, false);
         map.perlinNoise(20 * scale, 20 * scale, 3, 5, false, true);
-        var texture : Texture = Texture.fromBitmapData(map, false, false, scale);
+        var texture:Texture = Texture.fromBitmapData(map, false, false, scale);
         return texture;
     }
 }

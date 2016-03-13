@@ -13,7 +13,7 @@ package starling.rendering;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3d.Context3D;
+import flash.display3D.Context3D;
 
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;
@@ -32,25 +32,25 @@ import starling.utils.RenderUtil;
  */
 class FilterEffect extends Effect
 {
-    public var texture(get, set) : Texture;
-    public var textureSmoothing(get, set) : String;
-    public var textureRepeat(get, set) : Bool;
+    public var texture(get, set):Texture;
+    public var textureSmoothing(get, set):String;
+    public var textureRepeat(get, set):Bool;
 
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2"</code> */
-    public static var VERTEX_FORMAT : VertexDataFormat = 
+    public static var VERTEX_FORMAT:VertexDataFormat = 
         VertexDataFormat.fromString("position:float2, texCoords:float2");
     
     /** The AGAL code for the standard vertex shader that most filters will use.
      *  It simply transforms the vertex coordinates to clip-space and passes the texture
      *  coordinates to the fragment program (as 'v0'). */
-    public static var STD_VERTEX_SHADER : String = 
+    public static var STD_VERTEX_SHADER:String = 
         "m44 op, va0, vc0 \n" +  // 4x4 matrix transform to output clip-space  
         "mov v0, va1";  // pass texture coordinates to fragment program  
     
-    private var _texture : Texture;
-    private var _textureSmoothing : String;
-    private var _textureRepeat : Bool;
+    private var _texture:Texture;
+    private var _textureSmoothing:String;
+    private var _textureRepeat:Bool;
     
     /** Creates a new FilterEffect instance. */
     public function new()
@@ -65,18 +65,18 @@ class FilterEffect extends Effect
      *
      *  <p>Reserve 4 bits for the variant name of the base class.</p>
      */
-    override private function get_programVariantName() : Int
+    override private function get_programVariantName():Int
     {
         return RenderUtil.getTextureVariantBits(_texture);
     }
     
     /** @private */
-    override private function createProgram() : Program
+    override private function createProgram():Program
     {
         if (_texture != null) 
         {
-            var vertexShader : String = STD_VERTEX_SHADER;
-            var fragmentShader : String = 
+            var vertexShader:String = STD_VERTEX_SHADER;
+            var fragmentShader:String = 
             RenderUtil.createAGALTexOperation("oc", "v0", 0, _texture);
             
             return Program.fromSource(vertexShader, fragmentShader);
@@ -98,7 +98,7 @@ class FilterEffect extends Effect
      *    <li><code>fs0</code> — texture</li>
      *  </ul>
      */
-    override private function beforeDraw(context : Context3D) : Void
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
         
@@ -112,7 +112,7 @@ class FilterEffect extends Effect
     
     /** This method is called by <code>render</code>, directly after
      *  <code>context.drawTriangles</code>. Resets texture and vertex buffer attributes. */
-    override private function afterDraw(context : Context3D) : Void
+    override private function afterDraw(context:Context3D):Void
     {
         if (_texture != null) 
         {
@@ -125,20 +125,28 @@ class FilterEffect extends Effect
     
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2, texCoords:float2"</code> */
-    override private function get_vertexFormat() : VertexDataFormat{return VERTEX_FORMAT;
+    override private function get_vertexFormat():VertexDataFormat
+	{
+		return VERTEX_FORMAT;
     }
     
     /** The texture to be mapped onto the vertices. */
-    private function get_texture() : Texture{return _texture;
+    private function get_texture():Texture
+	{
+		return _texture;
     }
-    private function set_texture(value : Texture) : Texture{_texture = value;
+	
+    private function set_texture(value:Texture):Texture{_texture = value;
         return value;
     }
     
     /** The smoothing filter that is used for the texture. @default bilinear */
-    private function get_textureSmoothing() : String{return _textureSmoothing;
+    private function get_textureSmoothing():String
+	{
+		return _textureSmoothing;
     }
-    private function set_textureSmoothing(value : String) : String{_textureSmoothing = value;
+	
+    private function set_textureSmoothing(value:String):String{_textureSmoothing = value;
         return value;
     }
     
@@ -146,9 +154,12 @@ class FilterEffect extends Effect
      *  If enabled, the texture will produce a repeating pattern; otherwise, the outermost
      *  pixels will repeat. Unfortunately, this only works for power-of-two textures.
      *  @default false */
-    private function get_textureRepeat() : Bool{return _textureRepeat;
+    private function get_textureRepeat():Bool
+	{
+		return _textureRepeat;
     }
-    private function set_textureRepeat(value : Bool) : Bool{_textureRepeat = value;
+	
+    private function set_textureRepeat(value:Bool):Bool{_textureRepeat = value;
         return value;
     }
 }

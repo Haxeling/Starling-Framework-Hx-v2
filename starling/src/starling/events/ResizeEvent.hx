@@ -18,7 +18,7 @@ import flash.geom.Point;
  *  
  *  <p>The event contains properties containing the updated width and height of the Flash 
  *  player. If you want to scale the contents of your stage to fill the screen, update the 
- *  <code>Starling.current.viewPort</code> rectangle accordingly. If you want to make use of
+ *  <code>Starling.Current.viewPort</code> rectangle accordingly. If you want to make use of
  *  the additional screen estate, update the values of <code>stage.stageWidth</code> and 
  *  <code>stage.stageHeight</code> as well.</p>
  *  
@@ -27,23 +27,27 @@ import flash.geom.Point;
  */
 class ResizeEvent extends Event
 {
-    public var width(get, never) : Int;
-    public var height(get, never) : Int;
+    public var width(get, never):Int;
+    public var height(get, never):Int;
 
     /** Event type for a resized Flash player. */
-    public static inline var RESIZE : String = "resize";
+    public static var RESIZE:String = "resize";
     
     /** Creates a new ResizeEvent. */
-    public function new(type : String, width : Int, height : Int, bubbles : Bool = false)
+    public function new(type:String, width:Int, height:Int, bubbles:Bool = false)
     {
         super(type, bubbles, new Point(width, height));
     }
     
     /** The updated width of the player. */
-    private function get_width() : Int{return (try cast(data, Point) catch(e:Dynamic) null).x;
+    private function get_width():Int
+	{
+		return untyped cast(data, Point).x;
     }
     
     /** The updated height of the player. */
-    private function get_height() : Int{return (try cast(data, Point) catch(e:Dynamic) null).y;
+    private function get_height():Int
+	{
+		return untyped cast(data, Point).y;
     }
 }

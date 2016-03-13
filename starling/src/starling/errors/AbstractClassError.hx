@@ -17,7 +17,7 @@ import flash.errors.Error;
 class AbstractClassError extends Error
 {
     /** Creates a new AbstractClassError object. */
-    public function new(message : Dynamic = "Cannot instantiate abstract class", id : Dynamic = 0)
+    public function new(message:Dynamic = "Cannot instantiate abstract class", id:Dynamic = 0)
     {
         super(message, id);
     }

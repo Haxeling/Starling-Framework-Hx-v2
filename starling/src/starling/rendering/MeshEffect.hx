@@ -13,8 +13,8 @@ package starling.rendering;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3d.Context3D;
-import flash.display3d.Context3DProgramType;
+import flash.display3D.Context3D;
+import flash.display3D.Context3DProgramType;
 
 import starling.utils.RenderUtil;
 
@@ -31,17 +31,17 @@ import starling.utils.RenderUtil;
  */
 class MeshEffect extends FilterEffect
 {
-    public var alpha(get, set) : Float;
+    public var alpha(get, set):Float;
 
     /** The vertex format expected by <code>uploadVertexData</code>:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
-    public static var VERTEX_FORMAT : VertexDataFormat = 
+    public static var VERTEX_FORMAT:VertexDataFormat = 
         VertexDataFormat.fromString("position:float2, texCoords:float2, color:bytes4");
     
-    private var _alpha : Float;
+    private var _alpha:Float;
     
     // helper objects
-    private static var sRenderAlpha : Array<Float> = new Array<Float>();
+    private static var sRenderAlpha:Array<Float> = new Array<Float>();
     
     /** Creates a new MeshEffect instance. */
     public function new()
@@ -51,10 +51,10 @@ class MeshEffect extends FilterEffect
     }
     
     /** @private */
-    override private function createProgram() : Program
+    override private function createProgram():Program
     {
-        var vertexShader : String;
-        var fragmentShader : String;
+        var vertexShader:String;
+        var fragmentShader:String;
         
         if (texture != null) 
         {
@@ -93,7 +93,7 @@ class MeshEffect extends FilterEffect
      *    <li><code>fs0</code> — texture</li>
      *  </ul>
      */
-    override private function beforeDraw(context : Context3D) : Void
+    override private function beforeDraw(context:Context3D):Void
     {
         super.beforeDraw(context);
         
@@ -104,7 +104,7 @@ class MeshEffect extends FilterEffect
     
     /** This method is called by <code>render</code>, directly after
      *  <code>context.drawTriangles</code>. Resets texture and vertex buffer attributes. */
-    override private function afterDraw(context : Context3D) : Void
+    override private function afterDraw(context:Context3D):Void
     {
         context.setVertexBufferAt(2, null);
         
@@ -113,14 +113,19 @@ class MeshEffect extends FilterEffect
     
     /** The data format that this effect requires from the VertexData that it renders:
      *  <code>"position:float2, texCoords:float2, color:bytes4"</code> */
-    override private function get_vertexFormat() : VertexDataFormat{return VERTEX_FORMAT;
+    override private function get_vertexFormat():VertexDataFormat
+	{
+		return VERTEX_FORMAT;
     }
     
     /** The alpha value of the object rendered by the effect. Must be taken into account
      *  by all subclasses. */
-    private function get_alpha() : Float{return _alpha;
+    private function get_alpha():Float
+	{
+		return _alpha;
     }
-    private function set_alpha(value : Float) : Float{_alpha = value;
+	
+    private function set_alpha(value:Float):Float{_alpha = value;
         return value;
     }
 }

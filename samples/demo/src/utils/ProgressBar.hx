@@ -8,21 +8,21 @@ import flash.geom.Matrix;
 
 class ProgressBar extends Sprite
 {
-    public var ratio(get, set) : Float;
+    public var ratio(get, set):Float;
 
-    private var _background : Shape;
-    private var _bar : Shape;
+    private var _background:Shape;
+    private var _bar:Shape;
     
-    public function new(width : Int, height : Int)
+    public function new(width:Int, height:Int)
     {
         super();
         init(width, height);
     }
     
-    private function init(width : Int, height : Int) : Void
+    private function init(width:Int, height:Int):Void
     {
-        var padding : Float = height * 0.2;
-        var cornerRadius : Float = padding * 2;
+        var padding:Float = height * 0.2;
+        var cornerRadius:Float = padding * 2;
         
         // create black rounded box for background
         
@@ -34,9 +34,9 @@ class ProgressBar extends Sprite
         
         // create progress bar shape
         
-        var barWidth : Float = width - 2 * padding;
-        var barHeight : Float = height - 2 * padding;
-        var barMatrix : Matrix = new Matrix();
+        var barWidth:Float = width - 2 * padding;
+        var barHeight:Float = height - 2 * padding;
+        var barMatrix:Matrix = new Matrix();
         barMatrix.createGradientBox(barWidth, barHeight, Math.PI / 2);
         
         _bar = new Shape();
@@ -49,9 +49,12 @@ class ProgressBar extends Sprite
         addChild(_bar);
     }
     
-    private function get_ratio() : Float{return _bar.scaleX;
+    private function get_ratio():Float
+	{
+		return _bar.scaleX;
     }
-    private function set_ratio(value : Float) : Float
+	
+    private function set_ratio(value:Float):Float
     {
         _bar.scaleX = Math.max(0.0, Math.min(1.0, value));
         return value;

@@ -12,7 +12,7 @@ package starling.display;
 
 import flash.errors.ArgumentError;
 
-import flash.display3d.Context3DBlendFactor;
+import flash.display3D.Context3DBlendFactor;
 
 import starling.core.Starling;
 
@@ -36,19 +36,19 @@ import starling.core.Starling;
  */
 class BlendMode
 {
-    public var sourceFactor(get, never) : String;
-    public var destinationFactor(get, never) : String;
-    public var name(get, never) : String;
+    public var sourceFactor(get, never):Context3DBlendFactor;
+    public var destinationFactor(get, never):Context3DBlendFactor;
+    public var name(get, never):String;
 
-    private var _name : String;
-    private var _sourceFactor : String;
-    private var _destinationFactor : String;
+    private var _name:String;
+    private var _sourceFactor:Context3DBlendFactor;
+    private var _destinationFactor:Context3DBlendFactor;
     
-    private static var sBlendModes : Dynamic;
+    private static var sBlendModes:Dynamic;
     
     /** Creates a new BlendMode instance. Don't call this method directly; instead,
      *  register a new blend mode using <code>BlendMode.register</code>. */
-    public function new(name : String, sourceFactor : String, destinationFactor : String)
+    public function new(name:String, sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor)
     {
         _name = name;
         _sourceFactor = sourceFactor;
@@ -56,39 +56,39 @@ class BlendMode
     }
     
     /** Inherits the blend mode from this display object's parent. */
-    public static inline var AUTO : String = "auto";
+    public static var AUTO:String = "auto";
     
     /** Deactivates blending, i.e. disabling any transparency. */
-    public static inline var NONE : String = "none";
+    public static var NONE:String = "none";
     
     /** The display object appears in front of the background. */
-    public static inline var NORMAL : String = "normal";
+    public static var NORMAL:String = "normal";
     
     /** Adds the values of the colors of the display object to the colors of its background. */
-    public static inline var ADD : String = "add";
+    public static var ADD:String = "add";
     
     /** Multiplies the values of the display object colors with the the background color. */
-    public static inline var MULTIPLY : String = "multiply";
+    public static var MULTIPLY:String = "multiply";
     
     /** Multiplies the complement (inverse) of the display object color with the complement of 
       * the background color, resulting in a bleaching effect. */
-    public static inline var SCREEN : String = "screen";
+    public static var SCREEN:String = "screen";
     
     /** Erases the background when drawn on a RenderTexture. */
-    public static inline var ERASE : String = "erase";
+    public static var ERASE:String = "erase";
     
     /** When used on a RenderTexture, the drawn object will act as a mask for the current
      *  content, i.e. the source alpha overwrites the destination alpha. */
-    public static inline var MASK : String = "mask";
+    public static var MASK:String = "mask";
     
     /** Draws under/below existing objects; useful especially on RenderTextures. */
-    public static inline var BELOW : String = "below";
+    public static var BELOW:String = "below";
     
     // static access methods
     
     /** Returns the blend mode with the given name.
      *  Throws an ArgumentError if the mode does not exist. */
-    public static function get(modeName : String) : BlendMode
+    public static function get(modeName:String):BlendMode
     {
         if (sBlendModes == null)             registerDefaults();
         if (Lambda.has(sBlendModes, modeName))             return Reflect.field(sBlendModes, modeName)
@@ -96,15 +96,15 @@ class BlendMode
     }
     
     /** Registers a blending mode under a certain name. */
-    public static function register(name : String, srcFactor : String, dstFactor : String) : BlendMode
+    public static function register(name:String, srcFactor:Context3DBlendFactor, dstFactor:Context3DBlendFactor):BlendMode
     {
         if (sBlendModes == null)             registerDefaults();
-        var blendMode : BlendMode = new BlendMode(name, srcFactor, dstFactor);
+        var blendMode:BlendMode = new BlendMode(name, srcFactor, dstFactor);
         Reflect.setField(sBlendModes, name, blendMode);
         return blendMode;
     }
     
-    private static function registerDefaults() : Void
+    private static function registerDefaults():Void
     {
         if (sBlendModes != null)             return;
         
@@ -122,24 +122,28 @@ class BlendMode
     // instance methods / properties
     
     /** Sets the appropriate blend factors for source and destination on the current context. */
-    public function activate() : Void
+    public function activate():Void
     {
-        Starling.context.setBlendFactors(_sourceFactor, _destinationFactor);
+        Starling.Context.setBlendFactors(_sourceFactor, _destinationFactor);
     }
     
     /** Returns the name of the blend mode. */
-    public function toString() : String{return _name;
+    public function toString():String {
+		return _name;
     }
     
     /** The source blend factor of this blend mode. */
-    private function get_sourceFactor() : String{return _sourceFactor;
+    private function get_sourceFactor():Context3DBlendFactor {
+		return _sourceFactor;
     }
     
     /** The destination blend factor of this blend mode. */
-    private function get_destinationFactor() : String{return _destinationFactor;
+    private function get_destinationFactor():Context3DBlendFactor {
+		return _destinationFactor;
     }
     
     /** Returns the name of the blend mode. */
-    private function get_name() : String{return _name;
+    private function get_name():String {
+		return _name;
     }
 }

@@ -11,6 +11,7 @@
 package starling.rendering;
 
 import flash.errors.RangeError;
+import haxe.Constraints.Function;
 import starling.rendering.BatchToken;
 import starling.rendering.RenderState;
 
@@ -30,18 +31,18 @@ import flash.utils.Dictionary;
 
 class BatchProcessor
 {
-    public var numBatches(get, never) : Int;
-    public var onBatchComplete(get, set) : Function;
+    public var numBatches(get, never):Int;
+    public var onBatchComplete(get, set):Function;
 
-    private var _batches : Array<MeshBatch>;
-    private var _batchPool : BatchPool;
-    private var _currentBatch : MeshBatch;
-    private var _currentStyleType : Class<Dynamic>;
-    private var _onBatchComplete : Function;
-    private var _cacheToken : BatchToken;
+    private var _batches:Array<MeshBatch>;
+    private var _batchPool:BatchPool;
+    private var _currentBatch:MeshBatch;
+    private var _currentStyleType:Class<Dynamic>;
+    private var _onBatchComplete:Function;
+    private var _cacheToken:BatchToken;
     
     // helper objects
-    private static var sMeshSubset : MeshSubset = new MeshSubset();
+    private static var sMeshSubset:MeshSubset = new MeshSubset();
     
     /** Creates a new batch processor. */
     @:allow(starling.rendering)
@@ -53,12 +54,12 @@ class BatchProcessor
     }
     
     /** Disposes all batches (including those in the reusable pool). */
-    public function dispose() : Void
+    public function dispose():Void
     {
         for (batch in _batches)
         batch.dispose();
         
-        _batches.length = 0;
+        _batches.splice(0, _batches.length);
         _batchPool.purge();
         _currentBatch = null;
     }
@@ -76,8 +77,8 @@ class BatchProcessor
      *                    without transforming them in any way (no matter the value of the
      *                    state's <code>modelviewMatrix</code>).
      */
-    public function addMesh(mesh : Mesh, state : RenderState, subset : MeshSubset = null,
-            ignoreTransformations : Bool = false) : Void
+    public function addMesh(mesh:Mesh, state:RenderState, subset:MeshSubset = null,
+            ignoreTransformations:Bool = false):Void
     {
         if (subset == null) 
         {
@@ -100,13 +101,13 @@ class BatchProcessor
                 
                 _currentStyleType = mesh.style.type;
                 _currentBatch = _batchPool.get(_currentStyleType);
-                _currentBatch.blendMode = (state != null) ? state.blendMode : mesh.blendMode;
+                _currentBatch.blendMode = (state != null) ? state.blendMode:mesh.blendMode;
                 _cacheToken.setTo(_batches.length);
                 _batches[_batches.length] = _currentBatch;
             }
             
-            var matrix : Matrix = (state != null) ? state.modelviewMatrix : null;
-            var alpha : Float = (state != null) ? state.alpha : 1.0;
+            var matrix:Matrix = (state != null) ? state.modelviewMatrix:null;
+            var alpha:Float = (state != null) ? state.alpha:1.0;
             
             _currentBatch.addMesh(mesh, matrix, alpha, subset, ignoreTransformations);
             _cacheToken.vertexID += subset.numVertices;
@@ -116,9 +117,9 @@ class BatchProcessor
     
     /** Finishes the current batch, i.e. call the 'onComplete' callback on the batch and
      *  prepares initialization of a new one. */
-    public function finishBatch() : Void
+    public function finishBatch():Void
     {
-        var meshBatch : MeshBatch = _currentBatch;
+        var meshBatch:MeshBatch = _currentBatch;
         
         if (meshBatch != null) 
         {
@@ -131,46 +132,46 @@ class BatchProcessor
     }
     
     /** Clears all batches and adds them to a pool so they can be reused later. */
-    public function clear() : Void
+    public function clear():Void
     {
-        var numBatches : Int = _batches.length;
+        var numBatches:Int = _batches.length;
         
         for (i in 0...numBatches){_batchPool.put(_batches[i]);
         }
         
-        _batches.length = 0;
+        _batches.splice(0, _batches.length);
         _currentBatch = null;
         _currentStyleType = null;
         _cacheToken.reset();
     }
     
     /** Returns the batch at a certain index. */
-    public function getBatchAt(batchID : Int) : MeshBatch
+    public function getBatchAt(batchID:Int):MeshBatch
     {
         return _batches[batchID];
     }
     
     /** Disposes all batches that are currently unused. */
-    public function trim() : Void
+    public function trim():Void
     {
         _batchPool.purge();
     }
     
-    public function rewindTo(token : BatchToken) : Void
+    public function rewindTo(token:BatchToken):Void
     {
         if (token.batchID > _cacheToken.batchID) 
             throw new RangeError("Token outside available range");
         
-        var i : Int = _cacheToken.batchID;
+        var i:Int = _cacheToken.batchID;
         while (i > token.batchID){_batchPool.put(_batches.pop());
             --i;
         }
         
         if (_batches.length > token.batchID) 
         {
-            var batch : MeshBatch = _batches[token.batchID];
-            batch.numIndices = MathUtil.min(batch.numIndices, token.indexID);
-            batch.numVertices = MathUtil.min(batch.numVertices, token.vertexID);
+            var batch:MeshBatch = _batches[token.batchID];
+            batch.numIndices = untyped MathUtil.min(batch.numIndices, token.indexID);
+            batch.numVertices = untyped MathUtil.min(batch.numVertices, token.vertexID);
         }
         
         _currentBatch = null;
@@ -179,7 +180,7 @@ class BatchProcessor
     
     /** Sets all properties of the given token so that it describes the current position
      *  within this instance. */
-    public function fillToken(token : BatchToken) : BatchToken
+    public function fillToken(token:BatchToken):BatchToken
     {
         token.batchID = _cacheToken.batchID;
         token.vertexID = _cacheToken.vertexID;
@@ -188,15 +189,19 @@ class BatchProcessor
     }
     
     /** The number of batches currently stored in the BatchProcessor. */
-    private function get_numBatches() : Int{return _batches.length;
+    private function get_numBatches():Int
+	{
+		return _batches.length;
     }
     
     /** This callback is executed whenever a batch is finished and replaced by a new one.
      *  The finished MeshBatch is passed to the callback. Typically, this callback is used
      *  to actually render it. */
-    private function get_onBatchComplete() : Function{return _onBatchComplete;
+    private function get_onBatchComplete():Function
+	{
+		return _onBatchComplete;
     }
-    private function set_onBatchComplete(value : Function) : Function{_onBatchComplete = value;
+    private function set_onBatchComplete(value:Function):Function{_onBatchComplete = value;
         return value;
     }
 }
@@ -206,50 +211,54 @@ class BatchProcessor
 
 class BatchPool
 {
-    private var _batchLists : Dictionary;
+    private var _batchLists:Map<String, Array<MeshBatch>>;
     
     public function new()
     {
-        _batchLists = new Dictionary();
+        _batchLists = new Map<String, Array<MeshBatch>>();
     }
     
-    public function purge() : Void
+    public function purge():Void
     {
-        for (batchList/* AS3HX WARNING could not determine type for var: batchList exp: EIdent(_batchLists) type: Dictionary */ in _batchLists)
+        for (batchList in _batchLists)
         {
-            for (i in 0...batchList.length){batchList[i].dispose();
+            for (i in 0...batchList.length)
+			{
+				batchList[i].dispose();
             }
             
-            batchList.length = 0;
+            batchList.splice(0, batchList.length);
         }
     }
     
-    public function get(styleType : Class<Dynamic>) : MeshBatch
+    public function get(styleType:Class<Dynamic>):MeshBatch
     {
-        var batchList : Array<MeshBatch> = Reflect.field(_batchLists, Std.string(styleType));
+		
+		
+        var batchList:Array<MeshBatch> = _batchLists.get(Std.string(styleType));
         if (batchList == null) 
         {
             batchList = [];
-            Reflect.setField(_batchLists, Std.string(styleType), batchList);
+            _batchLists.set(Std.string(styleType), batchList);
         }
         
-        if (batchList.length > 0)             return batchList.pop()
+        if (batchList.length > 0) return batchList.pop()
         else 
         {
-            var batch : MeshBatch = new MeshBatch();
+            var batch:MeshBatch = new MeshBatch();
             batch.batchable = false;
             return batch;
         }
     }
     
-    public function put(meshBatch : MeshBatch) : Void
+    public function put(meshBatch:MeshBatch):Void
     {
-        var styleType : Class<Dynamic> = meshBatch.style.type;
-        var batchList : Array<MeshBatch> = Reflect.field(_batchLists, Std.string(styleType));
+        var styleType:Class<Dynamic> = meshBatch.style.type;
+        var batchList:Array<MeshBatch> = _batchLists.get(Std.string(styleType));
         if (batchList == null) 
         {
             batchList = [];
-            Reflect.setField(_batchLists, Std.string(styleType), batchList);
+            _batchLists.set(Std.string(styleType), batchList);
         }
         
         meshBatch.clear();
