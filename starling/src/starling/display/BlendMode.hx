@@ -44,7 +44,7 @@ class BlendMode
 	private var _sourceFactor:Context3DBlendFactor;
 	private var _destinationFactor:Context3DBlendFactor;
 	
-	private static var sBlendModes:Dynamic;
+	private static var sBlendModes:Map<String, BlendMode>;
 	
 	/** Creates a new BlendMode instance. Don't call this method directly; instead,
 	 *  register a new blend mode using <code>BlendMode.register</code>. */
@@ -90,25 +90,25 @@ class BlendMode
 	 *  Throws an ArgumentError if the mode does not exist. */
 	public static function get(modeName:String):BlendMode
 	{
-		if (sBlendModes == null)			 registerDefaults();
-		if (Lambda.has(sBlendModes, modeName))			 return Reflect.field(sBlendModes, modeName)
+		if (sBlendModes == null) registerDefaults();
+		if (sBlendModes.exists(modeName)) return sBlendModes.get(modeName)
 		else throw new ArgumentError("Blend mode not found: " + modeName);
 	}
 	
 	/** Registers a blending mode under a certain name. */
 	public static function register(name:String, srcFactor:Context3DBlendFactor, dstFactor:Context3DBlendFactor):BlendMode
 	{
-		if (sBlendModes == null)			 registerDefaults();
+		if (sBlendModes == null) registerDefaults();
 		var blendMode:BlendMode = new BlendMode(name, srcFactor, dstFactor);
-		Reflect.setField(sBlendModes, name, blendMode);
+		sBlendModes.set(name, blendMode);
 		return blendMode;
 	}
 	
 	private static function registerDefaults():Void
 	{
-		if (sBlendModes != null)			 return;
+		if (sBlendModes != null) return;
 		
-		sBlendModes = { };
+		sBlendModes = new Map<String, BlendMode>();
 		register("none", Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
 		register("normal", Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 		register("add", Context3DBlendFactor.ONE, Context3DBlendFactor.ONE);

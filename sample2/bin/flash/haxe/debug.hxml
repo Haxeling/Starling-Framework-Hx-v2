@@ -22,6 +22,6 @@
 -swf-lib bin/flash/obj/assets.swf
 -swf-version 17
 -swf bin/flash/bin/OpenFLStarlingSamples.swf
--swf-header 800:480:60:000000
+-swf-header 640:960:60:000000
 -cp bin/flash/haxe
 -debug

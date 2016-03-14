@@ -126,9 +126,13 @@ class Juggler implements IAnimatable
 			var dispatcher:EventDispatcher = cast(object, EventDispatcher);
 			if (dispatcher != null)	dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 			
-			var index:Int = Lambda.indexOf(_objects, object);
-			_objects[index] = null;
-			
+			for (i in 0..._objects.length) 
+			{
+				if (_objects[i] == object) {
+					_objects[i] = null;
+					_objects.splice(i, 0);
+				}
+			}
 			objectID = _objectIDs.get(object);
 			_objectIDs.remove(object);
 		}

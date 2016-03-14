@@ -30,64 +30,64 @@ class ApplicationMain {
 		var types = [];
 		
 		
-		urls.push ("textures/1x/atlas.png");
-		types.push (lime.Assets.AssetType.IMAGE);
-		
-		
-		urls.push ("textures/1x/atlas.xml");
-		types.push (lime.Assets.AssetType.TEXT);
-		
-		
-		urls.push ("textures/1x/background.jpg");
-		types.push (lime.Assets.AssetType.IMAGE);
-		
-		
-		urls.push ("textures/1x/compressed_texture.atf");
-		types.push (lime.Assets.AssetType.BINARY);
-		
-		
-		urls.push ("textures/2x/atlas.png");
-		types.push (lime.Assets.AssetType.IMAGE);
-		
-		
-		urls.push ("textures/2x/atlas.xml");
-		types.push (lime.Assets.AssetType.TEXT);
-		
-		
-		urls.push ("textures/2x/background.jpg");
-		types.push (lime.Assets.AssetType.IMAGE);
-		
-		
-		urls.push ("textures/2x/compressed_texture.atf");
-		types.push (lime.Assets.AssetType.BINARY);
-		
-		
-		urls.push ("audio/wing_flap.mp3");
+		urls.push ("assets/audio/wing_flap.mp3");
 		types.push (lime.Assets.AssetType.MUSIC);
 		
 		
-		urls.push ("fonts/1x/desyrel.fnt");
+		urls.push ("assets/fonts/1x/desyrel.fnt");
 		types.push (lime.Assets.AssetType.TEXT);
 		
 		
-		urls.push ("fonts/1x/desyrel.png");
+		urls.push ("assets/fonts/1x/desyrel.png");
 		types.push (lime.Assets.AssetType.IMAGE);
 		
 		
-		urls.push ("fonts/2x/desyrel.fnt");
+		urls.push ("assets/fonts/2x/desyrel.fnt");
 		types.push (lime.Assets.AssetType.TEXT);
 		
 		
-		urls.push ("fonts/2x/desyrel.png");
+		urls.push ("assets/fonts/2x/desyrel.png");
 		types.push (lime.Assets.AssetType.IMAGE);
 		
 		
-		urls.push ("fonts/Ubuntu-License.txt");
+		urls.push ("assets/fonts/Ubuntu-License.txt");
 		types.push (lime.Assets.AssetType.TEXT);
 		
 		
 		urls.push ("Ubuntu");
 		types.push (lime.Assets.AssetType.FONT);
+		
+		
+		urls.push ("assets/textures/1x/atlas.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("assets/textures/1x/atlas.xml");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("assets/textures/1x/background.jpg");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("assets/textures/1x/compressed_texture.atf");
+		types.push (lime.Assets.AssetType.BINARY);
+		
+		
+		urls.push ("assets/textures/2x/atlas.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("assets/textures/2x/atlas.xml");
+		types.push (lime.Assets.AssetType.TEXT);
+		
+		
+		urls.push ("assets/textures/2x/background.jpg");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("assets/textures/2x/compressed_texture.atf");
+		types.push (lime.Assets.AssetType.BINARY);
 		
 		
 		
@@ -151,7 +151,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "524",
+			build: "625",
 			company: "P.J.Shand",
 			file: "OpenFLStarlingSamples",
 			fps: 60,
@@ -169,13 +169,13 @@ class ApplicationMain {
 					display: 0,
 					fullscreen: false,
 					hardware: true,
-					height: 480,
+					height: 960,
 					parameters: "{}",
 					resizable: true,
 					stencilBuffer: true,
 					title: "OpenFLStarlingSamples",
 					vsync: false,
-					width: 800,
+					width: 640,
 					x: null,
 					y: null
 				},
@@ -193,7 +193,7 @@ class ApplicationMain {
 		
 		#if (js && html5)
 		#if (munit || utest)
-		openfl.Lib.embed (null, 800, 480, "000000");
+		openfl.Lib.embed (null, 640, 960, "000000");
 		#end
 		#else
 		create ();

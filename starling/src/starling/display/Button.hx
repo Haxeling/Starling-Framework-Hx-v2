@@ -93,7 +93,7 @@ class Button extends DisplayObjectContainer
 			overState:Texture = null, disabledState:Texture = null)
 	{
 		super();
-		if (upState == null)			 throw new ArgumentError("Texture 'upState' cannot be null");
+		if (upState == null) throw new ArgumentError("Texture 'upState' cannot be null");
 		
 		_upState = upState;
 		_downState = downState;

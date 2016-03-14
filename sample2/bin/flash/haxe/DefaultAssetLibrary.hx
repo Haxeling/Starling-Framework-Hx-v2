@@ -57,6 +57,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		
 		
+		openfl.text.Font.registerFont (__ASSET__OPENFL__assets_fonts_ubuntu_r_ttf);
 		
 		
 		
@@ -65,107 +66,106 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		
 		
-		openfl.text.Font.registerFont (__ASSET__OPENFL__fonts_ubuntu_r_ttf);
 		
 		#end
 		
 		#if flash
 		
-		className.set ("textures/1x/atlas.png", __ASSET__textures_1x_atlas_png);
-		type.set ("textures/1x/atlas.png", AssetType.IMAGE);
-		className.set ("textures/1x/atlas.xml", __ASSET__textures_1x_atlas_xml);
-		type.set ("textures/1x/atlas.xml", AssetType.TEXT);
-		className.set ("textures/1x/background.jpg", __ASSET__textures_1x_background_jpg);
-		type.set ("textures/1x/background.jpg", AssetType.IMAGE);
-		className.set ("textures/1x/compressed_texture.atf", __ASSET__textures_1x_compressed_texture_atf);
-		type.set ("textures/1x/compressed_texture.atf", AssetType.BINARY);
-		className.set ("textures/2x/atlas.png", __ASSET__textures_2x_atlas_png);
-		type.set ("textures/2x/atlas.png", AssetType.IMAGE);
-		className.set ("textures/2x/atlas.xml", __ASSET__textures_2x_atlas_xml);
-		type.set ("textures/2x/atlas.xml", AssetType.TEXT);
-		className.set ("textures/2x/background.jpg", __ASSET__textures_2x_background_jpg);
-		type.set ("textures/2x/background.jpg", AssetType.IMAGE);
-		className.set ("textures/2x/compressed_texture.atf", __ASSET__textures_2x_compressed_texture_atf);
-		type.set ("textures/2x/compressed_texture.atf", AssetType.BINARY);
-		className.set ("audio/wing_flap.mp3", __ASSET__audio_wing_flap_mp3);
-		type.set ("audio/wing_flap.mp3", AssetType.MUSIC);
-		className.set ("fonts/1x/desyrel.fnt", __ASSET__fonts_1x_desyrel_fnt);
-		type.set ("fonts/1x/desyrel.fnt", AssetType.TEXT);
-		className.set ("fonts/1x/desyrel.png", __ASSET__fonts_1x_desyrel_png);
-		type.set ("fonts/1x/desyrel.png", AssetType.IMAGE);
-		className.set ("fonts/2x/desyrel.fnt", __ASSET__fonts_2x_desyrel_fnt);
-		type.set ("fonts/2x/desyrel.fnt", AssetType.TEXT);
-		className.set ("fonts/2x/desyrel.png", __ASSET__fonts_2x_desyrel_png);
-		type.set ("fonts/2x/desyrel.png", AssetType.IMAGE);
-		className.set ("fonts/Ubuntu-License.txt", __ASSET__fonts_ubuntu_license_txt);
-		type.set ("fonts/Ubuntu-License.txt", AssetType.TEXT);
-		className.set ("fonts/Ubuntu-R.ttf", __ASSET__fonts_ubuntu_r_ttf);
-		type.set ("fonts/Ubuntu-R.ttf", AssetType.FONT);
+		className.set ("assets/audio/wing_flap.mp3", __ASSET__assets_audio_wing_flap_mp3);
+		type.set ("assets/audio/wing_flap.mp3", AssetType.MUSIC);
+		className.set ("assets/fonts/1x/desyrel.fnt", __ASSET__assets_fonts_1x_desyrel_fnt);
+		type.set ("assets/fonts/1x/desyrel.fnt", AssetType.TEXT);
+		className.set ("assets/fonts/1x/desyrel.png", __ASSET__assets_fonts_1x_desyrel_png);
+		type.set ("assets/fonts/1x/desyrel.png", AssetType.IMAGE);
+		className.set ("assets/fonts/2x/desyrel.fnt", __ASSET__assets_fonts_2x_desyrel_fnt);
+		type.set ("assets/fonts/2x/desyrel.fnt", AssetType.TEXT);
+		className.set ("assets/fonts/2x/desyrel.png", __ASSET__assets_fonts_2x_desyrel_png);
+		type.set ("assets/fonts/2x/desyrel.png", AssetType.IMAGE);
+		className.set ("assets/fonts/Ubuntu-License.txt", __ASSET__assets_fonts_ubuntu_license_txt);
+		type.set ("assets/fonts/Ubuntu-License.txt", AssetType.TEXT);
+		className.set ("assets/fonts/Ubuntu-R.ttf", __ASSET__assets_fonts_ubuntu_r_ttf);
+		type.set ("assets/fonts/Ubuntu-R.ttf", AssetType.FONT);
+		className.set ("assets/textures/1x/atlas.png", __ASSET__assets_textures_1x_atlas_png);
+		type.set ("assets/textures/1x/atlas.png", AssetType.IMAGE);
+		className.set ("assets/textures/1x/atlas.xml", __ASSET__assets_textures_1x_atlas_xml);
+		type.set ("assets/textures/1x/atlas.xml", AssetType.TEXT);
+		className.set ("assets/textures/1x/background.jpg", __ASSET__assets_textures_1x_background_jpg);
+		type.set ("assets/textures/1x/background.jpg", AssetType.IMAGE);
+		className.set ("assets/textures/1x/compressed_texture.atf", __ASSET__assets_textures_1x_compressed_texture_atf);
+		type.set ("assets/textures/1x/compressed_texture.atf", AssetType.BINARY);
+		className.set ("assets/textures/2x/atlas.png", __ASSET__assets_textures_2x_atlas_png);
+		type.set ("assets/textures/2x/atlas.png", AssetType.IMAGE);
+		className.set ("assets/textures/2x/atlas.xml", __ASSET__assets_textures_2x_atlas_xml);
+		type.set ("assets/textures/2x/atlas.xml", AssetType.TEXT);
+		className.set ("assets/textures/2x/background.jpg", __ASSET__assets_textures_2x_background_jpg);
+		type.set ("assets/textures/2x/background.jpg", AssetType.IMAGE);
+		className.set ("assets/textures/2x/compressed_texture.atf", __ASSET__assets_textures_2x_compressed_texture_atf);
+		type.set ("assets/textures/2x/compressed_texture.atf", AssetType.BINARY);
 		
 		
 		#elseif html5
 		
 		var id;
-		id = "textures/1x/atlas.png";
-		path.set (id, id);
-		
-		type.set (id, AssetType.IMAGE);
-		id = "textures/1x/atlas.xml";
-		path.set (id, id);
-		
-		type.set (id, AssetType.TEXT);
-		id = "textures/1x/background.jpg";
-		path.set (id, id);
-		
-		type.set (id, AssetType.IMAGE);
-		id = "textures/1x/compressed_texture.atf";
-		path.set (id, id);
-		
-		type.set (id, AssetType.BINARY);
-		id = "textures/2x/atlas.png";
-		path.set (id, id);
-		
-		type.set (id, AssetType.IMAGE);
-		id = "textures/2x/atlas.xml";
-		path.set (id, id);
-		
-		type.set (id, AssetType.TEXT);
-		id = "textures/2x/background.jpg";
-		path.set (id, id);
-		
-		type.set (id, AssetType.IMAGE);
-		id = "textures/2x/compressed_texture.atf";
-		path.set (id, id);
-		
-		type.set (id, AssetType.BINARY);
-		id = "audio/wing_flap.mp3";
+		id = "assets/audio/wing_flap.mp3";
 		path.set (id, id);
 		
 		type.set (id, AssetType.MUSIC);
-		id = "fonts/1x/desyrel.fnt";
+		id = "assets/fonts/1x/desyrel.fnt";
 		path.set (id, id);
 		
 		type.set (id, AssetType.TEXT);
-		id = "fonts/1x/desyrel.png";
+		id = "assets/fonts/1x/desyrel.png";
 		path.set (id, id);
 		
 		type.set (id, AssetType.IMAGE);
-		id = "fonts/2x/desyrel.fnt";
+		id = "assets/fonts/2x/desyrel.fnt";
 		path.set (id, id);
 		
 		type.set (id, AssetType.TEXT);
-		id = "fonts/2x/desyrel.png";
+		id = "assets/fonts/2x/desyrel.png";
 		path.set (id, id);
 		
 		type.set (id, AssetType.IMAGE);
-		id = "fonts/Ubuntu-License.txt";
+		id = "assets/fonts/Ubuntu-License.txt";
 		path.set (id, id);
 		
 		type.set (id, AssetType.TEXT);
-		id = "fonts/Ubuntu-R.ttf";
-		className.set (id, __ASSET__fonts_ubuntu_r_ttf);
+		id = "assets/fonts/Ubuntu-R.ttf";
+		className.set (id, __ASSET__assets_fonts_ubuntu_r_ttf);
 		
 		type.set (id, AssetType.FONT);
+		id = "assets/textures/1x/atlas.png";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
+		id = "assets/textures/1x/atlas.xml";
+		path.set (id, id);
+		
+		type.set (id, AssetType.TEXT);
+		id = "assets/textures/1x/background.jpg";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
+		id = "assets/textures/1x/compressed_texture.atf";
+		path.set (id, id);
+		
+		type.set (id, AssetType.BINARY);
+		id = "assets/textures/2x/atlas.png";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
+		id = "assets/textures/2x/atlas.xml";
+		path.set (id, id);
+		
+		type.set (id, AssetType.TEXT);
+		id = "assets/textures/2x/background.jpg";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
+		id = "assets/textures/2x/compressed_texture.atf";
+		path.set (id, id);
+		
+		type.set (id, AssetType.BINARY);
 		
 		
 		var assetsPrefix = null;
@@ -184,50 +184,50 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		var useManifest = false;
 		
-		className.set ("textures/1x/atlas.png", __ASSET__textures_1x_atlas_png);
-		type.set ("textures/1x/atlas.png", AssetType.IMAGE);
+		className.set ("assets/audio/wing_flap.mp3", __ASSET__assets_audio_wing_flap_mp3);
+		type.set ("assets/audio/wing_flap.mp3", AssetType.MUSIC);
 		
-		className.set ("textures/1x/atlas.xml", __ASSET__textures_1x_atlas_xml);
-		type.set ("textures/1x/atlas.xml", AssetType.TEXT);
+		className.set ("assets/fonts/1x/desyrel.fnt", __ASSET__assets_fonts_1x_desyrel_fnt);
+		type.set ("assets/fonts/1x/desyrel.fnt", AssetType.TEXT);
 		
-		className.set ("textures/1x/background.jpg", __ASSET__textures_1x_background_jpg);
-		type.set ("textures/1x/background.jpg", AssetType.IMAGE);
+		className.set ("assets/fonts/1x/desyrel.png", __ASSET__assets_fonts_1x_desyrel_png);
+		type.set ("assets/fonts/1x/desyrel.png", AssetType.IMAGE);
 		
-		className.set ("textures/1x/compressed_texture.atf", __ASSET__textures_1x_compressed_texture_atf);
-		type.set ("textures/1x/compressed_texture.atf", AssetType.BINARY);
+		className.set ("assets/fonts/2x/desyrel.fnt", __ASSET__assets_fonts_2x_desyrel_fnt);
+		type.set ("assets/fonts/2x/desyrel.fnt", AssetType.TEXT);
 		
-		className.set ("textures/2x/atlas.png", __ASSET__textures_2x_atlas_png);
-		type.set ("textures/2x/atlas.png", AssetType.IMAGE);
+		className.set ("assets/fonts/2x/desyrel.png", __ASSET__assets_fonts_2x_desyrel_png);
+		type.set ("assets/fonts/2x/desyrel.png", AssetType.IMAGE);
 		
-		className.set ("textures/2x/atlas.xml", __ASSET__textures_2x_atlas_xml);
-		type.set ("textures/2x/atlas.xml", AssetType.TEXT);
+		className.set ("assets/fonts/Ubuntu-License.txt", __ASSET__assets_fonts_ubuntu_license_txt);
+		type.set ("assets/fonts/Ubuntu-License.txt", AssetType.TEXT);
 		
-		className.set ("textures/2x/background.jpg", __ASSET__textures_2x_background_jpg);
-		type.set ("textures/2x/background.jpg", AssetType.IMAGE);
+		className.set ("assets/fonts/Ubuntu-R.ttf", __ASSET__assets_fonts_ubuntu_r_ttf);
+		type.set ("assets/fonts/Ubuntu-R.ttf", AssetType.FONT);
 		
-		className.set ("textures/2x/compressed_texture.atf", __ASSET__textures_2x_compressed_texture_atf);
-		type.set ("textures/2x/compressed_texture.atf", AssetType.BINARY);
+		className.set ("assets/textures/1x/atlas.png", __ASSET__assets_textures_1x_atlas_png);
+		type.set ("assets/textures/1x/atlas.png", AssetType.IMAGE);
 		
-		className.set ("audio/wing_flap.mp3", __ASSET__audio_wing_flap_mp3);
-		type.set ("audio/wing_flap.mp3", AssetType.MUSIC);
+		className.set ("assets/textures/1x/atlas.xml", __ASSET__assets_textures_1x_atlas_xml);
+		type.set ("assets/textures/1x/atlas.xml", AssetType.TEXT);
 		
-		className.set ("fonts/1x/desyrel.fnt", __ASSET__fonts_1x_desyrel_fnt);
-		type.set ("fonts/1x/desyrel.fnt", AssetType.TEXT);
+		className.set ("assets/textures/1x/background.jpg", __ASSET__assets_textures_1x_background_jpg);
+		type.set ("assets/textures/1x/background.jpg", AssetType.IMAGE);
 		
-		className.set ("fonts/1x/desyrel.png", __ASSET__fonts_1x_desyrel_png);
-		type.set ("fonts/1x/desyrel.png", AssetType.IMAGE);
+		className.set ("assets/textures/1x/compressed_texture.atf", __ASSET__assets_textures_1x_compressed_texture_atf);
+		type.set ("assets/textures/1x/compressed_texture.atf", AssetType.BINARY);
 		
-		className.set ("fonts/2x/desyrel.fnt", __ASSET__fonts_2x_desyrel_fnt);
-		type.set ("fonts/2x/desyrel.fnt", AssetType.TEXT);
+		className.set ("assets/textures/2x/atlas.png", __ASSET__assets_textures_2x_atlas_png);
+		type.set ("assets/textures/2x/atlas.png", AssetType.IMAGE);
 		
-		className.set ("fonts/2x/desyrel.png", __ASSET__fonts_2x_desyrel_png);
-		type.set ("fonts/2x/desyrel.png", AssetType.IMAGE);
+		className.set ("assets/textures/2x/atlas.xml", __ASSET__assets_textures_2x_atlas_xml);
+		type.set ("assets/textures/2x/atlas.xml", AssetType.TEXT);
 		
-		className.set ("fonts/Ubuntu-License.txt", __ASSET__fonts_ubuntu_license_txt);
-		type.set ("fonts/Ubuntu-License.txt", AssetType.TEXT);
+		className.set ("assets/textures/2x/background.jpg", __ASSET__assets_textures_2x_background_jpg);
+		type.set ("assets/textures/2x/background.jpg", AssetType.IMAGE);
 		
-		className.set ("fonts/Ubuntu-R.ttf", __ASSET__fonts_ubuntu_r_ttf);
-		type.set ("fonts/Ubuntu-R.ttf", AssetType.FONT);
+		className.set ("assets/textures/2x/compressed_texture.atf", __ASSET__assets_textures_2x_compressed_texture_atf);
+		type.set ("assets/textures/2x/compressed_texture.atf", AssetType.BINARY);
 		
 		
 		if (useManifest) {
@@ -872,21 +872,21 @@ class DefaultAssetLibrary extends AssetLibrary {
 #if !display
 #if flash
 
-@:keep @:bind #if display private #end class __ASSET__textures_1x_atlas_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__textures_1x_atlas_xml extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__textures_1x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__textures_1x_compressed_texture_atf extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__textures_2x_atlas_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__textures_2x_atlas_xml extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__textures_2x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__textures_2x_compressed_texture_atf extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__audio_wing_flap_mp3 extends flash.media.Sound { }
-@:keep @:bind #if display private #end class __ASSET__fonts_1x_desyrel_fnt extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__fonts_1x_desyrel_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__fonts_2x_desyrel_fnt extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__fonts_2x_desyrel_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
-@:keep @:bind #if display private #end class __ASSET__fonts_ubuntu_license_txt extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__fonts_ubuntu_r_ttf extends flash.text.Font { }
+@:keep @:bind #if display private #end class __ASSET__assets_audio_wing_flap_mp3 extends flash.media.Sound { }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_1x_desyrel_fnt extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_1x_desyrel_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_2x_desyrel_fnt extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_2x_desyrel_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_ubuntu_license_txt extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_fonts_ubuntu_r_ttf extends flash.text.Font { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_1x_atlas_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_1x_atlas_xml extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_1x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_1x_compressed_texture_atf extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_2x_atlas_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_2x_atlas_xml extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_2x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_2x_compressed_texture_atf extends flash.utils.ByteArray { }
 
 
 #elseif html5
@@ -897,6 +897,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 
 
+@:keep #if display private #end class __ASSET__assets_fonts_ubuntu_r_ttf extends lime.text.Font { public function new () { super (); name = "Ubuntu"; } } 
 
 
 
@@ -905,7 +906,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 
 
-@:keep #if display private #end class __ASSET__fonts_ubuntu_r_ttf extends lime.text.Font { public function new () { super (); name = "Ubuntu"; } } 
 
 
 #else
@@ -915,21 +915,21 @@ class DefaultAssetLibrary extends AssetLibrary {
 #if (windows || mac || linux || cpp)
 
 
-@:image("assets/textures/1x/atlas.png") #if display private #end class __ASSET__textures_1x_atlas_png extends lime.graphics.Image {}
-@:file("assets/textures/1x/atlas.xml") #if display private #end class __ASSET__textures_1x_atlas_xml extends lime.utils.Bytes {}
-@:image("assets/textures/1x/background.jpg") #if display private #end class __ASSET__textures_1x_background_jpg extends lime.graphics.Image {}
-@:file("assets/textures/1x/compressed_texture.atf") #if display private #end class __ASSET__textures_1x_compressed_texture_atf extends lime.utils.Bytes {}
-@:image("assets/textures/2x/atlas.png") #if display private #end class __ASSET__textures_2x_atlas_png extends lime.graphics.Image {}
-@:file("assets/textures/2x/atlas.xml") #if display private #end class __ASSET__textures_2x_atlas_xml extends lime.utils.Bytes {}
-@:image("assets/textures/2x/background.jpg") #if display private #end class __ASSET__textures_2x_background_jpg extends lime.graphics.Image {}
-@:file("assets/textures/2x/compressed_texture.atf") #if display private #end class __ASSET__textures_2x_compressed_texture_atf extends lime.utils.Bytes {}
-@:file("assets/audio/wing_flap.mp3") #if display private #end class __ASSET__audio_wing_flap_mp3 extends lime.utils.Bytes {}
-@:file("assets/fonts/1x/desyrel.fnt") #if display private #end class __ASSET__fonts_1x_desyrel_fnt extends lime.utils.Bytes {}
-@:image("assets/fonts/1x/desyrel.png") #if display private #end class __ASSET__fonts_1x_desyrel_png extends lime.graphics.Image {}
-@:file("assets/fonts/2x/desyrel.fnt") #if display private #end class __ASSET__fonts_2x_desyrel_fnt extends lime.utils.Bytes {}
-@:image("assets/fonts/2x/desyrel.png") #if display private #end class __ASSET__fonts_2x_desyrel_png extends lime.graphics.Image {}
-@:file("assets/fonts/Ubuntu-License.txt") #if display private #end class __ASSET__fonts_ubuntu_license_txt extends lime.utils.Bytes {}
-@:font("assets/fonts/Ubuntu-R.ttf") #if display private #end class __ASSET__fonts_ubuntu_r_ttf extends lime.text.Font {}
+@:file("assets/audio/wing_flap.mp3") #if display private #end class __ASSET__assets_audio_wing_flap_mp3 extends lime.utils.Bytes {}
+@:file("assets/fonts/1x/desyrel.fnt") #if display private #end class __ASSET__assets_fonts_1x_desyrel_fnt extends lime.utils.Bytes {}
+@:image("assets/fonts/1x/desyrel.png") #if display private #end class __ASSET__assets_fonts_1x_desyrel_png extends lime.graphics.Image {}
+@:file("assets/fonts/2x/desyrel.fnt") #if display private #end class __ASSET__assets_fonts_2x_desyrel_fnt extends lime.utils.Bytes {}
+@:image("assets/fonts/2x/desyrel.png") #if display private #end class __ASSET__assets_fonts_2x_desyrel_png extends lime.graphics.Image {}
+@:file("assets/fonts/Ubuntu-License.txt") #if display private #end class __ASSET__assets_fonts_ubuntu_license_txt extends lime.utils.Bytes {}
+@:font("assets/fonts/Ubuntu-R.ttf") #if display private #end class __ASSET__assets_fonts_ubuntu_r_ttf extends lime.text.Font {}
+@:image("assets/textures/1x/atlas.png") #if display private #end class __ASSET__assets_textures_1x_atlas_png extends lime.graphics.Image {}
+@:file("assets/textures/1x/atlas.xml") #if display private #end class __ASSET__assets_textures_1x_atlas_xml extends lime.utils.Bytes {}
+@:image("assets/textures/1x/background.jpg") #if display private #end class __ASSET__assets_textures_1x_background_jpg extends lime.graphics.Image {}
+@:file("assets/textures/1x/compressed_texture.atf") #if display private #end class __ASSET__assets_textures_1x_compressed_texture_atf extends lime.utils.Bytes {}
+@:image("assets/textures/2x/atlas.png") #if display private #end class __ASSET__assets_textures_2x_atlas_png extends lime.graphics.Image {}
+@:file("assets/textures/2x/atlas.xml") #if display private #end class __ASSET__assets_textures_2x_atlas_xml extends lime.utils.Bytes {}
+@:image("assets/textures/2x/background.jpg") #if display private #end class __ASSET__assets_textures_2x_background_jpg extends lime.graphics.Image {}
+@:file("assets/textures/2x/compressed_texture.atf") #if display private #end class __ASSET__assets_textures_2x_compressed_texture_atf extends lime.utils.Bytes {}
 
 
 
@@ -937,7 +937,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 #end
 
 #if (openfl && !flash)
-@:keep #if display private #end class __ASSET__OPENFL__fonts_ubuntu_r_ttf extends openfl.text.Font { public function new () { var font = new __ASSET__fonts_ubuntu_r_ttf (); src = font.src; name = font.name; super (); }}
+@:keep #if display private #end class __ASSET__OPENFL__assets_fonts_ubuntu_r_ttf extends openfl.text.Font { public function new () { var font = new __ASSET__assets_fonts_ubuntu_r_ttf (); src = font.src; name = font.name; super (); }}
 
 #end
 

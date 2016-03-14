@@ -18,6 +18,7 @@ import flash.system.System;
 import flash.utils.ByteArray;
 import haxe.Constraints.Function;
 import haxe.Timer;
+import starling.textures.TextureOptions;
 
 import starling.core.Starling;
 import starling.events.Event;
@@ -58,11 +59,14 @@ class Main extends Sprite
 		
 		Starling.MultitouchEnabled = true;  // useful on mobile devices  
 		
+		trace("Main");
+		
 		_starling = new Starling(Game, stage, viewPort, null, Context3DRenderMode.AUTO, [Context3DProfile.BASELINE]);
 		_starling.stage.stageWidth = StageWidth;  // <- same size on all devices!  
 		_starling.stage.stageHeight = StageHeight;  // <- same size on all devices!  
 		_starling.enableErrorChecking = Capabilities.isDebugger;
 		_starling.simulateMultitouch = false;
+		trace("addEventListener");
 		_starling.addEventListener(starling.events.Event.ROOT_CREATED, function():Void
 		{
 			loadAssets(scaleFactor, startGame);
@@ -89,6 +93,7 @@ class Main extends Sprite
 	
 	private function loadAssets(scaleFactor:Int, onComplete:Function):Void
 	{
+		trace("loadAssets");
 		// Our assets are loaded and managed by the 'AssetManager'. To use that class,
 		// we first have to enqueue pointers to all assets we want it to load.
 		
@@ -96,30 +101,42 @@ class Main extends Sprite
 		var assets:AssetManager = new AssetManager(scaleFactor);
 		
 		assets.verbose = Capabilities.isDebugger;
-		assets.enqueue(appDir.resolvePath("audio"));
-		assets.enqueue(appDir.resolvePath(StringUtil.format("fonts/{0}x", [scaleFactor])));
-		assets.enqueue(appDir.resolvePath(StringUtil.format("textures/{0}x", [scaleFactor])));
+		/*assets.enqueue([
+			appDir.resolvePath("audio"),
+			appDir.resolvePath(StringUtil.format("fonts/{0}x", [scaleFactor])),
+			appDir.resolvePath(StringUtil.format("textures/{0}x", [scaleFactor]))
+		]);*/
+		assets.enqueueWithName(EmbeddedAssets.atlas, "atlas", new TextureOptions(2));
+		assets.enqueueWithName(EmbeddedAssets.atlas_xml, "atlas_xml");
+		assets.enqueueWithName(EmbeddedAssets.background, "background");
+		assets.enqueueWithName(EmbeddedAssets.compressed_texture, "compressed_texture");
+		assets.enqueueWithName(EmbeddedAssets.desyrel, "desyrel", new TextureOptions(2));
+		assets.enqueueWithName(EmbeddedAssets.desyrel_fnt, "desyrel_fnt");
+		assets.enqueueWithName(EmbeddedAssets.wing_flap, "wing_flap");
 		
 		// Now, while the AssetManager now contains pointers to all the assets, it actually
 		// has not loaded them yet. This happens in the "loadQueue" method; and since this
 		// will take a while, we'll update the progress bar accordingly.
 		
+		trace("begin load");
 		assets.loadQueue(function(ratio:Float):Void
-				{
-					_progressBar.ratio = ratio;
-					if (ratio == 1) 
-					{
-						// now would be a good time for a clean-up
-						System.pauseForGCIfCollectionImminent(0);
-						System.gc();
-						
-						onComplete(assets);
-					}
-				});
+		{
+			trace("load Complete: " + ratio);
+			_progressBar.ratio = ratio;
+			if (ratio == 1) 
+			{
+				// now would be a good time for a clean-up
+				System.pauseForGCIfCollectionImminent(0);
+				System.gc();
+				
+				onComplete(assets);
+			}
+		});
 	}
 	
 	private function startGame(assets:AssetManager):Void
 	{
+		trace("startGame");
 		var game:Game = cast(_starling.root, Game);
 		game.start(assets);
 		Timer.delay(removeElements, 150);
@@ -129,7 +146,7 @@ class Main extends Sprite
 	{
 		// Add background image. By using "loadBytes", we can avoid any flickering.
 		
-		var bgPath:String = StringUtil.format("textures/{0}x/background.jpg", [scaleFactor]);
+		var bgPath:String = StringUtil.format("assets/textures/{0}x/background.jpg", [scaleFactor]);
 		trace("bgPath = " + bgPath);
 		var bgFile:File = File.applicationDirectory.resolvePath(bgPath);
 		var bytes:ByteArray = new ByteArray();

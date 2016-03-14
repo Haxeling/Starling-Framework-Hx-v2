@@ -140,7 +140,8 @@ class DisplayObjectContainer extends DisplayObject
 				
 				if (stage != null) 
 				{
-					var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+					var container:DisplayObjectContainer = null;
+					if (Std.is(child, DisplayObjectContainer)) container = cast(child, DisplayObjectContainer);
 					if (container != null) container.broadcastEventWith(Event.ADDED_TO_STAGE)
 					else child.dispatchEventWith(Event.ADDED_TO_STAGE);
 				}

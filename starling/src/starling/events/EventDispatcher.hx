@@ -54,11 +54,9 @@ class EventDispatcher
 		if (_eventListeners == null) 
 			_eventListeners = new Map<String, Array<Function>>();
 		
-	   // var listeners:Array<Function> = cast(Reflect.field(_eventListeners, type));
 		var listeners:Array<Function> = _eventListeners.get(type);
 		if (listeners == null) {
 			_eventListeners.set(type, [listener]);
-		   // Reflect.setField(_eventListeners, type, [listener])
 		}
 		// avoid 'push'
 		else if (Lambda.indexOf(listeners, listener) == -1)			   // check for duplicates  
@@ -70,7 +68,7 @@ class EventDispatcher
 	{
 		if (_eventListeners != null) 
 		{
-			var listeners:Array<Function> = cast(Reflect.field(_eventListeners, type));
+			var listeners:Array<Function> = _eventListeners.get(type);
 			var numListeners:Int = (listeners != null) ? listeners.length:0;
 			
 			if (numListeners > 0) 
@@ -87,7 +85,7 @@ class EventDispatcher
 					for (i in index + 1...numListeners){restListeners[i - 1] = listeners[i];
 					}
 					
-					Reflect.setField(_eventListeners, type, restListeners);
+					_eventListeners.set(type, restListeners);
 				}
 			}
 		}
@@ -97,12 +95,10 @@ class EventDispatcher
 	 *  Be careful when removing all event listeners: you never know who else was listening. */
 	public function removeEventListeners(type:String = null):Void
 	{
-		// TODO: fix delete
-		trace("FIX: Line 98");
-		/*if (type != null && _eventListeners != null) 
-			delete _eventListeners[type];
+		if (type != null && _eventListeners != null) 
+			_eventListeners.remove(type);
 		else
-			_eventListeners = null;*/
+			_eventListeners = null;
 	}
 	
 	/** Dispatches an event to all objects that have registered listeners for its type. 
@@ -208,7 +204,8 @@ class EventDispatcher
 	 *  avoid allocations. */
 	public function dispatchEventWith(type:String, bubbles:Bool = false, data:Dynamic = null):Void
 	{
-		if (bubbles || hasEventListener(type)) 
+		var _hasEventListener:Bool = hasEventListener(type);
+		if (bubbles || _hasEventListener) 
 		{
 			var event:Event = Event.fromPool(type, bubbles, data);
 			dispatchEvent(event);
@@ -221,11 +218,16 @@ class EventDispatcher
 	 *  listener is registered. */
 	public function hasEventListener(type:String, listener:Function = null):Bool
 	{
-		var listeners:Array<Function> = (_eventListeners != null) ? Reflect.field(_eventListeners, type):null;
-		if (listeners == null)			 return false
+		var listeners:Array<Function> = (_eventListeners != null) ? _eventListeners.get(type):null;
+		if (listeners == null) {
+			return false;
+		}
 		else 
 		{
-			if (listener != null)				 return Lambda.indexOf(listeners, listener) != -1
+			if (listener != null) {
+				for (i in 0...listeners.length) if (listeners[i] == listener) return true;
+				return false;// Lambda.indexOf(listeners, listener) != -1
+			}
 			else return listeners.length != 0;
 		}
 	}

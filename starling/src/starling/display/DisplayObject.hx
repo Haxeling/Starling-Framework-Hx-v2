@@ -1277,7 +1277,14 @@ class DisplayObject extends EventDispatcher
 	 *  to the stage. */
 	private function get_stage():Stage
 	{
-		return cast(this.base, Stage);
+		var base = this.base;
+		if (base == null) {
+			return null;
+		}else if(Std.is(base, Stage)) {
+			return cast (base);
+		}else {
+			return null;
+		}
 	}
 }
 

@@ -9,21 +9,21 @@
 	<app main="sample.Main" file="OpenFLStarlingSamples" path="bin" />
 	
 	<window background="#000000" fps="60" />
-	<window width="800" height="480" unless="mobile" />
+	<window width="640" height="960" unless="mobile" />
 	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
-	<source path="../starling/src" />
+	<source path="../starling/src" />0
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="air3" />
 	
 	<!-- assets -->
 	<!--<icon path="assets/openfl.svg" />-->
-	<assets path="assets/textures" rename="textures" />
-	<assets path="assets/audio" rename="audio" />
-	<assets path="assets/fonts" rename="fonts" />
+	<assets path="assets/audio" rename="assets/audio" />
+	<assets path="assets/fonts" rename="assets/fonts" />
+	<assets path="assets/textures" rename="assets/textures" />
 	
 	<app swf-version="17"/>
 	<haxeflag name="-D air" if="flash" ></haxeflag>

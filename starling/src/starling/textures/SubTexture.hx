@@ -11,6 +11,7 @@
 package starling.textures;
 
 import flash.display3D.Context3DTextureFormat;
+import openfl.errors.Error;
 import starling.textures.Texture;
 
 import flash.display3D.textures.TextureBase;
@@ -91,7 +92,14 @@ class SubTexture extends Texture
 		while (texture != null)
 		{
 			_transformationMatrixToRoot.concat(texture._transformationMatrix);
-			texture = cast(texture.parent, SubTexture);
+			texture = null;
+			trace("Check");
+			try {
+				texture = cast(texture.parent, SubTexture);
+			}
+			catch (e:Error) {
+				
+			}
 		}
 	}
 	

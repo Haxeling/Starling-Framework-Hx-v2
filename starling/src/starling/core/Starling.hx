@@ -395,6 +395,7 @@ class Starling extends EventDispatcher
 	
 	private function initialize():Void
 	{
+		trace("initialize");
 		makeCurrent();
 		updateViewPort(true);
 		
@@ -407,10 +408,14 @@ class Starling extends EventDispatcher
 	
 	private function initializeRoot():Void
 	{
+		trace("_root = " + _root);
+		trace("_rootClass = " + _rootClass);
+		
 		if (_root == null && _rootClass != null) 
 		{
+			trace("initializeRoot2");
 			_root = cast(Type.createInstance(_rootClass, []), DisplayObject);
-			if (_root == null)				 throw new Error("Invalid root class: " + _rootClass);
+			if (_root == null) throw new Error("Invalid root class: " + _rootClass);
 			_stage.addChildAt(_root, 0);
 			
 			dispatchEventWith(starling.events.Event.ROOT_CREATED, false, _root);
@@ -624,6 +629,7 @@ class Starling extends EventDispatcher
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextRestored, false, 10, true);
 		
 		trace("[Starling] Context ready. Display Driver:", context.driverInfo);
+		trace("onContextCreated");
 		initialize();
 	}
 	
@@ -975,12 +981,13 @@ class Starling extends EventDispatcher
 	}
 	private function set_rootClass(value:Class<Dynamic>):Class<Dynamic>
 	{
+		trace("rootClass");
 		if (_rootClass != null && _root != null) 
 			throw new Error("Root class may not change after root has been instantiated")
 		else if (_rootClass == null) 
 		{
 			_rootClass = value;
-			if (context != null)				 initializeRoot();
+			if (context != null) initializeRoot();
 		}
 		return value;
 	}
