@@ -25,6 +25,8 @@
 	<assets path="assets/fonts" rename="assets/fonts" />
 	<assets path="assets/textures" rename="assets/textures" />
 	
+	<haxeflag name="-D advanced-telemetry" if="flash" ></haxeflag>
+	
 	<app swf-version="17"/>
 	<haxeflag name="-D air" if="flash" ></haxeflag>
 	<!-- optimize output

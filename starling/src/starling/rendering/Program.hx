@@ -16,6 +16,8 @@ import flash.display3D.Context3DProgramType;
 import flash.display3D.Program3D;
 import flash.events.Event;
 import flash.utils.ByteArray;
+import haxe.ds.StringMap;
+import openfl._internal.aglsl.assembler.Part;
 import openfl.utils.AGALMiniAssembler;
 
 import starling.core.Starling;
@@ -60,13 +62,15 @@ class Program
 	}
 	
 	/** Creates a new Program instance from AGAL assembly language. */
-	public static function fromSource(vertexShader:String, fragmentShader:String,
-			agalVersion:Int = 1):Program
+	public static function fromSource(vertexShader:String, fragmentShader:String, agalVersion:Int = 1):Program
 	{
 		trace("check casting works correctly");
+		var v:StringMap<Part> = sAssembler.assemble(vertexShader, cast Context3DProgramType.VERTEX, agalVersion);
+		var f:StringMap<Part> = sAssembler.assemble(fragmentShader, cast Context3DProgramType.FRAGMENT, agalVersion);
 		return new Program(
-		sAssembler.assemble(cast Context3DProgramType.VERTEX, vertexShader, agalVersion), 
-		sAssembler.assemble(cast Context3DProgramType.FRAGMENT, fragmentShader, agalVersion));
+			v.get(cast Context3DProgramType.VERTEX).data,
+			f.get(cast Context3DProgramType.FRAGMENT).data
+		);
 	}
 	
 	/** Activates the program on the given context. If you don't pass a context, the current

@@ -505,10 +505,10 @@ class DisplayObjectContainer extends DisplayObject
 	
 	/** @private */
 	@:allow(starling.display)
-	private function getChildEventListeners(object:DisplayObject, eventType:String,
-			listeners:Array<DisplayObject>):Void
+	private function getChildEventListeners(object:DisplayObject, eventType:String, listeners:Array<DisplayObject>):Void
 	{
-		var container:DisplayObjectContainer = cast(object, DisplayObjectContainer);
+		var isDisplayObjectContainer:Bool = Std.is(object, DisplayObjectContainer);
+		var container:DisplayObjectContainer = isDisplayObjectContainer ? cast(object, DisplayObjectContainer) : null;
 		
 		if (object.hasEventListener(eventType)) 
 			listeners[listeners.length] = object;

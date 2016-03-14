@@ -73,7 +73,7 @@ class MeshBatch extends Mesh
 	/** @inheritDoc */
 	override public function dispose():Void
 	{
-		if (_effect != null)			 _effect.dispose();
+		if (_effect != null) _effect.dispose();
 		super.dispose();
 	}
 	

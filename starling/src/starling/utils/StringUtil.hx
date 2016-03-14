@@ -45,7 +45,7 @@ class StringUtil
 	 */
 	public static function clean(string:String):String
 	{
-		return ("_" + String).substr(1);
+		return ("_" + string).substr(1);
 	}
 	
 	/** Removes all leading white-space and control characters from the given String.

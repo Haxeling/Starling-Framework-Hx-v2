@@ -166,7 +166,7 @@ class TextureAtlas
 	 *  (especially useful for "MovieClip"). */
 	public function getTextures(prefix:String = "", out:Array<Texture> = null):Array<Texture>
 	{
-		if (out == null)			 out = [];
+		if (out == null) out = [];
 		
 		for (name in getNames(prefix, sNames))
 		out[out.length] = getTexture(name);  // avoid 'push'  

@@ -122,7 +122,9 @@ class Main extends Sprite
 		assets.loadQueue(function(ratio:Float):Void
 		{
 			trace("load Complete: " + ratio);
-			_progressBar.ratio = ratio;
+			if (_progressBar != null) {
+				_progressBar.ratio = ratio;
+			}
 			if (ratio == 1) 
 			{
 				// now would be a good time for a clean-up

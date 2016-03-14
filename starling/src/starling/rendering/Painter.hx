@@ -838,7 +838,7 @@ class Painter
 	private function get_profile():Context3DProfile
 	{
 		trace("Check Cast is working correctly");
-		if (_context != null) return cast _context.profile
+		if (_context != null) return cast _context.profile;
 		else return null;
 	}
 	

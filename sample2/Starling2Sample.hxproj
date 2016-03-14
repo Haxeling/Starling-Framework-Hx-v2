@@ -27,12 +27,12 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=3.6.0&#xA;lime=2.9.0&#xA;actuate=1.8.6&#xA;air3=0.0.1&#xA;openfl-next&#xA;tools=2.9.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;air&#xA;display" />
+    <option directives="openfl=3.6.0&#xA;lime=2.9.0&#xA;actuate=1.8.6&#xA;air3=0.0.1&#xA;openfl-next&#xA;tools=2.9.0&#xA;no-compilation&#xA;openfl-flash&#xA;web&#xA;advanced-telemetry&#xA;air&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 17" />
+    <option additional="-swf-version 17&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

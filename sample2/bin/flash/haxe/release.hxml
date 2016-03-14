@@ -18,6 +18,7 @@
 -D openfl-flash
 -D fdb
 -D web
+-D advanced-telemetry
 -D air
 -swf-lib bin/flash/obj/assets.swf
 -swf-version 17

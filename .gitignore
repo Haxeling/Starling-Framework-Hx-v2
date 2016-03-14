@@ -45,3 +45,4 @@ FlexUnitCompilerApplication.as
 
 # Release package
 starling/bin/starling-*.zip
+/sample2/bin/flash/bin/OpenFLStarlingSamples.swf
