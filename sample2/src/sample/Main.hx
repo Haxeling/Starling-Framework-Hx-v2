@@ -59,14 +59,12 @@ class Main extends Sprite
 		
 		Starling.MultitouchEnabled = true;  // useful on mobile devices  
 		
-		trace("Main");
-		
 		_starling = new Starling(Game, stage, viewPort, null, Context3DRenderMode.AUTO, [Context3DProfile.BASELINE]);
 		_starling.stage.stageWidth = StageWidth;  // <- same size on all devices!  
 		_starling.stage.stageHeight = StageHeight;  // <- same size on all devices!  
 		_starling.enableErrorChecking = Capabilities.isDebugger;
 		_starling.simulateMultitouch = false;
-		trace("addEventListener");
+		
 		_starling.addEventListener(starling.events.Event.ROOT_CREATED, function():Void
 		{
 			loadAssets(scaleFactor, startGame);
