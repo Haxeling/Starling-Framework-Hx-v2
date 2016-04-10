@@ -10,12 +10,13 @@
 
 package starling.rendering;
 
-import flash.errors.RangeError;
+import haxe.ds.ObjectMap;
+import openfl.errors.RangeError;
 import haxe.Constraints.Function;
 import starling.rendering.BatchToken;
 import starling.rendering.RenderState;
 
-import flash.geom.Matrix;
+import openfl.geom.Matrix;
 
 import starling.display.Mesh;
 import starling.display.MeshBatch;
@@ -25,8 +26,6 @@ import starling.utils.MeshSubset;
 /** This class manages a list of mesh batches of different types;
  *  it acts as a "meta" MeshBatch that initiates all rendering.
  */
-
-import flash.utils.Dictionary;
 
 
 class BatchProcessor
@@ -57,7 +56,7 @@ class BatchProcessor
 	public function dispose():Void
 	{
 		for (batch in _batches)
-		batch.dispose();
+			batch.dispose();
 		
 		_batches.splice(0, _batches.length);
 		_batchPool.purge();
@@ -77,8 +76,7 @@ class BatchProcessor
 	 *					without transforming them in any way (no matter the value of the
 	 *					state's <code>modelviewMatrix</code>).
 	 */
-	public function addMesh(mesh:Mesh, state:RenderState, subset:MeshSubset = null,
-			ignoreTransformations:Bool = false):Void
+	public function addMesh(mesh:Mesh, state:RenderState, subset:MeshSubset = null, ignoreTransformations:Bool = false):Void
 	{
 		if (subset == null) 
 		{
@@ -89,17 +87,20 @@ class BatchProcessor
 		}
 		else 
 		{
-			if (subset.numVertices < 0)				 subset.numVertices = mesh.numVertices - subset.vertexID;
-			if (subset.numIndices < 0)				 subset.numIndices = mesh.numIndices - subset.indexID;
+			if (subset.numVertices < 0) subset.numVertices = mesh.numVertices - subset.vertexID;
+			if (subset.numIndices < 0) subset.numIndices = mesh.numIndices - subset.indexID;
 		}
 		
 		if (subset.numVertices > 0) 
 		{
-			if (_currentBatch == null || !_currentBatch.canAddMesh(mesh, subset.numVertices)) 
+			var _canAddMesh:Bool = false;
+			if (_currentBatch != null) _canAddMesh = _currentBatch.canAddMesh(mesh, subset.numVertices);
+			if (_currentBatch == null || !_canAddMesh) 
 			{
 				finishBatch();
 				
 				_currentStyleType = mesh.style.type;
+				
 				_currentBatch = _batchPool.get(_currentStyleType);
 				_currentBatch.blendMode = (state != null) ? state.blendMode:mesh.blendMode;
 				_cacheToken.setTo(_batches.length);
@@ -136,7 +137,8 @@ class BatchProcessor
 	{
 		var numBatches:Int = _batches.length;
 		
-		for (i in 0...numBatches){_batchPool.put(_batches[i]);
+		for (i in 0...numBatches) {
+			_batchPool.put(_batches[i]);
 		}
 		
 		_batches.splice(0, _batches.length);
@@ -163,7 +165,8 @@ class BatchProcessor
 			throw new RangeError("Token outside available range");
 		
 		var i:Int = _cacheToken.batchID;
-		while (i > token.batchID){_batchPool.put(_batches.pop());
+		while (i > token.batchID) {
+			_batchPool.put(_batches.pop());
 			--i;
 		}
 		
@@ -211,11 +214,11 @@ class BatchProcessor
 
 class BatchPool
 {
-	private var _batchLists:Map<String, Array<MeshBatch>>;
+	private var _batchLists:ObjectMap<Dynamic, Array<MeshBatch>>;
 	
 	public function new()
 	{
-		_batchLists = new Map<String, Array<MeshBatch>>();
+		_batchLists = new ObjectMap<Dynamic, Array<MeshBatch>>();
 	}
 	
 	public function purge():Void
@@ -235,11 +238,11 @@ class BatchPool
 	{
 		
 		
-		var batchList:Array<MeshBatch> = _batchLists.get(Std.string(styleType));
+		var batchList:Array<MeshBatch> = _batchLists.get(styleType);
 		if (batchList == null) 
 		{
 			batchList = [];
-			_batchLists.set(Std.string(styleType), batchList);
+			_batchLists.set(styleType, batchList);
 		}
 		
 		if (batchList.length > 0) return batchList.pop()
@@ -254,11 +257,11 @@ class BatchPool
 	public function put(meshBatch:MeshBatch):Void
 	{
 		var styleType:Class<Dynamic> = meshBatch.style.type;
-		var batchList:Array<MeshBatch> = _batchLists.get(Std.string(styleType));
+		var batchList:Array<MeshBatch> = _batchLists.get(styleType);
 		if (batchList == null) 
 		{
 			batchList = [];
-			_batchLists.set(Std.string(styleType), batchList);
+			_batchLists.set(styleType, batchList);
 		}
 		
 		meshBatch.clear();

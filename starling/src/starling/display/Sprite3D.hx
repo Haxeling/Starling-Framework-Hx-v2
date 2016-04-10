@@ -10,19 +10,18 @@
 
 package starling.display;
 
-import flash.errors.Error;
-import starling.utils.Deg2rad;
+import openfl.errors.Error;
+import starling.utils.Rad2deg;
 
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Vector3D;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Vector3D;
 
 import starling.events.Event;
 import starling.rendering.Painter;
 import starling.utils.MathUtil;
 import starling.utils.MatrixUtil;
-import starling.utils.Rad2deg;
 
 /** A container that allows you to position objects in three-dimensional space.
  *
@@ -108,7 +107,7 @@ class Sprite3D extends DisplayObjectContainer
 	/** @inheritDoc */
 	override public function render(painter:Painter):Void
 	{
-		if (_is2D)			 super.render(painter)
+		if (_is2D) super.render(painter)
 		else 
 		{
 			painter.finishMeshBatch();
@@ -125,7 +124,7 @@ class Sprite3D extends DisplayObjectContainer
 	/** @inheritDoc */
 	override public function hitTest(localPoint:Point):DisplayObject
 	{
-		if (_is2D)			 return super.hitTest(localPoint)
+		if (_is2D) return super.hitTest(localPoint)
 		else 
 		{
 			if (!visible || !touchable) return null;
@@ -153,7 +152,7 @@ class Sprite3D extends DisplayObjectContainer
 				_rotationY > -E && _rotationY < E &&
 				_pivotZ > -E && _pivotZ < E;
 		
-		if (_is2D != was2D)			 updateSupportsRenderCache();
+		if (_is2D != was2D)	updateSupportsRenderCache();
 		super.setRequiresRedraw();
 	}
 	
@@ -203,22 +202,20 @@ class Sprite3D extends DisplayObjectContainer
 		
 		_transformationMatrix3D.identity();
 		
-		if (scaleX != 1.0 || scaleY != 1.0 || _scaleZ != 1.0) {
-			//_transformationMatrix3D.appendScale(scaleX || E, scaleY || E, _scaleZ || E);
+		if (scaleX != 1.0 || scaleY != 1.0 || _scaleZ != 1.0) 
 			_transformationMatrix3D.appendScale(cast ((cast scaleX) || (cast E)) , cast ((cast scaleY) || (cast E)), cast ((cast scaleZ) || (cast E)));
-		}
-		if (_rotationX != 0.0) 
-			_transformationMatrix3D.appendRotation(Deg2rad.call(_rotationX), Vector3D.X_AXIS);
-		if (_rotationY != 0.0) 
-			_transformationMatrix3D.appendRotation(Deg2rad.call(_rotationY), Vector3D.Y_AXIS);
-		if (rotationZ != 0.0) 
-			_transformationMatrix3D.appendRotation(Deg2rad.call(rotationZ), Vector3D.Z_AXIS);
-		if (x != 0.0 || y != 0.0 || _z != 0.0) 
+		if (_rotationX != 0.0)
+			_transformationMatrix3D.appendRotation(Rad2deg.call(_rotationX), Vector3D.X_AXIS);
+		if (_rotationY != 0.0)
+			_transformationMatrix3D.appendRotation(Rad2deg.call(_rotationY), Vector3D.Y_AXIS);
+		if (rotationZ != 0.0)
+			_transformationMatrix3D.appendRotation(Rad2deg.call(rotationZ), Vector3D.Z_AXIS);
+		if (x != 0.0 || y != 0.0 || _z != 0.0)
 			_transformationMatrix3D.appendTranslation(x, y, _z);
-		if (pivotX != 0.0 || pivotY != 0.0 || _pivotZ != 0.0) 
+		if (pivotX != 0.0 || pivotY != 0.0 || _pivotZ != 0.0)
 			_transformationMatrix3D.prependTranslation(-pivotX, -pivotY, -_pivotZ);
 		
-		if (_is2D)			 MatrixUtil.convertTo2D(_transformationMatrix3D, _transformationMatrix)
+		if (_is2D) MatrixUtil.convertTo2D(_transformationMatrix3D, _transformationMatrix);
 		else _transformationMatrix.identity();
 	}
 	

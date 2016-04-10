@@ -14,9 +14,9 @@ import haxe.Constraints.Function;
 import starling.filters.ITexturePool;
 import starling.filters.TexturePool;
 
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;

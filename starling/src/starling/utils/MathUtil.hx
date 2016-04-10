@@ -11,8 +11,8 @@
 package starling.utils;
 
 
-import flash.geom.Point;
-import flash.geom.Vector3D;
+import openfl.geom.Point;
+import openfl.geom.Vector3D;
 
 import starling.errors.AbstractClassError;
 

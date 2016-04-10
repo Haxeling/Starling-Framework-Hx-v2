@@ -18,13 +18,12 @@ import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
 import starling.utils.Execute;
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.IndexBuffer3D;
-import flash.display3D.VertexBuffer3D;
-import flash.events.Event;
-import flash.geom.Matrix3D;
-import flash.utils.Dictionary;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.events.Event;
+import openfl.geom.Matrix3D;
 
 
 import starling.core.Starling;
@@ -139,6 +138,14 @@ class Effect
 	{
 		_mvpMatrix3D = new Matrix3D();
 		_programBaseName = Type.getClassName(Type.getClass(this));
+		
+		var nameCache:Map<Int, String> = sProgramNameCache.get(programBaseName);
+		
+		if (nameCache == null) 
+		{
+			nameCache = new Map<Int, String>();
+			sProgramNameCache.set(programBaseName, nameCache);
+		}
 		
 		// Handle lost context (using conventional Flash event for weak listener support)
 		Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
@@ -307,26 +314,17 @@ class Effect
 	 */
 	private function get_programName():String
 	{
-		var baseName:String = this.programBaseName;
-		var variantName:Int = this.programVariantName;
-		var nameCache:Map<Int, String> = sProgramNameCache.get(baseName);
-		
-		if (nameCache == null) 
-		{
-			nameCache = new Map<Int, String>();
-		   sProgramNameCache.set(baseName, nameCache);
-		}
-		
-		var name:String = nameCache.get(variantName);
+		var nameCache:Map<Int, String> = sProgramNameCache.get(programBaseName);
+		var name:String = nameCache.get(programVariantName);
 		
 		if (name == null) 
 		{
-			if (variantName != 0) {
-				name = baseName + "#" + Std.string(variantName);
+			if (programVariantName != 0) {
+				name = programBaseName + "#" + Std.string(programVariantName);
 			}
-			else name = baseName;
+			else name = programBaseName;
 			
-			nameCache.set(variantName, name);
+			nameCache.set(programVariantName, name);
 		}
 		
 		return name;

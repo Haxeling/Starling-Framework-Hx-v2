@@ -11,8 +11,8 @@
 package starling.filters;
 
 
-import flash.display3D.Context3DProfile;
-import flash.geom.Rectangle;
+import openfl.display3D.Context3DProfile;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.textures.SubTexture;

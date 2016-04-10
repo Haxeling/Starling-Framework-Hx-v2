@@ -10,11 +10,11 @@
 
 package starling.textures;
 
-import flash.errors.ArgumentError;
-import flash.errors.Error;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.utils.ByteArray;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.utils.ByteArray;
 
 /** A parser for the ATF data format. */
 class AtfData
@@ -36,9 +36,9 @@ class AtfData
 	/** Create a new instance by parsing the given byte array. */
 	public function new(data:ByteArray)
 	{
-		if (!isAtfData(data))			 throw new ArgumentError("Invalid ATF data");
+		if (!isAtfData(data)) throw new ArgumentError("Invalid ATF data");
 		
-		if (data[6] == 255)			 data.position = 12
+		if (data[6] == 255)	data.position = 12
 		// new file version
 		else data.position = 6;  // old file version  
 		
@@ -73,17 +73,17 @@ class AtfData
 	/** Checks the first 3 bytes of the data for the 'ATF' signature. */
 	public static function isAtfData(data:ByteArray):Bool
 	{
-		if (data.length < 3)			 return false
+		if (data.length < 3) return false
 		else 
 		{
-			var signature:String = String.fromCharCode(data[2]);
+			var signature:String = String.fromCharCode(data[0]);
 			signature += String.fromCharCode(data[1]);
 			signature += String.fromCharCode(data[2]);
 			return signature == "ATF";
 		}
 	}
 	
-	/** The texture format. @see flash.display3D.textures.Context3DTextureFormat */
+	/** The texture format. @see openfl.display3D.textures.Context3DTextureFormat */
 	private function get_format():Context3DTextureFormat
 	{
 		return _format;

@@ -4,7 +4,7 @@
 package starling.text;
 
 
-import flash.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DTextureFormat;
 
 import starling.core.Starling;
 

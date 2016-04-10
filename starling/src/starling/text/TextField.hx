@@ -10,16 +10,15 @@
 
 package starling.text;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.text.TextFormat;
 import starling.text.TextOptions;
 import starling.text.TrueTypeCompositor;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.utils.Dictionary;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;

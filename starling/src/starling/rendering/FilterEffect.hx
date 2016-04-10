@@ -13,7 +13,7 @@ package starling.rendering;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3D.Context3D;
+import openfl.display3D.Context3D;
 
 import starling.textures.Texture;
 import starling.textures.TextureSmoothing;

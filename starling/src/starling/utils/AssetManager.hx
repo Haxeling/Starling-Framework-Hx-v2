@@ -246,7 +246,7 @@ class AssetManager extends EventDispatcher
 	/** Returns a texture atlas with a certain name, or null if it's not found. */
 	public function getTextureAtlas(name:String):TextureAtlas
 	{
-		return cast mAtlases[name];
+		return mAtlases.get(name);
 	}
 	
 	/** Returns a sound with a certain name, or null if it's not found. */
@@ -325,10 +325,10 @@ class AssetManager extends EventDispatcher
 		if (mTextures.exists(name))
 		{
 			log("Warning: name was already in use; the previous texture will be replaced.");
-			mTextures[name].dispose();
+			mTextures.get(name).dispose();
 		}
 		
-		mTextures[name] = texture;
+		mTextures.set(name, texture);
 	}
 	
 	/** Register a texture atlas under a certain name. It will be available right away. 
@@ -341,10 +341,10 @@ class AssetManager extends EventDispatcher
 		if (mAtlases.exists(name))
 		{
 			log("Warning: name was already in use; the previous atlas will be replaced.");
-			mAtlases[name].dispose();
+			mAtlases.get(name).dispose();
 		}
 		
-		mAtlases[name] = atlas;
+		mAtlases.set(name, atlas);
 	}
 	
 	/** Register a sound under a certain name. It will be available right away.
@@ -397,10 +397,10 @@ class AssetManager extends EventDispatcher
 		if (mByteArrays.exists(name))
 		{
 			log("Warning: name was already in use; the previous byte array will be replaced.");
-			mByteArrays[name].clear();
+			mByteArrays.get(name).clear();
 		}
 		
-		mByteArrays[name] = byteArray;
+		mByteArrays.set(name, byteArray);
 	}
 	
 	// removing
@@ -411,7 +411,7 @@ class AssetManager extends EventDispatcher
 		log("Removing texture '" + name + "'");
 		
 		if (dispose && mTextures.exists(name))
-			mTextures[name].dispose();
+			mTextures.get(name).dispose();
 		
 		mTextures.remove(name);
 	}
@@ -422,7 +422,7 @@ class AssetManager extends EventDispatcher
 		log("Removing texture atlas '" + name + "'");
 		
 		if (dispose && mAtlases.exists(name))
-			mAtlases[name].dispose();
+			mAtlases.get(name).dispose();
 		
 		mAtlases.remove(name);
 	}
@@ -458,7 +458,7 @@ class AssetManager extends EventDispatcher
 		log("Removing byte array '"+ name + "'");
 		
 		if (dispose && mByteArrays.exists(name))
-			mByteArrays[name].clear();
+			mByteArrays.get(name).clear();
 		
 		mByteArrays.remove(name);
 	}
@@ -557,7 +557,7 @@ class AssetManager extends EventDispatcher
 				for each (childNode in typeXml.variable.(@type == "Class"))
 					enqueueWithName(child[childNode.@name], childNode.@name);*/
 			//}
-			/*else if (Type.getClassName(Type.getClass(child)) == "flash.filesystem.File")
+			/*else if (Type.getClassName(Type.getClass(child)) == "openfl.filesystem.File")
 			{
 				if (!child["exists"])
 				{
@@ -596,7 +596,7 @@ class AssetManager extends EventDispatcher
 									options:TextureOptions=null):String
 	{
 		trace("CHECK");
-		if (Type.getClassName(Type.getClass(asset)) == "flash.filesystem.File")
+		if (Type.getClassName(Type.getClass(asset)) == "openfl.filesystem.File")
 			asset = StringTools.urlDecode(Reflect.getProperty(asset, "url"));
 		
 		if (name == null)    name = getName(asset);
@@ -1449,7 +1449,7 @@ class AssetManager extends EventDispatcher
 	
 	/** Specifies whether a check should be made for the existence of a URL policy file before
 	 *  loading an object from a remote server. More information about this topic can be found 
-	 *  in the 'flash.system.LoaderContext' documentation. @default false */
+	 *  in the 'openfl.system.LoaderContext' documentation. @default false */
 	private function get_checkPolicyFile():Bool { return mCheckPolicyFile; }
 	private function set_checkPolicyFile(value:Bool):Bool
 	{

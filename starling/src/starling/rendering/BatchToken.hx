@@ -26,7 +26,7 @@ import starling.utils.StringUtil;
 class BatchToken
 {
 	/** The ID of the current MeshBatch. */
-	public var batchID:Int;
+	@:isVar public var batchID(get, set):Int;
 	
 	/** The ID of the next vertex within the current MeshBatch. */
 	public var vertexID:Int;
@@ -75,6 +75,17 @@ class BatchToken
 			"[BatchToken batchID={0} vertexID={1} indexID={2}]",
 			[batchID, vertexID, indexID]
 		);
+	}
+	
+	function get_batchID():Int 
+	{
+		return batchID;
+	}
+	
+	function set_batchID(value:Int):Int 
+	{
+		batchID = value;
+		return batchID;
 	}
 }
 

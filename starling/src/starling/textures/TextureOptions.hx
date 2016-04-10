@@ -11,7 +11,7 @@
 package starling.textures;
 
 
-import flash.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DTextureFormat;
 import haxe.Constraints.Function;
 import starling.core.Starling;
 

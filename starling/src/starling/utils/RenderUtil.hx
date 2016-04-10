@@ -10,20 +10,20 @@
 
 package starling.utils;
 
-import flash.display3D.Context3DProfile;
-import flash.errors.ArgumentError;
-import flash.errors.Error;
+import openfl.display3D.Context3DProfile;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import haxe.Timer;
 
-import flash.display.Stage3D;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DMipFilter;
-import flash.display3D.Context3DRenderMode;
-import flash.display3D.Context3DTextureFilter;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.Context3DWrapMode;
-import flash.events.ErrorEvent;
-import flash.events.Event;
+import openfl.display.Stage3D;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DMipFilter;
+import openfl.display3D.Context3DRenderMode;
+import openfl.display3D.Context3DTextureFilter;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DWrapMode;
+import openfl.events.ErrorEvent;
+import openfl.events.Event;
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -55,9 +55,7 @@ class RenderUtil
 	
 	/** Returns the flags that are required for AGAL texture lookup,
 	 *  including the '&lt;' and '&gt;' delimiters. */
-	public static function getTextureLookupFlags(format:Context3DTextureFormat, mipMapping:Bool,
-			repeat:Bool = false,
-			smoothing:String = null):String
+	public static function getTextureLookupFlags(format:Context3DTextureFormat, mipMapping:Bool, repeat:Bool = false, smoothing:String = null):String
 	{
 		// TODO this method can probably be removed
 		if (smoothing == null) smoothing = TextureSmoothing.BILINEAR;
@@ -81,7 +79,7 @@ class RenderUtil
 			options.push(mipMapping ? "miplinear":"mipnone");
 		}
 		
-		return "<" + options.join("") + ">";
+		return "<" + options.join(",") + ">";
 	}
 	
 	/** Returns a bit field uniquely describing texture format and premultiplied alpha,
@@ -120,9 +118,7 @@ class RenderUtil
 	
 	/** Calls <code>setSamplerStateAt</code> at the current context,
 	 *  converting the given parameters to their low level counterparts. */
-	public static function setSamplerStateAt(sampler:Int, mipMapping:Bool,
-			smoothing:String = "bilinear",
-			repeat:Bool = false):Void
+	public static function setSamplerStateAt(sampler:Int, mipMapping:Bool, smoothing:String = "bilinear", repeat:Bool = false):Void
 	{
 		var wrap:Context3DWrapMode = (repeat) ? Context3DWrapMode.REPEAT:Context3DWrapMode.CLAMP;
 		var filter:Context3DTextureFilter;
@@ -167,9 +163,7 @@ class RenderUtil
 	 *
 	 *  @return the AGAL source code, line break(s) included.
 	 */
-	public static function createAGALTexOperation(
-			resultReg:String, uvReg:String, sampler:Int, texture:Texture,
-			convertToPmaIfRequired:Bool = true):String
+	public static function createAGALTexOperation(resultReg:String, uvReg:String, sampler:Int, texture:Texture, convertToPmaIfRequired:Bool = true):String
 	{
 		var format:Context3DTextureFormat = texture.format;
 		var formatFlag:String;

@@ -12,7 +12,7 @@ package starling.events;
 
 import starling.events.TouchEvent;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 import starling.display.DisplayObject;
 import starling.utils.StringUtil;

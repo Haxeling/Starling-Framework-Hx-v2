@@ -11,12 +11,12 @@
 package starling.rendering;
 
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DBufferUsage;
-import flash.display3D.IndexBuffer3D;
-import flash.errors.EOFError;
-import flash.utils.ByteArray;
-import flash.utils.Endian;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DBufferUsage;
+import openfl.display3D.IndexBuffer3D;
+import openfl.errors.EOFError;
+import openfl.utils.ByteArray;
+import openfl.utils.Endian;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -78,7 +78,7 @@ class IndexData
 	private var _useQuadLayout:Bool;
 	
 	// helper objects
-	private static var sVector:Array<Int> = [];
+	private static var sVector:Array<UInt> = [];
 	private static var sTrimData:ByteArray = new ByteArray();
 	private static var sQuadData:ByteArray = new ByteArray();
 	
@@ -184,10 +184,14 @@ class IndexData
 				}
 				else 
 				{
-					trace("fix &&= on line 186");
-					/*for (i in 0...numIndices) {
-						keepsQuadLayout &&= getBasicQuadIndexAt(indexID + i) + offset == getBasicQuadIndexAt(targetIndexID + i);
-					}*/
+					trace("check &&= on line 186");
+					for (i in 0...numIndices) {
+						//keepsQuadLayout &&= getBasicQuadIndexAt(indexID + i) + offset == getBasicQuadIndexAt(targetIndexID + i);
+						keepsQuadLayout = keepsQuadLayout && (getBasicQuadIndexAt(indexID + i) + offset == getBasicQuadIndexAt(targetIndexID + i));
+						
+						//x &&= y; 
+						//x = x && y; 
+					}
 				}
 				
 				if (keepsQuadLayout) return;
@@ -349,15 +353,19 @@ class IndexData
 	
 	/** Creates a vector containing all indices. If you pass an existing vector to the method,
 	 *  its contents will be overwritten. */
-	public function toVector(out:Array<Int> = null):Array<Int>
+	public function toVector(out:Array<UInt> = null):Array<UInt>
 	{
-		if (out == null)			 out = new Array<Int>()
+		if (out == null) {
+			out = new Array<UInt>();
+			for (j in 0..._numIndices) out.push(0);
+		}
 		else out.splice(_numIndices, out.length - _numIndices);
 		
 		var rawData:ByteArray = (_useQuadLayout) ? sQuadData:_rawData;
 		rawData.position = 0;
 		
-		for (i in 0..._numIndices){out[i] = rawData.readUnsignedShort();
+		for (i in 0..._numIndices) {
+			out[i] = rawData.readUnsignedShort();
 		}
 		
 		return out;
@@ -369,7 +377,7 @@ class IndexData
 	{
 		var string:String = StringUtil.format(
 			"[IndexData numIndices={0} indices=\"{1}\"]",
-			[_numIndices, toVector(sVector).join("")]
+			[_numIndices, toVector(sVector).join(",")]
 		);
 		
 		sVector.splice(0, sVector.length);

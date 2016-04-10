@@ -10,12 +10,12 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.display.DisplayObjectContainer;
 import starling.display.Image;
 import starling.display.Sprite;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
 
@@ -359,7 +359,7 @@ class Button extends DisplayObjectContainer
 	
 	private function set_textFormat(value:TextFormat):TextFormat
 	{
-		if (_textField == null)			 createTextField();
+		if (_textField == null)	createTextField();
 		_textField.format = value;
 		return value;
 	}

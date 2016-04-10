@@ -11,11 +11,12 @@
 package starling.rendering;
 
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.display3D.Program3D;
-import flash.events.Event;
-import flash.utils.ByteArray;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Program3D;
+import openfl.display3D._shaders.AGLSLShaderUtils;
+import openfl.events.Event;
+import openfl.utils.ByteArray;
 import haxe.ds.StringMap;
 import openfl._internal.aglsl.assembler.Part;
 import openfl.utils.AGALMiniAssembler;
@@ -41,7 +42,8 @@ class Program
 	private var _fragmentShader:ByteArray;
 	private var _program3D:Program3D;
 	
-	private static var sAssembler:AGALMiniAssembler = new AGALMiniAssembler();
+	var vertexShaderStr:String;
+	var fragmentShaderStr:String;
 	
 	/** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
 	public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
@@ -62,15 +64,20 @@ class Program
 	}
 	
 	/** Creates a new Program instance from AGAL assembly language. */
-	public static function fromSource(vertexShader:String, fragmentShader:String, agalVersion:Int = 1):Program
+	public static function fromSource(vertexShaderStr:String, fragmentShaderStr:String, agalVersion:Int = 1):Program
 	{
-		trace("check casting works correctly");
-		var v:StringMap<Part> = sAssembler.assemble(vertexShader, cast Context3DProgramType.VERTEX, agalVersion);
-		var f:StringMap<Part> = sAssembler.assemble(fragmentShader, cast Context3DProgramType.FRAGMENT, agalVersion);
-		return new Program(
-			v.get(cast Context3DProgramType.VERTEX).data,
-			f.get(cast Context3DProgramType.FRAGMENT).data
+		trace("vertexShaderStr = " + vertexShaderStr);
+		trace("fragmentShaderStr = " + fragmentShaderStr);
+		
+		var program = new Program(
+			AGLSLShaderUtils.compile(cast Context3DProgramType.VERTEX, vertexShaderStr),
+			AGLSLShaderUtils.compile(cast Context3DProgramType.FRAGMENT, fragmentShaderStr)
 		);
+		
+		program.vertexShaderStr = vertexShaderStr;
+		program.fragmentShaderStr = fragmentShaderStr;
+		
+		return program;
 	}
 	
 	/** Activates the program on the given context. If you don't pass a context, the current
@@ -80,7 +87,7 @@ class Program
 		if (context == null) 
 		{
 			context = Starling.Context;
-			if (context == null)				 throw new MissingContextError();
+			if (context == null) throw new MissingContextError();
 		}
 		
 		if (_program3D == null) 

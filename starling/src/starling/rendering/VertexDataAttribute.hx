@@ -10,7 +10,7 @@
 
 package starling.rendering;
 
-import flash.display3D.Context3DVertexBufferFormat;
+import openfl.display3D.Context3DVertexBufferFormat;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 

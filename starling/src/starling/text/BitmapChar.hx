@@ -10,9 +10,6 @@
 
 package starling.text;
 
-
-import flash.utils.Dictionary;
-
 import starling.display.Image;
 import starling.textures.Texture;
 

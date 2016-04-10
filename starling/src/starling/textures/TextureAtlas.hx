@@ -11,8 +11,7 @@
 package starling.textures;
 
 
-import flash.geom.Rectangle;
-import flash.utils.Dictionary;
+import openfl.geom.Rectangle;
 
 import starling.utils.StringUtil;
 

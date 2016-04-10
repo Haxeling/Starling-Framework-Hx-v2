@@ -11,10 +11,10 @@
 package starling.text;
 
 
-import flash.display3D.Context3DTextureFormat;
-import flash.geom.Matrix;
-import flash.text.AntiAliasType;
-import flash.text.TextField;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.geom.Matrix;
+import openfl.text.AntiAliasType;
+import openfl.text.TextField;
 
 import starling.display.MeshBatch;
 import starling.display.Quad;
@@ -27,15 +27,15 @@ import starling.utils.Align;
  *  a texture.</p>
  */
 
-import flash.display.BitmapData;
+import openfl.display.BitmapData;
 
 class TrueTypeCompositor implements ITextCompositor
 {
 	// helpers
 	private static var sHelperMatrix:Matrix = new Matrix();
 	private static var sHelperQuad:Quad = new Quad(100, 100);
-	private static var sNativeTextField:flash.text.TextField = new flash.text.TextField();
-	private static var sNativeFormat:flash.text.TextFormat = new flash.text.TextFormat();
+	private static var sNativeTextField:openfl.text.TextField = new openfl.text.TextField();
+	private static var sNativeFormat:openfl.text.TextFormat = new openfl.text.TextFormat();
 	
 	/** Creates a new TrueTypeCompositor instance. */
 	@:allow(starling.text)
@@ -153,8 +153,8 @@ class TrueTypeCompositor implements ITextCompositor
 		}
 	}
 	
-	private function autoScaleNativeTextField(textField:flash.text.TextField,
-			textFormat:flash.text.TextFormat,
+	private function autoScaleNativeTextField(textField:openfl.text.TextField,
+			textFormat:openfl.text.TextFormat,
 			maxTextWidth:Int, maxTextHeight:Int,
 			text:String, isHtmlText:Bool):Void
 	{

@@ -23,15 +23,16 @@ import haxe.Constraints.Function;
 	{
 		if (func != null) 
 		{
+			var maxNumArgs:Int = 0;
 			#if flash
-				var maxNumArgs:Int = Reflect.getProperty(func, "length");
+				maxNumArgs = Reflect.getProperty(func, "length");
 			#else 
-				var maxNumArgs:Int = args.length;
+				maxNumArgs = args.length;
 			#end
-			
-			for (i in args.length...maxNumArgs)
-				args[i] = null;
-				
+			if (args != null) {				
+				for (i in args.length...maxNumArgs)
+					args[i] = null;
+			}
 			// In theory, the 'default' case would always work,
 			// but we want to avoid the 'slice' allocations.
 			

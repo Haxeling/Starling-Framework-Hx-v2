@@ -10,11 +10,11 @@
 
 package starling.filters;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.filters.FragmentFilter;
 import starling.filters.ITexturePool;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 import starling.rendering.FilterEffect;
 import starling.rendering.Painter;
@@ -25,8 +25,8 @@ import starling.textures.Texture;
  *  uses this class to draw the shadow (the result of a BlurFilter) behind an object.
  */
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 
 import starling.rendering.Program;
 

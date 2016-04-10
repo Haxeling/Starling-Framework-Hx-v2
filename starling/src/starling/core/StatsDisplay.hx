@@ -11,7 +11,7 @@
 package starling.core;
 
 
-import flash.system.System;
+import openfl.system.System;
 import starling.utils.FloatUtil;
 
 import starling.display.BlendMode;

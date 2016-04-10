@@ -10,18 +10,17 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DProfile;
-import flash.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DTextureFormat;
 import haxe.Constraints.Function;
 import openfl.errors.Error;
 import starling.textures.SubTexture;
 import starling.textures.Texture;
 
-import flash.display3D.textures.TextureBase;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Rectangle;
-import flash.utils.Dictionary;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 import starling.core.Starling;
 import starling.display.BlendMode;

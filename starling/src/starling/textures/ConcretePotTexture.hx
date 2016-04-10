@@ -10,18 +10,18 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.errors.ArgumentError;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.ArgumentError;
 import haxe.Constraints.Function;
 import starling.textures.ConcreteTexture;
 
-import flash.display.BitmapData;
-import flash.display3D.textures.TextureBase;
-import flash.events.Event;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.utils.ByteArray;
+import openfl.display.BitmapData;
+import openfl.display3D.textures.TextureBase;
+import openfl.events.Event;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 
 import starling.core.Starling;
 import starling.utils.MathUtil;
@@ -33,7 +33,7 @@ import starling.utils.Execute;
  *  For internal use only. */
 class ConcretePotTexture extends ConcreteTexture
 {
-	private var potBase(get, never):flash.display3D.textures.Texture;
+	private var potBase(get, never):openfl.display3D.textures.Texture;
 
 	private var _textureReadyCallback:Function;
 	
@@ -43,7 +43,7 @@ class ConcretePotTexture extends ConcreteTexture
 	
 	/** Creates a new instance with the given parameters. */
 	@:allow(starling.textures)
-	private function new(base:flash.display3D.textures.Texture, format:Context3DTextureFormat,
+	private function new(base:openfl.display3D.textures.Texture, format:Context3DTextureFormat,
 			width:Int, height:Int, mipMapping:Bool,
 			premultipliedAlpha:Bool,
 			optimizedForRenderTexture:Bool = false, scale:Float = 1)
@@ -137,9 +137,9 @@ class ConcretePotTexture extends ConcreteTexture
 		_textureReadyCallback = null;
 	}
 	
-	private function get_potBase():flash.display3D.textures.Texture
+	private function get_potBase():openfl.display3D.textures.Texture
 	{
-		return cast(base, flash.display3D.textures.Texture);
+		return cast(base, openfl.display3D.textures.Texture);
 	}
 }
 

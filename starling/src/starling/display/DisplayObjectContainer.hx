@@ -10,14 +10,14 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
-import flash.errors.RangeError;
+import openfl.errors.ArgumentError;
+import openfl.errors.RangeError;
 import haxe.Constraints.Function;
 
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
 
 
 import starling.errors.AbstractClassError;
@@ -73,7 +73,7 @@ class DisplayObjectContainer extends DisplayObject
 
 	// members
 	
-	private var _children:Array<DisplayObject>;
+	private var _children:Array<DisplayObject> = [];
 	private var _touchGroup:Bool;
 	
 	// helper objects
@@ -94,15 +94,15 @@ class DisplayObjectContainer extends DisplayObject
 		{
 			throw new AbstractClassError();
 		}
-		
-		_children = [];
 	}
 	
 	/** Disposes the resources of all children. */
 	override public function dispose():Void
 	{
 		var i:Int = _children.length - 1;
-		while (i >= 0){_children[i].dispose();
+		while (i >= 0) {
+			_children[i].dispose();
+			_children.splice(i, 1);
 			--i;
 		}
 		
@@ -140,19 +140,22 @@ class DisplayObjectContainer extends DisplayObject
 				
 				if (stage != null) 
 				{
-					var container:DisplayObjectContainer = null;
-					if (Std.is(child, DisplayObjectContainer)) container = cast(child, DisplayObjectContainer);
-					if (container != null) container.broadcastEventWith(Event.ADDED_TO_STAGE)
-					else child.dispatchEventWith(Event.ADDED_TO_STAGE);
+					var isDisplayObjectContainer:Bool = Std.is(child, DisplayObjectContainer);
+					if (isDisplayObjectContainer)
+                    {
+                        var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+						container.broadcastEventWith(Event.ADDED_TO_STAGE);
+                    }
+                    else child.dispatchEventWith(Event.ADDED_TO_STAGE);
 				}
 			}
-			
 			return child;
 		}
 		else 
 		{
 			throw new RangeError("Invalid child index");
 		}
+		
 	}
 	
 	/** Removes a child from the container. If the object is not a child, nothing happens. 
@@ -177,8 +180,12 @@ class DisplayObjectContainer extends DisplayObject
 			
 			if (stage != null) 
 			{
-				var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
-				if (container != null) container.broadcastEventWith(Event.REMOVED_FROM_STAGE)
+				var isDisplayObjectContainer:Bool = Std.is(child, DisplayObjectContainer);
+				if (isDisplayObjectContainer)
+				{
+					var container:DisplayObjectContainer = cast(child, DisplayObjectContainer);
+					container.broadcastEventWith(Event.REMOVED_FROM_STAGE);
+				}
 				else child.dispatchEventWith(Event.REMOVED_FROM_STAGE);
 			}
 			
@@ -344,7 +351,9 @@ class DisplayObjectContainer extends DisplayObject
 		while (i >= 0){  // front to back!  
 			{
 				var child:DisplayObject = _children[i];
-				if (child.isMask)					 {--i;continue;
+				if (child.isMask) {
+					--i;
+					continue;
 				};
 				
 				sHelperMatrix.copyFrom(child.transformationMatrix);
@@ -382,8 +391,8 @@ class DisplayObjectContainer extends DisplayObject
 				{
 					painter.pushState(sCacheToken);
 					painter.drawFromCache(child._pushToken, child._popToken);
-					painter.popState(child._popToken);
 					
+					painter.popState(child._popToken);
 					child._pushToken.copyFrom(sCacheToken);
 				}
 				else 
@@ -394,16 +403,15 @@ class DisplayObjectContainer extends DisplayObject
 					painter.pushState(child._pushToken);
 					painter.setStateTo(child.transformationMatrix, child.alpha, child.blendMode);
 					
-					if (mask != null)						 painter.drawMask(mask);
+					if (mask != null) painter.drawMask(mask);
 					
-					if (filter != null)						 filter.render(painter)
+					if (filter != null) filter.render(painter)
 					else child.render(painter);
 					
-					if (mask != null)						 painter.eraseMask(mask);
+					if (mask != null) painter.eraseMask(mask);
 					
 					painter.popState(child._popToken);
 				}
-				
 				child._tokenFrameID = frameID;
 			}
 		}

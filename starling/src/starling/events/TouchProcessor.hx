@@ -10,7 +10,7 @@
 
 package starling.events;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 import starling.core.Starling;
 import starling.display.DisplayObject;
@@ -497,7 +497,7 @@ class TouchProcessor
 		trace("fix uncomment");
 		/*try
 		{
-			var nativeAppClass:Dynamic = getDefinitionByName("flash.desktop::NativeApplication");
+			var nativeAppClass:Dynamic = getDefinitionByName("openfl.desktop::NativeApplication");
 			var nativeApp:Dynamic = nativeAppClass["nativeApplication"];
 			
 			if (enable)

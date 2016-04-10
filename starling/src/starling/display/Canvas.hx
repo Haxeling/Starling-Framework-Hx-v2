@@ -14,7 +14,7 @@ import starling.display.DisplayObject;
 import starling.display.DisplayObjectContainer;
 import starling.display.Mesh;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 import starling.geom.Polygon;
 import starling.rendering.IndexData;

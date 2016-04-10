@@ -15,8 +15,8 @@ import starling.rendering.RenderState;
 import starling.rendering.VertexData;
 import starling.rendering.VertexDataFormat;
 
-import flash.geom.Matrix;
-import flash.geom.Point;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 
 import starling.display.Mesh;
 import starling.events.Event;

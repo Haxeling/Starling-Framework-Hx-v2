@@ -10,12 +10,12 @@
 
 package starling.geom;
 
-import flash.errors.ArgumentError;
-import flash.errors.Error;
-import flash.errors.RangeError;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
+import openfl.errors.RangeError;
 import starling.utils.FloatUtil;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 
 import starling.rendering.IndexData;
@@ -32,7 +32,7 @@ import starling.utils.Pool;
  *  area calculation, etc.</p>
  */
 
-import flash.errors.IllegalOperationError;
+import openfl.errors.IllegalOperationError;
 import starling.geom.Polygon;
 
 

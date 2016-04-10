@@ -11,10 +11,11 @@
 package starling.utils;
 
 
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Vector3D;
+import openfl.Vector;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Vector3D;
 
 import starling.errors.AbstractClassError;
 
@@ -22,12 +23,28 @@ import starling.errors.AbstractClassError;
 class MatrixUtil
 {
 	// helper objects
-	private static var sRawData:Array<Float> = 
-		[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-	private static var sRawData2:Array<Float> = new Array<Float>();
+	private static var sRawData:Vector<Float> = Vector.ofArray(
+	[
+		1, 0, 0, 0, 
+		0, 1, 0, 0, 
+		0, 0, 1, 0, 
+		0, 0, 0, 1
+	]);
+	private static var sRawData2:Vector<Float> = Vector.ofArray(
+	[
+		0, 0, 0, 0, 
+		0, 0, 0, 0, 
+		0, 0, 0, 0, 
+		0, 0, 0, 0
+	]);
 	private static var sPoint3D:Vector3D = new Vector3D();
-	private static var sMatrixData:Array<Float> = 
-		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	private static var sMatrixData:Vector<Float> = Vector.ofArray(
+	[
+		0, 0, 0, 0, 
+		0, 0, 0, 0, 
+		0, 0, 0, 0, 
+		0, 0, 0, 0
+	]);
 	
 	/** @private */
 	public function new()
@@ -38,7 +55,7 @@ class MatrixUtil
 	 *  the result will be stored in this matrix instead of creating a new object. */
 	public static function convertTo3D(matrix:Matrix, out:Matrix3D = null):Matrix3D
 	{
-		if (out == null)			 out = new Matrix3D();
+		if (out == null) out = new Matrix3D();
 		
 		sRawData[0] = matrix.a;
 		sRawData[1] = matrix.b;
@@ -78,7 +95,7 @@ class MatrixUtil
 	/** Determines if the 3D matrix is an identity matrix. */
 	public static function isIdentity3D(matrix:Matrix3D):Bool
 	{
-		var data:Array<Float> = sRawData2;
+		var data:Vector<Float> = sRawData2;
 		matrix.copyRawDataTo(data);
 		
 		return data[0] == 1.0 && data[1] == 0.0 && data[2] == 0.0 && data[3] == 0.0 &&
@@ -121,14 +138,12 @@ class MatrixUtil
 	public static function transformCoords3D(matrix:Matrix3D, x:Float, y:Float, z:Float,
 			out:Vector3D = null):Vector3D
 	{
-		if (out == null)			 out = new Vector3D();
-		
+		if (out == null) out = new Vector3D();
 		matrix.copyRawDataTo(sRawData2);
 		out.x = x * sRawData2[0] + y * sRawData2[4] + z * sRawData2[8] + sRawData2[12];
 		out.y = x * sRawData2[1] + y * sRawData2[5] + z * sRawData2[9] + sRawData2[13];
 		out.z = x * sRawData2[2] + y * sRawData2[6] + z * sRawData2[10] + sRawData2[14];
 		out.w = x * sRawData2[3] + y * sRawData2[7] + z * sRawData2[11] + sRawData2[15];
-		
 		return out;
 	}
 	

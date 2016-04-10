@@ -10,18 +10,18 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import haxe.Constraints.Function;
 import starling.display.DisplayObjectContainer;
 import starling.display.Stage;
 
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
-import flash.system.Capabilities;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.system.Capabilities;
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
 
@@ -455,13 +455,12 @@ class DisplayObject extends EventDispatcher
 	 *  to another. This method supports three dimensional objects created via 'Sprite3D'.
 	 *  If you pass an <code>out</code>-matrix, the result will be stored in this matrix
 	 *  instead of creating a new object. */
-	public function getTransformationMatrix3D(targetSpace:DisplayObject,
-			out:Matrix3D = null):Matrix3D
+	public function getTransformationMatrix3D(targetSpace:DisplayObject, out:Matrix3D = null):Matrix3D
 	{
 		var commonParent:DisplayObject;
 		var currentObject:DisplayObject;
 		
-		if (out != null)			 out.identity()
+		if (out != null) out.identity()
 		else out = new Matrix3D();
 		
 		if (targetSpace == this) 
@@ -827,8 +826,8 @@ class DisplayObject extends EventDispatcher
 		_skewY = Math.atan(matrix.b / matrix.a);
 		
 		// NaN check ("isNaN" causes allocation)
-		if (_skewX != _skewX)			 _skewX = 0.0;
-		if (_skewY != _skewY)			 _skewY = 0.0;
+		if (_skewX != _skewX) _skewX = 0.0;
+		if (_skewY != _skewY) _skewY = 0.0;
 		
 		_scaleY = ((_skewX > -PI_Q && _skewX < PI_Q)) ? matrix.d / Math.cos(_skewX):-matrix.c / Math.sin(_skewX);
 		_scaleX = ((_skewY > -PI_Q && _skewY < PI_Q)) ? matrix.a / Math.cos(_skewY):matrix.b / Math.sin(_skewY);

@@ -11,8 +11,10 @@
 
 package starling.animation;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import haxe.Constraints.Function;
+import openfl.errors.Error;
+import starling.utils.Execute;
 
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -213,16 +215,18 @@ class Tween extends EventDispatcher implements IAnimatable
 		
 		_currentTime += time;
 		
-		if (_currentTime <= 0) return;
-			
-		// the delay is not over yet
+		if (_currentTime <= 0) {
+			return; // the delay is not over yet
+		}
 		else if (_currentTime > _totalTime) 
 			_currentTime = _totalTime;
 		
 		if (_currentCycle < 0 && previousTime <= 0 && _currentTime > 0) 
 		{
 			_currentCycle++;
-			if (_onStart != null)				 _onStart(_onStartArgs);
+			if (_onStart != null) {
+				Execute.call(_onStart, _onStartArgs);
+			}
 		}
 		
 		var ratio:Float = _currentTime / _totalTime;
@@ -231,15 +235,16 @@ class Tween extends EventDispatcher implements IAnimatable
 		_progress = (reversed) ? _transitionFunc(1.0 - ratio):_transitionFunc(ratio);
 		
 		for (i in 0...numProperties){
-			if (_startValues[i] != _startValues[i])				   // isNaN check - "isNaN" causes allocation!  
-			_startValues[i] = cast(Reflect.field(_target, Std.string(_properties[i])), Float);
+			if (_startValues[i] != _startValues[i])	{ // isNaN check - "isNaN" causes allocation!  
+				_startValues[i] = cast Reflect.getProperty(_target, _properties[i]);
+			}
 			
 			var updateFunc:Function = _updateFuncs[i];
 			updateFunc(_properties[i], _startValues[i], _endValues[i]);
 		}
 		
 		if (_onUpdate != null) {
-			_onUpdate(_onUpdateArgs);
+			Execute.call(_onUpdate, _onUpdateArgs);
 		}
 		
 		if (previousTime < _totalTime && _currentTime >= _totalTime) 
@@ -248,8 +253,10 @@ class Tween extends EventDispatcher implements IAnimatable
 			{
 				_currentTime = -_repeatDelay;
 				_currentCycle++;
-				if (_repeatCount > 1)					 _repeatCount--;
-				if (_onRepeat != null)					 _onRepeat(_onRepeatArgs);
+				if (_repeatCount > 1) _repeatCount--;
+				if (_onRepeat != null) {
+					Execute.call(_onRepeat, _onRepeatArgs);
+				}
 			}
 			else 
 			{
@@ -261,10 +268,11 @@ class Tween extends EventDispatcher implements IAnimatable
 				// add it to another juggler; so this event has to be dispatched *before*
 				// executing 'onComplete'.
 				dispatchEventWith(Event.REMOVE_FROM_JUGGLER);
-				if (onComplete != null) onComplete(onCompleteArgs);
+				if (onComplete != null) {
+					Execute.call(onComplete, onCompleteArgs);
+				}
 			}
 		}
-		
 		if (carryOverTime != 0) 
 			advanceTime(carryOverTime);
 	}
@@ -315,8 +323,11 @@ class Tween extends EventDispatcher implements IAnimatable
 	private function updateStandard(property:String, startValue:Float, endValue:Float):Void
 	{
 		var newValue:Float = startValue + _progress * (endValue - startValue);
-		if (_roundToInt)			 newValue = Math.round(newValue);
-		Reflect.setField(_target, property, newValue);
+		if (_roundToInt) newValue = Math.round(newValue);
+		try {
+			Reflect.setProperty(_target, property, newValue);
+		}
+		catch (e:Error) {}
 	}
 	
 	private function updateRgb(property:String, startValue:Float, endValue:Float):Void

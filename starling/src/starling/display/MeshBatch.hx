@@ -10,7 +10,7 @@
 
 package starling.display;
 
-import flash.geom.Matrix;
+import openfl.geom.Matrix;
 
 import starling.rendering.IndexData;
 import starling.rendering.MeshEffect;
@@ -140,8 +140,8 @@ class MeshBatch extends Mesh
 		meshStyle.batchIndexData(_style, targetIndexID, targetVertexID - subset.vertexID,
 				subset.indexID, subset.numIndices);
 		
-		if (alpha != 1.0)			 _vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
-		if (_batchable)			 setRequiresRedraw();
+		if (alpha != 1.0) _vertexData.scaleAlphas("color", alpha, targetVertexID, subset.numVertices);
+		if (_batchable) setRequiresRedraw();
 		
 		_indexSyncRequired = _vertexSyncRequired = true;
 	}
@@ -168,8 +168,8 @@ class MeshBatch extends Mesh
 		meshStyle.batchVertexData(_style, vertexID, matrix, 0, numVertices);
 		meshStyle.batchIndexData(_style, indexID, vertexID, 0, numIndices);
 		
-		if (alpha != 1.0)			 _vertexData.scaleAlphas("color", alpha, vertexID, numVertices);
-		if (_batchable)			 setRequiresRedraw();
+		if (alpha != 1.0) _vertexData.scaleAlphas("color", alpha, vertexID, numVertices);
+		if (_batchable) setRequiresRedraw();
 		
 		_indexSyncRequired = _vertexSyncRequired = true;
 	}
@@ -197,9 +197,9 @@ class MeshBatch extends Mesh
 	{
 		var currentNumVertices:Int = _vertexData.numVertices;
 		
-		if (currentNumVertices == 0)			 return true;
-		if (numVertices < 0)			 numVertices = mesh.numVertices;
-		if (numVertices == 0)			 return true;
+		if (currentNumVertices == 0) return true;
+		if (numVertices < 0) numVertices = mesh.numVertices;
+		if (numVertices == 0) return true;
 		if (numVertices + currentNumVertices > MAX_NUM_VERTICES)			 return false;
 		
 		return _style.canBatchWith(mesh._style);
@@ -224,8 +224,8 @@ class MeshBatch extends Mesh
 			painter.drawCount += 1;
 			painter.prepareToDraw();
 			
-			if (_vertexSyncRequired)				 syncVertexBuffer();
-			if (_indexSyncRequired)				 syncIndexBuffer();
+			if (_vertexSyncRequired) syncVertexBuffer();
+			if (_indexSyncRequired) syncIndexBuffer();
 			
 			_style.updateEffect(_effect, painter.state);
 			_effect.render(0, _indexData.numTriangles);

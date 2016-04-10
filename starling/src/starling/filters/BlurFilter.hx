@@ -20,8 +20,8 @@ import starling.textures.Texture;
 /** The BlurFilter applies a Gaussian blur to an object. The strength of the blur can be
  *  set for x- and y-axis separately. */
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 
 import starling.rendering.Program;
 
@@ -165,7 +165,7 @@ class BlurEffect extends FilterEffect
 	private var _weights:Array<Float> = [0, 0, 0, 0];
 	
 	// helpers
-	private var sTmpWeights:Array<Float> = new Array<Float>();
+	private var sTmpWeights:Array<Float> = [0, 0, 0, 0, 0];
 	
 	/** Creates a new BlurEffect.
 	 *

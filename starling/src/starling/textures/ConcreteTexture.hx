@@ -10,18 +10,18 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DTextureFormat;
-import flash.errors.Error;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.errors.Error;
 import haxe.Constraints.Function;
 import starling.textures.Texture;
 
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display3D.textures.TextureBase;
-import flash.media.Camera;
-import flash.net.NetStream;
-import flash.system.Capabilities;
-import flash.utils.ByteArray;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display3D.textures.TextureBase;
+//import openfl.media.Camera;
+import openfl.net.NetStream;
+import openfl.system.Capabilities;
+import openfl.utils.ByteArray;
 
 
 import starling.core.Starling;
@@ -141,10 +141,10 @@ class ConcreteTexture extends Texture
 	}
 	
 	/** Specifies a video stream from a camera to be rendered within the texture. */
-	public function attachCamera(camera:Camera, onComplete:Function = null):Void
-	{
-		attachVideo("Camera", camera, onComplete);
-	}
+	//public function attachCamera(camera:Camera, onComplete:Function = null):Void
+	//{
+		//attachVideo("Camera", camera, onComplete);
+	//}
 	
 	/** @private */
 	@:allow(starling.textures)

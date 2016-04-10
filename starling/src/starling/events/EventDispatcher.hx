@@ -10,8 +10,6 @@
 
 package starling.events;
 
-
-import flash.utils.Dictionary;
 import haxe.Constraints.Function;
 
 import starling.display.DisplayObject;
@@ -54,13 +52,21 @@ class EventDispatcher
 		if (_eventListeners == null) 
 			_eventListeners = new Map<String, Array<Function>>();
 		
-		var listeners:Array<Function> = _eventListeners.get(type);
+		/*var listeners:Array<Function> = _eventListeners.get(type);
 		if (listeners == null) {
 			_eventListeners.set(type, [listener]);
 		}
 		// avoid 'push'
 		else if (Lambda.indexOf(listeners, listener) == -1)			   // check for duplicates  
-		listeners[listeners.length] = listener;
+		listeners[listeners.length] = listener;*/
+		
+		var listeners:Array<Function> = _eventListeners.get(type);
+		if (listeners == null) {
+			_eventListeners.set(type, [listener]);
+		}
+		else if (listeners.indexOf(listener) == -1) {// check for duplicates
+			listeners[listeners.length] = listener; // avoid 'push'
+		}
 	}
 	
 	/** Removes an event listener from the object. */
@@ -137,7 +143,7 @@ class EventDispatcher
 		var listeners:Array<Function> = (_eventListeners != null) ?
 			_eventListeners[event.type] : null;
 		
-		var numListeners:Int = listeners == null ? 0 : listeners.length;
+		var numListeners:Int = (listeners == null) ? 0 : listeners.length;
 		
 		if (numListeners != 0) 
 		{
@@ -147,7 +153,9 @@ class EventDispatcher
 			// when somebody modifies the list while we're looping, "addEventListener" is not
 			// problematic, and "removeEventListener" will create a new Vector, anyway.
 			
-			for (i in 0...numListeners){
+			var i:Int = numListeners - 1;
+			while (i >= 0) 
+			{
 				var listener:Function = listeners[i];
 				#if flash
 					var numArgs:Int = untyped listener["length"];
@@ -162,6 +170,8 @@ class EventDispatcher
 				
 				if (event.stopsImmediatePropagation) 
 					return true;
+				
+				i--;
 			}
 			
 			return event.stopsPropagation;

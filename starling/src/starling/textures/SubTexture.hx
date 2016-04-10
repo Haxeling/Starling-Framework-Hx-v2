@@ -10,14 +10,14 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DTextureFormat;
+import openfl.display3D.Context3DTextureFormat;
 import openfl.errors.Error;
 import starling.textures.Texture;
 
-import flash.display3D.textures.TextureBase;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
+import openfl.display3D.textures.TextureBase;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 /** A SubTexture represents a section of another texture. This is achieved solely by
  *  manipulation of texture coordinates, making the class very efficient. 
@@ -93,7 +93,7 @@ class SubTexture extends Texture
 		{
 			_transformationMatrixToRoot.concat(texture._transformationMatrix);
 			texture = null;
-			trace("Check");
+			//TODO: trace("Check");
 			try {
 				texture = cast(texture.parent, SubTexture);
 			}

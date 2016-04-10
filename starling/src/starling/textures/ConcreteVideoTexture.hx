@@ -11,10 +11,10 @@
 package starling.textures;
 
 
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.TextureBase;
-import flash.display3D.textures.VideoTexture;
-import flash.events.Event;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.VideoTexture;
+import openfl.events.Event;
 import haxe.Constraints.Function;
 
 import starling.core.Starling;
@@ -31,7 +31,7 @@ class ConcreteVideoTexture extends ConcreteTexture
 	private var _textureReadyCallback:Function;
 	
 	/** Creates a new instance with the given parameters.
-	 *  <code>base</code> must be of type <code>flash.display3D.textures.VideoTexture</code>.
+	 *  <code>base</code> must be of type <code>openfl.display3D.textures.VideoTexture</code>.
 	 */
 	@:allow(starling.textures)
 	private function new(base:VideoTexture, scale:Float = 1)

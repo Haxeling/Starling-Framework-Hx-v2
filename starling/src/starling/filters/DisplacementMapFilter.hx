@@ -13,7 +13,7 @@ package starling.filters;
 import starling.filters.FragmentFilter;
 import starling.filters.ITexturePool;
 
-import flash.geom.Point;
+import openfl.geom.Point;
 
 import starling.core.Starling;
 import starling.rendering.FilterEffect;
@@ -34,10 +34,10 @@ import starling.textures.Texture;
  *  map texture at <code>(x - mapPoint.x, y - mapPoint.y)</code>.</p>
  */
 
-import flash.display.BitmapDataChannel;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
-import flash.geom.Matrix3D;
+import openfl.display.BitmapDataChannel;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.geom.Matrix3D;
 
 
 

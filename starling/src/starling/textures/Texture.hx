@@ -10,25 +10,25 @@
 
 package starling.textures;
 
-import flash.display3D.Context3DProfile;
-import flash.errors.ArgumentError;
+import openfl.display3D.Context3DProfile;
+import openfl.errors.ArgumentError;
 import haxe.Constraints.Function;
 import starling.textures.TextureOptions;
 
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DTextureFormat;
-import flash.display3D.textures.RectangleTexture;
-import flash.display3D.textures.TextureBase;
-import flash.display3D.textures.VideoTexture;
-import flash.geom.Matrix;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.media.Camera;
-import flash.net.NetStream;
-import flash.system.Capabilities;
-import flash.utils.ByteArray;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DTextureFormat;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.TextureBase;
+//import openfl.display3D.textures.VideoTexture;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+//import openfl.media.Camera;
+import openfl.net.NetStream;
+import openfl.system.Capabilities;
+import openfl.utils.ByteArray;
 
 
 import starling.core.Starling;
@@ -53,7 +53,7 @@ import starling.utils.SystemUtil;
  *  <strong>Texture Formats</strong>
  *
  *  <p>Since textures can be created from a "BitmapData" object, Starling supports any bitmap
- *  format that is supported by Flash. And since you can render any Flash display object into
+ *  format that is supported by openfl. And since you can render any Flash display object into
  *  a BitmapData object, you can use this to display non-Starling content in Starling - e.g.
  *  Shape objects.</p>
  *
@@ -195,9 +195,9 @@ class Texture
 					options.mipMapping, options.optimizeForRenderToTexture,
 					options.scale, options.format);
 		}
-		else if (Std.is(data, ByteArray)) 
+		else if (Std.is(data, ByteArrayData)) 
 		{
-			return fromAtfData(cast(data, ByteArray),
+			return fromAtfData(cast(data, ByteArrayData),
 					options.scale, options.mipMapping, options.onReady);
 		}
 		else 
@@ -218,9 +218,9 @@ class Texture
 	{
 		if (options == null)			 options = sDefaultOptions;
 		
-		if (Std.is(base, flash.display3D.textures.Texture)) 
+		if (Std.is(base, openfl.display3D.textures.Texture)) 
 		{
-			return new ConcretePotTexture(cast(base, flash.display3D.textures.Texture), 
+			return new ConcretePotTexture(cast(base, openfl.display3D.textures.Texture), 
 			options.format, width, height, options.mipMapping, 
 			options.premultipliedAlpha, options.optimizeForRenderToTexture, 
 			options.scale);
@@ -231,10 +231,10 @@ class Texture
 			options.format, width, height, options.premultipliedAlpha, 
 			options.optimizeForRenderToTexture, options.scale);
 		}
-		else if (Std.is(base, VideoTexture)) 
+		/*else if (Std.is(base, VideoTexture)) 
 		{
 			return new ConcreteVideoTexture(cast(base, VideoTexture), options.scale);
-		}
+		}*/
 		else 
 		throw new ArgumentError("Unsupported 'base' type: " + Type.getClassName(Type.getClass(base)));
 	}
@@ -268,9 +268,9 @@ class Texture
 						texture.root.uploadBitmap(Type.createInstance(assetClass, []));
 					};
 		}
-		else if (Std.is(asset, ByteArray)) 
+		else if (Std.is(asset, ByteArrayData)) 
 		{
-			texture = Texture.fromAtfData(cast(asset, ByteArray), scale, mipMapping, null);
+			texture = Texture.fromAtfData(cast(asset, ByteArrayData), scale, mipMapping, null);
 			texture.root.onRestore = function():Void
 					{
 						texture.root.uploadAtfData(Type.createInstance(assetClass, []));
@@ -362,7 +362,7 @@ class Texture
 		if (context == null)			 throw new MissingContextError();
 		
 		var atfData:AtfData = new AtfData(data);
-		var nativeTexture:flash.display3D.textures.Texture = context.createTexture(
+		var nativeTexture:openfl.display3D.textures.Texture = context.createTexture(
 				atfData.width, atfData.height, atfData.format, false);
 		var concreteTexture:ConcreteTexture = new ConcretePotTexture(nativeTexture, 
 		atfData.format, atfData.width, atfData.height, useMipMaps && atfData.numTextures > 1, 
@@ -405,20 +405,20 @@ class Texture
 	 *  @param onComplete will be executed when the texture is ready. Contains a parameter
 	 *				 of type 'Texture'.
 	 */
-	public static function fromNetStream(stream:NetStream, scale:Float = 1,
-			onComplete:Function = null):Texture
-	{
-		// workaround for bug in NetStream class:
-		if (stream.client == stream && Reflect.getProperty(stream, "onMetaData") == null) 
-		//if (stream.client == stream && !(Lambda.has(stream, "onMetaData"))) 
-			stream.client = {
-					onMetaData:function(md:Dynamic):Void{
-					}
-
-				};
-		
-		return fromVideoAttachment("NetStream", stream, scale, onComplete);
-	}
+	//public static function fromNetStream(stream:NetStream, scale:Float = 1,
+			//onComplete:Function = null):Texture
+	//{
+		//// workaround for bug in NetStream class:
+		//if (stream.client == stream && Reflect.getProperty(stream, "onMetaData") == null) 
+		////if (stream.client == stream && !(Lambda.has(stream, "onMetaData"))) 
+			//stream.client = {
+					//onMetaData:function(md:Dynamic):Void{
+					//}
+//
+				//};
+		//
+		//return fromVideoAttachment("NetStream", stream, scale, onComplete);
+	//}
 	
 	/** Creates a video texture from a camera. Beware that the texture must not be used
 	 *  before the 'onComplete' callback has been executed; until then, it will have a size
@@ -439,31 +439,31 @@ class Texture
 	 *  @param onComplete will be executed when the texture is ready. May contain a parameter
 	 *				 of type 'Texture'.
 	 */
-	public static function fromCamera(camera:Camera, scale:Float = 1,
-			onComplete:Function = null):Texture
-	{
-		return fromVideoAttachment("Camera", camera, scale, onComplete);
-	}
+	//public static function fromCamera(camera:Camera, scale:Float = 1,
+			//onComplete:Function = null):Texture
+	//{
+		//return fromVideoAttachment("Camera", camera, scale, onComplete);
+	//}
 	
-	private static function fromVideoAttachment(type:String, attachment:Dynamic,
-			scale:Float, onComplete:Function):Texture
-	{
-		if (!SystemUtil.supportsVideoTexture) 
-			throw new NotSupportedError("Video Textures are not supported on this platform");
-		
-		var context:Context3D = Starling.Context;
-		if (context == null)			 throw new MissingContextError();
-		
-		var base:VideoTexture = context.createVideoTexture();
-		var texture:ConcreteTexture = new ConcreteVideoTexture(base, scale);
-		texture.attachVideo(type, attachment, onComplete);
-		texture.onRestore = function():Void
-				{
-					texture.root.attachVideo(type, attachment);
-				};
-		
-		return texture;
-	}
+	//private static function fromVideoAttachment(type:String, attachment:Dynamic,
+			//scale:Float, onComplete:Function):Texture
+	//{
+		//if (!SystemUtil.supportsVideoTexture) 
+			//throw new NotSupportedError("Video Textures are not supported on this platform");
+		//
+		//var context:Context3D = Starling.Context;
+		//if (context == null)			 throw new MissingContextError();
+		//
+		//var base:VideoTexture = context.createVideoTexture();
+		//var texture:ConcreteTexture = new ConcreteVideoTexture(base, scale);
+		//texture.attachVideo(type, attachment, onComplete);
+		//texture.onRestore = function():Void
+				//{
+					//texture.root.attachVideo(type, attachment);
+				//};
+		//
+		//return texture;
+	//}
 	
 	/** Creates a texture with a certain size and color.
 	 *
@@ -524,10 +524,12 @@ class Texture
 		
 		var origWidth:Float = width * scale;
 		var origHeight:Float = height * scale;
-		var useRectTexture:Bool = !mipMapping && Starling.Current.profile !=  Context3DProfile.BASELINE_CONSTRAINED && (format == Context3DTextureFormat.COMPRESSED || format == Context3DTextureFormat.COMPRESSED_ALPHA);
-		trace("check");
-		//format.indexOf("compressed") == -1;
-	   
+		
+		var formatStr:String = cast format;
+		var useRectTexture:Bool = !mipMapping && 
+			Starling.Current.profile != Context3DProfile.BASELINE_CONSTRAINED && 
+			formatStr.indexOf("compressed") == -1;
+		
 		if (useRectTexture) 
 		{
 			actualWidth = Math.ceil(origWidth - 0.000000001);  // avoid floating point errors  
@@ -549,7 +551,7 @@ class Texture
 							actualWidth, actualHeight, format, optimizeForRenderToTexture);
 			
 			concreteTexture = new ConcretePotTexture(
-					cast(nativeTexture, flash.display3D.textures.Texture), format, 
+					cast(nativeTexture, openfl.display3D.textures.Texture), format, 
 					actualWidth, actualHeight, mipMapping, premultipliedAlpha, 
 					optimizeForRenderToTexture, scale);
 		}

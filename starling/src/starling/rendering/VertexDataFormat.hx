@@ -10,12 +10,11 @@
 
 package starling.rendering;
 
-import flash.display3D.Context3DVertexBufferFormat;
-import flash.errors.ArgumentError;
+import openfl.display3D.Context3DVertexBufferFormat;
+import openfl.errors.ArgumentError;
 import starling.rendering.VertexDataAttribute;
 
-import flash.display3D.VertexBuffer3D;
-import flash.utils.Dictionary;
+import openfl.display3D.VertexBuffer3D;
 
 import starling.core.Starling;
 import starling.utils.StringUtil;
@@ -86,7 +85,7 @@ class VertexDataFormat
 	 *	<li>Names are used to access the specific attributes of a vertex. They are
 	 *		completely arbitrary.</li>
 	 *	<li>The available formats can be found in the <code>Context3DVertexBufferFormat</code>
-	 *		class in the <code>flash.display3D</code> package.</li>
+	 *		class in the <code>openfl.display3D</code> package.</li>
 	 *	<li>Both names and format strings are case-sensitive.</li>
 	 *	<li>Always use <code>bytes4</code> for color data that you want to access with the
 	 *		respective methods.</li>

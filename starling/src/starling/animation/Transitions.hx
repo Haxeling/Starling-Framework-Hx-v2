@@ -14,8 +14,6 @@
 
 package starling.animation;
 
-
-import flash.utils.Dictionary;
 import haxe.Constraints.Function;
 
 import starling.errors.AbstractClassError;
@@ -52,7 +50,7 @@ class Transitions
 	public static var EASE_IN_OUT_BOUNCE:String = "easeInOutBounce";
 	public static var EASE_OUT_IN_BOUNCE:String = "easeOutInBounce";
 	
-	private static var sTransitions:Dictionary;
+	private static var sTransitions:Map<String, Function>;
 	
 	/** @private */
 	public function new()
@@ -62,20 +60,20 @@ class Transitions
 	/** Returns the transition function that was registered under a certain name. */
 	public static function getTransition(name:String):Function
 	{
-		if (sTransitions == null)			 registerDefaults();
-		return Reflect.field(sTransitions, name);
+		if (sTransitions == null) registerDefaults();
+		return sTransitions.get(name);
 	}
 	
 	/** Registers a new transition function under a certain name. */
 	public static function register(name:String, func:Function):Void
 	{
-		if (sTransitions == null)			 registerDefaults();
-		Reflect.setField(sTransitions, name, func);
+		if (sTransitions == null) registerDefaults();
+		sTransitions.set(name, func);
 	}
 	
 	private static function registerDefaults():Void
 	{
-		sTransitions = new Dictionary();
+		sTransitions = new Map<String, Function>();
 		
 		register(LINEAR, linear);
 		register(EASE_IN, easeIn);

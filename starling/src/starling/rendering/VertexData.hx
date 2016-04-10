@@ -10,22 +10,22 @@
 
 package starling.rendering;
 
-import flash.display3D.Context3DBufferUsage;
-import flash.display3D.Context3DVertexBufferFormat;
-import flash.errors.ArgumentError;
+import openfl.display3D.Context3DBufferUsage;
+import openfl.display3D.Context3DVertexBufferFormat;
+import openfl.errors.ArgumentError;
 import starling.rendering.VertexDataAttribute;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3D.Context3D;
-import flash.display3D.VertexBuffer3D;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
-import flash.utils.ByteArray;
-import flash.utils.Endian;
+import openfl.display3D.Context3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
+import openfl.utils.ByteArray;
+import openfl.utils.Endian;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -146,7 +146,7 @@ class VertexData
 	 */
 	public function new(format:Dynamic = null, initialCapacity:Int = 32)
 	{
-		if (format == null)			 _format = MeshStyle.VERTEX_FORMAT
+		if (format == null)	_format = MeshStyle.VERTEX_FORMAT
 		else if (Std.is(format, VertexDataFormat)) _format = format
 		else if (Std.is(format, String)) _format = VertexDataFormat.fromString(cast(format, String));
 		else throw new ArgumentError("'format' must be String or VertexDataFormat");
@@ -197,18 +197,20 @@ class VertexData
 	 *  Beware, though, that the copy-operation becomes much more expensive when the formats
 	 *  differ.</p>
 	 */
-	public function copyTo(target:VertexData, targetVertexID:Int = 0, matrix:Matrix = null,
-			vertexID:Int = 0, numVertices:Int = -1):Void
+	
+	public function copyTo(target:VertexData, targetVertexID:Int = 0, matrix:Matrix = null, vertexID:Int = 0, numVertices:Int = -1):Void
 	{
 		if (numVertices < 0 || vertexID + numVertices > _numVertices) 
 			numVertices = _numVertices - vertexID;
 		
 		if (_format == target._format) 
 		{
-			if (target._numVertices < targetVertexID + numVertices) 
+			if (target._numVertices < targetVertexID + numVertices) {
 				target._numVertices = targetVertexID + numVertices;
+			}
 			
-			// and then overwrite only the transformed positions.	// In this case, it's fastest to copy the complete range in one call  ;
+			// In this case, it's fastest to copy the complete range in one call
+			// and then overwrite only the transformed positions.	
 			var targetRawData:ByteArray = target._rawData;
 			targetRawData.position = targetVertexID * _vertexSize;
 			targetRawData.writeBytes(_rawData, vertexID * _vertexSize, numVertices * _vertexSize);
@@ -236,8 +238,9 @@ class VertexData
 		}
 		else 
 		{
-			if (target._numVertices < targetVertexID + numVertices) 
+			if (target._numVertices < targetVertexID + numVertices) {
 				target.numVertices = targetVertexID + numVertices;
+			}
 			
 			// ensure correct alphas!
 			for (i in 0..._numAttributes){
@@ -246,12 +249,12 @@ class VertexData
 				
 				if (tgtAttr != null)   // only copy attributes that exist in the target, as well  
 				{
-					if (srcAttr.offset == _posOffset) 
-						copyAttributeTo_internal(target, targetVertexID, matrix,
-							srcAttr, tgtAttr, vertexID, numVertices)
-					else 
-					copyAttributeTo_internal(target, targetVertexID, null,
-							srcAttr, tgtAttr, vertexID, numVertices);
+					if (srcAttr.offset == _posOffset) {
+						copyAttributeTo_internal(target, targetVertexID, matrix, srcAttr, tgtAttr, vertexID, numVertices);
+					}
+					else {
+						copyAttributeTo_internal(target, targetVertexID, null, srcAttr, tgtAttr, vertexID, numVertices);
+					}
 				}
 			}
 		}
@@ -266,8 +269,7 @@ class VertexData
 	 *  that matrix before storing it in the target object. It must consist of two float
 	 *  values.</p>
 	 */
-	public function copyAttributeTo(target:VertexData, targetVertexID:Int, attrName:String,
-			matrix:Matrix = null, vertexID:Int = 0, numVertices:Int = -1):Void
+	public function copyAttributeTo(target:VertexData, targetVertexID:Int, attrName:String, matrix:Matrix = null, vertexID:Int = 0, numVertices:Int = -1):Void
 	{
 		var sourceAttribute:VertexDataAttribute = getAttribute(attrName);
 		var targetAttribute:VertexDataAttribute = target.getAttribute(attrName);
@@ -278,14 +280,10 @@ class VertexData
 		if (targetAttribute == null) 
 			throw new ArgumentError("Attribute '" + attrName + "' not found in target data");
 		
-		copyAttributeTo_internal(target, targetVertexID, matrix,
-				sourceAttribute, targetAttribute, vertexID, numVertices);
+		copyAttributeTo_internal(target, targetVertexID, matrix, sourceAttribute, targetAttribute, vertexID, numVertices);
 	}
 	
-	private function copyAttributeTo_internal(
-			target:VertexData, targetVertexID:Int, matrix:Matrix,
-			sourceAttribute:VertexDataAttribute, targetAttribute:VertexDataAttribute,
-			vertexID:Int, numVertices:Int):Void
+	private function copyAttributeTo_internal( target:VertexData, targetVertexID:Int, matrix:Matrix, sourceAttribute:VertexDataAttribute, targetAttribute:VertexDataAttribute, vertexID:Int, numVertices:Int):Void
 	{
 		if (sourceAttribute.format != targetAttribute.format) 
 			throw new IllegalOperationError("Attribute formats differ between source and target");
@@ -325,7 +323,8 @@ class VertexData
 		else 
 		{
 			for (i in 0...numVertices){
-				for (j in 0...attributeSizeIn32Bits){targetData.writeUnsignedInt(sourceData.readUnsignedInt());
+				for (j in 0...attributeSizeIn32Bits) {
+					targetData.writeUnsignedInt(sourceData.readUnsignedInt());
 				}
 				
 				sourceData.position += sourceDelta;
@@ -878,7 +877,7 @@ class VertexData
 		var buffer:VertexBuffer3D = context.createVertexBuffer(
 				_numVertices, untyped _vertexSize / 4, bufferUsage);
 		
-		if (upload)			 uploadToVertexBuffer(buffer);
+		if (upload) uploadToVertexBuffer(buffer);
 		return buffer;
 	}
 	

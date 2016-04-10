@@ -10,13 +10,13 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
-import flash.errors.Error;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import haxe.Constraints.Function;
 
-import flash.errors.IllegalOperationError;
-import flash.media.Sound;
-import flash.media.SoundTransform;
+import openfl.errors.IllegalOperationError;
+import openfl.media.Sound;
+import openfl.media.SoundTransform;
 
 import starling.animation.IAnimatable;
 import starling.events.Event;
@@ -264,6 +264,7 @@ class MovieClip extends Image implements IAnimatable
 		// Thus, we have to start over with the remaining time whenever that happens.
 		
 		var frame:MovieClipFrame = _frames[_currentFrameID];
+		trace("_currentFrameID = " + _currentFrameID);
 		
 		if (_wasStopped) 
 		{
@@ -280,6 +281,7 @@ class MovieClip extends Image implements IAnimatable
 				return;
 			}
 		}
+		trace("totalTime = " + totalTime);
 		
 		if (_currentTime == totalTime) 
 		{

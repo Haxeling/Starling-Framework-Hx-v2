@@ -10,7 +10,7 @@
 
 package starling.filters;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.filters.FragmentFilter;
 
 import starling.rendering.FilterEffect;
@@ -37,8 +37,8 @@ import starling.utils.Color;
  *  changes will add up.</p>
  */
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 
 import starling.rendering.Program;
 import starling.utils.RenderUtil;
@@ -244,7 +244,13 @@ class ColorMatrixEffect extends FilterEffect
 	private static var IDENTITY:Array<Dynamic> = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 	
 	// helpers
-	private static var sMatrix:Array<Float> = new Array<Float>();
+	private static var sMatrix:Array<Float> = [
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0
+	];
 	
 	public function new()
 	{

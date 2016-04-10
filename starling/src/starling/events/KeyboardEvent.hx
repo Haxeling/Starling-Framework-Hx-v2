@@ -17,7 +17,7 @@ package starling.events;
  *  properties as the Flash equivalent.</p> 
  * 
  *  <p>To be notified of keyboard events, add an event listener to any display object that
- *  is part of your display tree. Starling has no concept of a "Focus" like native Flash.</p>
+ *  is part of your display tree. Starling has no concept of a "Focus" like native openfl.</p>
  *  
  *  @see starling.display.Stage
  */

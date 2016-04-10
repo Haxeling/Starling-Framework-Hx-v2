@@ -10,24 +10,24 @@
 
 package starling.rendering;
 
-import flash.display3D.Context3DProfile;
-import flash.display3D.Context3DRenderMode;
-import flash.errors.Error;
+import haxe.ds.ObjectMap;
+import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DRenderMode;
+import openfl.errors.Error;
 import starling.rendering.Program;
 import starling.rendering.RenderState;
 
-import flash.display.Stage3D;
-import flash.display3D.Context3D;
-import flash.display3D.Context3DCompareMode;
-import flash.display3D.Context3DStencilAction;
-import flash.display3D.Context3DTriangleFace;
-import flash.display3D.textures.TextureBase;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
-import flash.utils.Dictionary;
+import openfl.display.Stage3D;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DStencilAction;
+import openfl.display3D.Context3DTriangleFace;
+import openfl.display3D.textures.TextureBase;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
 
 import starling.display.BlendMode;
 import starling.display.DisplayObject;
@@ -104,7 +104,7 @@ class Painter
 	private var _frameID:Int;
 	private var _pixelSize:Float;
 	private var _enableErrorChecking:Bool;
-	private var _stencilReferenceValues:Map<String, Int>;
+	private var _stencilReferenceValues:ObjectMap<Dynamic, Int>;
 	private var _clipRectStack:Array<Rectangle>;
 	private var _batchProcessor:BatchProcessor;
 	private var _batchCache:BatchProcessor;
@@ -142,7 +142,7 @@ class Painter
 		_backBufferWidth = (_context != null) ? _context.backBufferWidth:0;
 		_backBufferHeight = (_context != null) ? _context.backBufferHeight:0;
 		_backBufferScaleFactor = _pixelSize = 1.0;
-		_stencilReferenceValues = new Map<String, Int>();
+		_stencilReferenceValues = new ObjectMap<Dynamic, Int>();
 		_clipRectStack = [];
 		_programs = new Map<String,Program>();
 		_data = new Map<String, Dynamic>();
@@ -210,12 +210,10 @@ class Painter
 	 *								this setting in the app-xml (application descriptor);
 	 *								otherwise, this setting will be silently ignored.
 	 */
-	public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Float,
-			antiAlias:Int, enableDepthAndStencil:Bool):Void
+	public function configureBackBuffer(viewPort:Rectangle, contentScaleFactor:Float, antiAlias:Int, enableDepthAndStencil:Bool):Void
 	{
-		trace("fix/check &&= on line 217");
-		//enableDepthAndStencil &&= SystemUtil.supportsDepthAndStencil;
-		if (!SystemUtil.supportsDepthAndStencil) enableDepthAndStencil = false;
+		if (SystemUtil.supportsDepthAndStencil && enableDepthAndStencil) enableDepthAndStencil = true;
+		else enableDepthAndStencil = false;
 		
 		// Changing the stage3D position might move the back buffer to invalid bounds
 		// temporarily. To avoid problems, we set it to the smallest possible size first.
@@ -280,9 +278,8 @@ class Painter
 	public function pushState(token:BatchToken = null):Void
 	{
 		_stateStackPos++;
-		
 		if (_stateStack.length < _stateStackPos + 1) _stateStack[_stateStackPos] = new RenderState();
-		if (token != null)			 _batchProcessor.fillToken(token);
+		if (token != null) _batchProcessor.fillToken(token);
 		
 		_stateStack[_stateStackPos].copyFrom(_state);
 	}
@@ -294,12 +291,11 @@ class Painter
 	 *  @param blendMode			Replaces the current blend mode; except for "auto", which
 	 *							  means the current value remains unchanged.
 	 */
-	public function setStateTo(transformationMatrix:Matrix, alphaFactor:Float = 1.0,
-			blendMode:String = "auto"):Void
+	public function setStateTo(transformationMatrix:Matrix, alphaFactor:Float = 1.0, blendMode:String = "auto"):Void
 	{
-		if (transformationMatrix != null)			 _state.transformModelviewMatrix(transformationMatrix);
+		if (transformationMatrix != null)_state.transformModelviewMatrix(transformationMatrix);
 		if (alphaFactor != 1.0)			 _state.alpha *= alphaFactor;
-		if (blendMode != BlendMode.AUTO)			 _state.blendMode = blendMode;
+		if (blendMode != BlendMode.AUTO) _state.blendMode = blendMode;
 	}
 	
 	/** Restores the render state that was last pushed to the stack. If this changes
@@ -453,7 +449,12 @@ class Painter
 	 *  coordinates. */
 	private function isRectangularMask(mask:DisplayObject, out:Matrix):Bool
 	{
-		var quad:Quad = cast(mask, Quad);
+		var quad:Quad = null;
+		try {
+			quad = cast(mask, Quad);
+		}
+		catch (e:Error) { };
+		
 		if (quad != null && !quad.is3D && quad.style.type == MeshStyle) 
 		{
 			if (mask.stage != null) mask.getTransformationMatrix(null, out)
@@ -531,9 +532,13 @@ class Painter
 		
 		if (!startToken.equals(endToken)) 
 		{
+			
 			pushState();
 			
-			for (i in startToken.batchID...endToken.batchID + 1){
+			var start:Int = startToken.batchID;
+			var end:Int = endToken.batchID + 1;
+			
+			for (i in start...end) {
 				meshBatch = _batchCache.getBatchAt(i);
 				subset.setTo();  // resets subset  
 				
@@ -551,7 +556,7 @@ class Painter
 					subset.numIndices = endToken.indexID - subset.indexID;
 				}
 				
-				if (subset.numVertices > 0) 
+				if (subset.numVertices != 0) 
 				{
 					setStateTo(null, 1.0, meshBatch.blendMode);
 					_batchProcessor.addMesh(meshBatch, _state, subset, true);
@@ -711,7 +716,8 @@ class Painter
 	private function get_drawCount():Int {
 		return _drawCount;
 	}
-	private function set_drawCount(value:Int):Int{_drawCount = value;
+	private function set_drawCount(value:Int):Int {
+		_drawCount = value;
 		return value;
 	}
 	
@@ -723,14 +729,14 @@ class Painter
 	private function get_stencilReferenceValue():Int
 	{
 		var key:Dynamic = (_state.renderTarget != null) ? _state.renderTargetBase:this;
-		if (_stencilReferenceValues.exists(Std.string(key))) return _stencilReferenceValues.get(Std.string(key));
+		if (_stencilReferenceValues.exists(key)) return _stencilReferenceValues.get(key);
 		else return 0;
 	}
 	
 	private function set_stencilReferenceValue(value:Int):Int
 	{
 		var key:Dynamic = (_state.renderTarget != null) ? _state.renderTargetBase:this;
-		_stencilReferenceValues.set(Std.string(key), value);
+		_stencilReferenceValues.set(key, value);
 		
 		if (contextValid) 
 			_context.setStencilReferenceValue(value);
@@ -837,7 +843,6 @@ class Painter
 	 *  if the context has not been created yet. */
 	private function get_profile():Context3DProfile
 	{
-		trace("Check Cast is working correctly");
 		if (_context != null) return cast _context.profile;
 		else return null;
 	}

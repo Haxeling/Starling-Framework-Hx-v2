@@ -13,8 +13,8 @@ package starling.rendering;
 import starling.rendering.Program;
 import starling.rendering.VertexDataFormat;
 
-import flash.display3D.Context3D;
-import flash.display3D.Context3DProgramType;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
 
 import starling.utils.RenderUtil;
 
@@ -41,13 +41,13 @@ class MeshEffect extends FilterEffect
 	private var _alpha:Float;
 	
 	// helper objects
-	private static var sRenderAlpha:Array<Float> = new Array<Float>();
+	private static var sRenderAlpha:Array<Float> = [0, 0, 0, 0];
 	
 	/** Creates a new MeshEffect instance. */
 	public function new()
 	{
 		super();
-		_alpha = 1.0;
+		alpha = 1.0;
 	}
 	
 	/** @private */
@@ -97,7 +97,6 @@ class MeshEffect extends FilterEffect
 	{
 		super.beforeDraw(context);
 		
-		sRenderAlpha[0] = sRenderAlpha[1] = sRenderAlpha[2] = sRenderAlpha[3] = _alpha;
 		context.setProgramConstantsFromVector(Context3DProgramType.VERTEX, 4, sRenderAlpha);
 		vertexFormat.setVertexBufferAt(2, vertexBuffer, "color");
 	}
@@ -125,7 +124,10 @@ class MeshEffect extends FilterEffect
 		return _alpha;
 	}
 	
-	private function set_alpha(value:Float):Float{_alpha = value;
+	private function set_alpha(value:Float):Float {
+		if (_alpha == value) return value;
+		_alpha = value;
+		sRenderAlpha = [_alpha, _alpha, _alpha, _alpha];
 		return value;
 	}
 }

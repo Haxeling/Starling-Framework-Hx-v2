@@ -10,13 +10,12 @@
 
 package starling.text;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.text.ITextCompositor;
 import starling.text.TextFormat;
 import starling.text.TextOptions;
 
-import flash.geom.Rectangle;
-import flash.utils.Dictionary;
+import openfl.geom.Rectangle;
 
 import starling.display.Image;
 import starling.display.MeshBatch;

@@ -10,7 +10,7 @@
 
 package starling.filters;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import starling.filters.FragmentFilter;
 import starling.filters.ITexturePool;
 

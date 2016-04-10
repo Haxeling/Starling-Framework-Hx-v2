@@ -10,35 +10,34 @@
 
 package starling.core;
 
-import flash.display3D.Context3DProfile;
-import flash.display3D.Context3DRenderMode;
-import flash.errors.ArgumentError;
-import flash.errors.Error;
+import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DRenderMode;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import haxe.Timer;
 import starling.core.StatsDisplay;
 
-import flash.display.Shape;
-import flash.display.Sprite;
-import flash.display.Stage3D;
-import flash.display.StageAlign;
-import flash.display.StageScaleMode;
-import flash.display3D.Context3D;
-import flash.errors.IllegalOperationError;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-import flash.events.KeyboardEvent;
-import flash.events.MouseEvent;
-import flash.events.TouchEvent;
-import flash.geom.Rectangle;
-import flash.system.Capabilities;
-import flash.text.TextField;
-import flash.text.TextFieldAutoSize;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-import flash.ui.Mouse;
-import flash.ui.Multitouch;
-import flash.ui.MultitouchInputMode;
-import flash.utils.Dictionary;
+import openfl.display.Shape;
+import openfl.display.Sprite;
+import openfl.display.Stage3D;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
+import openfl.display3D.Context3D;
+import openfl.errors.IllegalOperationError;
+import openfl.events.ErrorEvent;
+import openfl.events.Event;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
+import openfl.geom.Rectangle;
+import openfl.system.Capabilities;
+import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
+import openfl.ui.Mouse;
+import openfl.ui.Multitouch;
+import openfl.ui.MultitouchInputMode;
 
 import starling.animation.Juggler;
 import starling.display.DisplayObject;
@@ -206,7 +205,7 @@ class Starling extends EventDispatcher
 	public var showStats(get, set):Bool;
 	public var stage(get, never):Stage;
 	public var stage3D(get, never):Stage3D;
-	public var nativeStage(get, never):flash.display.Stage;
+	public var nativeStage(get, never):openfl.display.Stage;
 	public var root(get, never):DisplayObject;
 	public var rootClass(get, set):Class<Dynamic>;
 	public var shareContext(get, set):Bool;
@@ -229,7 +228,7 @@ class Starling extends EventDispatcher
 	public static var VERSION:String = "2.0";
 	
 	/** The key for the shader programs stored in 'contextData' */
-	private static var PROGRAM_DATA_NAME:String = "Starling.programs";
+	private static inline var PROGRAM_DATA_NAME:String = "Starling.programs";
 	
 	// members
 	
@@ -252,7 +251,7 @@ class Starling extends EventDispatcher
 	private var _previousViewPort:Rectangle;
 	private var _clippedViewPort:Rectangle;
 	
-	private var _nativeStage:flash.display.Stage;
+	private var _nativeStage:openfl.display.Stage;
 	private var _nativeOverlay:Sprite;
 	
 	private static var sCurrent:Starling;
@@ -291,7 +290,7 @@ class Starling extends EventDispatcher
 	 *						profile automatically.</li>
 	 *					</ul>
 	 */
-	public function new(rootClass:Class<Dynamic>, stage:flash.display.Stage,
+	public function new(rootClass:Class<Dynamic>, stage:openfl.display.Stage,
 			viewPort:Rectangle = null, stage3D:Stage3D = null,
 			renderMode:Context3DRenderMode = null, profile:Array<Context3DProfile> = null)
 	{
@@ -326,7 +325,7 @@ class Starling extends EventDispatcher
 		
 		// register touch/mouse event handlers
 		for (touchEventType in touchEventTypes)
-		stage.addEventListener(touchEventType, onTouch, false, 0, true);
+			stage.addEventListener(touchEventType, onTouch, false, 0, true);
 		
 		// register other event handlers
 		stage.addEventListener(Event.ENTER_FRAME, onEnterFrame, false, 0, true);
@@ -373,7 +372,7 @@ class Starling extends EventDispatcher
 		_nativeStage.removeEventListener(touchEventType, onTouch, false);
 		
 		var index:Int = Lambda.indexOf(sAll, this);
-		if (index != -1)			 sAll.splice(index, 1);
+		if (index != -1) sAll.splice(index, 1);
 		
 		var numInstancesSharingThisPainter:Int = 
 		sAll.filter(function(s:Starling):Bool
@@ -395,12 +394,11 @@ class Starling extends EventDispatcher
 	
 	private function initialize():Void
 	{
-		trace("initialize");
 		makeCurrent();
 		updateViewPort(true);
 		
 		if (!shareContext)			   // ideal time: after viewPort setup, before root creation  
-		dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
+			dispatchEventWith(Event.CONTEXT3D_CREATE, false, context);
 		
 		initializeRoot();
 		_frameTimestamp = Math.round(haxe.Timer.stamp() * 1000) / 1000.0;
@@ -408,12 +406,8 @@ class Starling extends EventDispatcher
 	
 	private function initializeRoot():Void
 	{
-		trace("_root = " + _root);
-		trace("_rootClass = " + _rootClass);
-		
 		if (_root == null && _rootClass != null) 
 		{
-			trace("initializeRoot2");
 			_root = cast(Type.createInstance(_rootClass, []), DisplayObject);
 			if (_root == null) throw new Error("Invalid root class: " + _rootClass);
 			_stage.addChildAt(_root, 0);
@@ -494,8 +488,10 @@ class Starling extends EventDispatcher
 				_clippedViewPort.height / scaleY,
 				_stage.stageWidth, _stage.stageHeight, _stage.cameraPosition);
 		
-		if (!shareContext) 
+		if (!shareContext) {
 			_painter.clear(_stage.color, 1.0);
+			//_painter.clear(0xCC0055, 1.0);
+		}
 		
 		_stage.render(_painter);
 		_painter.finishFrame();
@@ -629,7 +625,6 @@ class Starling extends EventDispatcher
 		stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextRestored, false, 10, true);
 		
 		trace("[Starling] Context ready. Display Driver:", context.driverInfo);
-		trace("onContextCreated");
 		initialize();
 	}
 	
@@ -647,8 +642,8 @@ class Starling extends EventDispatcher
 		
 		if (!shareContext) 
 		{
-			if (_started)				 nextFrame()
-			else if (_rendering)				 render();
+			if (_started) nextFrame()
+			else if (_rendering) render();
 		}
 		
 		updateNativeOverlay();
@@ -699,7 +694,7 @@ class Starling extends EventDispatcher
 	
 	private function onTouch(event:Event):Void
 	{
-		if (!_started)			 return;
+		if (!_started) return;
 		
 		var globalX:Float;
 		var globalY:Float;
@@ -764,6 +759,7 @@ class Starling extends EventDispatcher
 		globalY = _stage.stageHeight * (globalY - _viewPort.y) / _viewPort.height;
 		
 		// enqueue touch in touch processor
+		
 		_touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
 		
 		// allow objects that depend on mouse-over state to be updated immediately
@@ -895,7 +891,7 @@ class Starling extends EventDispatcher
 		
 		if (value) 
 		{
-			if (_statsDisplay != null)				 _stage.addChild(_statsDisplay)
+			if (_statsDisplay != null) _stage.addChild(_statsDisplay)
 			else showStatsAt();
 		}
 		else _statsDisplay.removeFromParent();
@@ -956,7 +952,7 @@ class Starling extends EventDispatcher
 	}
 	
 	/** The Flash (2D) stage object Starling renders beneath. */
-	private function get_nativeStage():flash.display.Stage {
+	private function get_nativeStage():openfl.display.Stage {
 		return _nativeStage;
 	}
 	
@@ -981,7 +977,6 @@ class Starling extends EventDispatcher
 	}
 	private function set_rootClass(value:Class<Dynamic>):Class<Dynamic>
 	{
-		trace("rootClass");
 		if (_rootClass != null && _root != null) 
 			throw new Error("Root class may not change after root has been instantiated")
 		else if (_rootClass == null) 
@@ -1057,43 +1052,43 @@ class Starling extends EventDispatcher
 	// static properties
 	
 	/** The currently active Starling instance. */
-	private static function get_Current():Starling {
+	private static inline function get_Current():Starling {
 		return sCurrent;
 	}
 	
 	/** All Starling instances. <p>CAUTION: not a copy, but the actual object! Do not modify!</p> */
-	private static function get_All():Array<Starling> {
+	private static inline function get_All():Array<Starling> {
 		return sAll;
 	}
 	
 	/** The render context of the currently active Starling instance. */
-	private static function get_Context():Context3D {
+	private static inline function get_Context():Context3D {
 		return (sCurrent != null) ? sCurrent.context:null;
 	}
 	
 	/** The default juggler of the currently active Starling instance. */
-	private static function get_Juggler():Juggler {
+	private static inline function get_Juggler():Juggler {
 		return (sCurrent != null) ? sCurrent._juggler:null;
 	}
 	
 	/** The painter used for all rendering of the currently active Starling instance. */
-	private static function get_Painter():Painter {
+	private static inline function get_Painter():Painter {
 		return (sCurrent != null) ? sCurrent._painter:null;
 	}
 	
 	/** The contentScaleFactor of the currently active Starling instance. */
-	private static function get_ContentScaleFactor():Float
+	private static inline function get_ContentScaleFactor():Float
 	{
 		return (sCurrent != null) ? sCurrent.contentScaleFactor:1.0;
 	}
 	
 	/** Indicates if multitouch input should be supported. */
-	private static function get_MultitouchEnabled():Bool
+	private static inline function get_MultitouchEnabled():Bool
 	{
 		return Multitouch.inputMode == MultitouchInputMode.TOUCH_POINT;
 	}
 	
-	private static function set_MultitouchEnabled(value:Bool):Bool
+	private static inline function set_MultitouchEnabled(value:Bool):Bool
 	{
 		if (sCurrent != null)			 throw new IllegalOperationError(
 		"'multitouchEnabled' must be set before Starling instance is created")
@@ -1104,7 +1099,7 @@ class Starling extends EventDispatcher
 	}
 	
 	/** The number of frames that have been rendered since the current instance was created. */
-	private static function get_FrameID():Int
+	private static inline function get_FrameID():Int
 	{
 		return (sCurrent != null) ? sCurrent._frameID:0;
 	}

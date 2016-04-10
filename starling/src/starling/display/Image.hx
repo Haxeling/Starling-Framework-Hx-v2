@@ -12,7 +12,7 @@ package starling.display;
 
 import starling.display.Quad;
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 import starling.rendering.IndexData;
 import starling.rendering.VertexData;

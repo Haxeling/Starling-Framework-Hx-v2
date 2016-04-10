@@ -10,9 +10,9 @@
 
 package starling.display;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 
-import flash.display3D.Context3DBlendFactor;
+import openfl.display3D.Context3DBlendFactor;
 
 import starling.core.Starling;
 
@@ -32,7 +32,7 @@ import starling.core.Starling;
  *  To get the math right, remember that all colors in Starling use premultiplied alpha (PMA),
  *  which means that their RGB values were multiplied with the alpha value.</p>
  *
- *  @see flash.display3D.Context3DBlendFactor
+ *  @see openfl.display3D.Context3DBlendFactor
  */
 class BlendMode
 {

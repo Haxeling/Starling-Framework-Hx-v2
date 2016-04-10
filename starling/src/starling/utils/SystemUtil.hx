@@ -10,13 +10,13 @@
 
 package starling.utils;
 
-import flash.errors.Error;
+import openfl.errors.Error;
 import haxe.Constraints.Function;
 
-import flash.display3D.Context3D;
-import flash.events.Event;
-import flash.events.EventDispatcher;
-import flash.system.Capabilities;
+import openfl.display3D.Context3D;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
+import openfl.system.Capabilities;
 
 
 import starling.errors.AbstractClassError;
@@ -58,7 +58,7 @@ class SystemUtil
 		trace("FIX");
 		/*try
 		{
-			var nativeAppClass:Dynamic = Type.resolveClass("flash.desktop::NativeApplication");
+			var nativeAppClass:Dynamic = Type.resolveClass("openfl.desktop::NativeApplication");
 			var nativeApp:EventDispatcher = cast(Reflect.field(nativeAppClass, "nativeApplication"), EventDispatcher);
 			
 			nativeApp.addEventListener(Event.ACTIVATE, onActivate, false, 0, true);

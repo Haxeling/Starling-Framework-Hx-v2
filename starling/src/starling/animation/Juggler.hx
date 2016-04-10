@@ -10,11 +10,10 @@
 
 package starling.animation;
 
-import flash.errors.ArgumentError;
+import openfl.errors.ArgumentError;
 import haxe.Constraints.Function;
+import openfl.errors.Error;
 import starling.animation.Tween;
-
-import flash.utils.Dictionary;
 
 import starling.events.Event;
 import starling.events.EventDispatcher;
@@ -126,12 +125,14 @@ class Juggler implements IAnimatable
 			var dispatcher:EventDispatcher = cast(object, EventDispatcher);
 			if (dispatcher != null)	dispatcher.removeEventListener(Event.REMOVE_FROM_JUGGLER, onRemove);
 			
-			for (i in 0..._objects.length) 
+			var i:Int = _objects.length - 1;
+			while (i >= 0) 
 			{
 				if (_objects[i] == object) {
 					_objects[i] = null;
 					_objects.splice(i, 0);
 				}
+				i--;
 			}
 			objectID = _objectIDs.get(object);
 			_objectIDs.remove(object);
@@ -279,7 +280,7 @@ class Juggler implements IAnimatable
 	 */
 	public function repeatCall(call:Function, interval:Float, repeatCount:Int = 0, args:Array<Dynamic> = null):Int
 	{
-		if (call == null)			 throw new ArgumentError("call must not be null");
+		if (call == null) throw new ArgumentError("call must not be null");
 		
 		var delayedCall:DelayedCall = DelayedCall.fromPool(call, interval, args);
 		delayedCall.repeatCount = repeatCount;
@@ -333,6 +334,7 @@ class Juggler implements IAnimatable
 		for (property in Reflect.fields(properties))
 		{
 			var value:Dynamic = Reflect.field(properties, property);
+			
 			if (tweenSetters.indexOf(property) >= 0) {
 				Reflect.setProperty(tween, property, value);
 			} else {
@@ -357,43 +359,57 @@ class Juggler implements IAnimatable
 	public function advanceTime(time:Float):Void
 	{
 		var numObjects:Int = _objects.length;
-		var currentIndex:Int = 0;
-		var i:Int;
-		
-		_elapsedTime += time;
-		if (numObjects == 0) return;
-		
-		// there is a high probability that the "advanceTime" function modifies the list  ;
-		// of animatables. we must not process new objects right now (they will be processed	
-		// in the next frame), and we need to clean up any empty slots in the list.	
-		
-		var i:Int = 0;
-		for (i in 0...numObjects){
-			var object:IAnimatable = _objects[i];
-			if (object != null) 
-			{
-				// shift objects into empty slots along the way
-				if (currentIndex != i) 
-				{
-					_objects[currentIndex] = object;
-					_objects[i] = null;
-				}
-				
-				object.advanceTime(time);
-				++currentIndex;
-			}
-		}
-		
-		if (currentIndex != i) 
-		{
-			numObjects = _objects.length;  // count might have changed!  
-			
-			while (i < numObjects)
-			_objects[cast(currentIndex++, Int)] = _objects[cast(i++, Int)];
-			
-			_objects.splice(currentIndex, _objects.length - currentIndex);
-		}
+        var currentIndex:Int = 0;
+        var i:Int = 0;
+        
+        _elapsedTime += time;
+        if (numObjects == 0) return;
+        
+        // there is a high probability that the "advanceTime" function modifies the list 
+        // of animatables. we must not process new objects right now (they will be processed
+        // in the next frame), and we need to clean up any empty slots in the list.
+
+        while (i < numObjects)
+        {
+            var object:IAnimatable = _objects[i];
+            if (object != null)
+            {
+                // shift objects into empty slots along the way
+                if (currentIndex != i) 
+                {
+                    _objects[currentIndex] = object;
+                    _objects[i] = null;
+                }
+                
+                object.advanceTime(time);
+                ++currentIndex;
+            }
+            
+            ++i;
+        }
+        
+        if (currentIndex != i)
+        {
+            numObjects = _objects.length; // count might have changed!
+
+            while (i < numObjects)
+                _objects[currentIndex++] = _objects[i++];
+
+            resize(_objects, currentIndex);
+        }
 	}
+	
+	public function resize<T>(arr:Array<T>, newLength:Int, defaultValue:T = null):Void
+    {
+        var length:Int = arr.length;
+        if (newLength < length)
+            arr.splice(newLength, length - newLength);
+        else if (newLength > length)
+        {
+            for (i in length ... newLength)
+                arr[i] = defaultValue;
+        }
+    }
 	
 	private function onRemove(event:Event):Void
 	{
@@ -401,7 +417,11 @@ class Juggler implements IAnimatable
 		
 		if (objectID != 0) 
 		{
-			var tween:Tween = cast(event.target, Tween);
+			var tween:Tween = null;
+			try { tween = cast event.target; }
+			catch (e:Error) { }
+			
+			//var tween:Tween = cast(event.target, Tween);
 			if (tween != null && tween.isComplete) 
 				addWithID(tween.nextTween, objectID);
 		}

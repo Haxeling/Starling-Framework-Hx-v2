@@ -11,14 +11,14 @@
 package starling.display;
 
 
-import flash.display.BitmapData;
-import flash.display3D.Context3D;
-import flash.errors.IllegalOperationError;
-import flash.geom.Matrix;
-import flash.geom.Matrix3D;
-import flash.geom.Point;
-import flash.geom.Rectangle;
-import flash.geom.Vector3D;
+import openfl.display.BitmapData;
+import openfl.display3D.Context3D;
+import openfl.errors.IllegalOperationError;
+import openfl.geom.Matrix;
+import openfl.geom.Matrix3D;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Vector3D;
 
 import starling.core.Starling;
 import starling.events.EnterFrameEvent;
@@ -40,7 +40,7 @@ import starling.utils.RectangleUtil;
  * 
  *  <p>This class represents the Starling version of the stage. Don't confuse it with its 
  *  Flash equivalent: while the latter contains objects of the type 
- *  <code>flash.display.DisplayObject</code>, the Starling stage contains only objects of the
+ *  <code>openfl.display.DisplayObject</code>, the Starling stage contains only objects of the
  *  type <code>starling.display.DisplayObject</code>. Those classes are not compatible, and 
  *  you cannot exchange one type with the other.</p>
  * 
@@ -172,7 +172,7 @@ class Stage extends DisplayObjectContainer
 	 *  spawned up by 'stageWidth' and 'stageHeight') in another coordinate system. */
 	public function getStageBounds(targetSpace:DisplayObject, out:Rectangle = null):Rectangle
 	{
-		if (out == null)			 out = new Rectangle();
+		if (out == null) out = new Rectangle();
 		
 		out.setTo(0, 0, _width, _height);
 		getTransformationMatrix(targetSpace, sMatrix);
