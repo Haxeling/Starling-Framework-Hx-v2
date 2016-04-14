@@ -109,7 +109,9 @@ class TextField extends DisplayObjectContainer
 	// helper objects
 	private static var sMatrix:Matrix = new Matrix();
 	private static var sTrueTypeCompositor:TrueTypeCompositor = new TrueTypeCompositor();
-	private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA_PACKED;
+	// TODO: Check
+	//private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA_PACKED;
+	private static var sDefaultTextureFormat:Context3DTextureFormat = Context3DTextureFormat.BGRA;
 	private var _helperFormat:TextFormat = new TextFormat();
 	
 	/** Create a new text field with the given properties. */

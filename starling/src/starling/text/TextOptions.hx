@@ -33,7 +33,11 @@ class TextOptions
 		_wordWrap = wordWrap;
 		_autoScale = autoScale;
 		_textureScale = Starling.ContentScaleFactor;
-		_textureFormat = Context3DTextureFormat.BGR_PACKED;
+		
+		// TODO: Check
+		//_textureFormat = Context3DTextureFormat.BGR_PACKED;
+		_textureFormat = Context3DTextureFormat.BGRA;
+		
 		_isHtmlText = false;
 	}
 	

@@ -53,9 +53,7 @@ class SubTexture extends Texture
 	 *  @param rotated	If true, the SubTexture will show the parent region rotated by
 	 *					90 degrees (CCW).
 	 */
-	public function new(parent:Texture, region:Rectangle = null,
-			ownsParent:Bool = false, frame:Rectangle = null,
-			rotated:Bool = false)
+	public function new(parent:Texture, region:Rectangle = null, ownsParent:Bool = false, frame:Rectangle = null, rotated:Bool = false)
 	{
 		super();
 		// TODO: in a future version, the order of arguments of this constructor should
@@ -92,14 +90,20 @@ class SubTexture extends Texture
 		while (texture != null)
 		{
 			_transformationMatrixToRoot.concat(texture._transformationMatrix);
-			texture = null;
 			//TODO: trace("Check");
-			try {
+			
+			if (Reflect.hasField(texture, "parent")) {
 				texture = cast(texture.parent, SubTexture);
 			}
-			catch (e:Error) {
-				
+			else {
+				texture = null;
 			}
+			//try {
+				
+			//}
+			//catch (e:Error) {
+			//	
+			//}
 		}
 	}
 	

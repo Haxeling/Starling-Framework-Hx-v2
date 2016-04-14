@@ -137,8 +137,7 @@ class Stage extends DisplayObjectContainer
 	 *  @param transparent  If enabled, empty areas will appear transparent; otherwise, they
 	 *					  will be filled with the stage color.
 	 */
-	public function drawToBitmapData(destination:BitmapData = null,
-			transparent:Bool = true):BitmapData
+	public function drawToBitmapData(destination:BitmapData = null,transparent:Bool = true):BitmapData
 	{
 		var painter:Painter = Starling.Painter;
 		var state:RenderState = painter.state;
@@ -146,8 +145,8 @@ class Stage extends DisplayObjectContainer
 		
 		if (destination == null) 
 		{
-			var width:Int = context.backBufferWidth;
-			var height:Int = context.backBufferHeight;
+			var width:Int = painter.backBufferWidth;
+			var height:Int = painter.backBufferHeight;
 			destination = new BitmapData(width, height, transparent);
 		}
 		

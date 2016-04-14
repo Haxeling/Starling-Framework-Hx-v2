@@ -11,15 +11,14 @@
 package starling.rendering;
 
 
+import openfl.display3D._shaders.Shader;
+
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProgramType;
 import openfl.display3D.Program3D;
 import openfl.display3D._shaders.AGLSLShaderUtils;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
-import haxe.ds.StringMap;
-import openfl._internal.aglsl.assembler.Part;
-import openfl.utils.AGALMiniAssembler;
 
 import starling.core.Starling;
 import starling.errors.MissingContextError;
@@ -38,15 +37,22 @@ import starling.errors.MissingContextError;
  */
 class Program
 {
+	#if flash
 	private var _vertexShader:ByteArray;
 	private var _fragmentShader:ByteArray;
+	#else
+	private var _vertexShader:Shader;
+	private var _fragmentShader:Shader;
+	#end
+	
 	private var _program3D:Program3D;
 	
-	var vertexShaderStr:String;
-	var fragmentShaderStr:String;
-	
 	/** Creates a program from the given AGAL (Adobe Graphics Assembly Language) bytecode. */
+	#if flash
 	public function new(vertexShader:ByteArray, fragmentShader:ByteArray)
+	#else
+	public function new(vertexShader:Shader, fragmentShader:Shader)
+	#end
 	{
 		_vertexShader = vertexShader;
 		_fragmentShader = fragmentShader;
@@ -55,6 +61,8 @@ class Program
 		Starling.Current.stage3D.addEventListener(Event.CONTEXT3D_CREATE,
 				onContextCreated, false, 0, true);
 	}
+	
+	
 	
 	/** Disposes the internal Program3D instance. */
 	public function dispose():Void
@@ -66,17 +74,17 @@ class Program
 	/** Creates a new Program instance from AGAL assembly language. */
 	public static function fromSource(vertexShaderStr:String, fragmentShaderStr:String, agalVersion:Int = 1):Program
 	{
-		trace("vertexShaderStr = " + vertexShaderStr);
-		trace("fragmentShaderStr = " + fragmentShaderStr);
-		
+		#if flash
 		var program = new Program(
 			AGLSLShaderUtils.compile(cast Context3DProgramType.VERTEX, vertexShaderStr),
 			AGLSLShaderUtils.compile(cast Context3DProgramType.FRAGMENT, fragmentShaderStr)
 		);
-		
-		program.vertexShaderStr = vertexShaderStr;
-		program.fragmentShaderStr = fragmentShaderStr;
-		
+		#else
+		var program = new Program(
+			AGLSLShaderUtils.createShader(cast Context3DProgramType.VERTEX, vertexShaderStr),
+			AGLSLShaderUtils.createShader(cast Context3DProgramType.FRAGMENT, fragmentShaderStr)
+		);
+		#end
 		return program;
 	}
 	

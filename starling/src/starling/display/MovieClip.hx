@@ -524,7 +524,7 @@ class MovieClipFrame
 			#if flash
 				var numArgs:Int = untyped action['length'];
 			#else
-				var numArgs:Int = 2
+				var numArgs:Int = 2;
 			#end
 			
 			if (numArgs == 0) action()

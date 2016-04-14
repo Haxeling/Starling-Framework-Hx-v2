@@ -212,8 +212,10 @@ class RenderUtil
 		
 		if (RenderUtil.profiles == null) {
 			RenderUtil.profiles = [
+				#if flash
 				Context3DProfile.STANDARD, 
 				Context3DProfile.STANDARD_CONSTRAINED, 
+				#end
 				Context3DProfile.BASELINE_EXTENDED, 
 				Context3DProfile.BASELINE, 
 				Context3DProfile.BASELINE_CONSTRAINED

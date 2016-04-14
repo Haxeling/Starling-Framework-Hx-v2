@@ -11,14 +11,16 @@
 package starling.display;
 
 import openfl.errors.ArgumentError;
+import openfl.geom.Rectangle;
+import openfl.ui.Mouse;
+
+#if flash
+import flash.ui.MouseCursor;
+#end
+
 import starling.display.DisplayObjectContainer;
 import starling.display.Image;
 import starling.display.Sprite;
-
-import openfl.geom.Rectangle;
-import flash.ui.Mouse;
-import flash.ui.MouseCursor;
-
 import starling.events.Event;
 import starling.events.Touch;
 import starling.events.TouchEvent;
@@ -168,8 +170,9 @@ class Button extends DisplayObjectContainer
 	
 	override private function onTouch(event:TouchEvent):Void
 	{
-		Mouse.cursor = ((_useHandCursor && _enabled && event.interactsWith(this))) ? 
-				MouseCursor.BUTTON:MouseCursor.AUTO;
+		#if flash
+		Mouse.cursor = ((_useHandCursor && _enabled && event.interactsWith(this))) ? MouseCursor.BUTTON:MouseCursor.AUTO;
+		#end
 		
 		var touch:Touch = event.getTouch(this);
 		var isWithinBounds:Bool;

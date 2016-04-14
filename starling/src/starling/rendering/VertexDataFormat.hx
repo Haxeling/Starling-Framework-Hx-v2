@@ -55,7 +55,7 @@ class VertexDataFormat
 	public var numAttributes(get, never):Int;
 
 	private var _format:String;
-	private var _vertexSize:Int;
+	private var _vertexSize:Int = 0;
 	private var _attributes:Array<VertexDataAttribute>;
 	
 	// format cache
@@ -198,20 +198,22 @@ class VertexDataFormat
 					throw new ArgumentError("Missing colon: " + attrDesc);
 				
 				var attrName:String = StringTools.trim(attrParts[0]);
-				var attrFormat:String = StringTools.trim(attrParts[1]);
+				var attrStrFormat:String = StringTools.trim(attrParts[1]);
 				
-				if (attrName.length == 0 || attrFormat.length == 0) 
+				if (attrName.length == 0 || attrStrFormat.length == 0) 
 					throw new ArgumentError(("Invalid format string: " + attrDesc));
 				
-				var attribute:VertexDataAttribute = 
-				new VertexDataAttribute(attrName, cast attrFormat, offset);
-				
+				var attrFormat:Context3DVertexBufferFormat = null;
+				if (attrStrFormat == "bytes4") attrFormat = Context3DVertexBufferFormat.BYTES_4;
+				else if (attrStrFormat == "float1") attrFormat = Context3DVertexBufferFormat.FLOAT_1;
+				else if (attrStrFormat == "float2") attrFormat = Context3DVertexBufferFormat.FLOAT_2;
+				else if (attrStrFormat == "float3") attrFormat = Context3DVertexBufferFormat.FLOAT_3;
+				else if (attrStrFormat == "float4") attrFormat = Context3DVertexBufferFormat.FLOAT_4;
+				var attribute:VertexDataAttribute = new VertexDataAttribute(attrName, attrFormat, offset);
 				offset += attribute.size;
-				
 				_format += (i == (0) ? "":", ") + attribute.name + ":" + attribute.format;
 				_attributes[_attributes.length] = attribute;
 			}
-			
 			_vertexSize = offset;
 		}
 		else 

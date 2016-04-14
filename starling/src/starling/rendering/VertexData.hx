@@ -105,15 +105,15 @@ class VertexData
 	public var sizeIn32Bits(get, never):Int;
 
 	private var _rawData:ByteArray;
-	private var _numVertices:Int;
+	private var _numVertices:Int = 0;
 	private var _format:VertexDataFormat;
 	private var _attributes:Array<VertexDataAttribute>;
-	private var _numAttributes:Int;
-	private var _premultipliedAlpha:Bool;
+	private var _numAttributes:Int = 0;
+	private var _premultipliedAlpha:Bool = false;
 	
-	private var _posOffset:Int;  // in bytes  
-	private var _colOffset:Int;  // in bytes  
-	private var _vertexSize:Int;  // in bytes  
+	private var _posOffset:Int = 0;  // in bytes  
+	private var _colOffset:Int = 0;  // in bytes  
+	private var _vertexSize:Int = 0;  // in bytes  
 	
 	// helper objects
 	private static var sHelperPoint:Point = new Point();
@@ -155,6 +155,7 @@ class VertexData
 		_numAttributes = _attributes.length;
 		_posOffset = (_format.hasAttribute("position")) ? _format.getOffsetInBytes("position"):0;
 		_colOffset = (_format.hasAttribute("color")) ? _format.getOffsetInBytes("color"):0;
+		
 		_vertexSize = _format.vertexSizeInBytes;
 		_numVertices = 0;
 		_premultipliedAlpha = true;
@@ -381,7 +382,7 @@ class VertexData
 	/** Reads a Point from the specified vertex and attribute. */
 	public function getPoint(vertexID:Int, attrName:String, out:Point = null):Point
 	{
-		if (out == null)			 out = new Point();
+		if (out == null) out = new Point();
 		
 		var offset:Int = attrName == ("position") ? _posOffset:getAttribute(attrName).offset;
 		_rawData.position = vertexID * _vertexSize + offset;

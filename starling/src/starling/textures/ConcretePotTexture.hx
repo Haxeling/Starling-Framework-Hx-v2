@@ -61,7 +61,7 @@ class ConcretePotTexture extends ConcreteTexture
 	/** @inheritDoc */
 	override public function dispose():Void
 	{
-		base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+		base.removeEventListener(Texture.TEXTURE_READY, onTextureReady);
 		super.dispose();
 	}
 	
@@ -123,7 +123,7 @@ class ConcretePotTexture extends ConcreteTexture
 		if (Reflect.isFunction(async)) 
 		{
 			_textureReadyCallback = untyped async;
-			base.addEventListener(Event.TEXTURE_READY, onTextureReady);
+			base.addEventListener(Texture.TEXTURE_READY, onTextureReady);
 		}
 		
 		potBase.uploadCompressedTextureFromByteArray(data, offset, isAsync);
@@ -132,7 +132,7 @@ class ConcretePotTexture extends ConcreteTexture
 	
 	private function onTextureReady(event:Event):Void
 	{
-		base.removeEventListener(Event.TEXTURE_READY, onTextureReady);
+		base.removeEventListener(Texture.TEXTURE_READY, onTextureReady);
 		Execute.call(_textureReadyCallback, [this]);
 		_textureReadyCallback = null;
 	}

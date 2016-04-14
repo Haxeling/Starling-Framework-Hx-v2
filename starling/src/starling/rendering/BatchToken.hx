@@ -29,10 +29,10 @@ class BatchToken
 	@:isVar public var batchID(get, set):Int;
 	
 	/** The ID of the next vertex within the current MeshBatch. */
-	public var vertexID:Int;
+	public var vertexID:Int = 0;
 	
 	/** The ID of the next index within the current MeshBatch. */
-	public var indexID:Int;
+	public var indexID:Int = 0;
 	
 	/** Creates a new BatchToken. */
 	public function new(batchID:Int = 0, vertexID:Int = 0, indexID:Int = 0)

@@ -57,7 +57,7 @@ class Juggler implements IAnimatable
 	private var _objectIDs:Map<IAnimatable, Int>;
 	private var _elapsedTime:Float;
 	
-	private static var sCurrentObjectID:Int;
+	private static var sCurrentObjectID:Int = 0;
 	
 	private static var tweenSetters:Array<String> = null;
 	

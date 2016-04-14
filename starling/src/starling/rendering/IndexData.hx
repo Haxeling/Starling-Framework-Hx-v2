@@ -73,9 +73,9 @@ class IndexData
 	private static var INDEX_SIZE:Int = 2;
 	
 	private var _rawData:ByteArray;
-	private var _numIndices:Int;
-	private var _initialCapacity:Int;
-	private var _useQuadLayout:Bool;
+	private var _numIndices:Int = 0;
+	private var _initialCapacity:Int = 0;
+	private var _useQuadLayout:Bool = false;
 	
 	// helper objects
 	private static var sVector:Array<UInt> = [];

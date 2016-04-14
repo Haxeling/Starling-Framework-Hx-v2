@@ -22,9 +22,11 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Vector3D;
 import openfl.system.Capabilities;
+
+#if flash
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
-
+#end
 
 import starling.core.Starling;
 import starling.errors.AbstractClassError;
@@ -887,7 +889,9 @@ class DisplayObject extends EventDispatcher
 	
 	private function onTouch(event:TouchEvent):Void
 	{
+		#if flash
 		Mouse.cursor = (event.interactsWith(this)) ? MouseCursor.BUTTON:MouseCursor.AUTO;
+		#end
 	}
 	
 	/** The bounds of the object relative to the local coordinates of the parent. */

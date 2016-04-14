@@ -109,16 +109,16 @@ class AssetManager extends EventDispatcher
 	private static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 
 	private var mStarling:Starling;
-	private var mNumLostTextures:Int;
-	private var mNumRestoredTextures:Int;
-	private var mNumLoadingQueues:Int;
+	private var mNumLostTextures:Int = 0;
+	private var mNumRestoredTextures:Int = 0;
+	private var mNumLoadingQueues:Int = 0;
 
 	private var mDefaultTextureOptions:TextureOptions;
-	private var mCheckPolicyFile:Bool;
-	private var mKeepAtlasXmls:Bool;
-	private var mKeepFontXmls:Bool;
-	private var mNumConnections:Int;
-	private var mVerbose:Bool;
+	private var mCheckPolicyFile:Bool = false;
+	private var mKeepAtlasXmls:Bool = false;
+	private var mKeepFontXmls:Bool = false;
+	private var mNumConnections:Int = 0;
+	private var mVerbose:Bool = false;
 	private var mQueue:Array<Dynamic>;
 	
 	private var mTextures:Map<String, Texture>;

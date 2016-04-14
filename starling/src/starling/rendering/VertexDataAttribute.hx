@@ -34,13 +34,14 @@ class VertexDataAttribute
 
 	public var name:String;
 	public var format:Context3DVertexBufferFormat;
-	public var isColor:Bool;
-	public var offset:Int; // in bytes
-	public var size:Int;   // in bytes
+	public var isColor:Bool = false;
+	public var offset:Int = 0; // in bytes
+	public var size:Int = 0;   // in bytes
 
 	/** Creates a new instance with the given properties. */
 	public function new(name:String, format:Context3DVertexBufferFormat, offset:Int)
 	{
+		trace("set format = " + format);
 		try {
 			var i:Int = untyped VertexDataAttribute.FORMAT_SIZES[format];
 		}
@@ -54,7 +55,18 @@ class VertexDataAttribute
 		this.name = name;
 		this.format = format;
 		this.offset = offset;
-		this.size = untyped FORMAT_SIZES[format];
+		
+		//trace("FORMAT_SIZES = " + FORMAT_SIZES);
+		//trace("format = " + format);
+		//trace(untyped FORMAT_SIZES[format]);
+		
+		if (format == Context3DVertexBufferFormat.BYTES_4) this.size = 4;
+		else if (format == Context3DVertexBufferFormat.FLOAT_1) this.size = 4;
+		else if (format == Context3DVertexBufferFormat.FLOAT_2) this.size = 8;
+		else if (format == Context3DVertexBufferFormat.FLOAT_3) this.size = 12;
+		else if (format == Context3DVertexBufferFormat.FLOAT_4) this.size = 16;
+		
+		//this.size = untyped FORMAT_SIZES[format];
 		this.isColor = name.indexOf("color") != -1 || name.indexOf("Color") != -1;
 	}
 	

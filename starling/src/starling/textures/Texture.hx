@@ -128,6 +128,8 @@ import starling.utils.SystemUtil;
  */
 class Texture
 {
+	static private var TEXTURE_READY:String = "textureReady"; // for backwards compatibility
+	
 	public var frame(get, never):Rectangle;
 	public var frameWidth(get, never):Float;
 	public var frameHeight(get, never):Float;

@@ -16,6 +16,7 @@ import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 import haxe.Timer;
 import starling.core.StatsDisplay;
+import starling.openfl.OpenFLOverrides;
 
 import openfl.display.Shape;
 import openfl.display.Sprite;
@@ -295,9 +296,12 @@ class Starling extends EventDispatcher
 			renderMode:Context3DRenderMode = null, profile:Array<Context3DProfile> = null)
 	{
 		super();
-		if (stage == null)			 throw new ArgumentError("Stage must not be null");
-		if (viewPort == null)			 viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-		if (stage3D == null)			 stage3D = stage.stage3Ds[0];
+		
+		OpenFLOverrides;
+		
+		if (stage == null) throw new ArgumentError("Stage must not be null");
+		if (viewPort == null) viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
+		if (stage3D == null) stage3D = stage.stage3Ds[0];
 		
 		// TODO it might make sense to exchange the 'renderMode' and 'profile' parameters.  ;
 		
@@ -492,7 +496,6 @@ class Starling extends EventDispatcher
 			_painter.clear(_stage.color, 1.0);
 			//_painter.clear(0xCC0055, 1.0);
 		}
-		
 		_stage.render(_painter);
 		_painter.finishFrame();
 		_painter.frameID = ++_frameID;
@@ -526,11 +529,13 @@ class Starling extends EventDispatcher
 			
 			if (!shareContext) 
 			{
-				var contentScaleFactor:Float = 
-				(_supportHighResolutions) ? _nativeStage.contentsScaleFactor:1.0;
-				
+				var contentScaleFactor:Float = 1;
+				if (_supportHighResolutions && Reflect.hasField(_nativeStage, "contentsScaleFactor")) {
+					contentScaleFactor = Reflect.getProperty(_nativeStage, "contentsScaleFactor");
+				}
 				_painter.configureBackBuffer(_clippedViewPort, contentScaleFactor,
 						_antiAliasing, true);
+
 			}
 		}
 	}
@@ -639,7 +644,6 @@ class Starling extends EventDispatcher
 	{
 		// On mobile, the native display list is only updated on stage3D draw calls.
 		// Thus, we render even when Starling is paused.
-		
 		if (!shareContext) 
 		{
 			if (_started) nextFrame()
@@ -651,7 +655,7 @@ class Starling extends EventDispatcher
 	
 	private function onKey(event:KeyboardEvent):Void
 	{
-		if (!_started)			 return;
+		if (!_started) return;
 		
 		var keyEvent:starling.events.KeyboardEvent = new starling.events.KeyboardEvent(
 		event.type, event.charCode, event.keyCode, event.keyLocation, 
@@ -715,8 +719,8 @@ class Starling extends EventDispatcher
 			// MouseEvent.buttonDown returns true for both left and right button (AIR supports
 			// the right mouse button). We only want to react on the left button for now,
 			// so we have to save the state for the left button manually.
-			if (event.type == MouseEvent.MOUSE_DOWN)				 _leftMouseDown = true
-			else if (event.type == MouseEvent.MOUSE_UP)				 _leftMouseDown = false;
+			if (event.type == MouseEvent.MOUSE_DOWN)	_leftMouseDown = true
+			else if (event.type == MouseEvent.MOUSE_UP)	_leftMouseDown = false;
 		}
 		else 
 		{
@@ -725,8 +729,11 @@ class Starling extends EventDispatcher
 			// On a system that supports both mouse and touch input, the primary touch point
 			// is dispatched as mouse event as well. Since we don't want to listen to that
 			// event twice, we ignore the primary touch in that case.
-			
-			if (Mouse.supportsCursor && touchEvent.isPrimaryTouchPoint)				 return
+			var supportsCursor:Bool = false;
+			#if flash
+			supportsCursor = Mouse.supportsCursor;
+			#end
+			if (supportsCursor && touchEvent.isPrimaryTouchPoint) return;
 			else 
 			{
 				globalX = touchEvent.stageX;
@@ -763,7 +770,11 @@ class Starling extends EventDispatcher
 		_touchProcessor.enqueue(touchID, phase, globalX, globalY, pressure, width, height);
 		
 		// allow objects that depend on mouse-over state to be updated immediately
-		if (event.type == MouseEvent.MOUSE_UP && Mouse.supportsCursor) 
+		var supportsCursor:Bool = false;
+		#if flash
+		supportsCursor = Mouse.supportsCursor;
+		#end
+		if (event.type == MouseEvent.MOUSE_UP && supportsCursor) 
 			_touchProcessor.enqueue(touchID, TouchPhase.HOVER, globalX, globalY);
 	}
 	
@@ -777,7 +788,11 @@ class Starling extends EventDispatcher
 			types.push(TouchEvent.TOUCH_END);
 		}
 		
-		if (!MultitouchEnabled || Mouse.supportsCursor) {
+		var supportsCursor:Bool = false;
+		#if flash
+		supportsCursor = Mouse.supportsCursor;
+		#end
+		if (!MultitouchEnabled || supportsCursor) {
 			types.push(MouseEvent.MOUSE_DOWN);
 			types.push(MouseEvent.MOUSE_MOVE);
 			types.push(MouseEvent.MOUSE_UP);
@@ -1046,7 +1061,7 @@ class Starling extends EventDispatcher
 	/** Indicates if the Context3D object is currently valid (i.e. it hasn't been lost or
 	 *  disposed). */
 	private function get_contextValid():Bool {
-		return _painter.contextValid;
+		return context != null && context.driverInfo != "Disposed";
 	}
 	
 	// static properties
@@ -1104,4 +1119,3 @@ class Starling extends EventDispatcher
 		return (sCurrent != null) ? sCurrent._frameID:0;
 	}
 }
-

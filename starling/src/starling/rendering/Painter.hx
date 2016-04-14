@@ -97,13 +97,13 @@ class Painter
 	
 	private var _stage3D:Stage3D;
 	private var _context:Context3D;
-	private var _shareContext:Bool;
+	private var _shareContext:Bool = false;
 	private var _programs:Map<String,Program>;
 	private var _data:Map<String, Dynamic>;
-	private var _drawCount:Int;
-	private var _frameID:Int;
-	private var _pixelSize:Float;
-	private var _enableErrorChecking:Bool;
+	private var _drawCount:Int = 0;
+	private var _frameID:Int = 0;
+	private var _pixelSize:Float = 0;
+	private var _enableErrorChecking:Bool = false;
 	private var _stencilReferenceValues:ObjectMap<Dynamic, Int>;
 	private var _clipRectStack:Array<Rectangle>;
 	private var _batchProcessor:BatchProcessor;
@@ -113,13 +113,13 @@ class Painter
 	private var _actualCulling:Context3DTriangleFace;
 	private var _actualBlendMode:String;
 	
-	private var _backBufferWidth:Float;
-	private var _backBufferHeight:Float;
-	private var _backBufferScaleFactor:Float;
+	private var _backBufferWidth:Float = 0;
+	private var _backBufferHeight:Float = 0;
+	private var _backBufferScaleFactor:Float = 0;
 	
 	private var _state:RenderState;
 	private var _stateStack:Array<RenderState>;
-	private var _stateStackPos:Int;
+	private var _stateStackPos:Int = 0;
 	
 	// helper objects
 	private static var sMatrix:Matrix = new Matrix();
@@ -139,8 +139,8 @@ class Painter
 		_stage3D.addEventListener(Event.CONTEXT3D_CREATE, onContextCreated, false, 10, true);
 		_context = _stage3D.context3D;
 		_shareContext = (_context != null) && _context.driverInfo != "Disposed";
-		_backBufferWidth = (_context != null) ? _context.backBufferWidth:0;
-		_backBufferHeight = (_context != null) ? _context.backBufferHeight:0;
+		_backBufferWidth = (_context != null) ? this.backBufferWidth:0;
+		_backBufferHeight = (_context != null) ? this.backBufferHeight:0;
 		_backBufferScaleFactor = _pixelSize = 1.0;
 		_stencilReferenceValues = new ObjectMap<Dynamic, Int>();
 		_clipRectStack = [];
@@ -167,7 +167,7 @@ class Painter
 		_batchCache.dispose();
 		
 		if (!_shareContext) 
-			_context.dispose(false);
+			_context.dispose(#if flash false #end);
 		
 		for (program in _programs)
 			program.dispose();
@@ -218,14 +218,14 @@ class Painter
 		// Changing the stage3D position might move the back buffer to invalid bounds
 		// temporarily. To avoid problems, we set it to the smallest possible size first.
 		
-		if (_context.profile == "baselineConstrained") 
+		
+		if (this.profile == Context3DProfile.BASELINE_CONSTRAINED) 
 			_context.configureBackBuffer(32, 32, antiAlias, enableDepthAndStencil);
 		
 		_stage3D.x = viewPort.x;
 		_stage3D.y = viewPort.y;
 		
-		_context.configureBackBuffer(untyped viewPort.width, untyped viewPort.height,
-				antiAlias, enableDepthAndStencil, contentScaleFactor != 1.0);
+		_context.configureBackBuffer(untyped viewPort.width, untyped viewPort.height, antiAlias, enableDepthAndStencil #if flash, contentScaleFactor != 1.0 #end);
 		
 		_backBufferWidth = viewPort.width;
 		_backBufferHeight = viewPort.height;
@@ -843,8 +843,14 @@ class Painter
 	 *  if the context has not been created yet. */
 	private function get_profile():Context3DProfile
 	{
-		if (_context != null) return cast _context.profile;
-		else return null;
+		#if !flash
+			trace("WARNING: _context.profile not supported for this target");
+			return Context3DProfile.BASELINE_CONSTRAINED;
+		#else
+			if (_context != null) return cast _context.profile;
+			else return null;
+		#end
+		
 	}
 	
 	/** A dictionary that can be used to save custom data related to the render context.

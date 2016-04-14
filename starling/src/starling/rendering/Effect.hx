@@ -122,9 +122,9 @@ class Effect
 		VertexDataFormat.fromString("position:float2");
 	
 	private var _indexBuffer:IndexBuffer3D;
-	private var _indexBufferSize:Int;  // in number of indices  
+	private var _indexBufferSize:Int = 0;  // in number of indices  
 	private var _vertexBuffer:VertexBuffer3D;
-	private var _vertexBufferSize:Int;  // in blocks of 32 bits  
+	private var _vertexBufferSize:Int = 0;  // in blocks of 32 bits  
 	
 	private var _mvpMatrix3D:Matrix3D;
 	private var _onRestore:Function;
