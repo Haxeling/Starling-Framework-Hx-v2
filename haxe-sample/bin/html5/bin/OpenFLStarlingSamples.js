@@ -45,16 +45,20 @@ ApplicationMain.create = function() {
 	types.push("IMAGE");
 	urls.push("assets/textures/1x/compressed_texture.atf");
 	types.push("BINARY");
+	urls.push("assets/textures/1x/jsHeader.png");
+	types.push("IMAGE");
 	urls.push("assets/textures/2x/atlas.png");
 	types.push("IMAGE");
 	urls.push("assets/textures/2x/atlas.xml");
 	types.push("TEXT");
-	urls.push("assets/textures/2x/atlas2.png");
-	types.push("IMAGE");
 	urls.push("assets/textures/2x/background.jpg");
 	types.push("IMAGE");
 	urls.push("assets/textures/2x/compressed_texture.atf");
 	types.push("BINARY");
+	urls.push("assets/textures/perlinNoise.png");
+	types.push("IMAGE");
+	urls.push("assets/textures/Untitled.png");
+	types.push("IMAGE");
 	if(ApplicationMain.config.assetsPrefix != null) {
 		var _g1 = 0;
 		var _g = urls.length;
@@ -77,11 +81,11 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "1372", company : "P.J.Shand", file : "OpenFLStarlingSamples", fps : 60, name : "OpenFLStarlingSamples", orientation : "portrait", packageName : "starling.samples", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 960, parameters : "{}", resizable : true, stencilBuffer : true, title : "OpenFLStarlingSamples", vsync : true, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "1389", company : "P.J.Shand", file : "OpenFLStarlingSamples", fps : 60, name : "OpenFLStarlingSamples", orientation : "portrait", packageName : "starling.samples", version : "1.0.0", windows : [{ antialiasing : 0, background : 3355443, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : false, height : 960, parameters : "{}", resizable : true, stencilBuffer : true, title : "OpenFLStarlingSamples", vsync : true, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
-	var entryPoint = Type.resolveClass("sample.Main");
+	var entryPoint = Type.resolveClass("test.TestMain");
 	var _g = 0;
 	var _g1 = Type.getClassFields(entryPoint);
 	while(_g < _g1.length) {
@@ -1481,12 +1485,9 @@ openfl_display_Sprite.prototype = $extend(openfl_display_DisplayObjectContainer.
 	}
 	,__hitTest: function(x,y,shapeFlag,stack,interactiveOnly,hitObject) {
 		if(this.hitArea != null) {
-			if(!this.hitArea.mouseEnabled) {
-				this.hitArea.mouseEnabled = true;
-				var hitTest = this.hitArea.__hitTest(x,y,shapeFlag,null,true,hitObject);
-				this.hitArea.mouseEnabled = false;
-				if(hitTest) stack[stack.length] = hitObject;
-				return hitTest;
+			if(!this.hitArea.mouseEnabled && this.hitArea.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject)) {
+				stack[stack.length - 1] = hitObject;
+				return true;
 			}
 		} else {
 			if(!hitObject.get_visible() || this.__isMask || interactiveOnly && !this.mouseEnabled && !this.mouseChildren) return false;
@@ -1515,20 +1516,16 @@ openfl_display_Sprite.prototype = $extend(openfl_display_DisplayObjectContainer.
 	,__class__: openfl_display_Sprite
 	,__properties__: $extend(openfl_display_DisplayObjectContainer.prototype.__properties__,{get_graphics:"get_graphics"})
 });
-var sample_Main = function() {
+var test_TestMain = function() {
 	this.StageHeight = Constants.GameHeight;
 	this.StageWidth = Constants.GameWidth;
 	openfl_display_Sprite.call(this);
-	sample_Main._root = this;
-	sample_Main.mouseOnStageDispatcher = new starling_events_EventDispatcher();
 	if(this.stage != null) this.start(); else this.addEventListener("addedToStage",$bind(this,this.onAddedToStage));
 };
-$hxClasses["sample.Main"] = sample_Main;
-sample_Main.__name__ = ["sample","Main"];
-sample_Main.mouseOnStageDispatcher = null;
-sample_Main._root = null;
-sample_Main.__super__ = openfl_display_Sprite;
-sample_Main.prototype = $extend(openfl_display_Sprite.prototype,{
+$hxClasses["test.TestMain"] = test_TestMain;
+test_TestMain.__name__ = ["test","TestMain"];
+test_TestMain.__super__ = openfl_display_Sprite;
+test_TestMain.prototype = $extend(openfl_display_Sprite.prototype,{
 	StageWidth: null
 	,StageHeight: null
 	,mStarling: null
@@ -1537,7 +1534,6 @@ sample_Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.start();
 	}
 	,start: function() {
-		var _g = this;
 		if(starling_core_Starling.sCurrent != null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("'multitouchEnabled' must be set before Starling instance is created")); else openfl_ui_Multitouch.set_inputMode(2);
 		true;
 		if(starling_core_Starling.sCurrent != null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("'multitouchEnabled' must be set before Starling instance is created")); else openfl_ui_Multitouch.set_inputMode(2);
@@ -1545,78 +1541,26 @@ sample_Main.prototype = $extend(openfl_display_Sprite.prototype,{
 		var viewPort = new openfl_geom_Rectangle(0,0,this.StageWidth * 2,this.StageHeight * 2);
 		var scaleFactor;
 		if(viewPort.width < 480) scaleFactor = 1; else scaleFactor = 2;
-		this.mStarling = new starling_core_Starling(Game,this.stage,viewPort,null,openfl_display3D_Context3DRenderMode.AUTO,[openfl_display3D_Context3DProfile.BASELINE]);
+		this.mStarling = new starling_core_Starling(test_TestBase,this.stage,viewPort,null,openfl_display3D_Context3DRenderMode.AUTO,[openfl_display3D_Context3DProfile.BASELINE]);
 		this.mStarling.get_stage().set_stageWidth(this.StageWidth);
 		this.mStarling.get_stage().set_stageHeight(this.StageHeight);
 		this.mStarling.set_antiAliasing(2);
 		this.mStarling.set_simulateMultitouch(false);
 		this.mStarling.addEventListener(starling_events_Event.ROOT_CREATED,function() {
-			_g.loadAssets(scaleFactor,$bind(_g,_g.startGame));
-			_g.switchRendering();
 		});
 		this.mStarling.start();
-		haxe_Log.trace("DeviceInfo.isMobile = " + Std.string(utils_DeviceInfo.get_isMobile()),{ fileName : "Main.hx", lineNumber : 97, className : "sample.Main", methodName : "start"});
-		if(utils_DeviceInfo.get_isMobile()) this.set_mouseOnStage(true); else {
-			var firstElementChild = window.document.body.firstElementChild.firstElementChild;
-			firstElementChild.onmousemove = $bind(this,this.onMouseMove);
-			firstElementChild.onmouseout = $bind(this,this.onLeaveHandler);
-		}
 	}
-	,onMouseMove: function(e) {
-		this.set_mouseOnStage(true);
-	}
-	,onLeaveHandler: function(e) {
-		this.set_mouseOnStage(false);
-	}
-	,loadAssets: function(scaleFactor,onComplete) {
-		var assets = new starling_utils_AssetManager(scaleFactor);
-		assets.enqueueWithName(EmbeddedAssets.get_atlas(),"atlas",new starling_textures_TextureOptions(2));
-		assets.enqueueWithName(EmbeddedAssets.get_atlas_xml(),"atlas_xml");
-		assets.enqueueWithName(EmbeddedAssets.get_background(),"background");
-		assets.enqueueWithName(EmbeddedAssets.get_compressed_texture(),"compressed_texture");
-		assets.enqueueWithName(EmbeddedAssets.get_desyrel(),"desyrel",new starling_textures_TextureOptions(2));
-		assets.enqueueWithName(EmbeddedAssets.get_desyrel_fnt(),"desyrel_fnt");
-		assets.enqueueWithName(EmbeddedAssets.get_wing_flap(),"wing_flap");
-		assets.loadQueue(function(ratio) {
-			if(ratio == 1) onComplete(assets);
-		});
-	}
-	,startGame: function(assets) {
-		var game = this.mStarling.get_root();
-		game.start(assets);
-	}
-	,get_mouseOnStage: function() {
-		return sample_Main._mouseOnStage;
-	}
-	,set_mouseOnStage: function(value) {
-		if(this.get_mouseOnStage() == value) return value;
-		sample_Main._mouseOnStage = value;
-		this.switchRendering();
-		sample_Main.mouseOnStageDispatcher.dispatchEvent(new starling_events_Event(starling_events_Event.CHANGE));
-		return value;
-	}
-	,switchRendering: function() {
-		if(this.get_mouseOnStage()) {
-			this.mStarling.start();
-			this.get_graphics().clear();
-		} else {
-			this.mStarling.stop();
-			this.get_graphics().beginFill(0,0.8);
-			this.get_graphics().drawRect(0,0,this.stage.stageWidth,this.stage.stageHeight);
-		}
-	}
-	,__class__: sample_Main
-	,__properties__: $extend(openfl_display_Sprite.prototype.__properties__,{set_mouseOnStage:"set_mouseOnStage",get_mouseOnStage:"get_mouseOnStage"})
+	,__class__: test_TestMain
 });
 var DocumentClass = function() {
 	openfl_Lib.current.addChild(this);
-	sample_Main.call(this);
+	test_TestMain.call(this);
 	this.dispatchEvent(new openfl_events_Event("addedToStage",false,false));
 };
 $hxClasses["DocumentClass"] = DocumentClass;
 DocumentClass.__name__ = ["DocumentClass"];
-DocumentClass.__super__ = sample_Main;
-DocumentClass.prototype = $extend(sample_Main.prototype,{
+DocumentClass.__super__ = test_TestMain;
+DocumentClass.prototype = $extend(test_TestMain.prototype,{
 	__class__: DocumentClass
 });
 var Constants = function() {
@@ -1742,21 +1686,27 @@ var DefaultAssetLibrary = function() {
 	id = "assets/textures/1x/compressed_texture.atf";
 	this.path.set(id,id);
 	this.type.set(id,"BINARY");
+	id = "assets/textures/1x/jsHeader.png";
+	this.path.set(id,id);
+	this.type.set(id,"IMAGE");
 	id = "assets/textures/2x/atlas.png";
 	this.path.set(id,id);
 	this.type.set(id,"IMAGE");
 	id = "assets/textures/2x/atlas.xml";
 	this.path.set(id,id);
 	this.type.set(id,"TEXT");
-	id = "assets/textures/2x/atlas2.png";
-	this.path.set(id,id);
-	this.type.set(id,"IMAGE");
 	id = "assets/textures/2x/background.jpg";
 	this.path.set(id,id);
 	this.type.set(id,"IMAGE");
 	id = "assets/textures/2x/compressed_texture.atf";
 	this.path.set(id,id);
 	this.type.set(id,"BINARY");
+	id = "assets/textures/perlinNoise.png";
+	this.path.set(id,id);
+	this.type.set(id,"IMAGE");
+	id = "assets/textures/Untitled.png";
+	this.path.set(id,id);
+	this.type.set(id,"IMAGE");
 	var assetsPrefix = null;
 	if(ApplicationMain.config != null && Object.prototype.hasOwnProperty.call(ApplicationMain.config,"assetsPrefix")) assetsPrefix = ApplicationMain.config.assetsPrefix;
 	if(assetsPrefix != null) {
@@ -2099,5059 +2049,6 @@ EReg.prototype = {
 	}
 	,__class__: EReg
 };
-var EmbeddedAssets = function() { };
-$hxClasses["EmbeddedAssets"] = EmbeddedAssets;
-EmbeddedAssets.__name__ = ["EmbeddedAssets"];
-EmbeddedAssets.__properties__ = {get_wing_flap:"get_wing_flap",get_desyrel:"get_desyrel",get_desyrel_fnt:"get_desyrel_fnt",get_compressed_texture:"get_compressed_texture",get_background:"get_background",get_atlas2:"get_atlas2",get_atlas:"get_atlas",get_atlas_xml:"get_atlas_xml"}
-EmbeddedAssets.atlas_xml = null;
-EmbeddedAssets.atlas = null;
-EmbeddedAssets.atlas2 = null;
-EmbeddedAssets.background = null;
-EmbeddedAssets.compressed_texture = null;
-EmbeddedAssets.desyrel_fnt = null;
-EmbeddedAssets.desyrel = null;
-EmbeddedAssets.wing_flap = null;
-EmbeddedAssets.get_atlas_xml = function() {
-	return Xml.parse(openfl_Assets.getText("assets/textures/2x/atlas.xml"));
-};
-EmbeddedAssets.get_atlas = function() {
-	return openfl_Assets.getBitmapData("assets/textures/2x/atlas.png");
-};
-EmbeddedAssets.get_atlas2 = function() {
-	return openfl_Assets.getBitmapData("assets/textures/2x/atlas2.png");
-};
-EmbeddedAssets.get_background = function() {
-	return openfl_Assets.getBitmapData("assets/textures/2x/background.jpg");
-};
-EmbeddedAssets.get_compressed_texture = function() {
-	return openfl_Assets.getBytes("assets/textures/2x/compressed_texture.atf");
-};
-EmbeddedAssets.get_desyrel_fnt = function() {
-	return Xml.parse(openfl_Assets.getText("assets/fonts/2x/desyrel.fnt"));
-};
-EmbeddedAssets.get_desyrel = function() {
-	return openfl_Assets.getBitmapData("assets/fonts/2x/desyrel.png");
-};
-EmbeddedAssets.get_wing_flap = function() {
-	return openfl_Assets.getSound("assets/audio/wing_flap.mp3");
-};
-var starling_events_EventDispatcher = function() {
-};
-$hxClasses["starling.events.EventDispatcher"] = starling_events_EventDispatcher;
-starling_events_EventDispatcher.__name__ = ["starling","events","EventDispatcher"];
-starling_events_EventDispatcher.prototype = {
-	_eventListeners: null
-	,addEventListener: function(type,listener) {
-		if(this._eventListeners == null) this._eventListeners = new haxe_ds_StringMap();
-		var listeners = this._eventListeners.get(type);
-		if(listeners == null) this._eventListeners.set(type,[listener]); else if(HxOverrides.indexOf(listeners,listener,0) == -1) listeners[listeners.length] = listener;
-	}
-	,removeEventListener: function(type,listener) {
-		if(this._eventListeners != null) {
-			var listeners = this._eventListeners.get(type);
-			var numListeners;
-			if(listeners != null) numListeners = listeners.length; else numListeners = 0;
-			if(numListeners > 0) {
-				var index = Lambda.indexOf(listeners,listener);
-				if(index != -1) {
-					var restListeners = listeners.splice(0,index);
-					var _g = index + 1;
-					while(_g < numListeners) {
-						var i = _g++;
-						restListeners[i - 1] = listeners[i];
-					}
-					this._eventListeners.set(type,restListeners);
-				}
-			}
-		}
-	}
-	,removeEventListeners: function(type) {
-		if(type != null && this._eventListeners != null) this._eventListeners.remove(type); else this._eventListeners = null;
-	}
-	,dispatchEvent: function(event) {
-		var bubbles = event.get_bubbles();
-		if(!bubbles && (this._eventListeners == null || !(function($this) {
-			var $r;
-			var key = event.get_type();
-			$r = $this._eventListeners.exists(key);
-			return $r;
-		}(this)))) return;
-		var previousTarget = event.get_target();
-		event.setTarget(this);
-		if(bubbles && js_Boot.__instanceof(this,starling_display_DisplayObject)) this.bubbleEvent(event); else this.invokeEvent(event);
-		if(previousTarget != null) event.setTarget(previousTarget);
-	}
-	,invokeEvent: function(event) {
-		var listeners;
-		if(this._eventListeners != null) {
-			var key = event.get_type();
-			listeners = this._eventListeners.get(key);
-		} else listeners = null;
-		var numListeners;
-		if(listeners == null) numListeners = 0; else numListeners = listeners.length;
-		if(numListeners != 0) {
-			event.setCurrentTarget(this);
-			var i = numListeners - 1;
-			while(i >= 0) {
-				var listener = listeners[i];
-				if(listener != null) listener(event,event.get_data());
-				if(event.get_stopsImmediatePropagation()) return true;
-				i--;
-			}
-			return event.get_stopsPropagation();
-		} else return false;
-	}
-	,bubbleEvent: function(event) {
-		var chain;
-		var element;
-		element = js_Boot.__cast(this , starling_display_DisplayObject);
-		var length = 1;
-		if(starling_events_EventDispatcher.sBubbleChains.length > 0) {
-			chain = starling_events_EventDispatcher.sBubbleChains.pop();
-			chain[0] = element;
-		} else chain = [element];
-		while((element = element.get_parent()) != null) chain[js_Boot.__cast(length++ , Int)] = element;
-		var _g = 0;
-		while(_g < length) {
-			var i = _g++;
-			var stopPropagation = chain[i].invokeEvent(event);
-			if(stopPropagation) break;
-		}
-		chain.splice(0,chain.length);
-		starling_events_EventDispatcher.sBubbleChains[starling_events_EventDispatcher.sBubbleChains.length] = chain;
-	}
-	,dispatchEventWith: function(type,bubbles,data) {
-		if(bubbles == null) bubbles = false;
-		var _hasEventListener = this.hasEventListener(type);
-		if(bubbles || _hasEventListener) {
-			var event = starling_events_Event.fromPool(type,bubbles,data);
-			this.dispatchEvent(event);
-			starling_events_Event.toPool(event);
-		}
-	}
-	,hasEventListener: function(type,listener) {
-		var listeners;
-		if(this._eventListeners != null) listeners = this._eventListeners.get(type); else listeners = null;
-		if(listeners == null) return false; else if(listener != null) {
-			var _g1 = 0;
-			var _g = listeners.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				if(listeners[i] == listener) return true;
-			}
-			return false;
-		} else return listeners.length != 0;
-	}
-	,__class__: starling_events_EventDispatcher
-};
-var openfl_geom_Matrix = function(a,b,c,d,tx,ty) {
-	if(ty == null) ty = 0;
-	if(tx == null) tx = 0;
-	if(d == null) d = 1;
-	if(c == null) c = 0;
-	if(b == null) b = 0;
-	if(a == null) a = 1;
-	this.a = a;
-	this.b = b;
-	this.c = c;
-	this.d = d;
-	this.tx = tx;
-	this.ty = ty;
-};
-$hxClasses["openfl.geom.Matrix"] = openfl_geom_Matrix;
-openfl_geom_Matrix.__name__ = ["openfl","geom","Matrix"];
-openfl_geom_Matrix.prototype = {
-	a: null
-	,b: null
-	,c: null
-	,d: null
-	,tx: null
-	,ty: null
-	,__array: null
-	,clone: function() {
-		return new openfl_geom_Matrix(this.a,this.b,this.c,this.d,this.tx,this.ty);
-	}
-	,concat: function(m) {
-		var a1 = this.a * m.a + this.b * m.c;
-		this.b = this.a * m.b + this.b * m.d;
-		this.a = a1;
-		var c1 = this.c * m.a + this.d * m.c;
-		this.d = this.c * m.b + this.d * m.d;
-		this.c = c1;
-		var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
-		this.ty = this.tx * m.b + this.ty * m.d + m.ty;
-		this.tx = tx1;
-	}
-	,copyColumnFrom: function(column,vector3D) {
-		if(column > 2) throw new js__$Boot_HaxeError("Column " + column + " out of bounds (2)"); else if(column == 0) {
-			this.a = vector3D.x;
-			this.c = vector3D.y;
-		} else if(column == 1) {
-			this.b = vector3D.x;
-			this.d = vector3D.y;
-		} else {
-			this.tx = vector3D.x;
-			this.ty = vector3D.y;
-		}
-	}
-	,copyColumnTo: function(column,vector3D) {
-		if(column > 2) throw new js__$Boot_HaxeError("Column " + column + " out of bounds (2)"); else if(column == 0) {
-			vector3D.x = this.a;
-			vector3D.y = this.c;
-			vector3D.z = 0;
-		} else if(column == 1) {
-			vector3D.x = this.b;
-			vector3D.y = this.d;
-			vector3D.z = 0;
-		} else {
-			vector3D.x = this.tx;
-			vector3D.y = this.ty;
-			vector3D.z = 1;
-		}
-	}
-	,copyFrom: function(sourceMatrix) {
-		this.a = sourceMatrix.a;
-		this.b = sourceMatrix.b;
-		this.c = sourceMatrix.c;
-		this.d = sourceMatrix.d;
-		this.tx = sourceMatrix.tx;
-		this.ty = sourceMatrix.ty;
-	}
-	,copyRowFrom: function(row,vector3D) {
-		if(row > 2) throw new js__$Boot_HaxeError("Row " + row + " out of bounds (2)"); else if(row == 0) {
-			this.a = vector3D.x;
-			this.c = vector3D.y;
-		} else if(row == 1) {
-			this.b = vector3D.x;
-			this.d = vector3D.y;
-		} else {
-			this.tx = vector3D.x;
-			this.ty = vector3D.y;
-		}
-	}
-	,copyRowTo: function(row,vector3D) {
-		if(row > 2) throw new js__$Boot_HaxeError("Row " + row + " out of bounds (2)"); else if(row == 0) {
-			vector3D.x = this.a;
-			vector3D.y = this.b;
-			vector3D.z = this.tx;
-		} else if(row == 1) {
-			vector3D.x = this.c;
-			vector3D.y = this.d;
-			vector3D.z = this.ty;
-		} else vector3D.setTo(0,0,1);
-	}
-	,createBox: function(scaleX,scaleY,rotation,tx,ty) {
-		if(ty == null) ty = 0;
-		if(tx == null) tx = 0;
-		if(rotation == null) rotation = 0;
-		if(rotation != 0) {
-			var cos = Math.cos(rotation);
-			var sin = Math.sin(rotation);
-			this.a = cos * scaleX;
-			this.b = sin * scaleY;
-			this.c = -sin * scaleX;
-			this.d = cos * scaleY;
-		} else {
-			this.a = scaleX;
-			this.b = 0;
-			this.c = 0;
-			this.d = scaleY;
-		}
-		this.tx = tx;
-		this.ty = ty;
-	}
-	,createGradientBox: function(width,height,rotation,tx,ty) {
-		if(ty == null) ty = 0;
-		if(tx == null) tx = 0;
-		if(rotation == null) rotation = 0;
-		this.a = width / 1638.4;
-		this.d = height / 1638.4;
-		if(rotation != 0) {
-			var cos = Math.cos(rotation);
-			var sin = Math.sin(rotation);
-			this.b = sin * this.d;
-			this.c = -sin * this.a;
-			this.a *= cos;
-			this.d *= cos;
-		} else {
-			this.b = 0;
-			this.c = 0;
-		}
-		this.tx = tx + width / 2;
-		this.ty = ty + height / 2;
-	}
-	,deltaTransformPoint: function(point) {
-		return new openfl_geom_Point(point.x * this.a + point.y * this.c,point.x * this.b + point.y * this.d);
-	}
-	,equals: function(matrix) {
-		return matrix != null && this.tx == matrix.tx && this.ty == matrix.ty && this.a == matrix.a && this.b == matrix.b && this.c == matrix.c && this.d == matrix.d;
-	}
-	,identity: function() {
-		this.a = 1;
-		this.b = 0;
-		this.c = 0;
-		this.d = 1;
-		this.tx = 0;
-		this.ty = 0;
-	}
-	,invert: function() {
-		var norm = this.a * this.d - this.b * this.c;
-		if(norm == 0) {
-			this.a = this.b = this.c = this.d = 0;
-			this.tx = -this.tx;
-			this.ty = -this.ty;
-		} else {
-			norm = 1.0 / norm;
-			var a1 = this.d * norm;
-			this.d = this.a * norm;
-			this.a = a1;
-			this.b *= -norm;
-			this.c *= -norm;
-			var tx1 = -this.a * this.tx - this.c * this.ty;
-			this.ty = -this.b * this.tx - this.d * this.ty;
-			this.tx = tx1;
-		}
-		return this;
-	}
-	,rotate: function(theta) {
-		var cos = Math.cos(theta);
-		var sin = Math.sin(theta);
-		var a1 = this.a * cos - this.b * sin;
-		this.b = this.a * sin + this.b * cos;
-		this.a = a1;
-		var c1 = this.c * cos - this.d * sin;
-		this.d = this.c * sin + this.d * cos;
-		this.c = c1;
-		var tx1 = this.tx * cos - this.ty * sin;
-		this.ty = this.tx * sin + this.ty * cos;
-		this.tx = tx1;
-	}
-	,scale: function(sx,sy) {
-		this.a *= sx;
-		this.b *= sy;
-		this.c *= sx;
-		this.d *= sy;
-		this.tx *= sx;
-		this.ty *= sy;
-	}
-	,setRotation: function(theta,scale) {
-		if(scale == null) scale = 1;
-		this.a = Math.cos(theta) * scale;
-		this.c = Math.sin(theta) * scale;
-		this.b = -this.c;
-		this.d = this.a;
-	}
-	,setTo: function(a,b,c,d,tx,ty) {
-		this.a = a;
-		this.b = b;
-		this.c = c;
-		this.d = d;
-		this.tx = tx;
-		this.ty = ty;
-	}
-	,to3DString: function(roundPixels) {
-		if(roundPixels == null) roundPixels = false;
-		if(roundPixels) return "matrix3d(" + this.a + ", " + this.b + ", 0, 0, " + this.c + ", " + this.d + ", 0, 0, 0, 0, 1, 0, " + (this.tx | 0) + ", " + (this.ty | 0) + ", 0, 1)"; else return "matrix3d(" + this.a + ", " + this.b + ", 0, 0, " + this.c + ", " + this.d + ", 0, 0, 0, 0, 1, 0, " + this.tx + ", " + this.ty + ", 0, 1)";
-	}
-	,toMozString: function() {
-		return "matrix(" + this.a + ", " + this.b + ", " + this.c + ", " + this.d + ", " + this.tx + "px, " + this.ty + "px)";
-	}
-	,toString: function() {
-		return "matrix(" + this.a + ", " + this.b + ", " + this.c + ", " + this.d + ", " + this.tx + ", " + this.ty + ")";
-	}
-	,transformPoint: function(pos) {
-		return new openfl_geom_Point(pos.x * this.a + pos.y * this.c + this.tx,pos.x * this.b + pos.y * this.d + this.ty);
-	}
-	,translate: function(dx,dy) {
-		this.tx += dx;
-		this.ty += dy;
-	}
-	,toArray: function(transpose) {
-		if(transpose == null) transpose = false;
-		if(this.__array == null) {
-			var this1;
-			this1 = new Float32Array(9);
-			this.__array = this1;
-		}
-		if(transpose) {
-			this.__array[0] = this.a;
-			this.__array[1] = this.b;
-			this.__array[2] = 0;
-			this.__array[3] = this.c;
-			this.__array[4] = this.d;
-			this.__array[5] = 0;
-			this.__array[6] = this.tx;
-			this.__array[7] = this.ty;
-			this.__array[8] = 1;
-		} else {
-			this.__array[0] = this.a;
-			this.__array[1] = this.c;
-			this.__array[2] = this.tx;
-			this.__array[3] = this.b;
-			this.__array[4] = this.d;
-			this.__array[5] = this.ty;
-			this.__array[6] = 0;
-			this.__array[7] = 0;
-			this.__array[8] = 1;
-		}
-		return this.__array;
-	}
-	,__cleanValues: function() {
-		this.a = Math.round(this.a * 1000) / 1000;
-		this.b = Math.round(this.b * 1000) / 1000;
-		this.c = Math.round(this.c * 1000) / 1000;
-		this.d = Math.round(this.d * 1000) / 1000;
-		this.tx = Math.round(this.tx * 10) / 10;
-		this.ty = Math.round(this.ty * 10) / 10;
-	}
-	,__toMatrix3: function() {
-		return new lime_math_Matrix3(this.a,this.b,this.c,this.d,this.tx,this.ty);
-	}
-	,__transformInversePoint: function(point) {
-		var norm = this.a * this.d - this.b * this.c;
-		if(norm == 0) {
-			point.x = -this.tx;
-			point.y = -this.ty;
-		} else {
-			var px = 1.0 / norm * (this.c * (this.ty - point.y) + this.d * (point.x - this.tx));
-			point.y = 1.0 / norm * (this.a * (point.y - this.ty) + this.b * (this.tx - point.x));
-			point.x = px;
-		}
-	}
-	,__transformInverseX: function(px,py) {
-		var norm = this.a * this.d - this.b * this.c;
-		if(norm == 0) return -this.tx; else return 1.0 / norm * (this.c * (this.ty - py) + this.d * (px - this.tx));
-	}
-	,__transformInverseY: function(px,py) {
-		var norm = this.a * this.d - this.b * this.c;
-		if(norm == 0) return -this.ty; else return 1.0 / norm * (this.a * (py - this.ty) + this.b * (this.tx - px));
-	}
-	,__transformPoint: function(point) {
-		var px = point.x;
-		var py = point.y;
-		point.x = px * this.a + py * this.c + this.tx;
-		point.y = px * this.b + py * this.d + this.ty;
-	}
-	,__transformX: function(px,py) {
-		return px * this.a + py * this.c + this.tx;
-	}
-	,__transformY: function(px,py) {
-		return px * this.b + py * this.d + this.ty;
-	}
-	,__translateTransformed: function(px,py) {
-		this.tx = px * this.a + py * this.c + this.tx;
-		this.ty = px * this.b + py * this.d + this.ty;
-	}
-	,__class__: openfl_geom_Matrix
-};
-var openfl_geom_Matrix3D = function(v) {
-	if(v != null && v.length == 16) this.rawData = v; else {
-		var value = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
-		var vectorData = new openfl_VectorData();
-		vectorData.length = value.length;
-		vectorData.fixed = true;
-		var vec;
-		var this1;
-		this1 = new Array(value.length);
-		vec = this1;
-		var _g1 = 0;
-		var _g = value.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			vec[i] = value[i];
-		}
-		vectorData.data = vec;
-		this.rawData = vectorData;
-	}
-};
-$hxClasses["openfl.geom.Matrix3D"] = openfl_geom_Matrix3D;
-openfl_geom_Matrix3D.__name__ = ["openfl","geom","Matrix3D"];
-openfl_geom_Matrix3D.create2D = function(x,y,scale,rotation) {
-	if(rotation == null) rotation = 0;
-	if(scale == null) scale = 1;
-	var theta = rotation * Math.PI / 180.0;
-	var c = Math.cos(theta);
-	var s = Math.sin(theta);
-	return new openfl_geom_Matrix3D((function($this) {
-		var $r;
-		var value = [c * scale,-s * scale,0,0,s * scale,c * scale,0,0,0,0,1,0,x,y,0,1];
-		var vectorData = new openfl_VectorData();
-		vectorData.length = value.length;
-		vectorData.fixed = true;
-		{
-			var vec;
-			var this1;
-			this1 = new Array(value.length);
-			vec = this1;
-			var _g1 = 0;
-			var _g = value.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				vec[i] = value[i];
-			}
-			vectorData.data = vec;
-		}
-		$r = vectorData;
-		return $r;
-	}(this)));
-};
-openfl_geom_Matrix3D.createABCD = function(a,b,c,d,tx,ty) {
-	return new openfl_geom_Matrix3D((function($this) {
-		var $r;
-		var value = [a,b,0,0,c,d,0,0,0,0,1,0,tx,ty,0,1];
-		var vectorData = new openfl_VectorData();
-		vectorData.length = value.length;
-		vectorData.fixed = true;
-		{
-			var vec;
-			var this1;
-			this1 = new Array(value.length);
-			vec = this1;
-			var _g1 = 0;
-			var _g = value.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				vec[i] = value[i];
-			}
-			vectorData.data = vec;
-		}
-		$r = vectorData;
-		return $r;
-	}(this)));
-};
-openfl_geom_Matrix3D.createOrtho = function(x0,x1,y0,y1,zNear,zFar) {
-	var sx = 1.0 / (x1 - x0);
-	var sy = 1.0 / (y1 - y0);
-	var sz = 1.0 / (zFar - zNear);
-	return new openfl_geom_Matrix3D((function($this) {
-		var $r;
-		var value = [2.0 * sx,0,0,0,0,2.0 * sy,0,0,0,0,-2. * sz,0,-(x0 + x1) * sx,-(y0 + y1) * sy,-(zNear + zFar) * sz,1];
-		var vectorData = new openfl_VectorData();
-		vectorData.length = value.length;
-		vectorData.fixed = true;
-		{
-			var vec;
-			var this1;
-			this1 = new Array(value.length);
-			vec = this1;
-			var _g1 = 0;
-			var _g = value.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				vec[i] = value[i];
-			}
-			vectorData.data = vec;
-		}
-		$r = vectorData;
-		return $r;
-	}(this)));
-};
-openfl_geom_Matrix3D.interpolate = function(thisMat,toMat,percent) {
-	var m = new openfl_geom_Matrix3D();
-	var _g = 0;
-	while(_g < 16) {
-		var i = _g++;
-		var this1 = m.rawData;
-		if(!this1.fixed) {
-			if(i >= this1.length) this1.length = i + 1;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[i] = thisMat.rawData.data[i] + (toMat.rawData.data[i] - thisMat.rawData.data[i]) * percent;
-	}
-	return m;
-};
-openfl_geom_Matrix3D.__getAxisRotation = function(x,y,z,degrees) {
-	var m = new openfl_geom_Matrix3D();
-	var a1 = new openfl_geom_Vector3D(x,y,z);
-	var rad = -degrees * (Math.PI / 180);
-	var c = Math.cos(rad);
-	var s = Math.sin(rad);
-	var t = 1.0 - c;
-	var this1 = m.rawData;
-	if(!this1.fixed) {
-		if(0 >= this1.length) this1.length = 1;
-		if(this1.data.length < this1.length) {
-			var data;
-			var this2;
-			this2 = new Array(this1.data.length + 10);
-			data = this2;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-			this1.data = data;
-		}
-	}
-	this1.data[0] = c + a1.x * a1.x * t;
-	var this3 = m.rawData;
-	if(!this3.fixed) {
-		if(5 >= this3.length) this3.length = 6;
-		if(this3.data.length < this3.length) {
-			var data1;
-			var this4;
-			this4 = new Array(this3.data.length + 10);
-			data1 = this4;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-			this3.data = data1;
-		}
-	}
-	this3.data[5] = c + a1.y * a1.y * t;
-	var this5 = m.rawData;
-	if(!this5.fixed) {
-		if(10 >= this5.length) this5.length = 11;
-		if(this5.data.length < this5.length) {
-			var data2;
-			var this6;
-			this6 = new Array(this5.data.length + 10);
-			data2 = this6;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-			this5.data = data2;
-		}
-	}
-	this5.data[10] = c + a1.z * a1.z * t;
-	var tmp1 = a1.x * a1.y * t;
-	var tmp2 = a1.z * s;
-	var this7 = m.rawData;
-	if(!this7.fixed) {
-		if(4 >= this7.length) this7.length = 5;
-		if(this7.data.length < this7.length) {
-			var data3;
-			var this8;
-			this8 = new Array(this7.data.length + 10);
-			data3 = this8;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-			this7.data = data3;
-		}
-	}
-	this7.data[4] = tmp1 + tmp2;
-	var this9 = m.rawData;
-	if(!this9.fixed) {
-		if(1 >= this9.length) this9.length = 2;
-		if(this9.data.length < this9.length) {
-			var data4;
-			var this10;
-			this10 = new Array(this9.data.length + 10);
-			data4 = this10;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-			this9.data = data4;
-		}
-	}
-	this9.data[1] = tmp1 - tmp2;
-	tmp1 = a1.x * a1.z * t;
-	tmp2 = a1.y * s;
-	var this11 = m.rawData;
-	if(!this11.fixed) {
-		if(8 >= this11.length) this11.length = 9;
-		if(this11.data.length < this11.length) {
-			var data5;
-			var this12;
-			this12 = new Array(this11.data.length + 10);
-			data5 = this12;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-			this11.data = data5;
-		}
-	}
-	this11.data[8] = tmp1 - tmp2;
-	var this13 = m.rawData;
-	if(!this13.fixed) {
-		if(2 >= this13.length) this13.length = 3;
-		if(this13.data.length < this13.length) {
-			var data6;
-			var this14;
-			this14 = new Array(this13.data.length + 10);
-			data6 = this14;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-			this13.data = data6;
-		}
-	}
-	this13.data[2] = tmp1 + tmp2;
-	tmp1 = a1.y * a1.z * t;
-	tmp2 = a1.x * s;
-	var this15 = m.rawData;
-	if(!this15.fixed) {
-		if(9 >= this15.length) this15.length = 10;
-		if(this15.data.length < this15.length) {
-			var data7;
-			var this16;
-			this16 = new Array(this15.data.length + 10);
-			data7 = this16;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-			this15.data = data7;
-		}
-	}
-	this15.data[9] = tmp1 + tmp2;
-	var this17 = m.rawData;
-	if(!this17.fixed) {
-		if(6 >= this17.length) this17.length = 7;
-		if(this17.data.length < this17.length) {
-			var data8;
-			var this18;
-			this18 = new Array(this17.data.length + 10);
-			data8 = this18;
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-			this17.data = data8;
-		}
-	}
-	this17.data[6] = tmp1 - tmp2;
-	return m;
-};
-openfl_geom_Matrix3D.prototype = {
-	determinant: null
-	,rawData: null
-	,append: function(lhs) {
-		var m111 = this.rawData.data[0];
-		var m121 = this.rawData.data[4];
-		var m131 = this.rawData.data[8];
-		var m141 = this.rawData.data[12];
-		var m112 = this.rawData.data[1];
-		var m122 = this.rawData.data[5];
-		var m132 = this.rawData.data[9];
-		var m142 = this.rawData.data[13];
-		var m113 = this.rawData.data[2];
-		var m123 = this.rawData.data[6];
-		var m133 = this.rawData.data[10];
-		var m143 = this.rawData.data[14];
-		var m114 = this.rawData.data[3];
-		var m124 = this.rawData.data[7];
-		var m134 = this.rawData.data[11];
-		var m144 = this.rawData.data[15];
-		var m211 = lhs.rawData.data[0];
-		var m221 = lhs.rawData.data[4];
-		var m231 = lhs.rawData.data[8];
-		var m241 = lhs.rawData.data[12];
-		var m212 = lhs.rawData.data[1];
-		var m222 = lhs.rawData.data[5];
-		var m232 = lhs.rawData.data[9];
-		var m242 = lhs.rawData.data[13];
-		var m213 = lhs.rawData.data[2];
-		var m223 = lhs.rawData.data[6];
-		var m233 = lhs.rawData.data[10];
-		var m243 = lhs.rawData.data[14];
-		var m214 = lhs.rawData.data[3];
-		var m224 = lhs.rawData.data[7];
-		var m234 = lhs.rawData.data[11];
-		var m244 = lhs.rawData.data[15];
-		var this1 = this.rawData;
-		if(!this1.fixed) {
-			if(0 >= this1.length) this1.length = 1;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(1 >= this3.length) this3.length = 2;
-			if(this3.data.length < this3.length) {
-				var data1;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data1 = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-				this3.data = data1;
-			}
-		}
-		this3.data[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(2 >= this5.length) this5.length = 3;
-			if(this5.data.length < this5.length) {
-				var data2;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data2 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-				this5.data = data2;
-			}
-		}
-		this5.data[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
-		var this7 = this.rawData;
-		if(!this7.fixed) {
-			if(3 >= this7.length) this7.length = 4;
-			if(this7.data.length < this7.length) {
-				var data3;
-				var this8;
-				this8 = new Array(this7.data.length + 10);
-				data3 = this8;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-				this7.data = data3;
-			}
-		}
-		this7.data[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
-		var this9 = this.rawData;
-		if(!this9.fixed) {
-			if(4 >= this9.length) this9.length = 5;
-			if(this9.data.length < this9.length) {
-				var data4;
-				var this10;
-				this10 = new Array(this9.data.length + 10);
-				data4 = this10;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-				this9.data = data4;
-			}
-		}
-		this9.data[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
-		var this11 = this.rawData;
-		if(!this11.fixed) {
-			if(5 >= this11.length) this11.length = 6;
-			if(this11.data.length < this11.length) {
-				var data5;
-				var this12;
-				this12 = new Array(this11.data.length + 10);
-				data5 = this12;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-				this11.data = data5;
-			}
-		}
-		this11.data[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
-		var this13 = this.rawData;
-		if(!this13.fixed) {
-			if(6 >= this13.length) this13.length = 7;
-			if(this13.data.length < this13.length) {
-				var data6;
-				var this14;
-				this14 = new Array(this13.data.length + 10);
-				data6 = this14;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-				this13.data = data6;
-			}
-		}
-		this13.data[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
-		var this15 = this.rawData;
-		if(!this15.fixed) {
-			if(7 >= this15.length) this15.length = 8;
-			if(this15.data.length < this15.length) {
-				var data7;
-				var this16;
-				this16 = new Array(this15.data.length + 10);
-				data7 = this16;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-				this15.data = data7;
-			}
-		}
-		this15.data[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
-		var this17 = this.rawData;
-		if(!this17.fixed) {
-			if(8 >= this17.length) this17.length = 9;
-			if(this17.data.length < this17.length) {
-				var data8;
-				var this18;
-				this18 = new Array(this17.data.length + 10);
-				data8 = this18;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-				this17.data = data8;
-			}
-		}
-		this17.data[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
-		var this19 = this.rawData;
-		if(!this19.fixed) {
-			if(9 >= this19.length) this19.length = 10;
-			if(this19.data.length < this19.length) {
-				var data9;
-				var this20;
-				this20 = new Array(this19.data.length + 10);
-				data9 = this20;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-				this19.data = data9;
-			}
-		}
-		this19.data[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
-		var this21 = this.rawData;
-		if(!this21.fixed) {
-			if(10 >= this21.length) this21.length = 11;
-			if(this21.data.length < this21.length) {
-				var data10;
-				var this22;
-				this22 = new Array(this21.data.length + 10);
-				data10 = this22;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-				this21.data = data10;
-			}
-		}
-		this21.data[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
-		var this23 = this.rawData;
-		if(!this23.fixed) {
-			if(11 >= this23.length) this23.length = 12;
-			if(this23.data.length < this23.length) {
-				var data11;
-				var this24;
-				this24 = new Array(this23.data.length + 10);
-				data11 = this24;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-				this23.data = data11;
-			}
-		}
-		this23.data[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
-		var this25 = this.rawData;
-		if(!this25.fixed) {
-			if(12 >= this25.length) this25.length = 13;
-			if(this25.data.length < this25.length) {
-				var data12;
-				var this26;
-				this26 = new Array(this25.data.length + 10);
-				data12 = this26;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-				this25.data = data12;
-			}
-		}
-		this25.data[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
-		var this27 = this.rawData;
-		if(!this27.fixed) {
-			if(13 >= this27.length) this27.length = 14;
-			if(this27.data.length < this27.length) {
-				var data13;
-				var this28;
-				this28 = new Array(this27.data.length + 10);
-				data13 = this28;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-				this27.data = data13;
-			}
-		}
-		this27.data[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
-		var this29 = this.rawData;
-		if(!this29.fixed) {
-			if(14 >= this29.length) this29.length = 15;
-			if(this29.data.length < this29.length) {
-				var data14;
-				var this30;
-				this30 = new Array(this29.data.length + 10);
-				data14 = this30;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-				this29.data = data14;
-			}
-		}
-		this29.data[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
-		var this31 = this.rawData;
-		if(!this31.fixed) {
-			if(15 >= this31.length) this31.length = 16;
-			if(this31.data.length < this31.length) {
-				var data15;
-				var this32;
-				this32 = new Array(this31.data.length + 10);
-				data15 = this32;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-				this31.data = data15;
-			}
-		}
-		this31.data[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
-	}
-	,appendRotation: function(degrees,axis,pivotPoint) {
-		var m = openfl_geom_Matrix3D.__getAxisRotation(axis.x,axis.y,axis.z,degrees);
-		if(pivotPoint != null) {
-			var p = pivotPoint;
-			m.appendTranslation(p.x,p.y,p.z);
-		}
-		this.append(m);
-	}
-	,appendScale: function(xScale,yScale,zScale) {
-		this.append(new openfl_geom_Matrix3D((function($this) {
-			var $r;
-			var value = [xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0];
-			var vectorData = new openfl_VectorData();
-			vectorData.length = value.length;
-			vectorData.fixed = true;
-			{
-				var vec;
-				var this1;
-				this1 = new Array(value.length);
-				vec = this1;
-				var _g1 = 0;
-				var _g = value.length;
-				while(_g1 < _g) {
-					var i = _g1++;
-					vec[i] = value[i];
-				}
-				vectorData.data = vec;
-			}
-			$r = vectorData;
-			return $r;
-		}(this))));
-	}
-	,appendTranslation: function(x,y,z) {
-		var this1 = this.rawData;
-		if(!this1.fixed) {
-			if(12 >= this1.length) this1.length = 13;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[12] = this.rawData.data[12] + x;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(13 >= this3.length) this3.length = 14;
-			if(this3.data.length < this3.length) {
-				var data1;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data1 = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-				this3.data = data1;
-			}
-		}
-		this3.data[13] = this.rawData.data[13] + y;
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(14 >= this5.length) this5.length = 15;
-			if(this5.data.length < this5.length) {
-				var data2;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data2 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-				this5.data = data2;
-			}
-		}
-		this5.data[14] = this.rawData.data[14] + z;
-	}
-	,clone: function() {
-		return new openfl_geom_Matrix3D((function($this) {
-			var $r;
-			var this1 = $this.rawData;
-			var vectorData = new openfl_VectorData();
-			vectorData.length = this1.length;
-			vectorData.fixed = this1.fixed;
-			{
-				var this2;
-				this2 = new Array(this1.length);
-				vectorData.data = this2;
-			}
-			haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
-			$r = vectorData;
-			return $r;
-		}(this)));
-	}
-	,copyColumnFrom: function(column,vector3D) {
-		switch(column) {
-		case 0:
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(0 >= this1.length) this1.length = 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[0] = vector3D.x;
-			var this3 = this.rawData;
-			if(!this3.fixed) {
-				if(1 >= this3.length) this3.length = 2;
-				if(this3.data.length < this3.length) {
-					var data1;
-					var this4;
-					this4 = new Array(this3.data.length + 10);
-					data1 = this4;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-					this3.data = data1;
-				}
-			}
-			this3.data[1] = vector3D.y;
-			var this5 = this.rawData;
-			if(!this5.fixed) {
-				if(2 >= this5.length) this5.length = 3;
-				if(this5.data.length < this5.length) {
-					var data2;
-					var this6;
-					this6 = new Array(this5.data.length + 10);
-					data2 = this6;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-					this5.data = data2;
-				}
-			}
-			this5.data[2] = vector3D.z;
-			var this7 = this.rawData;
-			if(!this7.fixed) {
-				if(3 >= this7.length) this7.length = 4;
-				if(this7.data.length < this7.length) {
-					var data3;
-					var this8;
-					this8 = new Array(this7.data.length + 10);
-					data3 = this8;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-					this7.data = data3;
-				}
-			}
-			this7.data[3] = vector3D.w;
-			break;
-		case 1:
-			var this9 = this.rawData;
-			if(!this9.fixed) {
-				if(4 >= this9.length) this9.length = 5;
-				if(this9.data.length < this9.length) {
-					var data4;
-					var this10;
-					this10 = new Array(this9.data.length + 10);
-					data4 = this10;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-					this9.data = data4;
-				}
-			}
-			this9.data[4] = vector3D.x;
-			var this11 = this.rawData;
-			if(!this11.fixed) {
-				if(5 >= this11.length) this11.length = 6;
-				if(this11.data.length < this11.length) {
-					var data5;
-					var this12;
-					this12 = new Array(this11.data.length + 10);
-					data5 = this12;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-					this11.data = data5;
-				}
-			}
-			this11.data[5] = vector3D.y;
-			var this13 = this.rawData;
-			if(!this13.fixed) {
-				if(6 >= this13.length) this13.length = 7;
-				if(this13.data.length < this13.length) {
-					var data6;
-					var this14;
-					this14 = new Array(this13.data.length + 10);
-					data6 = this14;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-					this13.data = data6;
-				}
-			}
-			this13.data[6] = vector3D.z;
-			var this15 = this.rawData;
-			if(!this15.fixed) {
-				if(7 >= this15.length) this15.length = 8;
-				if(this15.data.length < this15.length) {
-					var data7;
-					var this16;
-					this16 = new Array(this15.data.length + 10);
-					data7 = this16;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-					this15.data = data7;
-				}
-			}
-			this15.data[7] = vector3D.w;
-			break;
-		case 2:
-			var this17 = this.rawData;
-			if(!this17.fixed) {
-				if(8 >= this17.length) this17.length = 9;
-				if(this17.data.length < this17.length) {
-					var data8;
-					var this18;
-					this18 = new Array(this17.data.length + 10);
-					data8 = this18;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-					this17.data = data8;
-				}
-			}
-			this17.data[8] = vector3D.x;
-			var this19 = this.rawData;
-			if(!this19.fixed) {
-				if(9 >= this19.length) this19.length = 10;
-				if(this19.data.length < this19.length) {
-					var data9;
-					var this20;
-					this20 = new Array(this19.data.length + 10);
-					data9 = this20;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-					this19.data = data9;
-				}
-			}
-			this19.data[9] = vector3D.y;
-			var this21 = this.rawData;
-			if(!this21.fixed) {
-				if(10 >= this21.length) this21.length = 11;
-				if(this21.data.length < this21.length) {
-					var data10;
-					var this22;
-					this22 = new Array(this21.data.length + 10);
-					data10 = this22;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-					this21.data = data10;
-				}
-			}
-			this21.data[10] = vector3D.z;
-			var this23 = this.rawData;
-			if(!this23.fixed) {
-				if(11 >= this23.length) this23.length = 12;
-				if(this23.data.length < this23.length) {
-					var data11;
-					var this24;
-					this24 = new Array(this23.data.length + 10);
-					data11 = this24;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-					this23.data = data11;
-				}
-			}
-			this23.data[11] = vector3D.w;
-			break;
-		case 3:
-			var this25 = this.rawData;
-			if(!this25.fixed) {
-				if(12 >= this25.length) this25.length = 13;
-				if(this25.data.length < this25.length) {
-					var data12;
-					var this26;
-					this26 = new Array(this25.data.length + 10);
-					data12 = this26;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-					this25.data = data12;
-				}
-			}
-			this25.data[12] = vector3D.x;
-			var this27 = this.rawData;
-			if(!this27.fixed) {
-				if(13 >= this27.length) this27.length = 14;
-				if(this27.data.length < this27.length) {
-					var data13;
-					var this28;
-					this28 = new Array(this27.data.length + 10);
-					data13 = this28;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-					this27.data = data13;
-				}
-			}
-			this27.data[13] = vector3D.y;
-			var this29 = this.rawData;
-			if(!this29.fixed) {
-				if(14 >= this29.length) this29.length = 15;
-				if(this29.data.length < this29.length) {
-					var data14;
-					var this30;
-					this30 = new Array(this29.data.length + 10);
-					data14 = this30;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-					this29.data = data14;
-				}
-			}
-			this29.data[14] = vector3D.z;
-			var this31 = this.rawData;
-			if(!this31.fixed) {
-				if(15 >= this31.length) this31.length = 16;
-				if(this31.data.length < this31.length) {
-					var data15;
-					var this32;
-					this32 = new Array(this31.data.length + 10);
-					data15 = this32;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-					this31.data = data15;
-				}
-			}
-			this31.data[15] = vector3D.w;
-			break;
-		default:
-		}
-	}
-	,copyColumnTo: function(column,vector3D) {
-		switch(column) {
-		case 0:
-			vector3D.x = this.rawData.data[0];
-			vector3D.y = this.rawData.data[1];
-			vector3D.z = this.rawData.data[2];
-			vector3D.w = this.rawData.data[3];
-			break;
-		case 1:
-			vector3D.x = this.rawData.data[4];
-			vector3D.y = this.rawData.data[5];
-			vector3D.z = this.rawData.data[6];
-			vector3D.w = this.rawData.data[7];
-			break;
-		case 2:
-			vector3D.x = this.rawData.data[8];
-			vector3D.y = this.rawData.data[9];
-			vector3D.z = this.rawData.data[10];
-			vector3D.w = this.rawData.data[11];
-			break;
-		case 3:
-			vector3D.x = this.rawData.data[12];
-			vector3D.y = this.rawData.data[13];
-			vector3D.z = this.rawData.data[14];
-			vector3D.w = this.rawData.data[15];
-			break;
-		default:
-		}
-	}
-	,copyFrom: function(other) {
-		var this1 = other.rawData;
-		var vectorData = new openfl_VectorData();
-		vectorData.length = this1.length;
-		vectorData.fixed = this1.fixed;
-		var this2;
-		this2 = new Array(this1.length);
-		vectorData.data = this2;
-		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
-		this.rawData = vectorData;
-	}
-	,copyRawDataFrom: function(vector,index,transpose) {
-		if(transpose == null) transpose = false;
-		if(index == null) index = 0;
-		if(transpose) this.transpose();
-		var length = vector.length - index;
-		var _g = 0;
-		while(_g < length) {
-			var i = _g++;
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(i >= this1.length) this1.length = i + 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[i] = vector.data[i + index];
-		}
-		if(transpose) this.transpose();
-	}
-	,copyRawDataTo: function(vector,index,transpose) {
-		if(transpose == null) transpose = false;
-		if(index == null) index = 0;
-		if(transpose) this.transpose();
-		var _g1 = 0;
-		var _g = this.rawData.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var key = i + index;
-			if(!vector.fixed) {
-				if(key >= vector.length) vector.length = key + 1;
-				if(vector.data.length < vector.length) {
-					var data;
-					var this1;
-					this1 = new Array(vector.data.length + 10);
-					data = this1;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(vector.data,0,data,0,vector.data.length);
-					vector.data = data;
-				}
-			}
-			vector.data[key] = this.rawData.data[i];
-		}
-		if(transpose) this.transpose();
-	}
-	,copyRowFrom: function(row,vector3D) {
-		switch(row) {
-		case 0:
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(0 >= this1.length) this1.length = 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[0] = vector3D.x;
-			var this3 = this.rawData;
-			if(!this3.fixed) {
-				if(4 >= this3.length) this3.length = 5;
-				if(this3.data.length < this3.length) {
-					var data1;
-					var this4;
-					this4 = new Array(this3.data.length + 10);
-					data1 = this4;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-					this3.data = data1;
-				}
-			}
-			this3.data[4] = vector3D.y;
-			var this5 = this.rawData;
-			if(!this5.fixed) {
-				if(8 >= this5.length) this5.length = 9;
-				if(this5.data.length < this5.length) {
-					var data2;
-					var this6;
-					this6 = new Array(this5.data.length + 10);
-					data2 = this6;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-					this5.data = data2;
-				}
-			}
-			this5.data[8] = vector3D.z;
-			var this7 = this.rawData;
-			if(!this7.fixed) {
-				if(12 >= this7.length) this7.length = 13;
-				if(this7.data.length < this7.length) {
-					var data3;
-					var this8;
-					this8 = new Array(this7.data.length + 10);
-					data3 = this8;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-					this7.data = data3;
-				}
-			}
-			this7.data[12] = vector3D.w;
-			break;
-		case 1:
-			var this9 = this.rawData;
-			if(!this9.fixed) {
-				if(1 >= this9.length) this9.length = 2;
-				if(this9.data.length < this9.length) {
-					var data4;
-					var this10;
-					this10 = new Array(this9.data.length + 10);
-					data4 = this10;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-					this9.data = data4;
-				}
-			}
-			this9.data[1] = vector3D.x;
-			var this11 = this.rawData;
-			if(!this11.fixed) {
-				if(5 >= this11.length) this11.length = 6;
-				if(this11.data.length < this11.length) {
-					var data5;
-					var this12;
-					this12 = new Array(this11.data.length + 10);
-					data5 = this12;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-					this11.data = data5;
-				}
-			}
-			this11.data[5] = vector3D.y;
-			var this13 = this.rawData;
-			if(!this13.fixed) {
-				if(9 >= this13.length) this13.length = 10;
-				if(this13.data.length < this13.length) {
-					var data6;
-					var this14;
-					this14 = new Array(this13.data.length + 10);
-					data6 = this14;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-					this13.data = data6;
-				}
-			}
-			this13.data[9] = vector3D.z;
-			var this15 = this.rawData;
-			if(!this15.fixed) {
-				if(13 >= this15.length) this15.length = 14;
-				if(this15.data.length < this15.length) {
-					var data7;
-					var this16;
-					this16 = new Array(this15.data.length + 10);
-					data7 = this16;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-					this15.data = data7;
-				}
-			}
-			this15.data[13] = vector3D.w;
-			break;
-		case 2:
-			var this17 = this.rawData;
-			if(!this17.fixed) {
-				if(2 >= this17.length) this17.length = 3;
-				if(this17.data.length < this17.length) {
-					var data8;
-					var this18;
-					this18 = new Array(this17.data.length + 10);
-					data8 = this18;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-					this17.data = data8;
-				}
-			}
-			this17.data[2] = vector3D.x;
-			var this19 = this.rawData;
-			if(!this19.fixed) {
-				if(6 >= this19.length) this19.length = 7;
-				if(this19.data.length < this19.length) {
-					var data9;
-					var this20;
-					this20 = new Array(this19.data.length + 10);
-					data9 = this20;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-					this19.data = data9;
-				}
-			}
-			this19.data[6] = vector3D.y;
-			var this21 = this.rawData;
-			if(!this21.fixed) {
-				if(10 >= this21.length) this21.length = 11;
-				if(this21.data.length < this21.length) {
-					var data10;
-					var this22;
-					this22 = new Array(this21.data.length + 10);
-					data10 = this22;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-					this21.data = data10;
-				}
-			}
-			this21.data[10] = vector3D.z;
-			var this23 = this.rawData;
-			if(!this23.fixed) {
-				if(14 >= this23.length) this23.length = 15;
-				if(this23.data.length < this23.length) {
-					var data11;
-					var this24;
-					this24 = new Array(this23.data.length + 10);
-					data11 = this24;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-					this23.data = data11;
-				}
-			}
-			this23.data[14] = vector3D.w;
-			break;
-		case 3:
-			var this25 = this.rawData;
-			if(!this25.fixed) {
-				if(3 >= this25.length) this25.length = 4;
-				if(this25.data.length < this25.length) {
-					var data12;
-					var this26;
-					this26 = new Array(this25.data.length + 10);
-					data12 = this26;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-					this25.data = data12;
-				}
-			}
-			this25.data[3] = vector3D.x;
-			var this27 = this.rawData;
-			if(!this27.fixed) {
-				if(7 >= this27.length) this27.length = 8;
-				if(this27.data.length < this27.length) {
-					var data13;
-					var this28;
-					this28 = new Array(this27.data.length + 10);
-					data13 = this28;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-					this27.data = data13;
-				}
-			}
-			this27.data[7] = vector3D.y;
-			var this29 = this.rawData;
-			if(!this29.fixed) {
-				if(11 >= this29.length) this29.length = 12;
-				if(this29.data.length < this29.length) {
-					var data14;
-					var this30;
-					this30 = new Array(this29.data.length + 10);
-					data14 = this30;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-					this29.data = data14;
-				}
-			}
-			this29.data[11] = vector3D.z;
-			var this31 = this.rawData;
-			if(!this31.fixed) {
-				if(15 >= this31.length) this31.length = 16;
-				if(this31.data.length < this31.length) {
-					var data15;
-					var this32;
-					this32 = new Array(this31.data.length + 10);
-					data15 = this32;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-					this31.data = data15;
-				}
-			}
-			this31.data[15] = vector3D.w;
-			break;
-		default:
-		}
-	}
-	,copyRowTo: function(row,vector3D) {
-		switch(row) {
-		case 0:
-			vector3D.x = this.rawData.data[0];
-			vector3D.y = this.rawData.data[4];
-			vector3D.z = this.rawData.data[8];
-			vector3D.w = this.rawData.data[12];
-			break;
-		case 1:
-			vector3D.x = this.rawData.data[1];
-			vector3D.y = this.rawData.data[5];
-			vector3D.z = this.rawData.data[9];
-			vector3D.w = this.rawData.data[13];
-			break;
-		case 2:
-			vector3D.x = this.rawData.data[2];
-			vector3D.y = this.rawData.data[6];
-			vector3D.z = this.rawData.data[10];
-			vector3D.w = this.rawData.data[14];
-			break;
-		case 3:
-			vector3D.x = this.rawData.data[3];
-			vector3D.y = this.rawData.data[7];
-			vector3D.z = this.rawData.data[11];
-			vector3D.w = this.rawData.data[15];
-			break;
-		default:
-		}
-	}
-	,copyToMatrix3D: function(other) {
-		var this1 = this.rawData;
-		var vectorData = new openfl_VectorData();
-		vectorData.length = this1.length;
-		vectorData.fixed = this1.fixed;
-		var this2;
-		this2 = new Array(this1.length);
-		vectorData.data = this2;
-		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
-		other.rawData = vectorData;
-	}
-	,decompose: function(orientationStyle) {
-		if(orientationStyle == null) orientationStyle = 1;
-		var vec;
-		var this1;
-		this1 = new openfl_VectorData();
-		var this2;
-		this2 = new Array(0);
-		this1.data = this2;
-		this1.length = 0;
-		this1.fixed = false;
-		vec = this1;
-		var m = this.clone();
-		var mr;
-		var this3 = m.rawData;
-		var vectorData = new openfl_VectorData();
-		vectorData.length = this3.length;
-		vectorData.fixed = this3.fixed;
-		var this4;
-		this4 = new Array(this3.length);
-		vectorData.data = this4;
-		haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,vectorData.data,0,this3.length);
-		mr = vectorData;
-		var pos = new openfl_geom_Vector3D(mr.data[12],mr.data[13],mr.data[14]);
-		{
-			if(!mr.fixed) {
-				if(12 >= mr.length) mr.length = 13;
-				if(mr.data.length < mr.length) {
-					var data;
-					var this5;
-					this5 = new Array(mr.data.length + 10);
-					data = this5;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data,0,mr.data.length);
-					mr.data = data;
-				}
-			}
-			mr.data[12] = 0;
-		}
-		{
-			if(!mr.fixed) {
-				if(13 >= mr.length) mr.length = 14;
-				if(mr.data.length < mr.length) {
-					var data1;
-					var this6;
-					this6 = new Array(mr.data.length + 10);
-					data1 = this6;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data1,0,mr.data.length);
-					mr.data = data1;
-				}
-			}
-			mr.data[13] = 0;
-		}
-		{
-			if(!mr.fixed) {
-				if(14 >= mr.length) mr.length = 15;
-				if(mr.data.length < mr.length) {
-					var data2;
-					var this7;
-					this7 = new Array(mr.data.length + 10);
-					data2 = this7;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data2,0,mr.data.length);
-					mr.data = data2;
-				}
-			}
-			mr.data[14] = 0;
-		}
-		var scale = new openfl_geom_Vector3D();
-		scale.x = Math.sqrt(mr.data[0] * mr.data[0] + mr.data[1] * mr.data[1] + mr.data[2] * mr.data[2]);
-		scale.y = Math.sqrt(mr.data[4] * mr.data[4] + mr.data[5] * mr.data[5] + mr.data[6] * mr.data[6]);
-		scale.z = Math.sqrt(mr.data[8] * mr.data[8] + mr.data[9] * mr.data[9] + mr.data[10] * mr.data[10]);
-		if(mr.data[0] * (mr.data[5] * mr.data[10] - mr.data[6] * mr.data[9]) - mr.data[1] * (mr.data[4] * mr.data[10] - mr.data[6] * mr.data[8]) + mr.data[2] * (mr.data[4] * mr.data[9] - mr.data[5] * mr.data[8]) < 0) scale.z = -scale.z;
-		{
-			if(!mr.fixed) {
-				if(0 >= mr.length) mr.length = 1;
-				if(mr.data.length < mr.length) {
-					var data3;
-					var this8;
-					this8 = new Array(mr.data.length + 10);
-					data3 = this8;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data3,0,mr.data.length);
-					mr.data = data3;
-				}
-			}
-			mr.data[0] = mr.data[0] / scale.x;
-		}
-		{
-			if(!mr.fixed) {
-				if(1 >= mr.length) mr.length = 2;
-				if(mr.data.length < mr.length) {
-					var data4;
-					var this9;
-					this9 = new Array(mr.data.length + 10);
-					data4 = this9;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data4,0,mr.data.length);
-					mr.data = data4;
-				}
-			}
-			mr.data[1] = mr.data[1] / scale.x;
-		}
-		{
-			if(!mr.fixed) {
-				if(2 >= mr.length) mr.length = 3;
-				if(mr.data.length < mr.length) {
-					var data5;
-					var this10;
-					this10 = new Array(mr.data.length + 10);
-					data5 = this10;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data5,0,mr.data.length);
-					mr.data = data5;
-				}
-			}
-			mr.data[2] = mr.data[2] / scale.x;
-		}
-		{
-			if(!mr.fixed) {
-				if(4 >= mr.length) mr.length = 5;
-				if(mr.data.length < mr.length) {
-					var data6;
-					var this11;
-					this11 = new Array(mr.data.length + 10);
-					data6 = this11;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data6,0,mr.data.length);
-					mr.data = data6;
-				}
-			}
-			mr.data[4] = mr.data[4] / scale.y;
-		}
-		{
-			if(!mr.fixed) {
-				if(5 >= mr.length) mr.length = 6;
-				if(mr.data.length < mr.length) {
-					var data7;
-					var this12;
-					this12 = new Array(mr.data.length + 10);
-					data7 = this12;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data7,0,mr.data.length);
-					mr.data = data7;
-				}
-			}
-			mr.data[5] = mr.data[5] / scale.y;
-		}
-		{
-			if(!mr.fixed) {
-				if(6 >= mr.length) mr.length = 7;
-				if(mr.data.length < mr.length) {
-					var data8;
-					var this13;
-					this13 = new Array(mr.data.length + 10);
-					data8 = this13;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data8,0,mr.data.length);
-					mr.data = data8;
-				}
-			}
-			mr.data[6] = mr.data[6] / scale.y;
-		}
-		{
-			if(!mr.fixed) {
-				if(8 >= mr.length) mr.length = 9;
-				if(mr.data.length < mr.length) {
-					var data9;
-					var this14;
-					this14 = new Array(mr.data.length + 10);
-					data9 = this14;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data9,0,mr.data.length);
-					mr.data = data9;
-				}
-			}
-			mr.data[8] = mr.data[8] / scale.z;
-		}
-		{
-			if(!mr.fixed) {
-				if(9 >= mr.length) mr.length = 10;
-				if(mr.data.length < mr.length) {
-					var data10;
-					var this15;
-					this15 = new Array(mr.data.length + 10);
-					data10 = this15;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data10,0,mr.data.length);
-					mr.data = data10;
-				}
-			}
-			mr.data[9] = mr.data[9] / scale.z;
-		}
-		{
-			if(!mr.fixed) {
-				if(10 >= mr.length) mr.length = 11;
-				if(mr.data.length < mr.length) {
-					var data11;
-					var this16;
-					this16 = new Array(mr.data.length + 10);
-					data11 = this16;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data11,0,mr.data.length);
-					mr.data = data11;
-				}
-			}
-			mr.data[10] = mr.data[10] / scale.z;
-		}
-		var rot = new openfl_geom_Vector3D();
-		if(orientationStyle != null) switch(orientationStyle) {
-		case 0:
-			rot.w = Math.acos((mr.data[0] + mr.data[5] + mr.data[10] - 1) / 2);
-			var len = Math.sqrt((mr.data[6] - mr.data[9]) * (mr.data[6] - mr.data[9]) + (mr.data[8] - mr.data[2]) * (mr.data[8] - mr.data[2]) + (mr.data[1] - mr.data[4]) * (mr.data[1] - mr.data[4]));
-			if(len != 0) {
-				rot.x = (mr.data[6] - mr.data[9]) / len;
-				rot.y = (mr.data[8] - mr.data[2]) / len;
-				rot.z = (mr.data[1] - mr.data[4]) / len;
-			} else rot.x = rot.y = rot.z = 0;
-			break;
-		case 2:
-			var tr = mr.data[0] + mr.data[5] + mr.data[10];
-			if(tr > 0) {
-				rot.w = Math.sqrt(1 + tr) / 2;
-				rot.x = (mr.data[6] - mr.data[9]) / (4 * rot.w);
-				rot.y = (mr.data[8] - mr.data[2]) / (4 * rot.w);
-				rot.z = (mr.data[1] - mr.data[4]) / (4 * rot.w);
-			} else if(mr.data[0] > mr.data[5] && mr.data[0] > mr.data[10]) {
-				rot.x = Math.sqrt(1 + mr.data[0] - mr.data[5] - mr.data[10]) / 2;
-				rot.w = (mr.data[6] - mr.data[9]) / (4 * rot.x);
-				rot.y = (mr.data[1] + mr.data[4]) / (4 * rot.x);
-				rot.z = (mr.data[8] + mr.data[2]) / (4 * rot.x);
-			} else if(mr.data[5] > mr.data[10]) {
-				rot.y = Math.sqrt(1 + mr.data[5] - mr.data[0] - mr.data[10]) / 2;
-				rot.x = (mr.data[1] + mr.data[4]) / (4 * rot.y);
-				rot.w = (mr.data[8] - mr.data[2]) / (4 * rot.y);
-				rot.z = (mr.data[6] + mr.data[9]) / (4 * rot.y);
-			} else {
-				rot.z = Math.sqrt(1 + mr.data[10] - mr.data[0] - mr.data[5]) / 2;
-				rot.x = (mr.data[8] + mr.data[2]) / (4 * rot.z);
-				rot.y = (mr.data[6] + mr.data[9]) / (4 * rot.z);
-				rot.w = (mr.data[1] - mr.data[4]) / (4 * rot.z);
-			}
-			break;
-		case 1:
-			rot.y = Math.asin(-mr.data[2]);
-			if(mr.data[2] != 1 && mr.data[2] != -1) {
-				rot.x = Math.atan2(mr.data[6],mr.data[10]);
-				rot.z = Math.atan2(mr.data[1],mr.data[0]);
-			} else {
-				rot.z = 0;
-				rot.x = Math.atan2(mr.data[4],mr.data[5]);
-			}
-			break;
-		}
-		if(!vec.fixed) {
-			vec.length++;
-			if(vec.data.length < vec.length) {
-				var data12;
-				var this17;
-				this17 = new Array(vec.data.length + 10);
-				data12 = this17;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data12,0,vec.data.length);
-				vec.data = data12;
-			}
-			vec.data[vec.length - 1] = pos;
-		}
-		vec.length;
-		if(!vec.fixed) {
-			vec.length++;
-			if(vec.data.length < vec.length) {
-				var data13;
-				var this18;
-				this18 = new Array(vec.data.length + 10);
-				data13 = this18;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data13,0,vec.data.length);
-				vec.data = data13;
-			}
-			vec.data[vec.length - 1] = rot;
-		}
-		vec.length;
-		if(!vec.fixed) {
-			vec.length++;
-			if(vec.data.length < vec.length) {
-				var data14;
-				var this19;
-				this19 = new Array(vec.data.length + 10);
-				data14 = this19;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data14,0,vec.data.length);
-				vec.data = data14;
-			}
-			vec.data[vec.length - 1] = scale;
-		}
-		vec.length;
-		return vec;
-	}
-	,deltaTransformVector: function(v) {
-		var x = v.x;
-		var y = v.y;
-		var z = v.z;
-		return new openfl_geom_Vector3D(x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[3],x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[7],x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[11],0);
-	}
-	,identity: function() {
-		{
-			var value = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
-			var vectorData = new openfl_VectorData();
-			vectorData.length = value.length;
-			vectorData.fixed = true;
-			var vec;
-			var this1;
-			this1 = new Array(value.length);
-			vec = this1;
-			var _g1 = 0;
-			var _g = value.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				vec[i] = value[i];
-			}
-			vectorData.data = vec;
-			this.rawData = vectorData;
-		}
-	}
-	,interpolateTo: function(toMat,percent) {
-		var _g = 0;
-		while(_g < 16) {
-			var i = _g++;
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(i >= this1.length) this1.length = i + 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[i] = this.rawData.data[i] + (toMat.rawData.data[i] - this.rawData.data[i]) * percent;
-		}
-	}
-	,invert: function() {
-		var d = this.get_determinant();
-		var invertable = Math.abs(d) > 0.00000000001;
-		if(invertable) {
-			d = 1 / d;
-			var m11 = this.rawData.data[0];
-			var m21 = this.rawData.data[4];
-			var m31 = this.rawData.data[8];
-			var m41 = this.rawData.data[12];
-			var m12 = this.rawData.data[1];
-			var m22 = this.rawData.data[5];
-			var m32 = this.rawData.data[9];
-			var m42 = this.rawData.data[13];
-			var m13 = this.rawData.data[2];
-			var m23 = this.rawData.data[6];
-			var m33 = this.rawData.data[10];
-			var m43 = this.rawData.data[14];
-			var m14 = this.rawData.data[3];
-			var m24 = this.rawData.data[7];
-			var m34 = this.rawData.data[11];
-			var m44 = this.rawData.data[15];
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(0 >= this1.length) this1.length = 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-			var this3 = this.rawData;
-			if(!this3.fixed) {
-				if(1 >= this3.length) this3.length = 2;
-				if(this3.data.length < this3.length) {
-					var data1;
-					var this4;
-					this4 = new Array(this3.data.length + 10);
-					data1 = this4;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-					this3.data = data1;
-				}
-			}
-			this3.data[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-			var this5 = this.rawData;
-			if(!this5.fixed) {
-				if(2 >= this5.length) this5.length = 3;
-				if(this5.data.length < this5.length) {
-					var data2;
-					var this6;
-					this6 = new Array(this5.data.length + 10);
-					data2 = this6;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-					this5.data = data2;
-				}
-			}
-			this5.data[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-			var this7 = this.rawData;
-			if(!this7.fixed) {
-				if(3 >= this7.length) this7.length = 4;
-				if(this7.data.length < this7.length) {
-					var data3;
-					var this8;
-					this8 = new Array(this7.data.length + 10);
-					data3 = this8;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-					this7.data = data3;
-				}
-			}
-			this7.data[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-			var this9 = this.rawData;
-			if(!this9.fixed) {
-				if(4 >= this9.length) this9.length = 5;
-				if(this9.data.length < this9.length) {
-					var data4;
-					var this10;
-					this10 = new Array(this9.data.length + 10);
-					data4 = this10;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-					this9.data = data4;
-				}
-			}
-			this9.data[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-			var this11 = this.rawData;
-			if(!this11.fixed) {
-				if(5 >= this11.length) this11.length = 6;
-				if(this11.data.length < this11.length) {
-					var data5;
-					var this12;
-					this12 = new Array(this11.data.length + 10);
-					data5 = this12;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-					this11.data = data5;
-				}
-			}
-			this11.data[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-			var this13 = this.rawData;
-			if(!this13.fixed) {
-				if(6 >= this13.length) this13.length = 7;
-				if(this13.data.length < this13.length) {
-					var data6;
-					var this14;
-					this14 = new Array(this13.data.length + 10);
-					data6 = this14;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-					this13.data = data6;
-				}
-			}
-			this13.data[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-			var this15 = this.rawData;
-			if(!this15.fixed) {
-				if(7 >= this15.length) this15.length = 8;
-				if(this15.data.length < this15.length) {
-					var data7;
-					var this16;
-					this16 = new Array(this15.data.length + 10);
-					data7 = this16;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-					this15.data = data7;
-				}
-			}
-			this15.data[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-			var this17 = this.rawData;
-			if(!this17.fixed) {
-				if(8 >= this17.length) this17.length = 9;
-				if(this17.data.length < this17.length) {
-					var data8;
-					var this18;
-					this18 = new Array(this17.data.length + 10);
-					data8 = this18;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-					this17.data = data8;
-				}
-			}
-			this17.data[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-			var this19 = this.rawData;
-			if(!this19.fixed) {
-				if(9 >= this19.length) this19.length = 10;
-				if(this19.data.length < this19.length) {
-					var data9;
-					var this20;
-					this20 = new Array(this19.data.length + 10);
-					data9 = this20;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-					this19.data = data9;
-				}
-			}
-			this19.data[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-			var this21 = this.rawData;
-			if(!this21.fixed) {
-				if(10 >= this21.length) this21.length = 11;
-				if(this21.data.length < this21.length) {
-					var data10;
-					var this22;
-					this22 = new Array(this21.data.length + 10);
-					data10 = this22;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-					this21.data = data10;
-				}
-			}
-			this21.data[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-			var this23 = this.rawData;
-			if(!this23.fixed) {
-				if(11 >= this23.length) this23.length = 12;
-				if(this23.data.length < this23.length) {
-					var data11;
-					var this24;
-					this24 = new Array(this23.data.length + 10);
-					data11 = this24;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-					this23.data = data11;
-				}
-			}
-			this23.data[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-			var this25 = this.rawData;
-			if(!this25.fixed) {
-				if(12 >= this25.length) this25.length = 13;
-				if(this25.data.length < this25.length) {
-					var data12;
-					var this26;
-					this26 = new Array(this25.data.length + 10);
-					data12 = this26;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-					this25.data = data12;
-				}
-			}
-			this25.data[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-			var this27 = this.rawData;
-			if(!this27.fixed) {
-				if(13 >= this27.length) this27.length = 14;
-				if(this27.data.length < this27.length) {
-					var data13;
-					var this28;
-					this28 = new Array(this27.data.length + 10);
-					data13 = this28;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-					this27.data = data13;
-				}
-			}
-			this27.data[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-			var this29 = this.rawData;
-			if(!this29.fixed) {
-				if(14 >= this29.length) this29.length = 15;
-				if(this29.data.length < this29.length) {
-					var data14;
-					var this30;
-					this30 = new Array(this29.data.length + 10);
-					data14 = this30;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-					this29.data = data14;
-				}
-			}
-			this29.data[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-			var this31 = this.rawData;
-			if(!this31.fixed) {
-				if(15 >= this31.length) this31.length = 16;
-				if(this31.data.length < this31.length) {
-					var data15;
-					var this32;
-					this32 = new Array(this31.data.length + 10);
-					data15 = this32;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-					this31.data = data15;
-				}
-			}
-			this31.data[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
-		}
-		return invertable;
-	}
-	,pointAt: function(pos,at,up) {
-		if(at == null) at = new openfl_geom_Vector3D(0,0,-1);
-		if(up == null) up = new openfl_geom_Vector3D(0,-1,0);
-		var dir = at.subtract(pos);
-		var vup = up.clone();
-		var right;
-		dir.normalize();
-		vup.normalize();
-		var dir2 = dir.clone();
-		dir2.scaleBy(vup.dotProduct(dir));
-		vup = vup.subtract(dir2);
-		if(vup.get_length() > 0) vup.normalize(); else if(dir.x != 0) vup = new openfl_geom_Vector3D(-dir.y,dir.x,0); else vup = new openfl_geom_Vector3D(1,0,0);
-		right = vup.crossProduct(dir);
-		right.normalize();
-		var this1 = this.rawData;
-		if(!this1.fixed) {
-			if(0 >= this1.length) this1.length = 1;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[0] = right.x;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(4 >= this3.length) this3.length = 5;
-			if(this3.data.length < this3.length) {
-				var data1;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data1 = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-				this3.data = data1;
-			}
-		}
-		this3.data[4] = right.y;
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(8 >= this5.length) this5.length = 9;
-			if(this5.data.length < this5.length) {
-				var data2;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data2 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-				this5.data = data2;
-			}
-		}
-		this5.data[8] = right.z;
-		var this7 = this.rawData;
-		if(!this7.fixed) {
-			if(12 >= this7.length) this7.length = 13;
-			if(this7.data.length < this7.length) {
-				var data3;
-				var this8;
-				this8 = new Array(this7.data.length + 10);
-				data3 = this8;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-				this7.data = data3;
-			}
-		}
-		this7.data[12] = 0.0;
-		var this9 = this.rawData;
-		if(!this9.fixed) {
-			if(1 >= this9.length) this9.length = 2;
-			if(this9.data.length < this9.length) {
-				var data4;
-				var this10;
-				this10 = new Array(this9.data.length + 10);
-				data4 = this10;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-				this9.data = data4;
-			}
-		}
-		this9.data[1] = vup.x;
-		var this11 = this.rawData;
-		if(!this11.fixed) {
-			if(5 >= this11.length) this11.length = 6;
-			if(this11.data.length < this11.length) {
-				var data5;
-				var this12;
-				this12 = new Array(this11.data.length + 10);
-				data5 = this12;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-				this11.data = data5;
-			}
-		}
-		this11.data[5] = vup.y;
-		var this13 = this.rawData;
-		if(!this13.fixed) {
-			if(9 >= this13.length) this13.length = 10;
-			if(this13.data.length < this13.length) {
-				var data6;
-				var this14;
-				this14 = new Array(this13.data.length + 10);
-				data6 = this14;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-				this13.data = data6;
-			}
-		}
-		this13.data[9] = vup.z;
-		var this15 = this.rawData;
-		if(!this15.fixed) {
-			if(13 >= this15.length) this15.length = 14;
-			if(this15.data.length < this15.length) {
-				var data7;
-				var this16;
-				this16 = new Array(this15.data.length + 10);
-				data7 = this16;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-				this15.data = data7;
-			}
-		}
-		this15.data[13] = 0.0;
-		var this17 = this.rawData;
-		if(!this17.fixed) {
-			if(2 >= this17.length) this17.length = 3;
-			if(this17.data.length < this17.length) {
-				var data8;
-				var this18;
-				this18 = new Array(this17.data.length + 10);
-				data8 = this18;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-				this17.data = data8;
-			}
-		}
-		this17.data[2] = dir.x;
-		var this19 = this.rawData;
-		if(!this19.fixed) {
-			if(6 >= this19.length) this19.length = 7;
-			if(this19.data.length < this19.length) {
-				var data9;
-				var this20;
-				this20 = new Array(this19.data.length + 10);
-				data9 = this20;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-				this19.data = data9;
-			}
-		}
-		this19.data[6] = dir.y;
-		var this21 = this.rawData;
-		if(!this21.fixed) {
-			if(10 >= this21.length) this21.length = 11;
-			if(this21.data.length < this21.length) {
-				var data10;
-				var this22;
-				this22 = new Array(this21.data.length + 10);
-				data10 = this22;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-				this21.data = data10;
-			}
-		}
-		this21.data[10] = dir.z;
-		var this23 = this.rawData;
-		if(!this23.fixed) {
-			if(14 >= this23.length) this23.length = 15;
-			if(this23.data.length < this23.length) {
-				var data11;
-				var this24;
-				this24 = new Array(this23.data.length + 10);
-				data11 = this24;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-				this23.data = data11;
-			}
-		}
-		this23.data[14] = 0.0;
-		var this25 = this.rawData;
-		if(!this25.fixed) {
-			if(3 >= this25.length) this25.length = 4;
-			if(this25.data.length < this25.length) {
-				var data12;
-				var this26;
-				this26 = new Array(this25.data.length + 10);
-				data12 = this26;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-				this25.data = data12;
-			}
-		}
-		this25.data[3] = pos.x;
-		var this27 = this.rawData;
-		if(!this27.fixed) {
-			if(7 >= this27.length) this27.length = 8;
-			if(this27.data.length < this27.length) {
-				var data13;
-				var this28;
-				this28 = new Array(this27.data.length + 10);
-				data13 = this28;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-				this27.data = data13;
-			}
-		}
-		this27.data[7] = pos.y;
-		var this29 = this.rawData;
-		if(!this29.fixed) {
-			if(11 >= this29.length) this29.length = 12;
-			if(this29.data.length < this29.length) {
-				var data14;
-				var this30;
-				this30 = new Array(this29.data.length + 10);
-				data14 = this30;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-				this29.data = data14;
-			}
-		}
-		this29.data[11] = pos.z;
-		var this31 = this.rawData;
-		if(!this31.fixed) {
-			if(15 >= this31.length) this31.length = 16;
-			if(this31.data.length < this31.length) {
-				var data15;
-				var this32;
-				this32 = new Array(this31.data.length + 10);
-				data15 = this32;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-				this31.data = data15;
-			}
-		}
-		this31.data[15] = 1.0;
-	}
-	,prepend: function(rhs) {
-		var m111 = rhs.rawData.data[0];
-		var m121 = rhs.rawData.data[4];
-		var m131 = rhs.rawData.data[8];
-		var m141 = rhs.rawData.data[12];
-		var m112 = rhs.rawData.data[1];
-		var m122 = rhs.rawData.data[5];
-		var m132 = rhs.rawData.data[9];
-		var m142 = rhs.rawData.data[13];
-		var m113 = rhs.rawData.data[2];
-		var m123 = rhs.rawData.data[6];
-		var m133 = rhs.rawData.data[10];
-		var m143 = rhs.rawData.data[14];
-		var m114 = rhs.rawData.data[3];
-		var m124 = rhs.rawData.data[7];
-		var m134 = rhs.rawData.data[11];
-		var m144 = rhs.rawData.data[15];
-		var m211 = this.rawData.data[0];
-		var m221 = this.rawData.data[4];
-		var m231 = this.rawData.data[8];
-		var m241 = this.rawData.data[12];
-		var m212 = this.rawData.data[1];
-		var m222 = this.rawData.data[5];
-		var m232 = this.rawData.data[9];
-		var m242 = this.rawData.data[13];
-		var m213 = this.rawData.data[2];
-		var m223 = this.rawData.data[6];
-		var m233 = this.rawData.data[10];
-		var m243 = this.rawData.data[14];
-		var m214 = this.rawData.data[3];
-		var m224 = this.rawData.data[7];
-		var m234 = this.rawData.data[11];
-		var m244 = this.rawData.data[15];
-		var this1 = this.rawData;
-		if(!this1.fixed) {
-			if(0 >= this1.length) this1.length = 1;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(1 >= this3.length) this3.length = 2;
-			if(this3.data.length < this3.length) {
-				var data1;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data1 = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-				this3.data = data1;
-			}
-		}
-		this3.data[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(2 >= this5.length) this5.length = 3;
-			if(this5.data.length < this5.length) {
-				var data2;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data2 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-				this5.data = data2;
-			}
-		}
-		this5.data[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
-		var this7 = this.rawData;
-		if(!this7.fixed) {
-			if(3 >= this7.length) this7.length = 4;
-			if(this7.data.length < this7.length) {
-				var data3;
-				var this8;
-				this8 = new Array(this7.data.length + 10);
-				data3 = this8;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-				this7.data = data3;
-			}
-		}
-		this7.data[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
-		var this9 = this.rawData;
-		if(!this9.fixed) {
-			if(4 >= this9.length) this9.length = 5;
-			if(this9.data.length < this9.length) {
-				var data4;
-				var this10;
-				this10 = new Array(this9.data.length + 10);
-				data4 = this10;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-				this9.data = data4;
-			}
-		}
-		this9.data[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
-		var this11 = this.rawData;
-		if(!this11.fixed) {
-			if(5 >= this11.length) this11.length = 6;
-			if(this11.data.length < this11.length) {
-				var data5;
-				var this12;
-				this12 = new Array(this11.data.length + 10);
-				data5 = this12;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-				this11.data = data5;
-			}
-		}
-		this11.data[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
-		var this13 = this.rawData;
-		if(!this13.fixed) {
-			if(6 >= this13.length) this13.length = 7;
-			if(this13.data.length < this13.length) {
-				var data6;
-				var this14;
-				this14 = new Array(this13.data.length + 10);
-				data6 = this14;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-				this13.data = data6;
-			}
-		}
-		this13.data[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
-		var this15 = this.rawData;
-		if(!this15.fixed) {
-			if(7 >= this15.length) this15.length = 8;
-			if(this15.data.length < this15.length) {
-				var data7;
-				var this16;
-				this16 = new Array(this15.data.length + 10);
-				data7 = this16;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-				this15.data = data7;
-			}
-		}
-		this15.data[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
-		var this17 = this.rawData;
-		if(!this17.fixed) {
-			if(8 >= this17.length) this17.length = 9;
-			if(this17.data.length < this17.length) {
-				var data8;
-				var this18;
-				this18 = new Array(this17.data.length + 10);
-				data8 = this18;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-				this17.data = data8;
-			}
-		}
-		this17.data[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
-		var this19 = this.rawData;
-		if(!this19.fixed) {
-			if(9 >= this19.length) this19.length = 10;
-			if(this19.data.length < this19.length) {
-				var data9;
-				var this20;
-				this20 = new Array(this19.data.length + 10);
-				data9 = this20;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-				this19.data = data9;
-			}
-		}
-		this19.data[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
-		var this21 = this.rawData;
-		if(!this21.fixed) {
-			if(10 >= this21.length) this21.length = 11;
-			if(this21.data.length < this21.length) {
-				var data10;
-				var this22;
-				this22 = new Array(this21.data.length + 10);
-				data10 = this22;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-				this21.data = data10;
-			}
-		}
-		this21.data[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
-		var this23 = this.rawData;
-		if(!this23.fixed) {
-			if(11 >= this23.length) this23.length = 12;
-			if(this23.data.length < this23.length) {
-				var data11;
-				var this24;
-				this24 = new Array(this23.data.length + 10);
-				data11 = this24;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-				this23.data = data11;
-			}
-		}
-		this23.data[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
-		var this25 = this.rawData;
-		if(!this25.fixed) {
-			if(12 >= this25.length) this25.length = 13;
-			if(this25.data.length < this25.length) {
-				var data12;
-				var this26;
-				this26 = new Array(this25.data.length + 10);
-				data12 = this26;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-				this25.data = data12;
-			}
-		}
-		this25.data[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
-		var this27 = this.rawData;
-		if(!this27.fixed) {
-			if(13 >= this27.length) this27.length = 14;
-			if(this27.data.length < this27.length) {
-				var data13;
-				var this28;
-				this28 = new Array(this27.data.length + 10);
-				data13 = this28;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-				this27.data = data13;
-			}
-		}
-		this27.data[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
-		var this29 = this.rawData;
-		if(!this29.fixed) {
-			if(14 >= this29.length) this29.length = 15;
-			if(this29.data.length < this29.length) {
-				var data14;
-				var this30;
-				this30 = new Array(this29.data.length + 10);
-				data14 = this30;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-				this29.data = data14;
-			}
-		}
-		this29.data[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
-		var this31 = this.rawData;
-		if(!this31.fixed) {
-			if(15 >= this31.length) this31.length = 16;
-			if(this31.data.length < this31.length) {
-				var data15;
-				var this32;
-				this32 = new Array(this31.data.length + 10);
-				data15 = this32;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-				this31.data = data15;
-			}
-		}
-		this31.data[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
-	}
-	,prependRotation: function(degrees,axis,pivotPoint) {
-		var m = openfl_geom_Matrix3D.__getAxisRotation(axis.x,axis.y,axis.z,degrees);
-		if(pivotPoint != null) {
-			var p = pivotPoint;
-			m.appendTranslation(p.x,p.y,p.z);
-		}
-		this.prepend(m);
-	}
-	,prependScale: function(xScale,yScale,zScale) {
-		this.prepend(new openfl_geom_Matrix3D((function($this) {
-			var $r;
-			var value = [xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0];
-			var vectorData = new openfl_VectorData();
-			vectorData.length = value.length;
-			vectorData.fixed = true;
-			{
-				var vec;
-				var this1;
-				this1 = new Array(value.length);
-				vec = this1;
-				var _g1 = 0;
-				var _g = value.length;
-				while(_g1 < _g) {
-					var i = _g1++;
-					vec[i] = value[i];
-				}
-				vectorData.data = vec;
-			}
-			$r = vectorData;
-			return $r;
-		}(this))));
-	}
-	,prependTranslation: function(x,y,z) {
-		var m = new openfl_geom_Matrix3D();
-		m.set_position(new openfl_geom_Vector3D(x,y,z));
-		this.prepend(m);
-	}
-	,recompose: function(components,orientationStyle) {
-		if(components.length < 3 || components.data[2].x == 0 || components.data[2].y == 0 || components.data[2].z == 0) return false;
-		if(orientationStyle == null) orientationStyle = 1;
-		this.identity();
-		var scale = [];
-		scale[0] = scale[1] = scale[2] = components.data[2].x;
-		scale[4] = scale[5] = scale[6] = components.data[2].y;
-		scale[8] = scale[9] = scale[10] = components.data[2].z;
-		if(orientationStyle != null) switch(orientationStyle) {
-		case 1:
-			var cx = Math.cos(components.data[1].x);
-			var cy = Math.cos(components.data[1].y);
-			var cz = Math.cos(components.data[1].z);
-			var sx = Math.sin(components.data[1].x);
-			var sy = Math.sin(components.data[1].y);
-			var sz = Math.sin(components.data[1].z);
-			var this1 = this.rawData;
-			if(!this1.fixed) {
-				if(0 >= this1.length) this1.length = 1;
-				if(this1.data.length < this1.length) {
-					var data;
-					var this2;
-					this2 = new Array(this1.data.length + 10);
-					data = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-					this1.data = data;
-				}
-			}
-			this1.data[0] = cy * cz * scale[0];
-			var this3 = this.rawData;
-			if(!this3.fixed) {
-				if(1 >= this3.length) this3.length = 2;
-				if(this3.data.length < this3.length) {
-					var data1;
-					var this4;
-					this4 = new Array(this3.data.length + 10);
-					data1 = this4;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-					this3.data = data1;
-				}
-			}
-			this3.data[1] = cy * sz * scale[1];
-			var this5 = this.rawData;
-			if(!this5.fixed) {
-				if(2 >= this5.length) this5.length = 3;
-				if(this5.data.length < this5.length) {
-					var data2;
-					var this6;
-					this6 = new Array(this5.data.length + 10);
-					data2 = this6;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-					this5.data = data2;
-				}
-			}
-			this5.data[2] = -sy * scale[2];
-			var this7 = this.rawData;
-			if(!this7.fixed) {
-				if(3 >= this7.length) this7.length = 4;
-				if(this7.data.length < this7.length) {
-					var data3;
-					var this8;
-					this8 = new Array(this7.data.length + 10);
-					data3 = this8;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
-					this7.data = data3;
-				}
-			}
-			this7.data[3] = 0;
-			var this9 = this.rawData;
-			if(!this9.fixed) {
-				if(4 >= this9.length) this9.length = 5;
-				if(this9.data.length < this9.length) {
-					var data4;
-					var this10;
-					this10 = new Array(this9.data.length + 10);
-					data4 = this10;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
-					this9.data = data4;
-				}
-			}
-			this9.data[4] = (sx * sy * cz - cx * sz) * scale[4];
-			var this11 = this.rawData;
-			if(!this11.fixed) {
-				if(5 >= this11.length) this11.length = 6;
-				if(this11.data.length < this11.length) {
-					var data5;
-					var this12;
-					this12 = new Array(this11.data.length + 10);
-					data5 = this12;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
-					this11.data = data5;
-				}
-			}
-			this11.data[5] = (sx * sy * sz + cx * cz) * scale[5];
-			var this13 = this.rawData;
-			if(!this13.fixed) {
-				if(6 >= this13.length) this13.length = 7;
-				if(this13.data.length < this13.length) {
-					var data6;
-					var this14;
-					this14 = new Array(this13.data.length + 10);
-					data6 = this14;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
-					this13.data = data6;
-				}
-			}
-			this13.data[6] = sx * cy * scale[6];
-			var this15 = this.rawData;
-			if(!this15.fixed) {
-				if(7 >= this15.length) this15.length = 8;
-				if(this15.data.length < this15.length) {
-					var data7;
-					var this16;
-					this16 = new Array(this15.data.length + 10);
-					data7 = this16;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
-					this15.data = data7;
-				}
-			}
-			this15.data[7] = 0;
-			var this17 = this.rawData;
-			if(!this17.fixed) {
-				if(8 >= this17.length) this17.length = 9;
-				if(this17.data.length < this17.length) {
-					var data8;
-					var this18;
-					this18 = new Array(this17.data.length + 10);
-					data8 = this18;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
-					this17.data = data8;
-				}
-			}
-			this17.data[8] = (cx * sy * cz + sx * sz) * scale[8];
-			var this19 = this.rawData;
-			if(!this19.fixed) {
-				if(9 >= this19.length) this19.length = 10;
-				if(this19.data.length < this19.length) {
-					var data9;
-					var this20;
-					this20 = new Array(this19.data.length + 10);
-					data9 = this20;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
-					this19.data = data9;
-				}
-			}
-			this19.data[9] = (cx * sy * sz - sx * cz) * scale[9];
-			var this21 = this.rawData;
-			if(!this21.fixed) {
-				if(10 >= this21.length) this21.length = 11;
-				if(this21.data.length < this21.length) {
-					var data10;
-					var this22;
-					this22 = new Array(this21.data.length + 10);
-					data10 = this22;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
-					this21.data = data10;
-				}
-			}
-			this21.data[10] = cx * cy * scale[10];
-			var this23 = this.rawData;
-			if(!this23.fixed) {
-				if(11 >= this23.length) this23.length = 12;
-				if(this23.data.length < this23.length) {
-					var data11;
-					var this24;
-					this24 = new Array(this23.data.length + 10);
-					data11 = this24;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
-					this23.data = data11;
-				}
-			}
-			this23.data[11] = 0;
-			var this25 = this.rawData;
-			if(!this25.fixed) {
-				if(12 >= this25.length) this25.length = 13;
-				if(this25.data.length < this25.length) {
-					var data12;
-					var this26;
-					this26 = new Array(this25.data.length + 10);
-					data12 = this26;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
-					this25.data = data12;
-				}
-			}
-			this25.data[12] = components.data[0].x;
-			var this27 = this.rawData;
-			if(!this27.fixed) {
-				if(13 >= this27.length) this27.length = 14;
-				if(this27.data.length < this27.length) {
-					var data13;
-					var this28;
-					this28 = new Array(this27.data.length + 10);
-					data13 = this28;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
-					this27.data = data13;
-				}
-			}
-			this27.data[13] = components.data[0].y;
-			var this29 = this.rawData;
-			if(!this29.fixed) {
-				if(14 >= this29.length) this29.length = 15;
-				if(this29.data.length < this29.length) {
-					var data14;
-					var this30;
-					this30 = new Array(this29.data.length + 10);
-					data14 = this30;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
-					this29.data = data14;
-				}
-			}
-			this29.data[14] = components.data[0].z;
-			var this31 = this.rawData;
-			if(!this31.fixed) {
-				if(15 >= this31.length) this31.length = 16;
-				if(this31.data.length < this31.length) {
-					var data15;
-					var this32;
-					this32 = new Array(this31.data.length + 10);
-					data15 = this32;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
-					this31.data = data15;
-				}
-			}
-			this31.data[15] = 1;
-			break;
-		default:
-			var x = components.data[1].x;
-			var y = components.data[1].y;
-			var z = components.data[1].z;
-			var w = components.data[1].w;
-			if(Type.enumEq(orientationStyle,0)) {
-				x *= Math.sin(w / 2);
-				y *= Math.sin(w / 2);
-				z *= Math.sin(w / 2);
-				w = Math.cos(w / 2);
-			}
-			var this33 = this.rawData;
-			if(!this33.fixed) {
-				if(0 >= this33.length) this33.length = 1;
-				if(this33.data.length < this33.length) {
-					var data16;
-					var this34;
-					this34 = new Array(this33.data.length + 10);
-					data16 = this34;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this33.data,0,data16,0,this33.data.length);
-					this33.data = data16;
-				}
-			}
-			this33.data[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
-			var this35 = this.rawData;
-			if(!this35.fixed) {
-				if(1 >= this35.length) this35.length = 2;
-				if(this35.data.length < this35.length) {
-					var data17;
-					var this36;
-					this36 = new Array(this35.data.length + 10);
-					data17 = this36;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this35.data,0,data17,0,this35.data.length);
-					this35.data = data17;
-				}
-			}
-			this35.data[1] = (2 * x * y + 2 * w * z) * scale[1];
-			var this37 = this.rawData;
-			if(!this37.fixed) {
-				if(2 >= this37.length) this37.length = 3;
-				if(this37.data.length < this37.length) {
-					var data18;
-					var this38;
-					this38 = new Array(this37.data.length + 10);
-					data18 = this38;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this37.data,0,data18,0,this37.data.length);
-					this37.data = data18;
-				}
-			}
-			this37.data[2] = (2 * x * z - 2 * w * y) * scale[2];
-			var this39 = this.rawData;
-			if(!this39.fixed) {
-				if(3 >= this39.length) this39.length = 4;
-				if(this39.data.length < this39.length) {
-					var data19;
-					var this40;
-					this40 = new Array(this39.data.length + 10);
-					data19 = this40;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this39.data,0,data19,0,this39.data.length);
-					this39.data = data19;
-				}
-			}
-			this39.data[3] = 0;
-			var this41 = this.rawData;
-			if(!this41.fixed) {
-				if(4 >= this41.length) this41.length = 5;
-				if(this41.data.length < this41.length) {
-					var data20;
-					var this42;
-					this42 = new Array(this41.data.length + 10);
-					data20 = this42;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this41.data,0,data20,0,this41.data.length);
-					this41.data = data20;
-				}
-			}
-			this41.data[4] = (2 * x * y - 2 * w * z) * scale[4];
-			var this43 = this.rawData;
-			if(!this43.fixed) {
-				if(5 >= this43.length) this43.length = 6;
-				if(this43.data.length < this43.length) {
-					var data21;
-					var this44;
-					this44 = new Array(this43.data.length + 10);
-					data21 = this44;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this43.data,0,data21,0,this43.data.length);
-					this43.data = data21;
-				}
-			}
-			this43.data[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
-			var this45 = this.rawData;
-			if(!this45.fixed) {
-				if(6 >= this45.length) this45.length = 7;
-				if(this45.data.length < this45.length) {
-					var data22;
-					var this46;
-					this46 = new Array(this45.data.length + 10);
-					data22 = this46;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this45.data,0,data22,0,this45.data.length);
-					this45.data = data22;
-				}
-			}
-			this45.data[6] = (2 * y * z + 2 * w * x) * scale[6];
-			var this47 = this.rawData;
-			if(!this47.fixed) {
-				if(7 >= this47.length) this47.length = 8;
-				if(this47.data.length < this47.length) {
-					var data23;
-					var this48;
-					this48 = new Array(this47.data.length + 10);
-					data23 = this48;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this47.data,0,data23,0,this47.data.length);
-					this47.data = data23;
-				}
-			}
-			this47.data[7] = 0;
-			var this49 = this.rawData;
-			if(!this49.fixed) {
-				if(8 >= this49.length) this49.length = 9;
-				if(this49.data.length < this49.length) {
-					var data24;
-					var this50;
-					this50 = new Array(this49.data.length + 10);
-					data24 = this50;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this49.data,0,data24,0,this49.data.length);
-					this49.data = data24;
-				}
-			}
-			this49.data[8] = (2 * x * z + 2 * w * y) * scale[8];
-			var this51 = this.rawData;
-			if(!this51.fixed) {
-				if(9 >= this51.length) this51.length = 10;
-				if(this51.data.length < this51.length) {
-					var data25;
-					var this52;
-					this52 = new Array(this51.data.length + 10);
-					data25 = this52;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this51.data,0,data25,0,this51.data.length);
-					this51.data = data25;
-				}
-			}
-			this51.data[9] = (2 * y * z - 2 * w * x) * scale[9];
-			var this53 = this.rawData;
-			if(!this53.fixed) {
-				if(10 >= this53.length) this53.length = 11;
-				if(this53.data.length < this53.length) {
-					var data26;
-					var this54;
-					this54 = new Array(this53.data.length + 10);
-					data26 = this54;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this53.data,0,data26,0,this53.data.length);
-					this53.data = data26;
-				}
-			}
-			this53.data[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
-			var this55 = this.rawData;
-			if(!this55.fixed) {
-				if(11 >= this55.length) this55.length = 12;
-				if(this55.data.length < this55.length) {
-					var data27;
-					var this56;
-					this56 = new Array(this55.data.length + 10);
-					data27 = this56;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this55.data,0,data27,0,this55.data.length);
-					this55.data = data27;
-				}
-			}
-			this55.data[11] = 0;
-			var this57 = this.rawData;
-			if(!this57.fixed) {
-				if(12 >= this57.length) this57.length = 13;
-				if(this57.data.length < this57.length) {
-					var data28;
-					var this58;
-					this58 = new Array(this57.data.length + 10);
-					data28 = this58;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this57.data,0,data28,0,this57.data.length);
-					this57.data = data28;
-				}
-			}
-			this57.data[12] = components.data[0].x;
-			var this59 = this.rawData;
-			if(!this59.fixed) {
-				if(13 >= this59.length) this59.length = 14;
-				if(this59.data.length < this59.length) {
-					var data29;
-					var this60;
-					this60 = new Array(this59.data.length + 10);
-					data29 = this60;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this59.data,0,data29,0,this59.data.length);
-					this59.data = data29;
-				}
-			}
-			this59.data[13] = components.data[0].y;
-			var this61 = this.rawData;
-			if(!this61.fixed) {
-				if(14 >= this61.length) this61.length = 15;
-				if(this61.data.length < this61.length) {
-					var data30;
-					var this62;
-					this62 = new Array(this61.data.length + 10);
-					data30 = this62;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this61.data,0,data30,0,this61.data.length);
-					this61.data = data30;
-				}
-			}
-			this61.data[14] = components.data[0].z;
-			var this63 = this.rawData;
-			if(!this63.fixed) {
-				if(15 >= this63.length) this63.length = 16;
-				if(this63.data.length < this63.length) {
-					var data31;
-					var this64;
-					this64 = new Array(this63.data.length + 10);
-					data31 = this64;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this63.data,0,data31,0,this63.data.length);
-					this63.data = data31;
-				}
-			}
-			this63.data[15] = 1;
-		} else {
-			var x = components.data[1].x;
-			var y = components.data[1].y;
-			var z = components.data[1].z;
-			var w = components.data[1].w;
-			if(Type.enumEq(orientationStyle,0)) {
-				x *= Math.sin(w / 2);
-				y *= Math.sin(w / 2);
-				z *= Math.sin(w / 2);
-				w = Math.cos(w / 2);
-			}
-			var this33 = this.rawData;
-			if(!this33.fixed) {
-				if(0 >= this33.length) this33.length = 1;
-				if(this33.data.length < this33.length) {
-					var data16;
-					var this34;
-					this34 = new Array(this33.data.length + 10);
-					data16 = this34;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this33.data,0,data16,0,this33.data.length);
-					this33.data = data16;
-				}
-			}
-			this33.data[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
-			var this35 = this.rawData;
-			if(!this35.fixed) {
-				if(1 >= this35.length) this35.length = 2;
-				if(this35.data.length < this35.length) {
-					var data17;
-					var this36;
-					this36 = new Array(this35.data.length + 10);
-					data17 = this36;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this35.data,0,data17,0,this35.data.length);
-					this35.data = data17;
-				}
-			}
-			this35.data[1] = (2 * x * y + 2 * w * z) * scale[1];
-			var this37 = this.rawData;
-			if(!this37.fixed) {
-				if(2 >= this37.length) this37.length = 3;
-				if(this37.data.length < this37.length) {
-					var data18;
-					var this38;
-					this38 = new Array(this37.data.length + 10);
-					data18 = this38;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this37.data,0,data18,0,this37.data.length);
-					this37.data = data18;
-				}
-			}
-			this37.data[2] = (2 * x * z - 2 * w * y) * scale[2];
-			var this39 = this.rawData;
-			if(!this39.fixed) {
-				if(3 >= this39.length) this39.length = 4;
-				if(this39.data.length < this39.length) {
-					var data19;
-					var this40;
-					this40 = new Array(this39.data.length + 10);
-					data19 = this40;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this39.data,0,data19,0,this39.data.length);
-					this39.data = data19;
-				}
-			}
-			this39.data[3] = 0;
-			var this41 = this.rawData;
-			if(!this41.fixed) {
-				if(4 >= this41.length) this41.length = 5;
-				if(this41.data.length < this41.length) {
-					var data20;
-					var this42;
-					this42 = new Array(this41.data.length + 10);
-					data20 = this42;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this41.data,0,data20,0,this41.data.length);
-					this41.data = data20;
-				}
-			}
-			this41.data[4] = (2 * x * y - 2 * w * z) * scale[4];
-			var this43 = this.rawData;
-			if(!this43.fixed) {
-				if(5 >= this43.length) this43.length = 6;
-				if(this43.data.length < this43.length) {
-					var data21;
-					var this44;
-					this44 = new Array(this43.data.length + 10);
-					data21 = this44;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this43.data,0,data21,0,this43.data.length);
-					this43.data = data21;
-				}
-			}
-			this43.data[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
-			var this45 = this.rawData;
-			if(!this45.fixed) {
-				if(6 >= this45.length) this45.length = 7;
-				if(this45.data.length < this45.length) {
-					var data22;
-					var this46;
-					this46 = new Array(this45.data.length + 10);
-					data22 = this46;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this45.data,0,data22,0,this45.data.length);
-					this45.data = data22;
-				}
-			}
-			this45.data[6] = (2 * y * z + 2 * w * x) * scale[6];
-			var this47 = this.rawData;
-			if(!this47.fixed) {
-				if(7 >= this47.length) this47.length = 8;
-				if(this47.data.length < this47.length) {
-					var data23;
-					var this48;
-					this48 = new Array(this47.data.length + 10);
-					data23 = this48;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this47.data,0,data23,0,this47.data.length);
-					this47.data = data23;
-				}
-			}
-			this47.data[7] = 0;
-			var this49 = this.rawData;
-			if(!this49.fixed) {
-				if(8 >= this49.length) this49.length = 9;
-				if(this49.data.length < this49.length) {
-					var data24;
-					var this50;
-					this50 = new Array(this49.data.length + 10);
-					data24 = this50;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this49.data,0,data24,0,this49.data.length);
-					this49.data = data24;
-				}
-			}
-			this49.data[8] = (2 * x * z + 2 * w * y) * scale[8];
-			var this51 = this.rawData;
-			if(!this51.fixed) {
-				if(9 >= this51.length) this51.length = 10;
-				if(this51.data.length < this51.length) {
-					var data25;
-					var this52;
-					this52 = new Array(this51.data.length + 10);
-					data25 = this52;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this51.data,0,data25,0,this51.data.length);
-					this51.data = data25;
-				}
-			}
-			this51.data[9] = (2 * y * z - 2 * w * x) * scale[9];
-			var this53 = this.rawData;
-			if(!this53.fixed) {
-				if(10 >= this53.length) this53.length = 11;
-				if(this53.data.length < this53.length) {
-					var data26;
-					var this54;
-					this54 = new Array(this53.data.length + 10);
-					data26 = this54;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this53.data,0,data26,0,this53.data.length);
-					this53.data = data26;
-				}
-			}
-			this53.data[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
-			var this55 = this.rawData;
-			if(!this55.fixed) {
-				if(11 >= this55.length) this55.length = 12;
-				if(this55.data.length < this55.length) {
-					var data27;
-					var this56;
-					this56 = new Array(this55.data.length + 10);
-					data27 = this56;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this55.data,0,data27,0,this55.data.length);
-					this55.data = data27;
-				}
-			}
-			this55.data[11] = 0;
-			var this57 = this.rawData;
-			if(!this57.fixed) {
-				if(12 >= this57.length) this57.length = 13;
-				if(this57.data.length < this57.length) {
-					var data28;
-					var this58;
-					this58 = new Array(this57.data.length + 10);
-					data28 = this58;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this57.data,0,data28,0,this57.data.length);
-					this57.data = data28;
-				}
-			}
-			this57.data[12] = components.data[0].x;
-			var this59 = this.rawData;
-			if(!this59.fixed) {
-				if(13 >= this59.length) this59.length = 14;
-				if(this59.data.length < this59.length) {
-					var data29;
-					var this60;
-					this60 = new Array(this59.data.length + 10);
-					data29 = this60;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this59.data,0,data29,0,this59.data.length);
-					this59.data = data29;
-				}
-			}
-			this59.data[13] = components.data[0].y;
-			var this61 = this.rawData;
-			if(!this61.fixed) {
-				if(14 >= this61.length) this61.length = 15;
-				if(this61.data.length < this61.length) {
-					var data30;
-					var this62;
-					this62 = new Array(this61.data.length + 10);
-					data30 = this62;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this61.data,0,data30,0,this61.data.length);
-					this61.data = data30;
-				}
-			}
-			this61.data[14] = components.data[0].z;
-			var this63 = this.rawData;
-			if(!this63.fixed) {
-				if(15 >= this63.length) this63.length = 16;
-				if(this63.data.length < this63.length) {
-					var data31;
-					var this64;
-					this64 = new Array(this63.data.length + 10);
-					data31 = this64;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this63.data,0,data31,0,this63.data.length);
-					this63.data = data31;
-				}
-			}
-			this63.data[15] = 1;
-		}
-		if(components.data[2].x == 0) {
-			var this65 = this.rawData;
-			if(!this65.fixed) {
-				if(0 >= this65.length) this65.length = 1;
-				if(this65.data.length < this65.length) {
-					var data32;
-					var this66;
-					this66 = new Array(this65.data.length + 10);
-					data32 = this66;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this65.data,0,data32,0,this65.data.length);
-					this65.data = data32;
-				}
-			}
-			this65.data[0] = 1e-15;
-		}
-		if(components.data[2].y == 0) {
-			var this67 = this.rawData;
-			if(!this67.fixed) {
-				if(5 >= this67.length) this67.length = 6;
-				if(this67.data.length < this67.length) {
-					var data33;
-					var this68;
-					this68 = new Array(this67.data.length + 10);
-					data33 = this68;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this67.data,0,data33,0,this67.data.length);
-					this67.data = data33;
-				}
-			}
-			this67.data[5] = 1e-15;
-		}
-		if(components.data[2].z == 0) {
-			var this69 = this.rawData;
-			if(!this69.fixed) {
-				if(10 >= this69.length) this69.length = 11;
-				if(this69.data.length < this69.length) {
-					var data34;
-					var this70;
-					this70 = new Array(this69.data.length + 10);
-					data34 = this70;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(this69.data,0,data34,0,this69.data.length);
-					this69.data = data34;
-				}
-			}
-			this69.data[10] = 1e-15;
-		}
-		return !(components.data[2].x == 0 || components.data[2].y == 0 || components.data[2].y == 0);
-	}
-	,transformVector: function(v) {
-		var x = v.x;
-		var y = v.y;
-		var z = v.z;
-		return new openfl_geom_Vector3D(x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[12],x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[13],x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[14],x * this.rawData.data[3] + y * this.rawData.data[7] + z * this.rawData.data[11] + this.rawData.data[15]);
-	}
-	,transformVectors: function(vin,vout) {
-		var i = 0;
-		var x;
-		var y;
-		var z;
-		while(i + 3 <= vin.length) {
-			x = vin.data[i];
-			y = vin.data[i + 1];
-			z = vin.data[i + 2];
-			{
-				if(!vout.fixed) {
-					if(i >= vout.length) vout.length = i + 1;
-					if(vout.data.length < vout.length) {
-						var data;
-						var this1;
-						this1 = new Array(vout.data.length + 10);
-						data = this1;
-						haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data,0,vout.data.length);
-						vout.data = data;
-					}
-				}
-				vout.data[i] = x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[12];
-			}
-			var key = i + 1;
-			if(!vout.fixed) {
-				if(key >= vout.length) vout.length = key + 1;
-				if(vout.data.length < vout.length) {
-					var data1;
-					var this2;
-					this2 = new Array(vout.data.length + 10);
-					data1 = this2;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data1,0,vout.data.length);
-					vout.data = data1;
-				}
-			}
-			vout.data[key] = x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[13];
-			var key1 = i + 2;
-			if(!vout.fixed) {
-				if(key1 >= vout.length) vout.length = key1 + 1;
-				if(vout.data.length < vout.length) {
-					var data2;
-					var this3;
-					this3 = new Array(vout.data.length + 10);
-					data2 = this3;
-					haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data2,0,vout.data.length);
-					vout.data = data2;
-				}
-			}
-			vout.data[key1] = x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[14];
-			i += 3;
-		}
-	}
-	,transpose: function() {
-		var oRawData;
-		var this1 = this.rawData;
-		var vectorData = new openfl_VectorData();
-		vectorData.length = this1.length;
-		vectorData.fixed = this1.fixed;
-		var this2;
-		this2 = new Array(this1.length);
-		vectorData.data = this2;
-		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
-		oRawData = vectorData;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(1 >= this3.length) this3.length = 2;
-			if(this3.data.length < this3.length) {
-				var data;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data,0,this3.data.length);
-				this3.data = data;
-			}
-		}
-		this3.data[1] = oRawData.data[4];
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(2 >= this5.length) this5.length = 3;
-			if(this5.data.length < this5.length) {
-				var data1;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data1 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data1,0,this5.data.length);
-				this5.data = data1;
-			}
-		}
-		this5.data[2] = oRawData.data[8];
-		var this7 = this.rawData;
-		if(!this7.fixed) {
-			if(3 >= this7.length) this7.length = 4;
-			if(this7.data.length < this7.length) {
-				var data2;
-				var this8;
-				this8 = new Array(this7.data.length + 10);
-				data2 = this8;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data2,0,this7.data.length);
-				this7.data = data2;
-			}
-		}
-		this7.data[3] = oRawData.data[12];
-		var this9 = this.rawData;
-		if(!this9.fixed) {
-			if(4 >= this9.length) this9.length = 5;
-			if(this9.data.length < this9.length) {
-				var data3;
-				var this10;
-				this10 = new Array(this9.data.length + 10);
-				data3 = this10;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data3,0,this9.data.length);
-				this9.data = data3;
-			}
-		}
-		this9.data[4] = oRawData.data[1];
-		var this11 = this.rawData;
-		if(!this11.fixed) {
-			if(6 >= this11.length) this11.length = 7;
-			if(this11.data.length < this11.length) {
-				var data4;
-				var this12;
-				this12 = new Array(this11.data.length + 10);
-				data4 = this12;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data4,0,this11.data.length);
-				this11.data = data4;
-			}
-		}
-		this11.data[6] = oRawData.data[9];
-		var this13 = this.rawData;
-		if(!this13.fixed) {
-			if(7 >= this13.length) this13.length = 8;
-			if(this13.data.length < this13.length) {
-				var data5;
-				var this14;
-				this14 = new Array(this13.data.length + 10);
-				data5 = this14;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data5,0,this13.data.length);
-				this13.data = data5;
-			}
-		}
-		this13.data[7] = oRawData.data[13];
-		var this15 = this.rawData;
-		if(!this15.fixed) {
-			if(8 >= this15.length) this15.length = 9;
-			if(this15.data.length < this15.length) {
-				var data6;
-				var this16;
-				this16 = new Array(this15.data.length + 10);
-				data6 = this16;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data6,0,this15.data.length);
-				this15.data = data6;
-			}
-		}
-		this15.data[8] = oRawData.data[2];
-		var this17 = this.rawData;
-		if(!this17.fixed) {
-			if(9 >= this17.length) this17.length = 10;
-			if(this17.data.length < this17.length) {
-				var data7;
-				var this18;
-				this18 = new Array(this17.data.length + 10);
-				data7 = this18;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data7,0,this17.data.length);
-				this17.data = data7;
-			}
-		}
-		this17.data[9] = oRawData.data[6];
-		var this19 = this.rawData;
-		if(!this19.fixed) {
-			if(11 >= this19.length) this19.length = 12;
-			if(this19.data.length < this19.length) {
-				var data8;
-				var this20;
-				this20 = new Array(this19.data.length + 10);
-				data8 = this20;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data8,0,this19.data.length);
-				this19.data = data8;
-			}
-		}
-		this19.data[11] = oRawData.data[14];
-		var this21 = this.rawData;
-		if(!this21.fixed) {
-			if(12 >= this21.length) this21.length = 13;
-			if(this21.data.length < this21.length) {
-				var data9;
-				var this22;
-				this22 = new Array(this21.data.length + 10);
-				data9 = this22;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data9,0,this21.data.length);
-				this21.data = data9;
-			}
-		}
-		this21.data[12] = oRawData.data[3];
-		var this23 = this.rawData;
-		if(!this23.fixed) {
-			if(13 >= this23.length) this23.length = 14;
-			if(this23.data.length < this23.length) {
-				var data10;
-				var this24;
-				this24 = new Array(this23.data.length + 10);
-				data10 = this24;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data10,0,this23.data.length);
-				this23.data = data10;
-			}
-		}
-		this23.data[13] = oRawData.data[7];
-		var this25 = this.rawData;
-		if(!this25.fixed) {
-			if(14 >= this25.length) this25.length = 15;
-			if(this25.data.length < this25.length) {
-				var data11;
-				var this26;
-				this26 = new Array(this25.data.length + 10);
-				data11 = this26;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data11,0,this25.data.length);
-				this25.data = data11;
-			}
-		}
-		this25.data[14] = oRawData.data[11];
-	}
-	,get_determinant: function() {
-		return (this.rawData.data[0] * this.rawData.data[5] - this.rawData.data[4] * this.rawData.data[1]) * (this.rawData.data[10] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[11]) - (this.rawData.data[0] * this.rawData.data[9] - this.rawData.data[8] * this.rawData.data[1]) * (this.rawData.data[6] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[7]) + (this.rawData.data[0] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[1]) * (this.rawData.data[6] * this.rawData.data[11] - this.rawData.data[10] * this.rawData.data[7]) + (this.rawData.data[4] * this.rawData.data[9] - this.rawData.data[8] * this.rawData.data[5]) * (this.rawData.data[2] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[3]) - (this.rawData.data[4] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[5]) * (this.rawData.data[2] * this.rawData.data[11] - this.rawData.data[10] * this.rawData.data[3]) + (this.rawData.data[8] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[9]) * (this.rawData.data[2] * this.rawData.data[7] - this.rawData.data[6] * this.rawData.data[3]);
-	}
-	,get_position: function() {
-		return new openfl_geom_Vector3D(this.rawData.data[12],this.rawData.data[13],this.rawData.data[14]);
-	}
-	,set_position: function(val) {
-		var this1 = this.rawData;
-		if(!this1.fixed) {
-			if(12 >= this1.length) this1.length = 13;
-			if(this1.data.length < this1.length) {
-				var data;
-				var this2;
-				this2 = new Array(this1.data.length + 10);
-				data = this2;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
-				this1.data = data;
-			}
-		}
-		this1.data[12] = val.x;
-		var this3 = this.rawData;
-		if(!this3.fixed) {
-			if(13 >= this3.length) this3.length = 14;
-			if(this3.data.length < this3.length) {
-				var data1;
-				var this4;
-				this4 = new Array(this3.data.length + 10);
-				data1 = this4;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
-				this3.data = data1;
-			}
-		}
-		this3.data[13] = val.y;
-		var this5 = this.rawData;
-		if(!this5.fixed) {
-			if(14 >= this5.length) this5.length = 15;
-			if(this5.data.length < this5.length) {
-				var data2;
-				var this6;
-				this6 = new Array(this5.data.length + 10);
-				data2 = this6;
-				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
-				this5.data = data2;
-			}
-		}
-		this5.data[14] = val.z;
-		return val;
-	}
-	,__class__: openfl_geom_Matrix3D
-	,__properties__: {set_position:"set_position",get_position:"get_position",get_determinant:"get_determinant"}
-};
-var openfl_VectorData = function() {
-	this.length = 0;
-};
-$hxClasses["openfl.VectorData"] = openfl_VectorData;
-openfl_VectorData.__name__ = ["openfl","VectorData"];
-openfl_VectorData.prototype = {
-	data: null
-	,fixed: null
-	,length: null
-	,__class__: openfl_VectorData
-};
-var openfl_geom_Point = function(x,y) {
-	if(y == null) y = 0;
-	if(x == null) x = 0;
-	this.x = x;
-	this.y = y;
-};
-$hxClasses["openfl.geom.Point"] = openfl_geom_Point;
-openfl_geom_Point.__name__ = ["openfl","geom","Point"];
-openfl_geom_Point.distance = function(pt1,pt2) {
-	var dx = pt1.x - pt2.x;
-	var dy = pt1.y - pt2.y;
-	return Math.sqrt(dx * dx + dy * dy);
-};
-openfl_geom_Point.interpolate = function(pt1,pt2,f) {
-	return new openfl_geom_Point(pt2.x + f * (pt1.x - pt2.x),pt2.y + f * (pt1.y - pt2.y));
-};
-openfl_geom_Point.polar = function(len,angle) {
-	return new openfl_geom_Point(len * Math.cos(angle),len * Math.sin(angle));
-};
-openfl_geom_Point.prototype = {
-	length: null
-	,x: null
-	,y: null
-	,add: function(v) {
-		return new openfl_geom_Point(v.x + this.x,v.y + this.y);
-	}
-	,clone: function() {
-		return new openfl_geom_Point(this.x,this.y);
-	}
-	,copyFrom: function(sourcePoint) {
-		this.x = sourcePoint.x;
-		this.y = sourcePoint.y;
-	}
-	,equals: function(toCompare) {
-		return toCompare != null && toCompare.x == this.x && toCompare.y == this.y;
-	}
-	,normalize: function(thickness) {
-		if(this.x == 0 && this.y == 0) return; else {
-			var norm = thickness / Math.sqrt(this.x * this.x + this.y * this.y);
-			this.x *= norm;
-			this.y *= norm;
-		}
-	}
-	,offset: function(dx,dy) {
-		this.x += dx;
-		this.y += dy;
-	}
-	,setTo: function(xa,ya) {
-		this.x = xa;
-		this.y = ya;
-	}
-	,subtract: function(v) {
-		return new openfl_geom_Point(this.x - v.x,this.y - v.y);
-	}
-	,toString: function() {
-		return "(x=" + this.x + ", y=" + this.y + ")";
-	}
-	,__toLimeVector2: function() {
-		return new lime_math_Vector2(this.x,this.y);
-	}
-	,get_length: function() {
-		return Math.sqrt(this.x * this.x + this.y * this.y);
-	}
-	,__class__: openfl_geom_Point
-	,__properties__: {get_length:"get_length"}
-};
-var openfl_geom_Vector3D = function(x,y,z,w) {
-	if(w == null) w = 0;
-	if(z == null) z = 0;
-	if(y == null) y = 0;
-	if(x == null) x = 0;
-	this.w = w;
-	this.x = x;
-	this.y = y;
-	this.z = z;
-};
-$hxClasses["openfl.geom.Vector3D"] = openfl_geom_Vector3D;
-openfl_geom_Vector3D.__name__ = ["openfl","geom","Vector3D"];
-openfl_geom_Vector3D.__properties__ = {get_Z_AXIS:"get_Z_AXIS",get_Y_AXIS:"get_Y_AXIS",get_X_AXIS:"get_X_AXIS"}
-openfl_geom_Vector3D.X_AXIS = null;
-openfl_geom_Vector3D.Y_AXIS = null;
-openfl_geom_Vector3D.Z_AXIS = null;
-openfl_geom_Vector3D.angleBetween = function(a,b) {
-	var la = a.get_length();
-	var lb = b.get_length();
-	var dot = a.dotProduct(b);
-	if(la != 0) dot /= la;
-	if(lb != 0) dot /= lb;
-	return Math.acos(dot);
-};
-openfl_geom_Vector3D.distance = function(pt1,pt2) {
-	var x = pt2.x - pt1.x;
-	var y = pt2.y - pt1.y;
-	var z = pt2.z - pt1.z;
-	return Math.sqrt(x * x + y * y + z * z);
-};
-openfl_geom_Vector3D.get_X_AXIS = function() {
-	return new openfl_geom_Vector3D(1,0,0);
-};
-openfl_geom_Vector3D.get_Y_AXIS = function() {
-	return new openfl_geom_Vector3D(0,1,0);
-};
-openfl_geom_Vector3D.get_Z_AXIS = function() {
-	return new openfl_geom_Vector3D(0,0,1);
-};
-openfl_geom_Vector3D.prototype = {
-	length: null
-	,lengthSquared: null
-	,w: null
-	,x: null
-	,y: null
-	,z: null
-	,add: function(a) {
-		return new openfl_geom_Vector3D(this.x + a.x,this.y + a.y,this.z + a.z);
-	}
-	,clone: function() {
-		return new openfl_geom_Vector3D(this.x,this.y,this.z,this.w);
-	}
-	,copyFrom: function(sourceVector3D) {
-		this.x = sourceVector3D.x;
-		this.y = sourceVector3D.y;
-		this.z = sourceVector3D.z;
-	}
-	,crossProduct: function(a) {
-		return new openfl_geom_Vector3D(this.y * a.z - this.z * a.y,this.z * a.x - this.x * a.z,this.x * a.y - this.y * a.x,1);
-	}
-	,decrementBy: function(a) {
-		this.x -= a.x;
-		this.y -= a.y;
-		this.z -= a.z;
-	}
-	,dotProduct: function(a) {
-		return this.x * a.x + this.y * a.y + this.z * a.z;
-	}
-	,equals: function(toCompare,allFour) {
-		if(allFour == null) allFour = false;
-		return this.x == toCompare.x && this.y == toCompare.y && this.z == toCompare.z && (!allFour || this.w == toCompare.w);
-	}
-	,incrementBy: function(a) {
-		this.x += a.x;
-		this.y += a.y;
-		this.z += a.z;
-	}
-	,nearEquals: function(toCompare,tolerance,allFour) {
-		if(allFour == null) allFour = false;
-		return Math.abs(this.x - toCompare.x) < tolerance && Math.abs(this.y - toCompare.y) < tolerance && Math.abs(this.z - toCompare.z) < tolerance && (!allFour || Math.abs(this.w - toCompare.w) < tolerance);
-	}
-	,negate: function() {
-		this.x *= -1;
-		this.y *= -1;
-		this.z *= -1;
-	}
-	,normalize: function() {
-		var l = this.get_length();
-		if(l != 0) {
-			this.x /= l;
-			this.y /= l;
-			this.z /= l;
-		}
-		return l;
-	}
-	,project: function() {
-		this.x /= this.w;
-		this.y /= this.w;
-		this.z /= this.w;
-	}
-	,scaleBy: function(s) {
-		this.x *= s;
-		this.y *= s;
-		this.z *= s;
-	}
-	,setTo: function(xa,ya,za) {
-		this.x = xa;
-		this.y = ya;
-		this.z = za;
-	}
-	,subtract: function(a) {
-		return new openfl_geom_Vector3D(this.x - a.x,this.y - a.y,this.z - a.z);
-	}
-	,toString: function() {
-		return "Vector3D(" + this.x + ", " + this.y + ", " + this.z + ")";
-	}
-	,get_length: function() {
-		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-	}
-	,get_lengthSquared: function() {
-		return this.x * this.x + this.y * this.y + this.z * this.z;
-	}
-	,__class__: openfl_geom_Vector3D
-	,__properties__: {get_lengthSquared:"get_lengthSquared",get_length:"get_length"}
-};
-var openfl_geom_Rectangle = function(x,y,width,height) {
-	if(height == null) height = 0;
-	if(width == null) width = 0;
-	if(y == null) y = 0;
-	if(x == null) x = 0;
-	this.x = x;
-	this.y = y;
-	this.width = width;
-	this.height = height;
-};
-$hxClasses["openfl.geom.Rectangle"] = openfl_geom_Rectangle;
-openfl_geom_Rectangle.__name__ = ["openfl","geom","Rectangle"];
-openfl_geom_Rectangle.prototype = {
-	height: null
-	,width: null
-	,x: null
-	,y: null
-	,clone: function() {
-		return new openfl_geom_Rectangle(this.x,this.y,this.width,this.height);
-	}
-	,contains: function(x,y) {
-		return x >= this.x && y >= this.y && x < this.get_right() && y < this.get_bottom();
-	}
-	,containsPoint: function(point) {
-		return this.contains(point.x,point.y);
-	}
-	,containsRect: function(rect) {
-		if(rect.width <= 0 || rect.height <= 0) return rect.x > this.x && rect.y > this.y && rect.get_right() < this.get_right() && rect.get_bottom() < this.get_bottom(); else return rect.x >= this.x && rect.y >= this.y && rect.get_right() <= this.get_right() && rect.get_bottom() <= this.get_bottom();
-	}
-	,copyFrom: function(sourceRect) {
-		this.x = sourceRect.x;
-		this.y = sourceRect.y;
-		this.width = sourceRect.width;
-		this.height = sourceRect.height;
-	}
-	,equals: function(toCompare) {
-		return toCompare != null && this.x == toCompare.x && this.y == toCompare.y && this.width == toCompare.width && this.height == toCompare.height;
-	}
-	,inflate: function(dx,dy) {
-		this.x -= dx;
-		this.width += dx * 2;
-		this.y -= dy;
-		this.height += dy * 2;
-	}
-	,inflatePoint: function(point) {
-		this.inflate(point.x,point.y);
-	}
-	,intersection: function(toIntersect) {
-		var x0;
-		if(this.x < toIntersect.x) x0 = toIntersect.x; else x0 = this.x;
-		var x1;
-		if(this.get_right() > toIntersect.get_right()) x1 = toIntersect.get_right(); else x1 = this.get_right();
-		if(x1 <= x0) return new openfl_geom_Rectangle();
-		var y0;
-		if(this.y < toIntersect.y) y0 = toIntersect.y; else y0 = this.y;
-		var y1;
-		if(this.get_bottom() > toIntersect.get_bottom()) y1 = toIntersect.get_bottom(); else y1 = this.get_bottom();
-		if(y1 <= y0) return new openfl_geom_Rectangle();
-		return new openfl_geom_Rectangle(x0,y0,x1 - x0,y1 - y0);
-	}
-	,intersects: function(toIntersect) {
-		var x0;
-		if(this.x < toIntersect.x) x0 = toIntersect.x; else x0 = this.x;
-		var x1;
-		if(this.get_right() > toIntersect.get_right()) x1 = toIntersect.get_right(); else x1 = this.get_right();
-		if(x1 <= x0) return false;
-		var y0;
-		if(this.y < toIntersect.y) y0 = toIntersect.y; else y0 = this.y;
-		var y1;
-		if(this.get_bottom() > toIntersect.get_bottom()) y1 = toIntersect.get_bottom(); else y1 = this.get_bottom();
-		return y1 > y0;
-	}
-	,isEmpty: function() {
-		return this.width <= 0 || this.height <= 0;
-	}
-	,offset: function(dx,dy) {
-		this.x += dx;
-		this.y += dy;
-	}
-	,offsetPoint: function(point) {
-		this.x += point.x;
-		this.y += point.y;
-	}
-	,setEmpty: function() {
-		this.x = this.y = this.width = this.height = 0;
-	}
-	,setTo: function(xa,ya,widtha,heighta) {
-		this.x = xa;
-		this.y = ya;
-		this.width = widtha;
-		this.height = heighta;
-	}
-	,toString: function() {
-		return "(x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + ")";
-	}
-	,union: function(toUnion) {
-		if(this.width == 0 || this.height == 0) return toUnion.clone(); else if(toUnion.width == 0 || toUnion.height == 0) return this.clone();
-		var x0;
-		if(this.x > toUnion.x) x0 = toUnion.x; else x0 = this.x;
-		var x1;
-		if(this.get_right() < toUnion.get_right()) x1 = toUnion.get_right(); else x1 = this.get_right();
-		var y0;
-		if(this.y > toUnion.y) y0 = toUnion.y; else y0 = this.y;
-		var y1;
-		if(this.get_bottom() < toUnion.get_bottom()) y1 = toUnion.get_bottom(); else y1 = this.get_bottom();
-		return new openfl_geom_Rectangle(x0,y0,x1 - x0,y1 - y0);
-	}
-	,__contract: function(x,y,width,height) {
-		if(this.width == 0 && this.height == 0) return;
-		var cacheRight = this.get_right();
-		var cacheBottom = this.get_bottom();
-		if(this.x < x) this.x = x;
-		if(this.y < y) this.y = y;
-		if(this.get_right() > x + width) this.width = x + width - this.x;
-		if(this.get_bottom() > y + height) this.height = y + height - this.y;
-	}
-	,__expand: function(x,y,width,height) {
-		if(this.width == 0 && this.height == 0) {
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			return;
-		}
-		var cacheRight = this.get_right();
-		var cacheBottom = this.get_bottom();
-		if(this.x > x) {
-			this.x = x;
-			this.width = cacheRight - x;
-		}
-		if(this.y > y) {
-			this.y = y;
-			this.height = cacheBottom - y;
-		}
-		if(cacheRight < x + width) this.width = x + width - this.x;
-		if(cacheBottom < y + height) this.height = y + height - this.y;
-	}
-	,__toLimeRectangle: function() {
-		return new lime_math_Rectangle(this.x,this.y,this.width,this.height);
-	}
-	,__transform: function(rect,m) {
-		var tx0 = m.a * this.x + m.c * this.y;
-		var tx1 = tx0;
-		var ty0 = m.b * this.x + m.d * this.y;
-		var ty1 = ty0;
-		var tx = m.a * (this.x + this.width) + m.c * this.y;
-		var ty = m.b * (this.x + this.width) + m.d * this.y;
-		if(tx < tx0) tx0 = tx;
-		if(ty < ty0) ty0 = ty;
-		if(tx > tx1) tx1 = tx;
-		if(ty > ty1) ty1 = ty;
-		tx = m.a * (this.x + this.width) + m.c * (this.y + this.height);
-		ty = m.b * (this.x + this.width) + m.d * (this.y + this.height);
-		if(tx < tx0) tx0 = tx;
-		if(ty < ty0) ty0 = ty;
-		if(tx > tx1) tx1 = tx;
-		if(ty > ty1) ty1 = ty;
-		tx = m.a * this.x + m.c * (this.y + this.height);
-		ty = m.b * this.x + m.d * (this.y + this.height);
-		if(tx < tx0) tx0 = tx;
-		if(ty < ty0) ty0 = ty;
-		if(tx > tx1) tx1 = tx;
-		if(ty > ty1) ty1 = ty;
-		rect.setTo(tx0 + m.tx,ty0 + m.ty,tx1 - tx0,ty1 - ty0);
-	}
-	,get_bottom: function() {
-		return this.y + this.height;
-	}
-	,set_bottom: function(b) {
-		this.height = b - this.y;
-		return b;
-	}
-	,get_bottomRight: function() {
-		return new openfl_geom_Point(this.x + this.width,this.y + this.height);
-	}
-	,set_bottomRight: function(p) {
-		this.width = p.x - this.x;
-		this.height = p.y - this.y;
-		return p.clone();
-	}
-	,get_left: function() {
-		return this.x;
-	}
-	,set_left: function(l) {
-		this.width -= l - this.x;
-		this.x = l;
-		return l;
-	}
-	,get_right: function() {
-		return this.x + this.width;
-	}
-	,set_right: function(r) {
-		this.width = r - this.x;
-		return r;
-	}
-	,get_size: function() {
-		return new openfl_geom_Point(this.width,this.height);
-	}
-	,set_size: function(p) {
-		this.width = p.x;
-		this.height = p.y;
-		return p.clone();
-	}
-	,get_top: function() {
-		return this.y;
-	}
-	,set_top: function(t) {
-		this.height -= t - this.y;
-		this.y = t;
-		return t;
-	}
-	,get_topLeft: function() {
-		return new openfl_geom_Point(this.x,this.y);
-	}
-	,set_topLeft: function(p) {
-		this.x = p.x;
-		this.y = p.y;
-		return p.clone();
-	}
-	,__class__: openfl_geom_Rectangle
-	,__properties__: {set_topLeft:"set_topLeft",get_topLeft:"get_topLeft",set_top:"set_top",get_top:"get_top",set_size:"set_size",get_size:"get_size",set_right:"set_right",get_right:"get_right",set_left:"set_left",get_left:"get_left",set_bottomRight:"set_bottomRight",get_bottomRight:"get_bottomRight",set_bottom:"set_bottom",get_bottom:"get_bottom"}
-};
-var starling_display_DisplayObject = function() {
-	this._popToken = new starling_rendering_BatchToken();
-	this._pushToken = new starling_rendering_BatchToken();
-	starling_events_EventDispatcher.call(this);
-	if(openfl_system_Capabilities.isDebugger && Type.getClassName(js_Boot.getClass(this)) == "starling.display::DisplayObject") throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
-	this._x = this._y = this._pivotX = this._pivotY = this._rotation = this._skewX = this._skewY = 0.0;
-	this._scaleX = this._scaleY = this._alpha = 1.0;
-	this._visible = this._touchable = this._hasVisibleArea = true;
-	this._blendMode = starling_display_BlendMode.AUTO;
-	this._transformationMatrix = new openfl_geom_Matrix();
-};
-$hxClasses["starling.display.DisplayObject"] = starling_display_DisplayObject;
-starling_display_DisplayObject.__name__ = ["starling","display","DisplayObject"];
-starling_display_DisplayObject.findCommonParent = function(object1,object2) {
-	var currentObject = object1;
-	while(currentObject != null) {
-		starling_display_DisplayObject.sAncestors[starling_display_DisplayObject.sAncestors.length] = currentObject;
-		currentObject = currentObject._parent;
-	}
-	currentObject = object2;
-	while(currentObject != null && Lambda.indexOf(starling_display_DisplayObject.sAncestors,currentObject) == -1) currentObject = currentObject._parent;
-	starling_display_DisplayObject.sAncestors.splice(0,starling_display_DisplayObject.sAncestors.length);
-	if(currentObject != null) return currentObject; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Object not connected to target"));
-};
-starling_display_DisplayObject.__super__ = starling_events_EventDispatcher;
-starling_display_DisplayObject.prototype = $extend(starling_events_EventDispatcher.prototype,{
-	_x: null
-	,_y: null
-	,_pivotX: null
-	,_pivotY: null
-	,_scaleX: null
-	,_scaleY: null
-	,_skewX: null
-	,_skewY: null
-	,_rotation: null
-	,_alpha: null
-	,_visible: null
-	,_touchable: null
-	,_blendMode: null
-	,_name: null
-	,_useHandCursor: null
-	,_parent: null
-	,_transformationMatrix: null
-	,_transformationMatrix3D: null
-	,_orientationChanged: null
-	,_is3D: null
-	,_isMask: null
-	,_lastParentOrSelfChangeFrameID: null
-	,_lastChildChangeFrameID: null
-	,_tokenFrameID: null
-	,_pushToken: null
-	,_popToken: null
-	,_hasVisibleArea: null
-	,_filter: null
-	,_mask: null
-	,dispose: function() {
-		if(this._filter != null) this._filter.dispose();
-		if(this._mask != null) this._mask.dispose();
-		this.removeEventListeners();
-		this.set_mask(null);
-	}
-	,removeFromParent: function(dispose) {
-		if(dispose == null) dispose = false;
-		if(this._parent != null) this._parent.removeChild(this,dispose); else if(dispose) this.dispose();
-	}
-	,getTransformationMatrix: function(targetSpace,out) {
-		var commonParent;
-		var currentObject;
-		if(out != null) out.identity(); else out = new openfl_geom_Matrix();
-		if(targetSpace == this) return out; else if(targetSpace == this._parent || targetSpace == null && this._parent == null) {
-			out.copyFrom(this.get_transformationMatrix());
-			return out;
-		} else if(targetSpace == null || targetSpace == this.get_base()) {
-			currentObject = this;
-			while(currentObject != targetSpace) {
-				out.concat(currentObject.get_transformationMatrix());
-				currentObject = currentObject._parent;
-			}
-			return out;
-		} else if(targetSpace._parent == this) {
-			targetSpace.getTransformationMatrix(this,out);
-			out.invert();
-			return out;
-		}
-		commonParent = starling_display_DisplayObject.findCommonParent(this,targetSpace);
-		currentObject = this;
-		while(currentObject != commonParent) {
-			out.concat(currentObject.get_transformationMatrix());
-			currentObject = currentObject._parent;
-		}
-		if(commonParent == targetSpace) return out;
-		starling_display_DisplayObject.sHelperMatrix.identity();
-		currentObject = targetSpace;
-		while(currentObject != commonParent) {
-			starling_display_DisplayObject.sHelperMatrix.concat(currentObject.get_transformationMatrix());
-			currentObject = currentObject._parent;
-		}
-		starling_display_DisplayObject.sHelperMatrix.invert();
-		out.concat(starling_display_DisplayObject.sHelperMatrix);
-		return out;
-	}
-	,getBounds: function(targetSpace,out) {
-		throw new js__$Boot_HaxeError(new starling_errors_AbstractMethodError());
-	}
-	,hitTest: function(localPoint) {
-		if(!this._visible || !this._touchable) return null;
-		if(this._mask != null && !this.hitTestMask(localPoint)) return null;
-		if(this.getBounds(this,starling_display_DisplayObject.sHelperRect).containsPoint(localPoint)) return this; else return null;
-	}
-	,hitTestMask: function(localPoint) {
-		if(this._mask != null) {
-			if(this._mask.get_stage() != null) this.getTransformationMatrix(this._mask,starling_display_DisplayObject.sHelperMatrixAlt); else {
-				starling_display_DisplayObject.sHelperMatrixAlt.copyFrom(this._mask.get_transformationMatrix());
-				starling_display_DisplayObject.sHelperMatrixAlt.invert();
-			}
-			var helperPoint;
-			if(localPoint == starling_display_DisplayObject.sHelperPoint) helperPoint = new openfl_geom_Point(); else helperPoint = starling_display_DisplayObject.sHelperPoint;
-			starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,localPoint,helperPoint);
-			return this._mask.hitTest(helperPoint) != null;
-		} else return true;
-	}
-	,localToGlobal: function(localPoint,out) {
-		if(this.get_is3D()) {
-			starling_display_DisplayObject.sHelperPoint3D.setTo(localPoint.x,localPoint.y,0);
-			return this.local3DToGlobal(starling_display_DisplayObject.sHelperPoint3D,out);
-		} else {
-			this.getTransformationMatrix(this.get_base(),starling_display_DisplayObject.sHelperMatrixAlt);
-			return starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,localPoint,out);
-		}
-	}
-	,globalToLocal: function(globalPoint,out) {
-		if(this.get_is3D()) {
-			this.globalToLocal3D(globalPoint,starling_display_DisplayObject.sHelperPoint3D);
-			this.get_stage().getCameraPosition(this,starling_display_DisplayObject.sHelperPointAlt3D);
-			return starling_utils_MathUtil.intersectLineWithXYPlane(starling_display_DisplayObject.sHelperPointAlt3D,starling_display_DisplayObject.sHelperPoint3D,out);
-		} else {
-			this.getTransformationMatrix(this.get_base(),starling_display_DisplayObject.sHelperMatrixAlt);
-			starling_display_DisplayObject.sHelperMatrixAlt.invert();
-			return starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,globalPoint,out);
-		}
-	}
-	,render: function(painter) {
-		throw new js__$Boot_HaxeError(new starling_errors_AbstractMethodError());
-	}
-	,alignPivot: function(horizontalAlign,verticalAlign) {
-		if(verticalAlign == null) verticalAlign = "center";
-		if(horizontalAlign == null) horizontalAlign = "center";
-		var bounds = this.getBounds(this,starling_display_DisplayObject.sHelperRect);
-		this.setOrientationChanged();
-		if(horizontalAlign == starling_utils_Align.LEFT) this._pivotX = bounds.x; else if(horizontalAlign == starling_utils_Align.CENTER) this._pivotX = bounds.x + bounds.width / 2.0; else if(horizontalAlign == starling_utils_Align.RIGHT) this._pivotX = bounds.x + bounds.width; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid horizontal alignment: " + horizontalAlign));
-		if(verticalAlign == starling_utils_Align.TOP) this._pivotY = bounds.y; else if(verticalAlign == starling_utils_Align.CENTER) this._pivotY = bounds.y + bounds.height / 2.0; else if(verticalAlign == starling_utils_Align.BOTTOM) this._pivotY = bounds.y + bounds.height; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid vertical alignment: " + verticalAlign));
-	}
-	,getTransformationMatrix3D: function(targetSpace,out) {
-		var commonParent;
-		var currentObject;
-		if(out != null) out.identity(); else out = new openfl_geom_Matrix3D();
-		if(targetSpace == this) return out; else if(targetSpace == this._parent || targetSpace == null && this._parent == null) {
-			out.copyFrom(this.get_transformationMatrix3D());
-			return out;
-		} else if(targetSpace == null || targetSpace == this.get_base()) {
-			currentObject = this;
-			while(currentObject != targetSpace) {
-				out.append(currentObject.get_transformationMatrix3D());
-				currentObject = currentObject._parent;
-			}
-			return out;
-		} else if(targetSpace._parent == this) {
-			targetSpace.getTransformationMatrix3D(this,out);
-			out.invert();
-			return out;
-		}
-		commonParent = starling_display_DisplayObject.findCommonParent(this,targetSpace);
-		currentObject = this;
-		while(currentObject != commonParent) {
-			out.append(currentObject.get_transformationMatrix3D());
-			currentObject = currentObject._parent;
-		}
-		if(commonParent == targetSpace) return out;
-		starling_display_DisplayObject.sHelperMatrix3D.identity();
-		currentObject = targetSpace;
-		while(currentObject != commonParent) {
-			starling_display_DisplayObject.sHelperMatrix3D.append(currentObject.get_transformationMatrix3D());
-			currentObject = currentObject._parent;
-		}
-		starling_display_DisplayObject.sHelperMatrix3D.invert();
-		out.append(starling_display_DisplayObject.sHelperMatrix3D);
-		return out;
-	}
-	,local3DToGlobal: function(localPoint,out) {
-		var stage = this.get_stage();
-		if(stage == null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Object not connected to stage"));
-		this.getTransformationMatrix3D(stage,starling_display_DisplayObject.sHelperMatrixAlt3D);
-		starling_utils_MatrixUtil.transformPoint3D(starling_display_DisplayObject.sHelperMatrixAlt3D,localPoint,starling_display_DisplayObject.sHelperPoint3D);
-		return starling_utils_MathUtil.intersectLineWithXYPlane(stage.get_cameraPosition(),starling_display_DisplayObject.sHelperPoint3D,out);
-	}
-	,globalToLocal3D: function(globalPoint,out) {
-		var stage = this.get_stage();
-		if(stage == null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Object not connected to stage"));
-		this.getTransformationMatrix3D(stage,starling_display_DisplayObject.sHelperMatrixAlt3D);
-		starling_display_DisplayObject.sHelperMatrixAlt3D.invert();
-		return starling_utils_MatrixUtil.transformCoords3D(starling_display_DisplayObject.sHelperMatrixAlt3D,globalPoint.x,globalPoint.y,0,out);
-	}
-	,setParent: function(value) {
-		var ancestor = value;
-		while(ancestor != this && ancestor != null) ancestor = ancestor._parent;
-		if(ancestor == this) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("An object cannot be added as a child to itself or one " + "of its children (or children's children, etc.)")); else this._parent = value;
-	}
-	,setIs3D: function(value) {
-		this._is3D = value;
-	}
-	,get_isMask: function() {
-		return this._isMask;
-	}
-	,setRequiresRedraw: function() {
-		var parent = this._parent;
-		var frameID;
-		if(starling_core_Starling.sCurrent != null) frameID = starling_core_Starling.sCurrent._frameID; else frameID = 0;
-		this._hasVisibleArea = this._alpha != 0.0 && this._visible && !this._isMask && this._scaleX != 0.0 && this._scaleY != 0.0;
-		this._lastParentOrSelfChangeFrameID = frameID;
-		while(parent != null && parent._lastChildChangeFrameID != frameID) {
-			parent._lastChildChangeFrameID = frameID;
-			parent = parent._parent;
-		}
-	}
-	,get_supportsRenderCache: function() {
-		return this._mask == null;
-	}
-	,updateSupportsRenderCache: function() {
-		if(this.get_supportsRenderCache()) this.removeEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrameWithoutRenderCache)); else this.addEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrameWithoutRenderCache));
-	}
-	,onEnterFrameWithoutRenderCache: function() {
-		this.setRequiresRedraw();
-	}
-	,setOrientationChanged: function() {
-		this._orientationChanged = true;
-		this.setRequiresRedraw();
-	}
-	,dispatchEvent: function(event) {
-		if(event.get_type() == starling_events_Event.REMOVED_FROM_STAGE && this.get_stage() == null) return; else starling_events_EventDispatcher.prototype.dispatchEvent.call(this,event);
-	}
-	,addEventListener: function(type,listener) {
-		if(type == starling_events_Event.ENTER_FRAME && !this.hasEventListener(type)) {
-			this.addEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
-			this.addEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
-			if(this.get_stage() != null) this.addEnterFrameListenerToStage();
-		}
-		starling_events_EventDispatcher.prototype.addEventListener.call(this,type,listener);
-	}
-	,removeEventListener: function(type,listener) {
-		starling_events_EventDispatcher.prototype.removeEventListener.call(this,type,listener);
-		if(type == starling_events_Event.ENTER_FRAME && !this.hasEventListener(type)) {
-			this.removeEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
-			this.removeEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
-			this.removeEnterFrameListenerFromStage();
-		}
-	}
-	,removeEventListeners: function(type) {
-		if((type == null || type == starling_events_Event.ENTER_FRAME) && this.hasEventListener(starling_events_Event.ENTER_FRAME)) {
-			this.removeEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
-			this.removeEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
-			this.removeEnterFrameListenerFromStage();
-		}
-		starling_events_EventDispatcher.prototype.removeEventListeners.call(this,type);
-	}
-	,addEnterFrameListenerToStage: function() {
-		starling_core_Starling.sCurrent.get_stage().addEnterFrameListener(this);
-	}
-	,removeEnterFrameListenerFromStage: function() {
-		starling_core_Starling.sCurrent.get_stage().removeEnterFrameListener(this);
-	}
-	,get_transformationMatrix: function() {
-		if(this._orientationChanged) {
-			this._orientationChanged = false;
-			if(this._skewX == 0.0 && this._skewY == 0.0) {
-				if(this._rotation == 0.0) this._transformationMatrix.setTo(this._scaleX,0.0,0.0,this._scaleY,this._x - this._pivotX * this._scaleX,this._y - this._pivotY * this._scaleY); else {
-					var cos = Math.cos(this._rotation);
-					var sin = Math.sin(this._rotation);
-					var a = this._scaleX * cos;
-					var b = this._scaleX * sin;
-					var c = this._scaleY * -sin;
-					var d = this._scaleY * cos;
-					var tx = this._x - this._pivotX * a - this._pivotY * c;
-					var ty = this._y - this._pivotX * b - this._pivotY * d;
-					this._transformationMatrix.setTo(a,b,c,d,tx,ty);
-				}
-			} else {
-				this._transformationMatrix.identity();
-				this._transformationMatrix.scale(this._scaleX,this._scaleY);
-				starling_utils_MatrixUtil.skew(this._transformationMatrix,this._skewX,this._skewY);
-				this._transformationMatrix.rotate(this._rotation);
-				this._transformationMatrix.translate(this._x,this._y);
-				if(this._pivotX != 0.0 || this._pivotY != 0.0) {
-					this._transformationMatrix.tx = this._x - this._transformationMatrix.a * this._pivotX - this._transformationMatrix.c * this._pivotY;
-					this._transformationMatrix.ty = this._y - this._transformationMatrix.b * this._pivotX - this._transformationMatrix.d * this._pivotY;
-				}
-			}
-		}
-		return this._transformationMatrix;
-	}
-	,set_transformationMatrix: function(matrix) {
-		var PI_Q = Math.PI / 4.0;
-		this.setRequiresRedraw();
-		this._orientationChanged = false;
-		this._transformationMatrix.copyFrom(matrix);
-		this._pivotX = this._pivotY = 0;
-		this._x = matrix.tx;
-		this._y = matrix.ty;
-		this._skewX = Math.atan(-matrix.c / matrix.d);
-		this._skewY = Math.atan(matrix.b / matrix.a);
-		if(this._skewX != this._skewX) this._skewX = 0.0;
-		if(this._skewY != this._skewY) this._skewY = 0.0;
-		if(this._skewX > -PI_Q && this._skewX < PI_Q) this._scaleY = matrix.d / Math.cos(this._skewX); else this._scaleY = -matrix.c / Math.sin(this._skewX);
-		if(this._skewY > -PI_Q && this._skewY < PI_Q) this._scaleX = matrix.a / Math.cos(this._skewY); else this._scaleX = matrix.b / Math.sin(this._skewY);
-		if(starling_utils_MathUtil.isEquivalent(this._skewX,this._skewY)) {
-			this._rotation = this._skewX;
-			this._skewX = this._skewY = 0;
-		} else this._rotation = 0;
-		return matrix;
-	}
-	,get_transformationMatrix3D: function() {
-		if(this._transformationMatrix3D == null) this._transformationMatrix3D = new openfl_geom_Matrix3D();
-		return starling_utils_MatrixUtil.convertTo3D(this.get_transformationMatrix(),this._transformationMatrix3D);
-	}
-	,get_is3D: function() {
-		return this._is3D;
-	}
-	,get_useHandCursor: function() {
-		return this._useHandCursor;
-	}
-	,set_useHandCursor: function(value) {
-		if(value == this._useHandCursor) return value;
-		this._useHandCursor = value;
-		if(this._useHandCursor) this.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch)); else this.removeEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch));
-		return value;
-	}
-	,onTouch: function(event) {
-	}
-	,get_bounds: function() {
-		return this.getBounds(this._parent);
-	}
-	,get_width: function() {
-		return this.getBounds(this._parent,starling_display_DisplayObject.sHelperRect).width;
-	}
-	,set_width: function(value) {
-		this.set_scaleX(1.0);
-		var actualWidth = this.get_width();
-		if(actualWidth != 0.0) this.set_scaleX(value / actualWidth);
-		return value;
-	}
-	,get_height: function() {
-		return this.getBounds(this._parent,starling_display_DisplayObject.sHelperRect).height;
-	}
-	,set_height: function(value) {
-		this.set_scaleY(1.0);
-		var actualHeight = this.get_height();
-		if(actualHeight != 0.0) this.set_scaleY(value / actualHeight);
-		return value;
-	}
-	,get_x: function() {
-		return this._x;
-	}
-	,set_x: function(value) {
-		if(this._x != value) {
-			this._x = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_y: function() {
-		return this._y;
-	}
-	,set_y: function(value) {
-		if(this._y != value) {
-			this._y = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_pivotX: function() {
-		return this._pivotX;
-	}
-	,set_pivotX: function(value) {
-		if(this._pivotX != value) {
-			this._pivotX = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_pivotY: function() {
-		return this._pivotY;
-	}
-	,set_pivotY: function(value) {
-		if(this._pivotY != value) {
-			this._pivotY = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_scaleX: function() {
-		return this._scaleX;
-	}
-	,set_scaleX: function(value) {
-		if(this._scaleX != value) {
-			this._scaleX = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_scaleY: function() {
-		return this._scaleY;
-	}
-	,set_scaleY: function(value) {
-		if(this._scaleY != value) {
-			this._scaleY = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_scale: function() {
-		return this.get_scaleX();
-	}
-	,set_scale: function(value) {
-		this.set_scaleX(this.set_scaleY(value));
-		return value;
-	}
-	,get_skewX: function() {
-		return this._skewX;
-	}
-	,set_skewX: function(value) {
-		value = starling_utils_MathUtil.normalizeAngle(value);
-		if(this._skewX != value) {
-			this._skewX = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_skewY: function() {
-		return this._skewY;
-	}
-	,set_skewY: function(value) {
-		value = starling_utils_MathUtil.normalizeAngle(value);
-		if(this._skewY != value) {
-			this._skewY = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_rotation: function() {
-		return this._rotation;
-	}
-	,set_rotation: function(value) {
-		value = starling_utils_MathUtil.normalizeAngle(value);
-		if(this._rotation != value) {
-			this._rotation = value;
-			this.setOrientationChanged();
-		}
-		return value;
-	}
-	,get_alpha: function() {
-		return this._alpha;
-	}
-	,set_alpha: function(value) {
-		if(value != this._alpha) {
-			if(value < 0.0) this._alpha = 0.0; else if(value > 1.0) this._alpha = 1.0; else this._alpha = value;
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_visible: function() {
-		return this._visible;
-	}
-	,set_visible: function(value) {
-		if(value != this._visible) {
-			this._visible = value;
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_touchable: function() {
-		return this._touchable;
-	}
-	,set_touchable: function(value) {
-		this._touchable = value;
-		return value;
-	}
-	,get_blendMode: function() {
-		return this._blendMode;
-	}
-	,set_blendMode: function(value) {
-		if(value != this._blendMode) {
-			this._blendMode = value;
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_name: function() {
-		return this._name;
-	}
-	,set_name: function(value) {
-		this._name = value;
-		return value;
-	}
-	,get_filter: function() {
-		return this._filter;
-	}
-	,set_filter: function(value) {
-		if(value != this._filter) {
-			if(this._filter != null) this._filter.setTarget(null);
-			if(value != null) value.setTarget(this);
-			this._filter = value;
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_mask: function() {
-		return this._mask;
-	}
-	,set_mask: function(value) {
-		if(this._mask != value) {
-			if(this._mask != null) this._mask._isMask = false;
-			if(value != null) {
-				value._isMask = true;
-				value._hasVisibleArea = false;
-			}
-			this._mask = value;
-			this.setRequiresRedraw();
-			this.updateSupportsRenderCache();
-		}
-		return value;
-	}
-	,get_parent: function() {
-		return this._parent;
-	}
-	,get_base: function() {
-		var currentObject = this;
-		while(currentObject._parent != null) currentObject = currentObject._parent;
-		return currentObject;
-	}
-	,get_root: function() {
-		var currentObject = this;
-		while(currentObject._parent != null) if(js_Boot.__instanceof(currentObject._parent,starling_display_Stage)) return currentObject; else currentObject = currentObject.get_parent();
-		return null;
-	}
-	,get_stage: function() {
-		var base = this.get_base();
-		if(base == null) return null; else if(js_Boot.__instanceof(base,starling_display_Stage)) return base; else return null;
-	}
-	,__class__: starling_display_DisplayObject
-	,__properties__: {get_stage:"get_stage",get_root:"get_root",get_base:"get_base",get_parent:"get_parent",set_mask:"set_mask",get_mask:"get_mask",set_filter:"set_filter",get_filter:"get_filter",set_name:"set_name",get_name:"get_name",set_blendMode:"set_blendMode",get_blendMode:"get_blendMode",set_touchable:"set_touchable",get_touchable:"get_touchable",set_visible:"set_visible",get_visible:"get_visible",set_alpha:"set_alpha",get_alpha:"get_alpha",set_rotation:"set_rotation",get_rotation:"get_rotation",set_skewY:"set_skewY",get_skewY:"get_skewY",set_skewX:"set_skewX",get_skewX:"get_skewX",set_scale:"set_scale",get_scale:"get_scale",set_scaleY:"set_scaleY",get_scaleY:"get_scaleY",set_scaleX:"set_scaleX",get_scaleX:"get_scaleX",set_pivotY:"set_pivotY",get_pivotY:"get_pivotY",set_pivotX:"set_pivotX",get_pivotX:"get_pivotX",set_y:"set_y",get_y:"get_y",set_x:"set_x",get_x:"get_x",set_height:"set_height",get_height:"get_height",set_width:"set_width",get_width:"get_width",get_bounds:"get_bounds",set_useHandCursor:"set_useHandCursor",get_useHandCursor:"get_useHandCursor",get_is3D:"get_is3D",get_transformationMatrix3D:"get_transformationMatrix3D",set_transformationMatrix:"set_transformationMatrix",get_transformationMatrix:"get_transformationMatrix",get_supportsRenderCache:"get_supportsRenderCache",get_isMask:"get_isMask"}
-});
-var starling_rendering_BatchToken = function(batchID,vertexID,indexID) {
-	if(indexID == null) indexID = 0;
-	if(vertexID == null) vertexID = 0;
-	if(batchID == null) batchID = 0;
-	this.indexID = 0;
-	this.vertexID = 0;
-	this.setTo(batchID,vertexID,indexID);
-};
-$hxClasses["starling.rendering.BatchToken"] = starling_rendering_BatchToken;
-starling_rendering_BatchToken.__name__ = ["starling","rendering","BatchToken"];
-starling_rendering_BatchToken.prototype = {
-	batchID: null
-	,vertexID: null
-	,indexID: null
-	,copyFrom: function(token) {
-		this.set_batchID(token.get_batchID());
-		this.vertexID = token.vertexID;
-		this.indexID = token.indexID;
-	}
-	,setTo: function(batchID,vertexID,indexID) {
-		if(indexID == null) indexID = 0;
-		if(vertexID == null) vertexID = 0;
-		if(batchID == null) batchID = 0;
-		this.set_batchID(batchID);
-		this.vertexID = vertexID;
-		this.indexID = indexID;
-	}
-	,reset: function() {
-		this.set_batchID(this.vertexID = this.indexID = 0);
-	}
-	,equals: function(other) {
-		return this.get_batchID() == other.get_batchID() && this.vertexID == other.vertexID && this.indexID == other.indexID;
-	}
-	,toString: function() {
-		return starling_utils_StringUtil.format("[BatchToken batchID={0} vertexID={1} indexID={2}]",[this.get_batchID(),this.vertexID,this.indexID]);
-	}
-	,get_batchID: function() {
-		return this.batchID;
-	}
-	,set_batchID: function(value) {
-		this.batchID = value;
-		return this.get_batchID();
-	}
-	,__class__: starling_rendering_BatchToken
-	,__properties__: {set_batchID:"set_batchID",get_batchID:"get_batchID"}
-};
-var starling_display_DisplayObjectContainer = function() {
-	this._children = [];
-	starling_display_DisplayObject.call(this);
-	if(openfl_system_Capabilities.isDebugger && Type.getClassName(js_Boot.getClass(this)) == "starling.display::DisplayObjectContainer") throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
-};
-$hxClasses["starling.display.DisplayObjectContainer"] = starling_display_DisplayObjectContainer;
-starling_display_DisplayObjectContainer.__name__ = ["starling","display","DisplayObjectContainer"];
-starling_display_DisplayObjectContainer.mergeSort = function(input,compareFunc,startIndex,length,buffer) {
-	if(length > 1) {
-		var i;
-		var endIndex = startIndex + length;
-		var halfLength = length / 2;
-		var l = startIndex;
-		var r = startIndex + halfLength;
-		starling_display_DisplayObjectContainer.mergeSort(input,compareFunc,startIndex,halfLength,buffer);
-		starling_display_DisplayObjectContainer.mergeSort(input,compareFunc,startIndex + halfLength,length - halfLength,buffer);
-		var _g = 0;
-		while(_g < length) {
-			var i1 = _g++;
-			if(l < startIndex + halfLength && (r == endIndex || compareFunc(input[l],input[r]) <= 0)) {
-				buffer[i1] = input[l];
-				l++;
-			} else {
-				buffer[i1] = input[r];
-				r++;
-			}
-		}
-		var _g1 = startIndex;
-		while(_g1 < endIndex) {
-			var i2 = _g1++;
-			input[i2] = buffer[js_Boot.__cast(i2 - startIndex , Int)];
-		}
-	}
-};
-starling_display_DisplayObjectContainer.__super__ = starling_display_DisplayObject;
-starling_display_DisplayObjectContainer.prototype = $extend(starling_display_DisplayObject.prototype,{
-	_children: null
-	,_touchGroup: null
-	,dispose: function() {
-		var i = this._children.length - 1;
-		while(i >= 0) {
-			this._children[i].dispose();
-			this._children.splice(i,1);
-			--i;
-		}
-		starling_display_DisplayObject.prototype.dispose.call(this);
-	}
-	,addChild: function(child) {
-		return this.addChildAt(child,this._children.length);
-	}
-	,addChildAt: function(child,index) {
-		var numChildren = this._children.length;
-		if(index >= 0 && index <= numChildren) {
-			this.setRequiresRedraw();
-			if(child.get_parent() == this) this.setChildIndex(child,index); else {
-				this._children.splice(index,0,child);
-				child.removeFromParent();
-				child.setParent(this);
-				child.dispatchEventWith(starling_events_Event.ADDED,true);
-				if(this.get_stage() != null) {
-					var isDisplayObjectContainer = js_Boot.__instanceof(child,starling_display_DisplayObjectContainer);
-					if(isDisplayObjectContainer) {
-						var container;
-						container = js_Boot.__cast(child , starling_display_DisplayObjectContainer);
-						container.broadcastEventWith(starling_events_Event.ADDED_TO_STAGE);
-					} else child.dispatchEventWith(starling_events_Event.ADDED_TO_STAGE);
-				}
-			}
-			return child;
-		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
-	}
-	,removeChild: function(child,dispose) {
-		if(dispose == null) dispose = false;
-		var childIndex = this.getChildIndex(child);
-		if(childIndex != -1) this.removeChildAt(childIndex,dispose);
-		return child;
-	}
-	,removeChildAt: function(index,dispose) {
-		if(dispose == null) dispose = false;
-		if(index >= 0 && index < this._children.length) {
-			this.setRequiresRedraw();
-			var child = this._children[index];
-			child.dispatchEventWith(starling_events_Event.REMOVED,true);
-			if(this.get_stage() != null) {
-				var isDisplayObjectContainer = js_Boot.__instanceof(child,starling_display_DisplayObjectContainer);
-				if(isDisplayObjectContainer) {
-					var container;
-					container = js_Boot.__cast(child , starling_display_DisplayObjectContainer);
-					container.broadcastEventWith(starling_events_Event.REMOVED_FROM_STAGE);
-				} else child.dispatchEventWith(starling_events_Event.REMOVED_FROM_STAGE);
-			}
-			child.setParent(null);
-			index = Lambda.indexOf(this._children,child);
-			if(index >= 0) this._children.splice(index,1);
-			if(dispose) child.dispose();
-			return child;
-		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
-	}
-	,removeChildren: function(beginIndex,endIndex,dispose) {
-		if(dispose == null) dispose = false;
-		if(endIndex == null) endIndex = -1;
-		if(beginIndex == null) beginIndex = 0;
-		if(endIndex < 0 || endIndex >= this.get_numChildren()) endIndex = this.get_numChildren() - 1;
-		var _g1 = beginIndex;
-		var _g = endIndex + 1;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this.removeChildAt(beginIndex,dispose);
-		}
-	}
-	,getChildAt: function(index) {
-		var numChildren = this._children.length;
-		if(index < 0) index = numChildren + index;
-		if(index >= 0 && index < numChildren) return this._children[index]; else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
-	}
-	,getChildByName: function(name) {
-		var numChildren = this._children.length;
-		var _g = 0;
-		while(_g < numChildren) {
-			var i = _g++;
-			if(this._children[i].get_name() == name) return this._children[i];
-		}
-		return null;
-	}
-	,getChildIndex: function(child) {
-		return Lambda.indexOf(this._children,child);
-	}
-	,setChildIndex: function(child,index) {
-		var oldIndex = this.getChildIndex(child);
-		if(oldIndex == index) return;
-		if(oldIndex == -1) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Not a child of this container"));
-		this._children.splice(oldIndex,1);
-		this._children.splice(index,0,child);
-		this.setRequiresRedraw();
-	}
-	,swapChildren: function(child1,child2) {
-		var index1 = this.getChildIndex(child1);
-		var index2 = this.getChildIndex(child2);
-		if(index1 == -1 || index2 == -1) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Not a child of this container"));
-		this.swapChildrenAt(index1,index2);
-	}
-	,swapChildrenAt: function(index1,index2) {
-		var child1 = this.getChildAt(index1);
-		var child2 = this.getChildAt(index2);
-		this._children[index1] = child2;
-		this._children[index2] = child1;
-		this.setRequiresRedraw();
-	}
-	,sortChildren: function(compareFunction) {
-		starling_display_DisplayObjectContainer.sSortBuffer.splice(this._children.length,starling_display_DisplayObjectContainer.sSortBuffer.length - this._children.length);
-		starling_display_DisplayObjectContainer.mergeSort(this._children,compareFunction,0,this._children.length,starling_display_DisplayObjectContainer.sSortBuffer);
-		starling_display_DisplayObjectContainer.sSortBuffer.splice(0,starling_display_DisplayObjectContainer.sSortBuffer.length);
-		this.setRequiresRedraw();
-	}
-	,contains: function(child) {
-		while(child != null) if(child == this) return true; else child = child.get_parent();
-		return false;
-	}
-	,getBounds: function(targetSpace,out) {
-		if(out == null) out = new openfl_geom_Rectangle();
-		var numChildren = this._children.length;
-		if(numChildren == 0) {
-			this.getTransformationMatrix(targetSpace,starling_display_DisplayObjectContainer.sHelperMatrix);
-			starling_utils_MatrixUtil.transformCoords(starling_display_DisplayObjectContainer.sHelperMatrix,0.0,0.0,starling_display_DisplayObjectContainer.sHelperPoint);
-			out.setTo(starling_display_DisplayObjectContainer.sHelperPoint.x,starling_display_DisplayObjectContainer.sHelperPoint.y,0,0);
-		} else if(numChildren == 1) this._children[0].getBounds(targetSpace,out); else {
-			var minX = Infinity;
-			var maxX = -Infinity;
-			var minY = Infinity;
-			var maxY = -Infinity;
-			var _g = 0;
-			while(_g < numChildren) {
-				var i = _g++;
-				this._children[i].getBounds(targetSpace,out);
-				if(minX > out.x) minX = out.x;
-				if(maxX < out.get_right()) maxX = out.get_right();
-				if(minY > out.y) minY = out.y;
-				if(maxY < out.get_bottom()) maxY = out.get_bottom();
-			}
-			out.setTo(minX,minY,maxX - minX,maxY - minY);
-		}
-		return out;
-	}
-	,hitTest: function(localPoint) {
-		if(!this.get_visible() || !this.get_touchable() || !this.hitTestMask(localPoint)) return null;
-		var target = null;
-		var localX = localPoint.x;
-		var localY = localPoint.y;
-		var numChildren = this._children.length;
-		var i = numChildren - 1;
-		while(i >= 0) {
-			var child = this._children[i];
-			if(child.get_isMask()) {
-				--i;
-				continue;
-			}
-			starling_display_DisplayObjectContainer.sHelperMatrix.copyFrom(child.get_transformationMatrix());
-			starling_display_DisplayObjectContainer.sHelperMatrix.invert();
-			starling_utils_MatrixUtil.transformCoords(starling_display_DisplayObjectContainer.sHelperMatrix,localX,localY,starling_display_DisplayObjectContainer.sHelperPoint);
-			target = child.hitTest(starling_display_DisplayObjectContainer.sHelperPoint);
-			if(target != null) if(this._touchGroup) return this; else return target;
-			--i;
-		}
-		return null;
-	}
-	,render: function(painter) {
-		var numChildren = this._children.length;
-		var frameID = painter.get_frameID();
-		var selfOrParentChanged = this._lastParentOrSelfChangeFrameID == frameID;
-		var _g = 0;
-		while(_g < numChildren) {
-			var i = _g++;
-			var child = this._children[i];
-			if(child._hasVisibleArea) {
-				if(selfOrParentChanged) child._lastParentOrSelfChangeFrameID = frameID;
-				if(child._lastParentOrSelfChangeFrameID != frameID && child._lastChildChangeFrameID != frameID && child._tokenFrameID == frameID - 1) {
-					painter.pushState(starling_display_DisplayObjectContainer.sCacheToken);
-					painter.drawFromCache(child._pushToken,child._popToken);
-					painter.popState(child._popToken);
-					child._pushToken.copyFrom(starling_display_DisplayObjectContainer.sCacheToken);
-				} else {
-					var mask = child._mask;
-					var filter = child._filter;
-					painter.pushState(child._pushToken);
-					painter.setStateTo(child.get_transformationMatrix(),child.get_alpha(),child.get_blendMode());
-					if(mask != null) painter.drawMask(mask);
-					if(filter != null) filter.render(painter); else child.render(painter);
-					if(mask != null) painter.eraseMask(mask);
-					painter.popState(child._popToken);
-				}
-				child._tokenFrameID = frameID;
-			}
-		}
-	}
-	,broadcastEvent: function(event) {
-		if(event.get_bubbles()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Broadcast of bubbling events is prohibited"));
-		var fromIndex = starling_display_DisplayObjectContainer.sBroadcastListeners.length;
-		this.getChildEventListeners(this,event.get_type(),starling_display_DisplayObjectContainer.sBroadcastListeners);
-		var toIndex = starling_display_DisplayObjectContainer.sBroadcastListeners.length;
-		var _g = fromIndex;
-		while(_g < toIndex) {
-			var i = _g++;
-			starling_display_DisplayObjectContainer.sBroadcastListeners[i].dispatchEvent(event);
-		}
-		starling_display_DisplayObjectContainer.sBroadcastListeners.splice(fromIndex,starling_display_DisplayObjectContainer.sBroadcastListeners.length - fromIndex);
-	}
-	,broadcastEventWith: function(eventType,data) {
-		var event = starling_events_Event.fromPool(eventType,false,data);
-		this.broadcastEvent(event);
-		starling_events_Event.toPool(event);
-	}
-	,get_numChildren: function() {
-		return this._children.length;
-	}
-	,get_touchGroup: function() {
-		return this._touchGroup;
-	}
-	,set_touchGroup: function(value) {
-		this._touchGroup = value;
-		return value;
-	}
-	,getChildEventListeners: function(object,eventType,listeners) {
-		var isDisplayObjectContainer = js_Boot.__instanceof(object,starling_display_DisplayObjectContainer);
-		var container;
-		if(isDisplayObjectContainer) container = js_Boot.__cast(object , starling_display_DisplayObjectContainer); else container = null;
-		if(object.hasEventListener(eventType)) listeners[listeners.length] = object;
-		if(container != null) {
-			var children = container._children;
-			var numChildren = children.length;
-			var _g = 0;
-			while(_g < numChildren) {
-				var i = _g++;
-				this.getChildEventListeners(children[i],eventType,listeners);
-			}
-		}
-	}
-	,__class__: starling_display_DisplayObjectContainer
-	,__properties__: $extend(starling_display_DisplayObject.prototype.__properties__,{set_touchGroup:"set_touchGroup",get_touchGroup:"get_touchGroup",get_numChildren:"get_numChildren"})
-});
-var starling_display_Sprite = function() {
-	starling_display_DisplayObjectContainer.call(this);
-};
-$hxClasses["starling.display.Sprite"] = starling_display_Sprite;
-starling_display_Sprite.__name__ = ["starling","display","Sprite"];
-starling_display_Sprite.__super__ = starling_display_DisplayObjectContainer;
-starling_display_Sprite.prototype = $extend(starling_display_DisplayObjectContainer.prototype,{
-	__class__: starling_display_Sprite
-});
-var Game = function() {
-	starling_display_Sprite.call(this);
-	this.sceneMap = new haxe_ds_StringMap();
-	var v = scenes_TextureScene;
-	this.sceneMap.set("scenes.TextureScene",v);
-	v;
-	var v1 = scenes_TouchScene;
-	this.sceneMap.set("scenes.TouchScene",v1);
-	v1;
-	var v2 = scenes_TextScene;
-	this.sceneMap.set("scenes.TextScene",v2);
-	v2;
-	var v3 = scenes_AnimationScene;
-	this.sceneMap.set("scenes.AnimationScene",v3);
-	v3;
-	var v4 = scenes_CustomHitTestScene;
-	this.sceneMap.set("scenes.CustomHitTestScene",v4);
-	v4;
-	var v5 = scenes_MovieScene;
-	this.sceneMap.set("scenes.MovieScene",v5);
-	v5;
-	var v6 = scenes_FilterScene;
-	this.sceneMap.set("scenes.FilterScene",v6);
-	v6;
-	var v7 = scenes_BlendModeScene;
-	this.sceneMap.set("scenes.BlendModeScene",v7);
-	v7;
-	var v8 = scenes_RenderTextureScene;
-	this.sceneMap.set("scenes.RenderTextureScene",v8);
-	v8;
-	var v9 = scenes_BenchmarkScene;
-	this.sceneMap.set("scenes.BenchmarkScene",v9);
-	v9;
-	var v10 = scenes_MaskScene;
-	this.sceneMap.set("scenes.MaskScene",v10);
-	v10;
-	var v11 = scenes_Sprite3DScene;
-	this.sceneMap.set("scenes.Sprite3DScene",v11);
-	v11;
-};
-$hxClasses["Game"] = Game;
-Game.__name__ = ["Game"];
-Game.__properties__ = {get_assets:"get_assets"}
-Game.UbuntuRegular = null;
-Game.sAssets = null;
-Game.get_assets = function() {
-	return Game.sAssets;
-};
-Game.__super__ = starling_display_Sprite;
-Game.prototype = $extend(starling_display_Sprite.prototype,{
-	_mainMenu: null
-	,_currentScene: null
-	,sceneMap: null
-	,start: function(assets) {
-		Game.sAssets = assets;
-		var bgTexture = assets.getTexture("background");
-		var bgImage = new starling_display_Image(bgTexture);
-		this.addChild(bgImage);
-		this.showMainMenu();
-		this.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onButtonTriggered));
-		this.get_stage().addEventListener(starling_events_KeyboardEvent.KEY_DOWN,$bind(this,this.onKey));
-	}
-	,showMainMenu: function() {
-		openfl_system_System.gc();
-		if(this._mainMenu == null) this._mainMenu = new MainMenu();
-		this.addChild(this._mainMenu);
-	}
-	,onKey: function(event) {
-		if(event.get_keyCode() == 32) starling_core_Starling.sCurrent.set_showStats(!starling_core_Starling.sCurrent.get_showStats()); else if(event.get_keyCode() == 88) (starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent.get_context():null).dispose();
-	}
-	,onButtonTriggered: function(event) {
-		var button;
-		button = js_Boot.__cast(event.get_target() , starling_display_Button);
-		if(button.get_name() == "backButton") this.closeScene(); else this.showScene(button.get_name());
-	}
-	,closeScene: function() {
-		this._currentScene.removeFromParent(true);
-		this._currentScene.dispose();
-		this._currentScene = null;
-		this.showMainMenu();
-	}
-	,showScene: function(name) {
-		if(name == null) return;
-		var sceneClass = this.sceneMap.get(name);
-		this._currentScene = Type.createInstance(sceneClass,[]);
-		this._mainMenu.removeFromParent();
-		this.addChild(this._currentScene);
-	}
-	,__class__: Game
-});
 var HxOverrides = function() { };
 $hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = ["HxOverrides"];
@@ -7517,53 +2414,6 @@ _$List_ListIterator.prototype = {
 	}
 	,__class__: _$List_ListIterator
 };
-var MainMenu = function() {
-	starling_display_Sprite.call(this);
-	this.init();
-};
-$hxClasses["MainMenu"] = MainMenu;
-MainMenu.__name__ = ["MainMenu"];
-MainMenu.__super__ = starling_display_Sprite;
-MainMenu.prototype = $extend(starling_display_Sprite.prototype,{
-	init: function() {
-		var logo = new starling_display_Image(Game.get_assets().getTexture("logo"));
-		this.addChild(logo);
-		haxe_Log.trace("MainMenu",{ fileName : "MainMenu.hx", lineNumber : 41, className : "MainMenu", methodName : "init"});
-		var scenesToCreate = [["Textures",scenes_TextureScene],["Multitouch",scenes_TouchScene],["TextFields",scenes_TextScene],["Animations",scenes_AnimationScene],["Custom hit-test",scenes_CustomHitTestScene],["Movie Clip",scenes_MovieScene],["Filters",scenes_FilterScene],["Blend Modes",scenes_BlendModeScene],["Render Texture",scenes_RenderTextureScene],["Benchmark",scenes_BenchmarkScene],["Masks",scenes_MaskScene],["Sprite 3D",scenes_Sprite3DScene]];
-		var count = 0;
-		var _g = 0;
-		while(_g < scenesToCreate.length) {
-			var sceneToCreate = scenesToCreate[_g];
-			++_g;
-			var sceneTitle = sceneToCreate[0];
-			var sceneClass = sceneToCreate[1];
-			var button = new utils_MenuButton(sceneTitle);
-			button.set_height(42);
-			button.readjustSize();
-			button.set_x(count % 2 == 0?28:167);
-			button.set_y(155 + count / 2 * 46);
-			button.set_name(Type.getClassName(sceneClass));
-			this.addChild(button);
-			if(scenesToCreate.length % 2 != 0 && count % 2 == 1) {
-				var _g1 = button;
-				_g1.set_y(_g1.get_y() + 24);
-			}
-			count++;
-		}
-		var driverInfo;
-		driverInfo = (starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent.get_context():null).driverInfo;
-		var infoText = new starling_text_TextField(310,64,driverInfo);
-		infoText.get_format().set_size(10);
-		infoText.get_format().set_verticalAlign(starling_utils_Align.BOTTOM);
-		infoText.set_x(5);
-		infoText.set_y(475 - infoText.get_height());
-		infoText.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onInfoTextTouched));
-		this.addChildAt(infoText,0);
-	}
-	,onInfoTextTouched: function(event) {
-	}
-	,__class__: MainMenu
-});
 var _$Map_Map_$Impl_$ = {};
 $hxClasses["_Map.Map_Impl_"] = _$Map_Map_$Impl_$;
 _$Map_Map_$Impl_$.__name__ = ["_Map","Map_Impl_"];
@@ -25144,382 +19994,6 @@ lime_utils__$UInt8Array_UInt8Array_$Impl_$.toBytes = function(this1) {
 lime_utils__$UInt8Array_UInt8Array_$Impl_$.toString = function(this1) {
 	if(this1 != null) return "UInt8Array [byteLength:" + this1.byteLength + ", length:" + this1.length + "]"; else return null;
 };
-var openfl_IAssetCache = function() { };
-$hxClasses["openfl.IAssetCache"] = openfl_IAssetCache;
-openfl_IAssetCache.__name__ = ["openfl","IAssetCache"];
-openfl_IAssetCache.prototype = {
-	get_enabled: null
-	,set_enabled: null
-	,clear: null
-	,getBitmapData: null
-	,getFont: null
-	,getSound: null
-	,hasBitmapData: null
-	,hasFont: null
-	,hasSound: null
-	,removeBitmapData: null
-	,removeFont: null
-	,removeSound: null
-	,setBitmapData: null
-	,setFont: null
-	,setSound: null
-	,__class__: openfl_IAssetCache
-	,__properties__: {set_enabled:"set_enabled",get_enabled:"get_enabled"}
-};
-var openfl_AssetCache = function() {
-	this.__enabled = true;
-	this.bitmapData = new haxe_ds_StringMap();
-	this.font = new haxe_ds_StringMap();
-	this.sound = new haxe_ds_StringMap();
-};
-$hxClasses["openfl.AssetCache"] = openfl_AssetCache;
-openfl_AssetCache.__name__ = ["openfl","AssetCache"];
-openfl_AssetCache.__interfaces__ = [openfl_IAssetCache];
-openfl_AssetCache.prototype = {
-	bitmapData: null
-	,font: null
-	,sound: null
-	,__enabled: null
-	,clear: function(prefix) {
-		if(prefix == null) {
-			this.bitmapData = new haxe_ds_StringMap();
-			this.font = new haxe_ds_StringMap();
-			this.sound = new haxe_ds_StringMap();
-		} else {
-			var keys = this.bitmapData.keys();
-			while( keys.hasNext() ) {
-				var key = keys.next();
-				if(StringTools.startsWith(key,prefix)) this.bitmapData.remove(key);
-			}
-			var keys1 = this.font.keys();
-			while( keys1.hasNext() ) {
-				var key1 = keys1.next();
-				if(StringTools.startsWith(key1,prefix)) this.font.remove(key1);
-			}
-			var keys2 = this.sound.keys();
-			while( keys2.hasNext() ) {
-				var key2 = keys2.next();
-				if(StringTools.startsWith(key2,prefix)) this.sound.remove(key2);
-			}
-		}
-	}
-	,getBitmapData: function(id) {
-		return this.bitmapData.get(id);
-	}
-	,getFont: function(id) {
-		return this.font.get(id);
-	}
-	,getSound: function(id) {
-		return this.sound.get(id);
-	}
-	,hasBitmapData: function(id) {
-		return this.bitmapData.exists(id);
-	}
-	,hasFont: function(id) {
-		return this.font.exists(id);
-	}
-	,hasSound: function(id) {
-		return this.sound.exists(id);
-	}
-	,removeBitmapData: function(id) {
-		return this.bitmapData.remove(id);
-	}
-	,removeFont: function(id) {
-		return this.font.remove(id);
-	}
-	,removeSound: function(id) {
-		return this.sound.remove(id);
-	}
-	,setBitmapData: function(id,bitmapData) {
-		this.bitmapData.set(id,bitmapData);
-	}
-	,setFont: function(id,font) {
-		this.font.set(id,font);
-	}
-	,setSound: function(id,sound) {
-		this.sound.set(id,sound);
-	}
-	,get_enabled: function() {
-		return this.__enabled;
-	}
-	,set_enabled: function(value) {
-		return this.__enabled = value;
-	}
-	,__class__: openfl_AssetCache
-	,__properties__: {set_enabled:"set_enabled",get_enabled:"get_enabled"}
-};
-var openfl_Assets = function() { };
-$hxClasses["openfl.Assets"] = openfl_Assets;
-openfl_Assets.__name__ = ["openfl","Assets"];
-openfl_Assets.addEventListener = function(type,listener,useCapture,priority,useWeakReference) {
-	if(useWeakReference == null) useWeakReference = false;
-	if(priority == null) priority = 0;
-	if(useCapture == null) useCapture = false;
-	if(!lime_Assets.onChange.has(openfl_Assets.LimeAssets_onChange)) lime_Assets.onChange.add(openfl_Assets.LimeAssets_onChange);
-	openfl_Assets.dispatcher.addEventListener(type,listener,useCapture,priority,useWeakReference);
-};
-openfl_Assets.dispatchEvent = function(event) {
-	return openfl_Assets.dispatcher.dispatchEvent(event);
-};
-openfl_Assets.exists = function(id,type) {
-	return lime_Assets.exists(id,type);
-};
-openfl_Assets.getBitmapData = function(id,useCache) {
-	if(useCache == null) useCache = true;
-	if(useCache && openfl_Assets.cache.get_enabled() && openfl_Assets.cache.hasBitmapData(id)) {
-		var bitmapData = openfl_Assets.cache.getBitmapData(id);
-		if(openfl_Assets.isValidBitmapData(bitmapData)) return bitmapData;
-	}
-	var image = lime_Assets.getImage(id,false);
-	if(image != null) {
-		var bitmapData1 = openfl_display_BitmapData.fromImage(image);
-		if(useCache && openfl_Assets.cache.get_enabled()) openfl_Assets.cache.setBitmapData(id,bitmapData1);
-		return bitmapData1;
-	}
-	return null;
-};
-openfl_Assets.getBytes = function(id) {
-	return openfl_utils__$ByteArray_ByteArray_$Impl_$.fromBytes(lime_Assets.getBytes(id));
-};
-openfl_Assets.getFont = function(id,useCache) {
-	if(useCache == null) useCache = true;
-	if(useCache && openfl_Assets.cache.get_enabled() && openfl_Assets.cache.hasFont(id)) return openfl_Assets.cache.getFont(id);
-	var limeFont = lime_Assets.getFont(id,false);
-	if(limeFont != null) {
-		var font = openfl_text_Font.__fromLimeFont(limeFont);
-		if(useCache && openfl_Assets.cache.get_enabled()) openfl_Assets.cache.setFont(id,font);
-		return font;
-	}
-	return new openfl_text_Font();
-};
-openfl_Assets.getLibrary = function(name) {
-	return lime_Assets.getLibrary(name);
-};
-openfl_Assets.getMovieClip = function(id) {
-	var libraryName = id.substring(0,id.indexOf(":"));
-	var symbolName;
-	var pos = id.indexOf(":") + 1;
-	symbolName = HxOverrides.substr(id,pos,null);
-	var library = openfl_Assets.getLibrary(libraryName);
-	if(library != null) {
-		if(library.exists(symbolName,"MOVIE_CLIP")) {
-			if(library.isLocal(symbolName,"MOVIE_CLIP")) return library.getMovieClip(symbolName); else haxe_Log.trace("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously",{ fileName : "Assets.hx", lineNumber : 223, className : "openfl.Assets", methodName : "getMovieClip"});
-		} else haxe_Log.trace("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"",{ fileName : "Assets.hx", lineNumber : 229, className : "openfl.Assets", methodName : "getMovieClip"});
-	} else haxe_Log.trace("[openfl.Assets] There is no asset library named \"" + libraryName + "\"",{ fileName : "Assets.hx", lineNumber : 235, className : "openfl.Assets", methodName : "getMovieClip"});
-	return null;
-};
-openfl_Assets.getMusic = function(id,useCache) {
-	if(useCache == null) useCache = true;
-	var path = lime_Assets.getPath(id);
-	if(path != null) return new openfl_media_Sound(new openfl_net_URLRequest(path));
-	return null;
-};
-openfl_Assets.getPath = function(id) {
-	return lime_Assets.getPath(id);
-};
-openfl_Assets.getSound = function(id,useCache) {
-	if(useCache == null) useCache = true;
-	if(useCache && openfl_Assets.cache.get_enabled() && openfl_Assets.cache.hasSound(id)) {
-		var sound = openfl_Assets.cache.getSound(id);
-		if(openfl_Assets.isValidSound(sound)) return sound;
-	}
-	var path = lime_Assets.getPath(id);
-	if(path != null) return new openfl_media_Sound(new openfl_net_URLRequest(path));
-	return null;
-};
-openfl_Assets.getText = function(id) {
-	return lime_Assets.getText(id);
-};
-openfl_Assets.hasEventListener = function(type) {
-	return openfl_Assets.dispatcher.hasEventListener(type);
-};
-openfl_Assets.isLocal = function(id,type,useCache) {
-	if(useCache == null) useCache = true;
-	if(useCache && openfl_Assets.cache.get_enabled()) {
-		if(type == "IMAGE" || type == null) {
-			if(openfl_Assets.cache.hasBitmapData(id)) return true;
-		}
-		if(type == "FONT" || type == null) {
-			if(openfl_Assets.cache.hasFont(id)) return true;
-		}
-		if(type == "SOUND" || type == "MUSIC" || type == null) {
-			if(openfl_Assets.cache.hasSound(id)) return true;
-		}
-	}
-	var libraryName = id.substring(0,id.indexOf(":"));
-	var symbolName;
-	var pos = id.indexOf(":") + 1;
-	symbolName = HxOverrides.substr(id,pos,null);
-	var library = openfl_Assets.getLibrary(libraryName);
-	if(library != null) return library.isLocal(symbolName,type);
-	return false;
-};
-openfl_Assets.isValidBitmapData = function(bitmapData) {
-	return bitmapData != null && bitmapData.image != null;
-};
-openfl_Assets.isValidSound = function(sound) {
-	return true;
-};
-openfl_Assets.list = function(type) {
-	return lime_Assets.list(type);
-};
-openfl_Assets.loadBitmapData = function(id,useCache,handler) {
-	if(useCache == null) useCache = true;
-	if(useCache == null) useCache = true;
-	var promise = new lime_app_Promise();
-	if(handler != null) {
-		promise.future.onComplete(handler);
-		promise.future.onError(function(_) {
-			handler(null);
-		});
-	}
-	if(useCache && openfl_Assets.cache.get_enabled() && openfl_Assets.cache.hasBitmapData(id)) {
-		var bitmapData = openfl_Assets.cache.getBitmapData(id);
-		if(openfl_Assets.isValidBitmapData(bitmapData)) {
-			promise.complete(bitmapData);
-			return promise.future;
-		}
-	}
-	lime_Assets.loadImage(id,false).onComplete(function(image) {
-		if(image != null) {
-			var bitmapData1 = openfl_display_BitmapData.fromImage(image);
-			if(useCache && openfl_Assets.cache.get_enabled()) openfl_Assets.cache.setBitmapData(id,bitmapData1);
-			promise.complete(bitmapData1);
-		} else promise.error("[Assets] Could not load Image \"" + id + "\"");
-	}).onError($bind(promise,promise.error)).onProgress($bind(promise,promise.progress));
-	return promise.future;
-};
-openfl_Assets.loadBytes = function(id,handler) {
-	var promise = new lime_app_Promise();
-	var future = lime_Assets.loadBytes(id);
-	if(handler != null) {
-		promise.future.onComplete(handler);
-		promise.future.onError(function(_) {
-			handler(null);
-		});
-		future.onComplete(function(bytes) {
-			promise.complete(openfl_utils__$ByteArray_ByteArray_$Impl_$.fromBytes(bytes));
-		});
-		future.onProgress(function(progress) {
-			promise.progress(progress);
-		});
-		future.onError(function(msg) {
-			promise.error(msg);
-		});
-	}
-	return promise.future;
-};
-openfl_Assets.loadFont = function(id,useCache,handler) {
-	if(useCache == null) useCache = true;
-	if(useCache == null) useCache = true;
-	var promise = new lime_app_Promise();
-	if(handler != null) {
-		promise.future.onComplete(handler);
-		promise.future.onError(function(_) {
-			handler(null);
-		});
-	}
-	if(useCache && openfl_Assets.cache.get_enabled() && openfl_Assets.cache.hasFont(id)) {
-		promise.complete(openfl_Assets.cache.getFont(id));
-		return promise.future;
-	}
-	lime_Assets.loadFont(id).onComplete(function(limeFont) {
-		var font = openfl_text_Font.__fromLimeFont(limeFont);
-		if(useCache && openfl_Assets.cache.get_enabled()) openfl_Assets.cache.setFont(id,font);
-		promise.complete(font);
-	}).onError($bind(promise,promise.error)).onProgress($bind(promise,promise.progress));
-	return promise.future;
-};
-openfl_Assets.loadLibrary = function(name,handler) {
-	var future = lime_Assets.loadLibrary(name);
-	if(handler != null) {
-		future.onComplete(handler);
-		future.onError(function(_) {
-			handler(null);
-		});
-	}
-	return future;
-};
-openfl_Assets.loadMusic = function(id,useCache,handler) {
-	if(useCache == null) useCache = true;
-	if(useCache == null) useCache = true;
-	return new lime_app_Future(function() {
-		return openfl_Assets.getMusic(id,useCache);
-	});
-};
-openfl_Assets.loadMovieClip = function(id,handler) {
-	var promise = new lime_app_Promise();
-	if(handler != null) {
-		promise.future.onComplete(handler);
-		promise.future.onError(function(_) {
-			handler(null);
-		});
-	}
-	var libraryName = id.substring(0,id.indexOf(":"));
-	var symbolName;
-	var pos = id.indexOf(":") + 1;
-	symbolName = HxOverrides.substr(id,pos,null);
-	var library = openfl_Assets.getLibrary(libraryName);
-	if(library != null) {
-		if(library.exists(symbolName,"MOVIE_CLIP")) promise.completeWith(library.loadMovieClip(symbolName)); else promise.error("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
-	} else promise.error("[Assets] There is no asset library named \"" + libraryName + "\"");
-	return promise.future;
-};
-openfl_Assets.loadSound = function(id,useCache,handler) {
-	if(useCache == null) useCache = true;
-	if(useCache == null) useCache = true;
-	return new lime_app_Future(function() {
-		return openfl_Assets.getSound(id,useCache);
-	});
-};
-openfl_Assets.loadText = function(id,handler) {
-	var future = lime_Assets.loadText(id);
-	if(handler != null) {
-		future.onComplete(handler);
-		future.onError(function(_) {
-			handler(null);
-		});
-	}
-	return future;
-};
-openfl_Assets.registerLibrary = function(name,library) {
-	lime_Assets.registerLibrary(name,library);
-};
-openfl_Assets.removeEventListener = function(type,listener,capture) {
-	if(capture == null) capture = false;
-	openfl_Assets.dispatcher.removeEventListener(type,listener,capture);
-};
-openfl_Assets.resolveClass = function(name) {
-	return Type.resolveClass(name);
-};
-openfl_Assets.resolveEnum = function(name) {
-	var value = Type.resolveEnum(name);
-	return value;
-};
-openfl_Assets.unloadLibrary = function(name) {
-	lime_Assets.unloadLibrary(name);
-};
-openfl_Assets.LimeAssets_onChange = function() {
-	openfl_Assets.dispatchEvent(new openfl_events_Event("change"));
-};
-var openfl_AssetLibrary = function() {
-	lime_AssetLibrary.call(this);
-};
-$hxClasses["openfl.AssetLibrary"] = openfl_AssetLibrary;
-openfl_AssetLibrary.__name__ = ["openfl","AssetLibrary"];
-openfl_AssetLibrary.__super__ = lime_AssetLibrary;
-openfl_AssetLibrary.prototype = $extend(lime_AssetLibrary.prototype,{
-	getMovieClip: function(id) {
-		return null;
-	}
-	,loadMovieClip: function(id) {
-		var _g = this;
-		return new lime_app_Future(function() {
-			return _g.getMovieClip(id);
-		});
-	}
-	,__class__: openfl_AssetLibrary
-});
 var openfl_display_MovieClip = function() {
 	openfl_display_Sprite.call(this);
 	this.__currentFrame = 0;
@@ -25646,6 +20120,372 @@ openfl_events_UncaughtErrorEvents.__super__ = openfl_events_EventDispatcher;
 openfl_events_UncaughtErrorEvents.prototype = $extend(openfl_events_EventDispatcher.prototype,{
 	__class__: openfl_events_UncaughtErrorEvents
 });
+var openfl_geom_Matrix = function(a,b,c,d,tx,ty) {
+	if(ty == null) ty = 0;
+	if(tx == null) tx = 0;
+	if(d == null) d = 1;
+	if(c == null) c = 0;
+	if(b == null) b = 0;
+	if(a == null) a = 1;
+	this.a = a;
+	this.b = b;
+	this.c = c;
+	this.d = d;
+	this.tx = tx;
+	this.ty = ty;
+};
+$hxClasses["openfl.geom.Matrix"] = openfl_geom_Matrix;
+openfl_geom_Matrix.__name__ = ["openfl","geom","Matrix"];
+openfl_geom_Matrix.prototype = {
+	a: null
+	,b: null
+	,c: null
+	,d: null
+	,tx: null
+	,ty: null
+	,__array: null
+	,clone: function() {
+		return new openfl_geom_Matrix(this.a,this.b,this.c,this.d,this.tx,this.ty);
+	}
+	,concat: function(m) {
+		var a1 = this.a * m.a + this.b * m.c;
+		this.b = this.a * m.b + this.b * m.d;
+		this.a = a1;
+		var c1 = this.c * m.a + this.d * m.c;
+		this.d = this.c * m.b + this.d * m.d;
+		this.c = c1;
+		var tx1 = this.tx * m.a + this.ty * m.c + m.tx;
+		this.ty = this.tx * m.b + this.ty * m.d + m.ty;
+		this.tx = tx1;
+	}
+	,copyColumnFrom: function(column,vector3D) {
+		if(column > 2) throw new js__$Boot_HaxeError("Column " + column + " out of bounds (2)"); else if(column == 0) {
+			this.a = vector3D.x;
+			this.c = vector3D.y;
+		} else if(column == 1) {
+			this.b = vector3D.x;
+			this.d = vector3D.y;
+		} else {
+			this.tx = vector3D.x;
+			this.ty = vector3D.y;
+		}
+	}
+	,copyColumnTo: function(column,vector3D) {
+		if(column > 2) throw new js__$Boot_HaxeError("Column " + column + " out of bounds (2)"); else if(column == 0) {
+			vector3D.x = this.a;
+			vector3D.y = this.c;
+			vector3D.z = 0;
+		} else if(column == 1) {
+			vector3D.x = this.b;
+			vector3D.y = this.d;
+			vector3D.z = 0;
+		} else {
+			vector3D.x = this.tx;
+			vector3D.y = this.ty;
+			vector3D.z = 1;
+		}
+	}
+	,copyFrom: function(sourceMatrix) {
+		this.a = sourceMatrix.a;
+		this.b = sourceMatrix.b;
+		this.c = sourceMatrix.c;
+		this.d = sourceMatrix.d;
+		this.tx = sourceMatrix.tx;
+		this.ty = sourceMatrix.ty;
+	}
+	,copyRowFrom: function(row,vector3D) {
+		if(row > 2) throw new js__$Boot_HaxeError("Row " + row + " out of bounds (2)"); else if(row == 0) {
+			this.a = vector3D.x;
+			this.c = vector3D.y;
+		} else if(row == 1) {
+			this.b = vector3D.x;
+			this.d = vector3D.y;
+		} else {
+			this.tx = vector3D.x;
+			this.ty = vector3D.y;
+		}
+	}
+	,copyRowTo: function(row,vector3D) {
+		if(row > 2) throw new js__$Boot_HaxeError("Row " + row + " out of bounds (2)"); else if(row == 0) {
+			vector3D.x = this.a;
+			vector3D.y = this.b;
+			vector3D.z = this.tx;
+		} else if(row == 1) {
+			vector3D.x = this.c;
+			vector3D.y = this.d;
+			vector3D.z = this.ty;
+		} else vector3D.setTo(0,0,1);
+	}
+	,createBox: function(scaleX,scaleY,rotation,tx,ty) {
+		if(ty == null) ty = 0;
+		if(tx == null) tx = 0;
+		if(rotation == null) rotation = 0;
+		if(rotation != 0) {
+			var cos = Math.cos(rotation);
+			var sin = Math.sin(rotation);
+			this.a = cos * scaleX;
+			this.b = sin * scaleY;
+			this.c = -sin * scaleX;
+			this.d = cos * scaleY;
+		} else {
+			this.a = scaleX;
+			this.b = 0;
+			this.c = 0;
+			this.d = scaleY;
+		}
+		this.tx = tx;
+		this.ty = ty;
+	}
+	,createGradientBox: function(width,height,rotation,tx,ty) {
+		if(ty == null) ty = 0;
+		if(tx == null) tx = 0;
+		if(rotation == null) rotation = 0;
+		this.a = width / 1638.4;
+		this.d = height / 1638.4;
+		if(rotation != 0) {
+			var cos = Math.cos(rotation);
+			var sin = Math.sin(rotation);
+			this.b = sin * this.d;
+			this.c = -sin * this.a;
+			this.a *= cos;
+			this.d *= cos;
+		} else {
+			this.b = 0;
+			this.c = 0;
+		}
+		this.tx = tx + width / 2;
+		this.ty = ty + height / 2;
+	}
+	,deltaTransformPoint: function(point) {
+		return new openfl_geom_Point(point.x * this.a + point.y * this.c,point.x * this.b + point.y * this.d);
+	}
+	,equals: function(matrix) {
+		return matrix != null && this.tx == matrix.tx && this.ty == matrix.ty && this.a == matrix.a && this.b == matrix.b && this.c == matrix.c && this.d == matrix.d;
+	}
+	,identity: function() {
+		this.a = 1;
+		this.b = 0;
+		this.c = 0;
+		this.d = 1;
+		this.tx = 0;
+		this.ty = 0;
+	}
+	,invert: function() {
+		var norm = this.a * this.d - this.b * this.c;
+		if(norm == 0) {
+			this.a = this.b = this.c = this.d = 0;
+			this.tx = -this.tx;
+			this.ty = -this.ty;
+		} else {
+			norm = 1.0 / norm;
+			var a1 = this.d * norm;
+			this.d = this.a * norm;
+			this.a = a1;
+			this.b *= -norm;
+			this.c *= -norm;
+			var tx1 = -this.a * this.tx - this.c * this.ty;
+			this.ty = -this.b * this.tx - this.d * this.ty;
+			this.tx = tx1;
+		}
+		return this;
+	}
+	,rotate: function(theta) {
+		var cos = Math.cos(theta);
+		var sin = Math.sin(theta);
+		var a1 = this.a * cos - this.b * sin;
+		this.b = this.a * sin + this.b * cos;
+		this.a = a1;
+		var c1 = this.c * cos - this.d * sin;
+		this.d = this.c * sin + this.d * cos;
+		this.c = c1;
+		var tx1 = this.tx * cos - this.ty * sin;
+		this.ty = this.tx * sin + this.ty * cos;
+		this.tx = tx1;
+	}
+	,scale: function(sx,sy) {
+		this.a *= sx;
+		this.b *= sy;
+		this.c *= sx;
+		this.d *= sy;
+		this.tx *= sx;
+		this.ty *= sy;
+	}
+	,setRotation: function(theta,scale) {
+		if(scale == null) scale = 1;
+		this.a = Math.cos(theta) * scale;
+		this.c = Math.sin(theta) * scale;
+		this.b = -this.c;
+		this.d = this.a;
+	}
+	,setTo: function(a,b,c,d,tx,ty) {
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.d = d;
+		this.tx = tx;
+		this.ty = ty;
+	}
+	,to3DString: function(roundPixels) {
+		if(roundPixels == null) roundPixels = false;
+		if(roundPixels) return "matrix3d(" + this.a + ", " + this.b + ", 0, 0, " + this.c + ", " + this.d + ", 0, 0, 0, 0, 1, 0, " + (this.tx | 0) + ", " + (this.ty | 0) + ", 0, 1)"; else return "matrix3d(" + this.a + ", " + this.b + ", 0, 0, " + this.c + ", " + this.d + ", 0, 0, 0, 0, 1, 0, " + this.tx + ", " + this.ty + ", 0, 1)";
+	}
+	,toMozString: function() {
+		return "matrix(" + this.a + ", " + this.b + ", " + this.c + ", " + this.d + ", " + this.tx + "px, " + this.ty + "px)";
+	}
+	,toString: function() {
+		return "matrix(" + this.a + ", " + this.b + ", " + this.c + ", " + this.d + ", " + this.tx + ", " + this.ty + ")";
+	}
+	,transformPoint: function(pos) {
+		return new openfl_geom_Point(pos.x * this.a + pos.y * this.c + this.tx,pos.x * this.b + pos.y * this.d + this.ty);
+	}
+	,translate: function(dx,dy) {
+		this.tx += dx;
+		this.ty += dy;
+	}
+	,toArray: function(transpose) {
+		if(transpose == null) transpose = false;
+		if(this.__array == null) {
+			var this1;
+			this1 = new Float32Array(9);
+			this.__array = this1;
+		}
+		if(transpose) {
+			this.__array[0] = this.a;
+			this.__array[1] = this.b;
+			this.__array[2] = 0;
+			this.__array[3] = this.c;
+			this.__array[4] = this.d;
+			this.__array[5] = 0;
+			this.__array[6] = this.tx;
+			this.__array[7] = this.ty;
+			this.__array[8] = 1;
+		} else {
+			this.__array[0] = this.a;
+			this.__array[1] = this.c;
+			this.__array[2] = this.tx;
+			this.__array[3] = this.b;
+			this.__array[4] = this.d;
+			this.__array[5] = this.ty;
+			this.__array[6] = 0;
+			this.__array[7] = 0;
+			this.__array[8] = 1;
+		}
+		return this.__array;
+	}
+	,__cleanValues: function() {
+		this.a = Math.round(this.a * 1000) / 1000;
+		this.b = Math.round(this.b * 1000) / 1000;
+		this.c = Math.round(this.c * 1000) / 1000;
+		this.d = Math.round(this.d * 1000) / 1000;
+		this.tx = Math.round(this.tx * 10) / 10;
+		this.ty = Math.round(this.ty * 10) / 10;
+	}
+	,__toMatrix3: function() {
+		return new lime_math_Matrix3(this.a,this.b,this.c,this.d,this.tx,this.ty);
+	}
+	,__transformInversePoint: function(point) {
+		var norm = this.a * this.d - this.b * this.c;
+		if(norm == 0) {
+			point.x = -this.tx;
+			point.y = -this.ty;
+		} else {
+			var px = 1.0 / norm * (this.c * (this.ty - point.y) + this.d * (point.x - this.tx));
+			point.y = 1.0 / norm * (this.a * (point.y - this.ty) + this.b * (this.tx - point.x));
+			point.x = px;
+		}
+	}
+	,__transformInverseX: function(px,py) {
+		var norm = this.a * this.d - this.b * this.c;
+		if(norm == 0) return -this.tx; else return 1.0 / norm * (this.c * (this.ty - py) + this.d * (px - this.tx));
+	}
+	,__transformInverseY: function(px,py) {
+		var norm = this.a * this.d - this.b * this.c;
+		if(norm == 0) return -this.ty; else return 1.0 / norm * (this.a * (py - this.ty) + this.b * (this.tx - px));
+	}
+	,__transformPoint: function(point) {
+		var px = point.x;
+		var py = point.y;
+		point.x = px * this.a + py * this.c + this.tx;
+		point.y = px * this.b + py * this.d + this.ty;
+	}
+	,__transformX: function(px,py) {
+		return px * this.a + py * this.c + this.tx;
+	}
+	,__transformY: function(px,py) {
+		return px * this.b + py * this.d + this.ty;
+	}
+	,__translateTransformed: function(px,py) {
+		this.tx = px * this.a + py * this.c + this.tx;
+		this.ty = px * this.b + py * this.d + this.ty;
+	}
+	,__class__: openfl_geom_Matrix
+};
+var openfl_geom_Point = function(x,y) {
+	if(y == null) y = 0;
+	if(x == null) x = 0;
+	this.x = x;
+	this.y = y;
+};
+$hxClasses["openfl.geom.Point"] = openfl_geom_Point;
+openfl_geom_Point.__name__ = ["openfl","geom","Point"];
+openfl_geom_Point.distance = function(pt1,pt2) {
+	var dx = pt1.x - pt2.x;
+	var dy = pt1.y - pt2.y;
+	return Math.sqrt(dx * dx + dy * dy);
+};
+openfl_geom_Point.interpolate = function(pt1,pt2,f) {
+	return new openfl_geom_Point(pt2.x + f * (pt1.x - pt2.x),pt2.y + f * (pt1.y - pt2.y));
+};
+openfl_geom_Point.polar = function(len,angle) {
+	return new openfl_geom_Point(len * Math.cos(angle),len * Math.sin(angle));
+};
+openfl_geom_Point.prototype = {
+	length: null
+	,x: null
+	,y: null
+	,add: function(v) {
+		return new openfl_geom_Point(v.x + this.x,v.y + this.y);
+	}
+	,clone: function() {
+		return new openfl_geom_Point(this.x,this.y);
+	}
+	,copyFrom: function(sourcePoint) {
+		this.x = sourcePoint.x;
+		this.y = sourcePoint.y;
+	}
+	,equals: function(toCompare) {
+		return toCompare != null && toCompare.x == this.x && toCompare.y == this.y;
+	}
+	,normalize: function(thickness) {
+		if(this.x == 0 && this.y == 0) return; else {
+			var norm = thickness / Math.sqrt(this.x * this.x + this.y * this.y);
+			this.x *= norm;
+			this.y *= norm;
+		}
+	}
+	,offset: function(dx,dy) {
+		this.x += dx;
+		this.y += dy;
+	}
+	,setTo: function(xa,ya) {
+		this.x = xa;
+		this.y = ya;
+	}
+	,subtract: function(v) {
+		return new openfl_geom_Point(this.x - v.x,this.y - v.y);
+	}
+	,toString: function() {
+		return "(x=" + this.x + ", y=" + this.y + ")";
+	}
+	,__toLimeVector2: function() {
+		return new lime_math_Vector2(this.x,this.y);
+	}
+	,get_length: function() {
+		return Math.sqrt(this.x * this.x + this.y * this.y);
+	}
+	,__class__: openfl_geom_Point
+	,__properties__: {get_length:"get_length"}
+};
 var openfl_geom_ColorTransform = function(redMultiplier,greenMultiplier,blueMultiplier,alphaMultiplier,redOffset,greenOffset,blueOffset,alphaOffset) {
 	if(alphaOffset == null) alphaOffset = 0;
 	if(blueOffset == null) blueOffset = 0;
@@ -26060,6 +20900,17 @@ openfl__$Vector_Vector_$Impl_$.get_fixed = function(this1) {
 };
 openfl__$Vector_Vector_$Impl_$.set_fixed = function(this1,value) {
 	return this1.fixed = value;
+};
+var openfl_VectorData = function() {
+	this.length = 0;
+};
+$hxClasses["openfl.VectorData"] = openfl_VectorData;
+openfl_VectorData.__name__ = ["openfl","VectorData"];
+openfl_VectorData.prototype = {
+	data: null
+	,fixed: null
+	,length: null
+	,__class__: openfl_VectorData
 };
 var openfl_VectorDataIterator = function(data) {
 	this.index = 0;
@@ -31984,6 +26835,228 @@ openfl__$internal_renderer_opengl_utils_VertexAttribute.prototype = {
 	,__class__: openfl__$internal_renderer_opengl_utils_VertexAttribute
 	,__properties__: {get_elements:"get_elements"}
 };
+var openfl_geom_Rectangle = function(x,y,width,height) {
+	if(height == null) height = 0;
+	if(width == null) width = 0;
+	if(y == null) y = 0;
+	if(x == null) x = 0;
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+};
+$hxClasses["openfl.geom.Rectangle"] = openfl_geom_Rectangle;
+openfl_geom_Rectangle.__name__ = ["openfl","geom","Rectangle"];
+openfl_geom_Rectangle.prototype = {
+	height: null
+	,width: null
+	,x: null
+	,y: null
+	,clone: function() {
+		return new openfl_geom_Rectangle(this.x,this.y,this.width,this.height);
+	}
+	,contains: function(x,y) {
+		return x >= this.x && y >= this.y && x < this.get_right() && y < this.get_bottom();
+	}
+	,containsPoint: function(point) {
+		return this.contains(point.x,point.y);
+	}
+	,containsRect: function(rect) {
+		if(rect.width <= 0 || rect.height <= 0) return rect.x > this.x && rect.y > this.y && rect.get_right() < this.get_right() && rect.get_bottom() < this.get_bottom(); else return rect.x >= this.x && rect.y >= this.y && rect.get_right() <= this.get_right() && rect.get_bottom() <= this.get_bottom();
+	}
+	,copyFrom: function(sourceRect) {
+		this.x = sourceRect.x;
+		this.y = sourceRect.y;
+		this.width = sourceRect.width;
+		this.height = sourceRect.height;
+	}
+	,equals: function(toCompare) {
+		return toCompare != null && this.x == toCompare.x && this.y == toCompare.y && this.width == toCompare.width && this.height == toCompare.height;
+	}
+	,inflate: function(dx,dy) {
+		this.x -= dx;
+		this.width += dx * 2;
+		this.y -= dy;
+		this.height += dy * 2;
+	}
+	,inflatePoint: function(point) {
+		this.inflate(point.x,point.y);
+	}
+	,intersection: function(toIntersect) {
+		var x0;
+		if(this.x < toIntersect.x) x0 = toIntersect.x; else x0 = this.x;
+		var x1;
+		if(this.get_right() > toIntersect.get_right()) x1 = toIntersect.get_right(); else x1 = this.get_right();
+		if(x1 <= x0) return new openfl_geom_Rectangle();
+		var y0;
+		if(this.y < toIntersect.y) y0 = toIntersect.y; else y0 = this.y;
+		var y1;
+		if(this.get_bottom() > toIntersect.get_bottom()) y1 = toIntersect.get_bottom(); else y1 = this.get_bottom();
+		if(y1 <= y0) return new openfl_geom_Rectangle();
+		return new openfl_geom_Rectangle(x0,y0,x1 - x0,y1 - y0);
+	}
+	,intersects: function(toIntersect) {
+		var x0;
+		if(this.x < toIntersect.x) x0 = toIntersect.x; else x0 = this.x;
+		var x1;
+		if(this.get_right() > toIntersect.get_right()) x1 = toIntersect.get_right(); else x1 = this.get_right();
+		if(x1 <= x0) return false;
+		var y0;
+		if(this.y < toIntersect.y) y0 = toIntersect.y; else y0 = this.y;
+		var y1;
+		if(this.get_bottom() > toIntersect.get_bottom()) y1 = toIntersect.get_bottom(); else y1 = this.get_bottom();
+		return y1 > y0;
+	}
+	,isEmpty: function() {
+		return this.width <= 0 || this.height <= 0;
+	}
+	,offset: function(dx,dy) {
+		this.x += dx;
+		this.y += dy;
+	}
+	,offsetPoint: function(point) {
+		this.x += point.x;
+		this.y += point.y;
+	}
+	,setEmpty: function() {
+		this.x = this.y = this.width = this.height = 0;
+	}
+	,setTo: function(xa,ya,widtha,heighta) {
+		this.x = xa;
+		this.y = ya;
+		this.width = widtha;
+		this.height = heighta;
+	}
+	,toString: function() {
+		return "(x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + ")";
+	}
+	,union: function(toUnion) {
+		if(this.width == 0 || this.height == 0) return toUnion.clone(); else if(toUnion.width == 0 || toUnion.height == 0) return this.clone();
+		var x0;
+		if(this.x > toUnion.x) x0 = toUnion.x; else x0 = this.x;
+		var x1;
+		if(this.get_right() < toUnion.get_right()) x1 = toUnion.get_right(); else x1 = this.get_right();
+		var y0;
+		if(this.y > toUnion.y) y0 = toUnion.y; else y0 = this.y;
+		var y1;
+		if(this.get_bottom() < toUnion.get_bottom()) y1 = toUnion.get_bottom(); else y1 = this.get_bottom();
+		return new openfl_geom_Rectangle(x0,y0,x1 - x0,y1 - y0);
+	}
+	,__contract: function(x,y,width,height) {
+		if(this.width == 0 && this.height == 0) return;
+		var cacheRight = this.get_right();
+		var cacheBottom = this.get_bottom();
+		if(this.x < x) this.x = x;
+		if(this.y < y) this.y = y;
+		if(this.get_right() > x + width) this.width = x + width - this.x;
+		if(this.get_bottom() > y + height) this.height = y + height - this.y;
+	}
+	,__expand: function(x,y,width,height) {
+		if(this.width == 0 && this.height == 0) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			return;
+		}
+		var cacheRight = this.get_right();
+		var cacheBottom = this.get_bottom();
+		if(this.x > x) {
+			this.x = x;
+			this.width = cacheRight - x;
+		}
+		if(this.y > y) {
+			this.y = y;
+			this.height = cacheBottom - y;
+		}
+		if(cacheRight < x + width) this.width = x + width - this.x;
+		if(cacheBottom < y + height) this.height = y + height - this.y;
+	}
+	,__toLimeRectangle: function() {
+		return new lime_math_Rectangle(this.x,this.y,this.width,this.height);
+	}
+	,__transform: function(rect,m) {
+		var tx0 = m.a * this.x + m.c * this.y;
+		var tx1 = tx0;
+		var ty0 = m.b * this.x + m.d * this.y;
+		var ty1 = ty0;
+		var tx = m.a * (this.x + this.width) + m.c * this.y;
+		var ty = m.b * (this.x + this.width) + m.d * this.y;
+		if(tx < tx0) tx0 = tx;
+		if(ty < ty0) ty0 = ty;
+		if(tx > tx1) tx1 = tx;
+		if(ty > ty1) ty1 = ty;
+		tx = m.a * (this.x + this.width) + m.c * (this.y + this.height);
+		ty = m.b * (this.x + this.width) + m.d * (this.y + this.height);
+		if(tx < tx0) tx0 = tx;
+		if(ty < ty0) ty0 = ty;
+		if(tx > tx1) tx1 = tx;
+		if(ty > ty1) ty1 = ty;
+		tx = m.a * this.x + m.c * (this.y + this.height);
+		ty = m.b * this.x + m.d * (this.y + this.height);
+		if(tx < tx0) tx0 = tx;
+		if(ty < ty0) ty0 = ty;
+		if(tx > tx1) tx1 = tx;
+		if(ty > ty1) ty1 = ty;
+		rect.setTo(tx0 + m.tx,ty0 + m.ty,tx1 - tx0,ty1 - ty0);
+	}
+	,get_bottom: function() {
+		return this.y + this.height;
+	}
+	,set_bottom: function(b) {
+		this.height = b - this.y;
+		return b;
+	}
+	,get_bottomRight: function() {
+		return new openfl_geom_Point(this.x + this.width,this.y + this.height);
+	}
+	,set_bottomRight: function(p) {
+		this.width = p.x - this.x;
+		this.height = p.y - this.y;
+		return p.clone();
+	}
+	,get_left: function() {
+		return this.x;
+	}
+	,set_left: function(l) {
+		this.width -= l - this.x;
+		this.x = l;
+		return l;
+	}
+	,get_right: function() {
+		return this.x + this.width;
+	}
+	,set_right: function(r) {
+		this.width = r - this.x;
+		return r;
+	}
+	,get_size: function() {
+		return new openfl_geom_Point(this.width,this.height);
+	}
+	,set_size: function(p) {
+		this.width = p.x;
+		this.height = p.y;
+		return p.clone();
+	}
+	,get_top: function() {
+		return this.y;
+	}
+	,set_top: function(t) {
+		this.height -= t - this.y;
+		this.y = t;
+		return t;
+	}
+	,get_topLeft: function() {
+		return new openfl_geom_Point(this.x,this.y);
+	}
+	,set_topLeft: function(p) {
+		this.x = p.x;
+		this.y = p.y;
+		return p.clone();
+	}
+	,__class__: openfl_geom_Rectangle
+	,__properties__: {set_topLeft:"set_topLeft",get_topLeft:"get_topLeft",set_top:"set_top",get_top:"get_top",set_size:"set_size",get_size:"get_size",set_right:"set_right",get_right:"get_right",set_left:"set_left",get_left:"get_left",set_bottomRight:"set_bottomRight",get_bottomRight:"get_bottomRight",set_bottom:"set_bottom",get_bottom:"get_bottom"}
+};
 var openfl__$internal_renderer_opengl_utils_GraphicsRenderer = function() { };
 $hxClasses["openfl._internal.renderer.opengl.utils.GraphicsRenderer"] = openfl__$internal_renderer_opengl_utils_GraphicsRenderer;
 openfl__$internal_renderer_opengl_utils_GraphicsRenderer.__name__ = ["openfl","_internal","renderer","opengl","utils","GraphicsRenderer"];
@@ -37254,7 +32327,7 @@ var openfl_display_OpenGLView = function() {
 		this.__canvas.width = openfl_Lib.current.stage.stageWidth;
 		this.__canvas.height = openfl_Lib.current.stage.stageHeight;
 		var $window = openfl_Lib.current.stage.window;
-		this.__context = this.__canvas.getContext("webgl",{ alpha : false, premultipliedAlpha : false, antialias : true, depth : Object.prototype.hasOwnProperty.call($window.config,"depthBuffer")?$window.config.depthBuffer:true, stencil : Object.prototype.hasOwnProperty.call($window.config,"stencilBuffer")?$window.config.stencilBuffer:false});
+		this.__context = this.__canvas.getContext("webgl",{ alpha : false, premultipliedAlpha : false, antialias : false, depth : Object.prototype.hasOwnProperty.call($window.config,"depthBuffer")?$window.config.depthBuffer:true, stencil : Object.prototype.hasOwnProperty.call($window.config,"stencilBuffer")?$window.config.stencilBuffer:false});
 		if(this.__context == null) this.__context = this.__canvas.getContext("experimental-webgl");
 		this.__context = WebGLDebugUtils.makeDebugContext(this.__context);
 		lime_graphics_opengl_GL.context = this.__context;
@@ -37804,7 +32877,6 @@ var openfl_display_Stage = function(window,color) {
 	}
 	this3.length;
 	if(openfl_Lib.current.stage == null) this.stage.addChild(openfl_Lib.current);
-	haxe_Timer.delay($bind(this,this.InitStageVideos),500);
 };
 $hxClasses["openfl.display.Stage"] = openfl_display_Stage;
 openfl_display_Stage.__name__ = ["openfl","display","Stage"];
@@ -37851,11 +32923,6 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 	,__stack: null
 	,__transparent: null
 	,__wasDirty: null
-	,_stageVideos: null
-	,stageVideos: null
-	,InitStageVideos: function() {
-		this.setStageVideos([]);
-	}
 	,globalToLocal: function(pos) {
 		return pos.clone();
 	}
@@ -38049,7 +33116,6 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 		this.stageWidth = width * window.__scale | 0;
 		this.stageHeight = height * window.__scale | 0;
 		if(this.__renderer != null) this.__renderer.resize(this.stageWidth,this.stageHeight);
-		this.setStageVideos([]);
 		var event = new openfl_events_Event("resize");
 		this.__broadcast(event,false);
 	}
@@ -38793,18 +33859,8 @@ openfl_display_Stage.prototype = $extend(openfl_display_DisplayObjectContainer.p
 		if(this.application != null) return this.application.backend.setFrameRate(value);
 		return value;
 	}
-	,get_stageVideos: function() {
-		return this._stageVideos;
-	}
-	,setStageVideos: function(value) {
-		if(this._stageVideos == value) return;
-		this._stageVideos = value;
-		var availability = openfl_media_StageVideoAvailability.AVAILABLE;
-		if(this._stageVideos.length == 0) availability = openfl_media_StageVideoAvailability.UNAVAILABLE;
-		this.dispatchEvent(new openfl_events_StageVideoAvailabilityEvent(openfl_events_StageVideoAvailabilityEvent.STAGE_VIDEO_AVAILABILITY,false,false,availability));
-	}
 	,__class__: openfl_display_Stage
-	,__properties__: $extend(openfl_display_DisplayObjectContainer.prototype.__properties__,{get_stageVideos:"get_stageVideos",set_frameRate:"set_frameRate",get_frameRate:"get_frameRate",set_focus:"set_focus",get_focus:"get_focus",set_displayState:"set_displayState",get_displayState:"get_displayState",set_color:"set_color",get_color:"get_color"})
+	,__properties__: $extend(openfl_display_DisplayObjectContainer.prototype.__properties__,{set_frameRate:"set_frameRate",get_frameRate:"get_frameRate",set_focus:"set_focus",get_focus:"get_focus",set_displayState:"set_displayState",get_displayState:"get_displayState",set_color:"set_color",get_color:"get_color"})
 });
 var openfl_display_Stage3D = function() {
 	openfl_events_EventDispatcher.call(this);
@@ -39104,12 +34160,6 @@ openfl_display3D_Context3D.prototype = {
 	,texturesCreated: null
 	,vertexBuffersCreated: null
 	,_yFlip: null
-	,backBufferDepthAndStencil: null
-	,rttDepthAndStencil: null
-	,scissorRectangle: null
-	,renderToTexture: null
-	,rttWidth: null
-	,rttHeight: null
 	,clear: function(red,green,blue,alpha,depth,stencil,mask) {
 		if(mask == null) mask = 17664;
 		if(stencil == null) stencil = 0;
@@ -39122,46 +34172,22 @@ openfl_display3D_Context3D.prototype = {
 			this.__updateBlendStatus();
 			this.drawing = true;
 		}
-		if(this.scissorRectangle != null) lime_graphics_opengl_GL.context.disable(3089);
 		lime_graphics_opengl_GL.context.clearColor(red,green,blue,alpha);
 		lime_graphics_opengl_GL.context.clearDepth(depth);
 		lime_graphics_opengl_GL.context.clearStencil(stencil);
 		lime_graphics_opengl_GL.context.clear(mask);
-		if(this.scissorRectangle != null) lime_graphics_opengl_GL.context.enable(3089);
 	}
 	,configureBackBuffer: function(width,height,antiAlias,enableDepthAndStencil) {
 		if(enableDepthAndStencil == null) enableDepthAndStencil = true;
-		this.backBufferDepthAndStencil = enableDepthAndStencil;
-		this.updateDepthAndStencilState();
-		this.setBackBufferViewPort(null,null,width,height);
-		this.updateScissorRectangle();
-	}
-	,setBackBufferViewPort: function(x,y,width,height) {
-		if(x == null) x = this.scrollRect.x | 0;
-		if(y == null) y = this.scrollRect.y | 0;
-		if(width == null) width = this.scrollRect.width | 0;
-		if(height == null) height = this.scrollRect.height | 0;
-		this.scrollRect.x = x;
-		this.scrollRect.y = y;
-		this.scrollRect.width = width;
-		this.scrollRect.height = height;
-		this.ogl.set_width(x + width);
-		this.ogl.set_height(y + height);
-		this.updateBackBufferViewPort();
-	}
-	,updateBackBufferViewPort: function() {
-		if(!this.renderToTexture) lime_graphics_opengl_GL.context.viewport(this.scrollRect.x | 0,this.scrollRect.y | 0,this.scrollRect.width | 0,this.scrollRect.height | 0);
-	}
-	,updateDepthAndStencilState: function() {
-		var depthAndStencil;
-		if(this.renderToTexture) depthAndStencil = this.rttDepthAndStencil; else depthAndStencil = this.backBufferDepthAndStencil;
-		if(depthAndStencil) {
-			if(lime_app_Application.current.windows[0].config.depthBuffer) lime_graphics_opengl_GL.context.enable(2929);
-			if(lime_app_Application.current.windows[0].config.stencilBuffer) lime_graphics_opengl_GL.context.enable(2960);
-		} else {
-			lime_graphics_opengl_GL.context.disable(2929);
-			lime_graphics_opengl_GL.context.disable(2960);
+		if(enableDepthAndStencil) {
+			lime_graphics_opengl_GL.context.enable(2929);
+			lime_graphics_opengl_GL.context.enable(2960);
 		}
+		this.ogl.set_scrollRect(new openfl_geom_Rectangle(0,0,width,height));
+		this.ogl.set_width(width);
+		this.ogl.set_height(height);
+		this.scrollRect = this.ogl.get_scrollRect().clone();
+		lime_graphics_opengl_GL.context.viewport(this.scrollRect.x | 0,this.scrollRect.y | 0,this.scrollRect.width | 0,this.scrollRect.height | 0);
 	}
 	,createCubeTexture: function(size,format,optimizeForRenderToTexture,streamingLevels) {
 		if(streamingLevels == null) streamingLevels = 0;
@@ -39423,7 +34449,6 @@ openfl_display3D_Context3D.prototype = {
 		if(bufferOffset == null) bufferOffset = 0;
 		var location;
 		if(this.currentProgram != null && this.currentProgram.glProgram != null) location = lime_graphics_opengl_GL.context.getAttribLocation(this.currentProgram.glProgram,locationName); else location = -1;
-		if(location == -1) return;
 		if(buffer == null) {
 			if(location > -1) lime_graphics_opengl_GL.context.disableVertexAttribArray(location);
 			return;
@@ -39505,13 +34530,9 @@ openfl_display3D_Context3D.prototype = {
 		lime_graphics_opengl_GL.context.disable(2929);
 		lime_graphics_opengl_GL.context.disable(2960);
 		lime_graphics_opengl_GL.context.disable(3089);
-		lime_graphics_opengl_GL.context.bindFramebuffer(36160,null);
 		if(this.framebuffer != null) lime_graphics_opengl_GL.context.bindFramebuffer(36160,null);
 		if(this.renderbuffer != null) lime_graphics_opengl_GL.context.bindRenderbuffer(36161,null);
-		this.renderToTexture = false;
-		this.updateBackBufferViewPort();
-		this.updateScissorRectangle();
-		this.updateDepthAndStencilState();
+		lime_graphics_opengl_GL.context.viewport(this.scrollRect.x | 0,this.scrollRect.y | 0,this.scrollRect.width | 0,this.scrollRect.height | 0);
 	}
 	,setRenderToTexture: function(texture,enableDepthAndStencil,antiAlias,surfaceSelector) {
 		if(surfaceSelector == null) surfaceSelector = 0;
@@ -39521,7 +34542,7 @@ openfl_display3D_Context3D.prototype = {
 		lime_graphics_opengl_GL.context.bindFramebuffer(36160,this.framebuffer);
 		if(this.renderbuffer == null) this.renderbuffer = lime_graphics_opengl_GL.context.createRenderbuffer();
 		lime_graphics_opengl_GL.context.bindRenderbuffer(36161,this.renderbuffer);
-		if(enableDepthAndStencil) lime_graphics_opengl_GL.context.renderbufferStorage(36161,34041,texture.width,texture.height);
+		lime_graphics_opengl_GL.context.renderbufferStorage(36161,6408,texture.width,texture.height);
 		lime_graphics_opengl_GL.context.framebufferTexture2D(36160,36064,3553,texture.glTexture,0);
 		lime_graphics_opengl_GL.context.renderbufferStorage(36161,34041,texture.width,texture.height);
 		lime_graphics_opengl_GL.context.framebufferRenderbuffer(36160,33306,36161,this.renderbuffer);
@@ -39534,12 +34555,6 @@ openfl_display3D_Context3D.prototype = {
 		lime_graphics_opengl_GL.context.texParameteri(3553,10240,9729);
 		lime_graphics_opengl_GL.context.texParameteri(3553,10241,9985);
 		lime_graphics_opengl_GL.context.viewport(0,0,texture.width,texture.height);
-		this.renderToTexture = true;
-		this.rttDepthAndStencil = enableDepthAndStencil;
-		this.rttWidth = texture.width;
-		this.rttHeight = texture.height;
-		this.updateScissorRectangle();
-		this.updateDepthAndStencilState();
 	}
 	,setSamplerStateAt: function(sampler,wrap,filter,mipfilter) {
 		if(0 <= sampler && sampler < openfl_display3D_Context3D.MAX_SAMPLERS) {
@@ -39549,19 +34564,12 @@ openfl_display3D_Context3D.prototype = {
 		} else throw new js__$Boot_HaxeError("Sampler is out of bounds.");
 	}
 	,setScissorRectangle: function(rectangle) {
-		this.scissorRectangle = rectangle;
 		if(rectangle == null) {
 			lime_graphics_opengl_GL.context.disable(3089);
 			return;
 		}
 		lime_graphics_opengl_GL.context.enable(3089);
-		this.updateScissorRectangle();
-	}
-	,updateScissorRectangle: function() {
-		if(this.scissorRectangle == null) return;
-		var height;
-		if(this.renderToTexture) height = this.rttHeight; else height = this.scrollRect.height | 0;
-		lime_graphics_opengl_GL.context.scissor(this.scissorRectangle.x | 0,height - (this.scissorRectangle.y | 0) - (this.scissorRectangle.height | 0) | 0,this.scissorRectangle.width | 0,this.scissorRectangle.height | 0);
+		lime_graphics_opengl_GL.context.scissor(rectangle.x | 0,rectangle.y | 0,rectangle.width | 0,rectangle.height | 0);
 	}
 	,setStencilActions: function(triangleFace,compareMode,actionOnBothPass,actionOnDepthFail,actionOnDepthPassStencilFail) {
 		this.stencilCompareMode = compareMode;
@@ -40831,34 +35839,6 @@ openfl_events_SecurityErrorEvent.prototype = $extend(openfl_events_ErrorEvent.pr
 	}
 	,__class__: openfl_events_SecurityErrorEvent
 });
-var openfl_events_StageVideoAvailabilityEvent = function(type,bubbles,cancelable,availability) {
-	if(cancelable == null) cancelable = false;
-	if(bubbles == null) bubbles = false;
-	openfl_events_Event.call(this,type,bubbles,cancelable);
-	this._availability = availability;
-};
-$hxClasses["openfl.events.StageVideoAvailabilityEvent"] = openfl_events_StageVideoAvailabilityEvent;
-openfl_events_StageVideoAvailabilityEvent.__name__ = ["openfl","events","StageVideoAvailabilityEvent"];
-openfl_events_StageVideoAvailabilityEvent.__super__ = openfl_events_Event;
-openfl_events_StageVideoAvailabilityEvent.prototype = $extend(openfl_events_Event.prototype,{
-	_availability: null
-	,availability: null
-	,_driver: null
-	,driver: null
-	,_reason: null
-	,reason: null
-	,get_availability: function() {
-		return this._availability;
-	}
-	,get_driver: function() {
-		return this._driver;
-	}
-	,get_reason: function() {
-		return this._reason;
-	}
-	,__class__: openfl_events_StageVideoAvailabilityEvent
-	,__properties__: {get_reason:"get_reason",get_driver:"get_driver",get_availability:"get_availability"}
-});
 var openfl_events_TouchEvent = function(type,bubbles,cancelable,touchPointID,isPrimaryTouchPoint,localX,localY,sizeX,sizeY,pressure,relatedObject,ctrlKey,altKey,shiftKey,commandKey,controlKey,timestamp,touchIntent,samples,isTouchPointCanceled) {
 	if(isTouchPointCanceled == null) isTouchPointCanceled = false;
 	if(timestamp == null) timestamp = 0;
@@ -41006,6 +35986,3216 @@ openfl_filters_BitmapFilter.prototype = {
 	}
 	,__class__: openfl_filters_BitmapFilter
 };
+var openfl_geom_Matrix3D = function(v) {
+	if(v != null && v.length == 16) this.rawData = v; else {
+		var value = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		var vec;
+		var this1;
+		this1 = new Array(value.length);
+		vec = this1;
+		var _g1 = 0;
+		var _g = value.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			vec[i] = value[i];
+		}
+		vectorData.data = vec;
+		this.rawData = vectorData;
+	}
+};
+$hxClasses["openfl.geom.Matrix3D"] = openfl_geom_Matrix3D;
+openfl_geom_Matrix3D.__name__ = ["openfl","geom","Matrix3D"];
+openfl_geom_Matrix3D.create2D = function(x,y,scale,rotation) {
+	if(rotation == null) rotation = 0;
+	if(scale == null) scale = 1;
+	var theta = rotation * Math.PI / 180.0;
+	var c = Math.cos(theta);
+	var s = Math.sin(theta);
+	return new openfl_geom_Matrix3D((function($this) {
+		var $r;
+		var value = [c * scale,-s * scale,0,0,s * scale,c * scale,0,0,0,0,1,0,x,y,0,1];
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		{
+			var vec;
+			var this1;
+			this1 = new Array(value.length);
+			vec = this1;
+			var _g1 = 0;
+			var _g = value.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				vec[i] = value[i];
+			}
+			vectorData.data = vec;
+		}
+		$r = vectorData;
+		return $r;
+	}(this)));
+};
+openfl_geom_Matrix3D.createABCD = function(a,b,c,d,tx,ty) {
+	return new openfl_geom_Matrix3D((function($this) {
+		var $r;
+		var value = [a,b,0,0,c,d,0,0,0,0,1,0,tx,ty,0,1];
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		{
+			var vec;
+			var this1;
+			this1 = new Array(value.length);
+			vec = this1;
+			var _g1 = 0;
+			var _g = value.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				vec[i] = value[i];
+			}
+			vectorData.data = vec;
+		}
+		$r = vectorData;
+		return $r;
+	}(this)));
+};
+openfl_geom_Matrix3D.createOrtho = function(x0,x1,y0,y1,zNear,zFar) {
+	var sx = 1.0 / (x1 - x0);
+	var sy = 1.0 / (y1 - y0);
+	var sz = 1.0 / (zFar - zNear);
+	return new openfl_geom_Matrix3D((function($this) {
+		var $r;
+		var value = [2.0 * sx,0,0,0,0,2.0 * sy,0,0,0,0,-2. * sz,0,-(x0 + x1) * sx,-(y0 + y1) * sy,-(zNear + zFar) * sz,1];
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		{
+			var vec;
+			var this1;
+			this1 = new Array(value.length);
+			vec = this1;
+			var _g1 = 0;
+			var _g = value.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				vec[i] = value[i];
+			}
+			vectorData.data = vec;
+		}
+		$r = vectorData;
+		return $r;
+	}(this)));
+};
+openfl_geom_Matrix3D.interpolate = function(thisMat,toMat,percent) {
+	var m = new openfl_geom_Matrix3D();
+	var _g = 0;
+	while(_g < 16) {
+		var i = _g++;
+		var this1 = m.rawData;
+		if(!this1.fixed) {
+			if(i >= this1.length) this1.length = i + 1;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[i] = thisMat.rawData.data[i] + (toMat.rawData.data[i] - thisMat.rawData.data[i]) * percent;
+	}
+	return m;
+};
+openfl_geom_Matrix3D.__getAxisRotation = function(x,y,z,degrees) {
+	var m = new openfl_geom_Matrix3D();
+	var a1 = new openfl_geom_Vector3D(x,y,z);
+	var rad = -degrees * (Math.PI / 180);
+	var c = Math.cos(rad);
+	var s = Math.sin(rad);
+	var t = 1.0 - c;
+	var this1 = m.rawData;
+	if(!this1.fixed) {
+		if(0 >= this1.length) this1.length = 1;
+		if(this1.data.length < this1.length) {
+			var data;
+			var this2;
+			this2 = new Array(this1.data.length + 10);
+			data = this2;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+			this1.data = data;
+		}
+	}
+	this1.data[0] = c + a1.x * a1.x * t;
+	var this3 = m.rawData;
+	if(!this3.fixed) {
+		if(5 >= this3.length) this3.length = 6;
+		if(this3.data.length < this3.length) {
+			var data1;
+			var this4;
+			this4 = new Array(this3.data.length + 10);
+			data1 = this4;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+			this3.data = data1;
+		}
+	}
+	this3.data[5] = c + a1.y * a1.y * t;
+	var this5 = m.rawData;
+	if(!this5.fixed) {
+		if(10 >= this5.length) this5.length = 11;
+		if(this5.data.length < this5.length) {
+			var data2;
+			var this6;
+			this6 = new Array(this5.data.length + 10);
+			data2 = this6;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+			this5.data = data2;
+		}
+	}
+	this5.data[10] = c + a1.z * a1.z * t;
+	var tmp1 = a1.x * a1.y * t;
+	var tmp2 = a1.z * s;
+	var this7 = m.rawData;
+	if(!this7.fixed) {
+		if(4 >= this7.length) this7.length = 5;
+		if(this7.data.length < this7.length) {
+			var data3;
+			var this8;
+			this8 = new Array(this7.data.length + 10);
+			data3 = this8;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+			this7.data = data3;
+		}
+	}
+	this7.data[4] = tmp1 + tmp2;
+	var this9 = m.rawData;
+	if(!this9.fixed) {
+		if(1 >= this9.length) this9.length = 2;
+		if(this9.data.length < this9.length) {
+			var data4;
+			var this10;
+			this10 = new Array(this9.data.length + 10);
+			data4 = this10;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+			this9.data = data4;
+		}
+	}
+	this9.data[1] = tmp1 - tmp2;
+	tmp1 = a1.x * a1.z * t;
+	tmp2 = a1.y * s;
+	var this11 = m.rawData;
+	if(!this11.fixed) {
+		if(8 >= this11.length) this11.length = 9;
+		if(this11.data.length < this11.length) {
+			var data5;
+			var this12;
+			this12 = new Array(this11.data.length + 10);
+			data5 = this12;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+			this11.data = data5;
+		}
+	}
+	this11.data[8] = tmp1 - tmp2;
+	var this13 = m.rawData;
+	if(!this13.fixed) {
+		if(2 >= this13.length) this13.length = 3;
+		if(this13.data.length < this13.length) {
+			var data6;
+			var this14;
+			this14 = new Array(this13.data.length + 10);
+			data6 = this14;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+			this13.data = data6;
+		}
+	}
+	this13.data[2] = tmp1 + tmp2;
+	tmp1 = a1.y * a1.z * t;
+	tmp2 = a1.x * s;
+	var this15 = m.rawData;
+	if(!this15.fixed) {
+		if(9 >= this15.length) this15.length = 10;
+		if(this15.data.length < this15.length) {
+			var data7;
+			var this16;
+			this16 = new Array(this15.data.length + 10);
+			data7 = this16;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+			this15.data = data7;
+		}
+	}
+	this15.data[9] = tmp1 + tmp2;
+	var this17 = m.rawData;
+	if(!this17.fixed) {
+		if(6 >= this17.length) this17.length = 7;
+		if(this17.data.length < this17.length) {
+			var data8;
+			var this18;
+			this18 = new Array(this17.data.length + 10);
+			data8 = this18;
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+			this17.data = data8;
+		}
+	}
+	this17.data[6] = tmp1 - tmp2;
+	return m;
+};
+openfl_geom_Matrix3D.prototype = {
+	determinant: null
+	,rawData: null
+	,append: function(lhs) {
+		var m111 = this.rawData.data[0];
+		var m121 = this.rawData.data[4];
+		var m131 = this.rawData.data[8];
+		var m141 = this.rawData.data[12];
+		var m112 = this.rawData.data[1];
+		var m122 = this.rawData.data[5];
+		var m132 = this.rawData.data[9];
+		var m142 = this.rawData.data[13];
+		var m113 = this.rawData.data[2];
+		var m123 = this.rawData.data[6];
+		var m133 = this.rawData.data[10];
+		var m143 = this.rawData.data[14];
+		var m114 = this.rawData.data[3];
+		var m124 = this.rawData.data[7];
+		var m134 = this.rawData.data[11];
+		var m144 = this.rawData.data[15];
+		var m211 = lhs.rawData.data[0];
+		var m221 = lhs.rawData.data[4];
+		var m231 = lhs.rawData.data[8];
+		var m241 = lhs.rawData.data[12];
+		var m212 = lhs.rawData.data[1];
+		var m222 = lhs.rawData.data[5];
+		var m232 = lhs.rawData.data[9];
+		var m242 = lhs.rawData.data[13];
+		var m213 = lhs.rawData.data[2];
+		var m223 = lhs.rawData.data[6];
+		var m233 = lhs.rawData.data[10];
+		var m243 = lhs.rawData.data[14];
+		var m214 = lhs.rawData.data[3];
+		var m224 = lhs.rawData.data[7];
+		var m234 = lhs.rawData.data[11];
+		var m244 = lhs.rawData.data[15];
+		var this1 = this.rawData;
+		if(!this1.fixed) {
+			if(0 >= this1.length) this1.length = 1;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(1 >= this3.length) this3.length = 2;
+			if(this3.data.length < this3.length) {
+				var data1;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data1 = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+				this3.data = data1;
+			}
+		}
+		this3.data[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(2 >= this5.length) this5.length = 3;
+			if(this5.data.length < this5.length) {
+				var data2;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data2 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+				this5.data = data2;
+			}
+		}
+		this5.data[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
+		var this7 = this.rawData;
+		if(!this7.fixed) {
+			if(3 >= this7.length) this7.length = 4;
+			if(this7.data.length < this7.length) {
+				var data3;
+				var this8;
+				this8 = new Array(this7.data.length + 10);
+				data3 = this8;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+				this7.data = data3;
+			}
+		}
+		this7.data[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
+		var this9 = this.rawData;
+		if(!this9.fixed) {
+			if(4 >= this9.length) this9.length = 5;
+			if(this9.data.length < this9.length) {
+				var data4;
+				var this10;
+				this10 = new Array(this9.data.length + 10);
+				data4 = this10;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+				this9.data = data4;
+			}
+		}
+		this9.data[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
+		var this11 = this.rawData;
+		if(!this11.fixed) {
+			if(5 >= this11.length) this11.length = 6;
+			if(this11.data.length < this11.length) {
+				var data5;
+				var this12;
+				this12 = new Array(this11.data.length + 10);
+				data5 = this12;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+				this11.data = data5;
+			}
+		}
+		this11.data[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
+		var this13 = this.rawData;
+		if(!this13.fixed) {
+			if(6 >= this13.length) this13.length = 7;
+			if(this13.data.length < this13.length) {
+				var data6;
+				var this14;
+				this14 = new Array(this13.data.length + 10);
+				data6 = this14;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+				this13.data = data6;
+			}
+		}
+		this13.data[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
+		var this15 = this.rawData;
+		if(!this15.fixed) {
+			if(7 >= this15.length) this15.length = 8;
+			if(this15.data.length < this15.length) {
+				var data7;
+				var this16;
+				this16 = new Array(this15.data.length + 10);
+				data7 = this16;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+				this15.data = data7;
+			}
+		}
+		this15.data[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
+		var this17 = this.rawData;
+		if(!this17.fixed) {
+			if(8 >= this17.length) this17.length = 9;
+			if(this17.data.length < this17.length) {
+				var data8;
+				var this18;
+				this18 = new Array(this17.data.length + 10);
+				data8 = this18;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+				this17.data = data8;
+			}
+		}
+		this17.data[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
+		var this19 = this.rawData;
+		if(!this19.fixed) {
+			if(9 >= this19.length) this19.length = 10;
+			if(this19.data.length < this19.length) {
+				var data9;
+				var this20;
+				this20 = new Array(this19.data.length + 10);
+				data9 = this20;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+				this19.data = data9;
+			}
+		}
+		this19.data[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
+		var this21 = this.rawData;
+		if(!this21.fixed) {
+			if(10 >= this21.length) this21.length = 11;
+			if(this21.data.length < this21.length) {
+				var data10;
+				var this22;
+				this22 = new Array(this21.data.length + 10);
+				data10 = this22;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+				this21.data = data10;
+			}
+		}
+		this21.data[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
+		var this23 = this.rawData;
+		if(!this23.fixed) {
+			if(11 >= this23.length) this23.length = 12;
+			if(this23.data.length < this23.length) {
+				var data11;
+				var this24;
+				this24 = new Array(this23.data.length + 10);
+				data11 = this24;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+				this23.data = data11;
+			}
+		}
+		this23.data[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
+		var this25 = this.rawData;
+		if(!this25.fixed) {
+			if(12 >= this25.length) this25.length = 13;
+			if(this25.data.length < this25.length) {
+				var data12;
+				var this26;
+				this26 = new Array(this25.data.length + 10);
+				data12 = this26;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+				this25.data = data12;
+			}
+		}
+		this25.data[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
+		var this27 = this.rawData;
+		if(!this27.fixed) {
+			if(13 >= this27.length) this27.length = 14;
+			if(this27.data.length < this27.length) {
+				var data13;
+				var this28;
+				this28 = new Array(this27.data.length + 10);
+				data13 = this28;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+				this27.data = data13;
+			}
+		}
+		this27.data[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
+		var this29 = this.rawData;
+		if(!this29.fixed) {
+			if(14 >= this29.length) this29.length = 15;
+			if(this29.data.length < this29.length) {
+				var data14;
+				var this30;
+				this30 = new Array(this29.data.length + 10);
+				data14 = this30;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+				this29.data = data14;
+			}
+		}
+		this29.data[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
+		var this31 = this.rawData;
+		if(!this31.fixed) {
+			if(15 >= this31.length) this31.length = 16;
+			if(this31.data.length < this31.length) {
+				var data15;
+				var this32;
+				this32 = new Array(this31.data.length + 10);
+				data15 = this32;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+				this31.data = data15;
+			}
+		}
+		this31.data[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
+	}
+	,appendRotation: function(degrees,axis,pivotPoint) {
+		var m = openfl_geom_Matrix3D.__getAxisRotation(axis.x,axis.y,axis.z,degrees);
+		if(pivotPoint != null) {
+			var p = pivotPoint;
+			m.appendTranslation(p.x,p.y,p.z);
+		}
+		this.append(m);
+	}
+	,appendScale: function(xScale,yScale,zScale) {
+		this.append(new openfl_geom_Matrix3D((function($this) {
+			var $r;
+			var value = [xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0];
+			var vectorData = new openfl_VectorData();
+			vectorData.length = value.length;
+			vectorData.fixed = true;
+			{
+				var vec;
+				var this1;
+				this1 = new Array(value.length);
+				vec = this1;
+				var _g1 = 0;
+				var _g = value.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					vec[i] = value[i];
+				}
+				vectorData.data = vec;
+			}
+			$r = vectorData;
+			return $r;
+		}(this))));
+	}
+	,appendTranslation: function(x,y,z) {
+		var this1 = this.rawData;
+		if(!this1.fixed) {
+			if(12 >= this1.length) this1.length = 13;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[12] = this.rawData.data[12] + x;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(13 >= this3.length) this3.length = 14;
+			if(this3.data.length < this3.length) {
+				var data1;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data1 = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+				this3.data = data1;
+			}
+		}
+		this3.data[13] = this.rawData.data[13] + y;
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(14 >= this5.length) this5.length = 15;
+			if(this5.data.length < this5.length) {
+				var data2;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data2 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+				this5.data = data2;
+			}
+		}
+		this5.data[14] = this.rawData.data[14] + z;
+	}
+	,clone: function() {
+		return new openfl_geom_Matrix3D((function($this) {
+			var $r;
+			var this1 = $this.rawData;
+			var vectorData = new openfl_VectorData();
+			vectorData.length = this1.length;
+			vectorData.fixed = this1.fixed;
+			{
+				var this2;
+				this2 = new Array(this1.length);
+				vectorData.data = this2;
+			}
+			haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
+			$r = vectorData;
+			return $r;
+		}(this)));
+	}
+	,copyColumnFrom: function(column,vector3D) {
+		switch(column) {
+		case 0:
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(0 >= this1.length) this1.length = 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[0] = vector3D.x;
+			var this3 = this.rawData;
+			if(!this3.fixed) {
+				if(1 >= this3.length) this3.length = 2;
+				if(this3.data.length < this3.length) {
+					var data1;
+					var this4;
+					this4 = new Array(this3.data.length + 10);
+					data1 = this4;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+					this3.data = data1;
+				}
+			}
+			this3.data[1] = vector3D.y;
+			var this5 = this.rawData;
+			if(!this5.fixed) {
+				if(2 >= this5.length) this5.length = 3;
+				if(this5.data.length < this5.length) {
+					var data2;
+					var this6;
+					this6 = new Array(this5.data.length + 10);
+					data2 = this6;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+					this5.data = data2;
+				}
+			}
+			this5.data[2] = vector3D.z;
+			var this7 = this.rawData;
+			if(!this7.fixed) {
+				if(3 >= this7.length) this7.length = 4;
+				if(this7.data.length < this7.length) {
+					var data3;
+					var this8;
+					this8 = new Array(this7.data.length + 10);
+					data3 = this8;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+					this7.data = data3;
+				}
+			}
+			this7.data[3] = vector3D.w;
+			break;
+		case 1:
+			var this9 = this.rawData;
+			if(!this9.fixed) {
+				if(4 >= this9.length) this9.length = 5;
+				if(this9.data.length < this9.length) {
+					var data4;
+					var this10;
+					this10 = new Array(this9.data.length + 10);
+					data4 = this10;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+					this9.data = data4;
+				}
+			}
+			this9.data[4] = vector3D.x;
+			var this11 = this.rawData;
+			if(!this11.fixed) {
+				if(5 >= this11.length) this11.length = 6;
+				if(this11.data.length < this11.length) {
+					var data5;
+					var this12;
+					this12 = new Array(this11.data.length + 10);
+					data5 = this12;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+					this11.data = data5;
+				}
+			}
+			this11.data[5] = vector3D.y;
+			var this13 = this.rawData;
+			if(!this13.fixed) {
+				if(6 >= this13.length) this13.length = 7;
+				if(this13.data.length < this13.length) {
+					var data6;
+					var this14;
+					this14 = new Array(this13.data.length + 10);
+					data6 = this14;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+					this13.data = data6;
+				}
+			}
+			this13.data[6] = vector3D.z;
+			var this15 = this.rawData;
+			if(!this15.fixed) {
+				if(7 >= this15.length) this15.length = 8;
+				if(this15.data.length < this15.length) {
+					var data7;
+					var this16;
+					this16 = new Array(this15.data.length + 10);
+					data7 = this16;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+					this15.data = data7;
+				}
+			}
+			this15.data[7] = vector3D.w;
+			break;
+		case 2:
+			var this17 = this.rawData;
+			if(!this17.fixed) {
+				if(8 >= this17.length) this17.length = 9;
+				if(this17.data.length < this17.length) {
+					var data8;
+					var this18;
+					this18 = new Array(this17.data.length + 10);
+					data8 = this18;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+					this17.data = data8;
+				}
+			}
+			this17.data[8] = vector3D.x;
+			var this19 = this.rawData;
+			if(!this19.fixed) {
+				if(9 >= this19.length) this19.length = 10;
+				if(this19.data.length < this19.length) {
+					var data9;
+					var this20;
+					this20 = new Array(this19.data.length + 10);
+					data9 = this20;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+					this19.data = data9;
+				}
+			}
+			this19.data[9] = vector3D.y;
+			var this21 = this.rawData;
+			if(!this21.fixed) {
+				if(10 >= this21.length) this21.length = 11;
+				if(this21.data.length < this21.length) {
+					var data10;
+					var this22;
+					this22 = new Array(this21.data.length + 10);
+					data10 = this22;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+					this21.data = data10;
+				}
+			}
+			this21.data[10] = vector3D.z;
+			var this23 = this.rawData;
+			if(!this23.fixed) {
+				if(11 >= this23.length) this23.length = 12;
+				if(this23.data.length < this23.length) {
+					var data11;
+					var this24;
+					this24 = new Array(this23.data.length + 10);
+					data11 = this24;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+					this23.data = data11;
+				}
+			}
+			this23.data[11] = vector3D.w;
+			break;
+		case 3:
+			var this25 = this.rawData;
+			if(!this25.fixed) {
+				if(12 >= this25.length) this25.length = 13;
+				if(this25.data.length < this25.length) {
+					var data12;
+					var this26;
+					this26 = new Array(this25.data.length + 10);
+					data12 = this26;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+					this25.data = data12;
+				}
+			}
+			this25.data[12] = vector3D.x;
+			var this27 = this.rawData;
+			if(!this27.fixed) {
+				if(13 >= this27.length) this27.length = 14;
+				if(this27.data.length < this27.length) {
+					var data13;
+					var this28;
+					this28 = new Array(this27.data.length + 10);
+					data13 = this28;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+					this27.data = data13;
+				}
+			}
+			this27.data[13] = vector3D.y;
+			var this29 = this.rawData;
+			if(!this29.fixed) {
+				if(14 >= this29.length) this29.length = 15;
+				if(this29.data.length < this29.length) {
+					var data14;
+					var this30;
+					this30 = new Array(this29.data.length + 10);
+					data14 = this30;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+					this29.data = data14;
+				}
+			}
+			this29.data[14] = vector3D.z;
+			var this31 = this.rawData;
+			if(!this31.fixed) {
+				if(15 >= this31.length) this31.length = 16;
+				if(this31.data.length < this31.length) {
+					var data15;
+					var this32;
+					this32 = new Array(this31.data.length + 10);
+					data15 = this32;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+					this31.data = data15;
+				}
+			}
+			this31.data[15] = vector3D.w;
+			break;
+		default:
+		}
+	}
+	,copyColumnTo: function(column,vector3D) {
+		switch(column) {
+		case 0:
+			vector3D.x = this.rawData.data[0];
+			vector3D.y = this.rawData.data[1];
+			vector3D.z = this.rawData.data[2];
+			vector3D.w = this.rawData.data[3];
+			break;
+		case 1:
+			vector3D.x = this.rawData.data[4];
+			vector3D.y = this.rawData.data[5];
+			vector3D.z = this.rawData.data[6];
+			vector3D.w = this.rawData.data[7];
+			break;
+		case 2:
+			vector3D.x = this.rawData.data[8];
+			vector3D.y = this.rawData.data[9];
+			vector3D.z = this.rawData.data[10];
+			vector3D.w = this.rawData.data[11];
+			break;
+		case 3:
+			vector3D.x = this.rawData.data[12];
+			vector3D.y = this.rawData.data[13];
+			vector3D.z = this.rawData.data[14];
+			vector3D.w = this.rawData.data[15];
+			break;
+		default:
+		}
+	}
+	,copyFrom: function(other) {
+		var this1 = other.rawData;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = this1.length;
+		vectorData.fixed = this1.fixed;
+		var this2;
+		this2 = new Array(this1.length);
+		vectorData.data = this2;
+		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
+		this.rawData = vectorData;
+	}
+	,copyRawDataFrom: function(vector,index,transpose) {
+		if(transpose == null) transpose = false;
+		if(index == null) index = 0;
+		if(transpose) this.transpose();
+		var length = vector.length - index;
+		var _g = 0;
+		while(_g < length) {
+			var i = _g++;
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(i >= this1.length) this1.length = i + 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[i] = vector.data[i + index];
+		}
+		if(transpose) this.transpose();
+	}
+	,copyRawDataTo: function(vector,index,transpose) {
+		if(transpose == null) transpose = false;
+		if(index == null) index = 0;
+		if(transpose) this.transpose();
+		var _g1 = 0;
+		var _g = this.rawData.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var key = i + index;
+			if(!vector.fixed) {
+				if(key >= vector.length) vector.length = key + 1;
+				if(vector.data.length < vector.length) {
+					var data;
+					var this1;
+					this1 = new Array(vector.data.length + 10);
+					data = this1;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(vector.data,0,data,0,vector.data.length);
+					vector.data = data;
+				}
+			}
+			vector.data[key] = this.rawData.data[i];
+		}
+		if(transpose) this.transpose();
+	}
+	,copyRowFrom: function(row,vector3D) {
+		switch(row) {
+		case 0:
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(0 >= this1.length) this1.length = 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[0] = vector3D.x;
+			var this3 = this.rawData;
+			if(!this3.fixed) {
+				if(4 >= this3.length) this3.length = 5;
+				if(this3.data.length < this3.length) {
+					var data1;
+					var this4;
+					this4 = new Array(this3.data.length + 10);
+					data1 = this4;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+					this3.data = data1;
+				}
+			}
+			this3.data[4] = vector3D.y;
+			var this5 = this.rawData;
+			if(!this5.fixed) {
+				if(8 >= this5.length) this5.length = 9;
+				if(this5.data.length < this5.length) {
+					var data2;
+					var this6;
+					this6 = new Array(this5.data.length + 10);
+					data2 = this6;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+					this5.data = data2;
+				}
+			}
+			this5.data[8] = vector3D.z;
+			var this7 = this.rawData;
+			if(!this7.fixed) {
+				if(12 >= this7.length) this7.length = 13;
+				if(this7.data.length < this7.length) {
+					var data3;
+					var this8;
+					this8 = new Array(this7.data.length + 10);
+					data3 = this8;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+					this7.data = data3;
+				}
+			}
+			this7.data[12] = vector3D.w;
+			break;
+		case 1:
+			var this9 = this.rawData;
+			if(!this9.fixed) {
+				if(1 >= this9.length) this9.length = 2;
+				if(this9.data.length < this9.length) {
+					var data4;
+					var this10;
+					this10 = new Array(this9.data.length + 10);
+					data4 = this10;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+					this9.data = data4;
+				}
+			}
+			this9.data[1] = vector3D.x;
+			var this11 = this.rawData;
+			if(!this11.fixed) {
+				if(5 >= this11.length) this11.length = 6;
+				if(this11.data.length < this11.length) {
+					var data5;
+					var this12;
+					this12 = new Array(this11.data.length + 10);
+					data5 = this12;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+					this11.data = data5;
+				}
+			}
+			this11.data[5] = vector3D.y;
+			var this13 = this.rawData;
+			if(!this13.fixed) {
+				if(9 >= this13.length) this13.length = 10;
+				if(this13.data.length < this13.length) {
+					var data6;
+					var this14;
+					this14 = new Array(this13.data.length + 10);
+					data6 = this14;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+					this13.data = data6;
+				}
+			}
+			this13.data[9] = vector3D.z;
+			var this15 = this.rawData;
+			if(!this15.fixed) {
+				if(13 >= this15.length) this15.length = 14;
+				if(this15.data.length < this15.length) {
+					var data7;
+					var this16;
+					this16 = new Array(this15.data.length + 10);
+					data7 = this16;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+					this15.data = data7;
+				}
+			}
+			this15.data[13] = vector3D.w;
+			break;
+		case 2:
+			var this17 = this.rawData;
+			if(!this17.fixed) {
+				if(2 >= this17.length) this17.length = 3;
+				if(this17.data.length < this17.length) {
+					var data8;
+					var this18;
+					this18 = new Array(this17.data.length + 10);
+					data8 = this18;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+					this17.data = data8;
+				}
+			}
+			this17.data[2] = vector3D.x;
+			var this19 = this.rawData;
+			if(!this19.fixed) {
+				if(6 >= this19.length) this19.length = 7;
+				if(this19.data.length < this19.length) {
+					var data9;
+					var this20;
+					this20 = new Array(this19.data.length + 10);
+					data9 = this20;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+					this19.data = data9;
+				}
+			}
+			this19.data[6] = vector3D.y;
+			var this21 = this.rawData;
+			if(!this21.fixed) {
+				if(10 >= this21.length) this21.length = 11;
+				if(this21.data.length < this21.length) {
+					var data10;
+					var this22;
+					this22 = new Array(this21.data.length + 10);
+					data10 = this22;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+					this21.data = data10;
+				}
+			}
+			this21.data[10] = vector3D.z;
+			var this23 = this.rawData;
+			if(!this23.fixed) {
+				if(14 >= this23.length) this23.length = 15;
+				if(this23.data.length < this23.length) {
+					var data11;
+					var this24;
+					this24 = new Array(this23.data.length + 10);
+					data11 = this24;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+					this23.data = data11;
+				}
+			}
+			this23.data[14] = vector3D.w;
+			break;
+		case 3:
+			var this25 = this.rawData;
+			if(!this25.fixed) {
+				if(3 >= this25.length) this25.length = 4;
+				if(this25.data.length < this25.length) {
+					var data12;
+					var this26;
+					this26 = new Array(this25.data.length + 10);
+					data12 = this26;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+					this25.data = data12;
+				}
+			}
+			this25.data[3] = vector3D.x;
+			var this27 = this.rawData;
+			if(!this27.fixed) {
+				if(7 >= this27.length) this27.length = 8;
+				if(this27.data.length < this27.length) {
+					var data13;
+					var this28;
+					this28 = new Array(this27.data.length + 10);
+					data13 = this28;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+					this27.data = data13;
+				}
+			}
+			this27.data[7] = vector3D.y;
+			var this29 = this.rawData;
+			if(!this29.fixed) {
+				if(11 >= this29.length) this29.length = 12;
+				if(this29.data.length < this29.length) {
+					var data14;
+					var this30;
+					this30 = new Array(this29.data.length + 10);
+					data14 = this30;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+					this29.data = data14;
+				}
+			}
+			this29.data[11] = vector3D.z;
+			var this31 = this.rawData;
+			if(!this31.fixed) {
+				if(15 >= this31.length) this31.length = 16;
+				if(this31.data.length < this31.length) {
+					var data15;
+					var this32;
+					this32 = new Array(this31.data.length + 10);
+					data15 = this32;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+					this31.data = data15;
+				}
+			}
+			this31.data[15] = vector3D.w;
+			break;
+		default:
+		}
+	}
+	,copyRowTo: function(row,vector3D) {
+		switch(row) {
+		case 0:
+			vector3D.x = this.rawData.data[0];
+			vector3D.y = this.rawData.data[4];
+			vector3D.z = this.rawData.data[8];
+			vector3D.w = this.rawData.data[12];
+			break;
+		case 1:
+			vector3D.x = this.rawData.data[1];
+			vector3D.y = this.rawData.data[5];
+			vector3D.z = this.rawData.data[9];
+			vector3D.w = this.rawData.data[13];
+			break;
+		case 2:
+			vector3D.x = this.rawData.data[2];
+			vector3D.y = this.rawData.data[6];
+			vector3D.z = this.rawData.data[10];
+			vector3D.w = this.rawData.data[14];
+			break;
+		case 3:
+			vector3D.x = this.rawData.data[3];
+			vector3D.y = this.rawData.data[7];
+			vector3D.z = this.rawData.data[11];
+			vector3D.w = this.rawData.data[15];
+			break;
+		default:
+		}
+	}
+	,copyToMatrix3D: function(other) {
+		var this1 = this.rawData;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = this1.length;
+		vectorData.fixed = this1.fixed;
+		var this2;
+		this2 = new Array(this1.length);
+		vectorData.data = this2;
+		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
+		other.rawData = vectorData;
+	}
+	,decompose: function(orientationStyle) {
+		if(orientationStyle == null) orientationStyle = 1;
+		var vec;
+		var this1;
+		this1 = new openfl_VectorData();
+		var this2;
+		this2 = new Array(0);
+		this1.data = this2;
+		this1.length = 0;
+		this1.fixed = false;
+		vec = this1;
+		var m = this.clone();
+		var mr;
+		var this3 = m.rawData;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = this3.length;
+		vectorData.fixed = this3.fixed;
+		var this4;
+		this4 = new Array(this3.length);
+		vectorData.data = this4;
+		haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,vectorData.data,0,this3.length);
+		mr = vectorData;
+		var pos = new openfl_geom_Vector3D(mr.data[12],mr.data[13],mr.data[14]);
+		{
+			if(!mr.fixed) {
+				if(12 >= mr.length) mr.length = 13;
+				if(mr.data.length < mr.length) {
+					var data;
+					var this5;
+					this5 = new Array(mr.data.length + 10);
+					data = this5;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data,0,mr.data.length);
+					mr.data = data;
+				}
+			}
+			mr.data[12] = 0;
+		}
+		{
+			if(!mr.fixed) {
+				if(13 >= mr.length) mr.length = 14;
+				if(mr.data.length < mr.length) {
+					var data1;
+					var this6;
+					this6 = new Array(mr.data.length + 10);
+					data1 = this6;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data1,0,mr.data.length);
+					mr.data = data1;
+				}
+			}
+			mr.data[13] = 0;
+		}
+		{
+			if(!mr.fixed) {
+				if(14 >= mr.length) mr.length = 15;
+				if(mr.data.length < mr.length) {
+					var data2;
+					var this7;
+					this7 = new Array(mr.data.length + 10);
+					data2 = this7;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data2,0,mr.data.length);
+					mr.data = data2;
+				}
+			}
+			mr.data[14] = 0;
+		}
+		var scale = new openfl_geom_Vector3D();
+		scale.x = Math.sqrt(mr.data[0] * mr.data[0] + mr.data[1] * mr.data[1] + mr.data[2] * mr.data[2]);
+		scale.y = Math.sqrt(mr.data[4] * mr.data[4] + mr.data[5] * mr.data[5] + mr.data[6] * mr.data[6]);
+		scale.z = Math.sqrt(mr.data[8] * mr.data[8] + mr.data[9] * mr.data[9] + mr.data[10] * mr.data[10]);
+		if(mr.data[0] * (mr.data[5] * mr.data[10] - mr.data[6] * mr.data[9]) - mr.data[1] * (mr.data[4] * mr.data[10] - mr.data[6] * mr.data[8]) + mr.data[2] * (mr.data[4] * mr.data[9] - mr.data[5] * mr.data[8]) < 0) scale.z = -scale.z;
+		{
+			if(!mr.fixed) {
+				if(0 >= mr.length) mr.length = 1;
+				if(mr.data.length < mr.length) {
+					var data3;
+					var this8;
+					this8 = new Array(mr.data.length + 10);
+					data3 = this8;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data3,0,mr.data.length);
+					mr.data = data3;
+				}
+			}
+			mr.data[0] = mr.data[0] / scale.x;
+		}
+		{
+			if(!mr.fixed) {
+				if(1 >= mr.length) mr.length = 2;
+				if(mr.data.length < mr.length) {
+					var data4;
+					var this9;
+					this9 = new Array(mr.data.length + 10);
+					data4 = this9;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data4,0,mr.data.length);
+					mr.data = data4;
+				}
+			}
+			mr.data[1] = mr.data[1] / scale.x;
+		}
+		{
+			if(!mr.fixed) {
+				if(2 >= mr.length) mr.length = 3;
+				if(mr.data.length < mr.length) {
+					var data5;
+					var this10;
+					this10 = new Array(mr.data.length + 10);
+					data5 = this10;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data5,0,mr.data.length);
+					mr.data = data5;
+				}
+			}
+			mr.data[2] = mr.data[2] / scale.x;
+		}
+		{
+			if(!mr.fixed) {
+				if(4 >= mr.length) mr.length = 5;
+				if(mr.data.length < mr.length) {
+					var data6;
+					var this11;
+					this11 = new Array(mr.data.length + 10);
+					data6 = this11;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data6,0,mr.data.length);
+					mr.data = data6;
+				}
+			}
+			mr.data[4] = mr.data[4] / scale.y;
+		}
+		{
+			if(!mr.fixed) {
+				if(5 >= mr.length) mr.length = 6;
+				if(mr.data.length < mr.length) {
+					var data7;
+					var this12;
+					this12 = new Array(mr.data.length + 10);
+					data7 = this12;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data7,0,mr.data.length);
+					mr.data = data7;
+				}
+			}
+			mr.data[5] = mr.data[5] / scale.y;
+		}
+		{
+			if(!mr.fixed) {
+				if(6 >= mr.length) mr.length = 7;
+				if(mr.data.length < mr.length) {
+					var data8;
+					var this13;
+					this13 = new Array(mr.data.length + 10);
+					data8 = this13;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data8,0,mr.data.length);
+					mr.data = data8;
+				}
+			}
+			mr.data[6] = mr.data[6] / scale.y;
+		}
+		{
+			if(!mr.fixed) {
+				if(8 >= mr.length) mr.length = 9;
+				if(mr.data.length < mr.length) {
+					var data9;
+					var this14;
+					this14 = new Array(mr.data.length + 10);
+					data9 = this14;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data9,0,mr.data.length);
+					mr.data = data9;
+				}
+			}
+			mr.data[8] = mr.data[8] / scale.z;
+		}
+		{
+			if(!mr.fixed) {
+				if(9 >= mr.length) mr.length = 10;
+				if(mr.data.length < mr.length) {
+					var data10;
+					var this15;
+					this15 = new Array(mr.data.length + 10);
+					data10 = this15;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data10,0,mr.data.length);
+					mr.data = data10;
+				}
+			}
+			mr.data[9] = mr.data[9] / scale.z;
+		}
+		{
+			if(!mr.fixed) {
+				if(10 >= mr.length) mr.length = 11;
+				if(mr.data.length < mr.length) {
+					var data11;
+					var this16;
+					this16 = new Array(mr.data.length + 10);
+					data11 = this16;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(mr.data,0,data11,0,mr.data.length);
+					mr.data = data11;
+				}
+			}
+			mr.data[10] = mr.data[10] / scale.z;
+		}
+		var rot = new openfl_geom_Vector3D();
+		if(orientationStyle != null) switch(orientationStyle) {
+		case 0:
+			rot.w = Math.acos((mr.data[0] + mr.data[5] + mr.data[10] - 1) / 2);
+			var len = Math.sqrt((mr.data[6] - mr.data[9]) * (mr.data[6] - mr.data[9]) + (mr.data[8] - mr.data[2]) * (mr.data[8] - mr.data[2]) + (mr.data[1] - mr.data[4]) * (mr.data[1] - mr.data[4]));
+			if(len != 0) {
+				rot.x = (mr.data[6] - mr.data[9]) / len;
+				rot.y = (mr.data[8] - mr.data[2]) / len;
+				rot.z = (mr.data[1] - mr.data[4]) / len;
+			} else rot.x = rot.y = rot.z = 0;
+			break;
+		case 2:
+			var tr = mr.data[0] + mr.data[5] + mr.data[10];
+			if(tr > 0) {
+				rot.w = Math.sqrt(1 + tr) / 2;
+				rot.x = (mr.data[6] - mr.data[9]) / (4 * rot.w);
+				rot.y = (mr.data[8] - mr.data[2]) / (4 * rot.w);
+				rot.z = (mr.data[1] - mr.data[4]) / (4 * rot.w);
+			} else if(mr.data[0] > mr.data[5] && mr.data[0] > mr.data[10]) {
+				rot.x = Math.sqrt(1 + mr.data[0] - mr.data[5] - mr.data[10]) / 2;
+				rot.w = (mr.data[6] - mr.data[9]) / (4 * rot.x);
+				rot.y = (mr.data[1] + mr.data[4]) / (4 * rot.x);
+				rot.z = (mr.data[8] + mr.data[2]) / (4 * rot.x);
+			} else if(mr.data[5] > mr.data[10]) {
+				rot.y = Math.sqrt(1 + mr.data[5] - mr.data[0] - mr.data[10]) / 2;
+				rot.x = (mr.data[1] + mr.data[4]) / (4 * rot.y);
+				rot.w = (mr.data[8] - mr.data[2]) / (4 * rot.y);
+				rot.z = (mr.data[6] + mr.data[9]) / (4 * rot.y);
+			} else {
+				rot.z = Math.sqrt(1 + mr.data[10] - mr.data[0] - mr.data[5]) / 2;
+				rot.x = (mr.data[8] + mr.data[2]) / (4 * rot.z);
+				rot.y = (mr.data[6] + mr.data[9]) / (4 * rot.z);
+				rot.w = (mr.data[1] - mr.data[4]) / (4 * rot.z);
+			}
+			break;
+		case 1:
+			rot.y = Math.asin(-mr.data[2]);
+			if(mr.data[2] != 1 && mr.data[2] != -1) {
+				rot.x = Math.atan2(mr.data[6],mr.data[10]);
+				rot.z = Math.atan2(mr.data[1],mr.data[0]);
+			} else {
+				rot.z = 0;
+				rot.x = Math.atan2(mr.data[4],mr.data[5]);
+			}
+			break;
+		}
+		if(!vec.fixed) {
+			vec.length++;
+			if(vec.data.length < vec.length) {
+				var data12;
+				var this17;
+				this17 = new Array(vec.data.length + 10);
+				data12 = this17;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data12,0,vec.data.length);
+				vec.data = data12;
+			}
+			vec.data[vec.length - 1] = pos;
+		}
+		vec.length;
+		if(!vec.fixed) {
+			vec.length++;
+			if(vec.data.length < vec.length) {
+				var data13;
+				var this18;
+				this18 = new Array(vec.data.length + 10);
+				data13 = this18;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data13,0,vec.data.length);
+				vec.data = data13;
+			}
+			vec.data[vec.length - 1] = rot;
+		}
+		vec.length;
+		if(!vec.fixed) {
+			vec.length++;
+			if(vec.data.length < vec.length) {
+				var data14;
+				var this19;
+				this19 = new Array(vec.data.length + 10);
+				data14 = this19;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(vec.data,0,data14,0,vec.data.length);
+				vec.data = data14;
+			}
+			vec.data[vec.length - 1] = scale;
+		}
+		vec.length;
+		return vec;
+	}
+	,deltaTransformVector: function(v) {
+		var x = v.x;
+		var y = v.y;
+		var z = v.z;
+		return new openfl_geom_Vector3D(x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[3],x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[7],x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[11],0);
+	}
+	,identity: function() {
+		{
+			var value = [1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0];
+			var vectorData = new openfl_VectorData();
+			vectorData.length = value.length;
+			vectorData.fixed = true;
+			var vec;
+			var this1;
+			this1 = new Array(value.length);
+			vec = this1;
+			var _g1 = 0;
+			var _g = value.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				vec[i] = value[i];
+			}
+			vectorData.data = vec;
+			this.rawData = vectorData;
+		}
+	}
+	,interpolateTo: function(toMat,percent) {
+		var _g = 0;
+		while(_g < 16) {
+			var i = _g++;
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(i >= this1.length) this1.length = i + 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[i] = this.rawData.data[i] + (toMat.rawData.data[i] - this.rawData.data[i]) * percent;
+		}
+	}
+	,invert: function() {
+		var d = this.get_determinant();
+		var invertable = Math.abs(d) > 0.00000000001;
+		if(invertable) {
+			d = 1 / d;
+			var m11 = this.rawData.data[0];
+			var m21 = this.rawData.data[4];
+			var m31 = this.rawData.data[8];
+			var m41 = this.rawData.data[12];
+			var m12 = this.rawData.data[1];
+			var m22 = this.rawData.data[5];
+			var m32 = this.rawData.data[9];
+			var m42 = this.rawData.data[13];
+			var m13 = this.rawData.data[2];
+			var m23 = this.rawData.data[6];
+			var m33 = this.rawData.data[10];
+			var m43 = this.rawData.data[14];
+			var m14 = this.rawData.data[3];
+			var m24 = this.rawData.data[7];
+			var m34 = this.rawData.data[11];
+			var m44 = this.rawData.data[15];
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(0 >= this1.length) this1.length = 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+			var this3 = this.rawData;
+			if(!this3.fixed) {
+				if(1 >= this3.length) this3.length = 2;
+				if(this3.data.length < this3.length) {
+					var data1;
+					var this4;
+					this4 = new Array(this3.data.length + 10);
+					data1 = this4;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+					this3.data = data1;
+				}
+			}
+			this3.data[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+			var this5 = this.rawData;
+			if(!this5.fixed) {
+				if(2 >= this5.length) this5.length = 3;
+				if(this5.data.length < this5.length) {
+					var data2;
+					var this6;
+					this6 = new Array(this5.data.length + 10);
+					data2 = this6;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+					this5.data = data2;
+				}
+			}
+			this5.data[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+			var this7 = this.rawData;
+			if(!this7.fixed) {
+				if(3 >= this7.length) this7.length = 4;
+				if(this7.data.length < this7.length) {
+					var data3;
+					var this8;
+					this8 = new Array(this7.data.length + 10);
+					data3 = this8;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+					this7.data = data3;
+				}
+			}
+			this7.data[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+			var this9 = this.rawData;
+			if(!this9.fixed) {
+				if(4 >= this9.length) this9.length = 5;
+				if(this9.data.length < this9.length) {
+					var data4;
+					var this10;
+					this10 = new Array(this9.data.length + 10);
+					data4 = this10;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+					this9.data = data4;
+				}
+			}
+			this9.data[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+			var this11 = this.rawData;
+			if(!this11.fixed) {
+				if(5 >= this11.length) this11.length = 6;
+				if(this11.data.length < this11.length) {
+					var data5;
+					var this12;
+					this12 = new Array(this11.data.length + 10);
+					data5 = this12;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+					this11.data = data5;
+				}
+			}
+			this11.data[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+			var this13 = this.rawData;
+			if(!this13.fixed) {
+				if(6 >= this13.length) this13.length = 7;
+				if(this13.data.length < this13.length) {
+					var data6;
+					var this14;
+					this14 = new Array(this13.data.length + 10);
+					data6 = this14;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+					this13.data = data6;
+				}
+			}
+			this13.data[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+			var this15 = this.rawData;
+			if(!this15.fixed) {
+				if(7 >= this15.length) this15.length = 8;
+				if(this15.data.length < this15.length) {
+					var data7;
+					var this16;
+					this16 = new Array(this15.data.length + 10);
+					data7 = this16;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+					this15.data = data7;
+				}
+			}
+			this15.data[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+			var this17 = this.rawData;
+			if(!this17.fixed) {
+				if(8 >= this17.length) this17.length = 9;
+				if(this17.data.length < this17.length) {
+					var data8;
+					var this18;
+					this18 = new Array(this17.data.length + 10);
+					data8 = this18;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+					this17.data = data8;
+				}
+			}
+			this17.data[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+			var this19 = this.rawData;
+			if(!this19.fixed) {
+				if(9 >= this19.length) this19.length = 10;
+				if(this19.data.length < this19.length) {
+					var data9;
+					var this20;
+					this20 = new Array(this19.data.length + 10);
+					data9 = this20;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+					this19.data = data9;
+				}
+			}
+			this19.data[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+			var this21 = this.rawData;
+			if(!this21.fixed) {
+				if(10 >= this21.length) this21.length = 11;
+				if(this21.data.length < this21.length) {
+					var data10;
+					var this22;
+					this22 = new Array(this21.data.length + 10);
+					data10 = this22;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+					this21.data = data10;
+				}
+			}
+			this21.data[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+			var this23 = this.rawData;
+			if(!this23.fixed) {
+				if(11 >= this23.length) this23.length = 12;
+				if(this23.data.length < this23.length) {
+					var data11;
+					var this24;
+					this24 = new Array(this23.data.length + 10);
+					data11 = this24;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+					this23.data = data11;
+				}
+			}
+			this23.data[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+			var this25 = this.rawData;
+			if(!this25.fixed) {
+				if(12 >= this25.length) this25.length = 13;
+				if(this25.data.length < this25.length) {
+					var data12;
+					var this26;
+					this26 = new Array(this25.data.length + 10);
+					data12 = this26;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+					this25.data = data12;
+				}
+			}
+			this25.data[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+			var this27 = this.rawData;
+			if(!this27.fixed) {
+				if(13 >= this27.length) this27.length = 14;
+				if(this27.data.length < this27.length) {
+					var data13;
+					var this28;
+					this28 = new Array(this27.data.length + 10);
+					data13 = this28;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+					this27.data = data13;
+				}
+			}
+			this27.data[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+			var this29 = this.rawData;
+			if(!this29.fixed) {
+				if(14 >= this29.length) this29.length = 15;
+				if(this29.data.length < this29.length) {
+					var data14;
+					var this30;
+					this30 = new Array(this29.data.length + 10);
+					data14 = this30;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+					this29.data = data14;
+				}
+			}
+			this29.data[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+			var this31 = this.rawData;
+			if(!this31.fixed) {
+				if(15 >= this31.length) this31.length = 16;
+				if(this31.data.length < this31.length) {
+					var data15;
+					var this32;
+					this32 = new Array(this31.data.length + 10);
+					data15 = this32;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+					this31.data = data15;
+				}
+			}
+			this31.data[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+		}
+		return invertable;
+	}
+	,pointAt: function(pos,at,up) {
+		if(at == null) at = new openfl_geom_Vector3D(0,0,-1);
+		if(up == null) up = new openfl_geom_Vector3D(0,-1,0);
+		var dir = at.subtract(pos);
+		var vup = up.clone();
+		var right;
+		dir.normalize();
+		vup.normalize();
+		var dir2 = dir.clone();
+		dir2.scaleBy(vup.dotProduct(dir));
+		vup = vup.subtract(dir2);
+		if(vup.get_length() > 0) vup.normalize(); else if(dir.x != 0) vup = new openfl_geom_Vector3D(-dir.y,dir.x,0); else vup = new openfl_geom_Vector3D(1,0,0);
+		right = vup.crossProduct(dir);
+		right.normalize();
+		var this1 = this.rawData;
+		if(!this1.fixed) {
+			if(0 >= this1.length) this1.length = 1;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[0] = right.x;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(4 >= this3.length) this3.length = 5;
+			if(this3.data.length < this3.length) {
+				var data1;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data1 = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+				this3.data = data1;
+			}
+		}
+		this3.data[4] = right.y;
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(8 >= this5.length) this5.length = 9;
+			if(this5.data.length < this5.length) {
+				var data2;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data2 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+				this5.data = data2;
+			}
+		}
+		this5.data[8] = right.z;
+		var this7 = this.rawData;
+		if(!this7.fixed) {
+			if(12 >= this7.length) this7.length = 13;
+			if(this7.data.length < this7.length) {
+				var data3;
+				var this8;
+				this8 = new Array(this7.data.length + 10);
+				data3 = this8;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+				this7.data = data3;
+			}
+		}
+		this7.data[12] = 0.0;
+		var this9 = this.rawData;
+		if(!this9.fixed) {
+			if(1 >= this9.length) this9.length = 2;
+			if(this9.data.length < this9.length) {
+				var data4;
+				var this10;
+				this10 = new Array(this9.data.length + 10);
+				data4 = this10;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+				this9.data = data4;
+			}
+		}
+		this9.data[1] = vup.x;
+		var this11 = this.rawData;
+		if(!this11.fixed) {
+			if(5 >= this11.length) this11.length = 6;
+			if(this11.data.length < this11.length) {
+				var data5;
+				var this12;
+				this12 = new Array(this11.data.length + 10);
+				data5 = this12;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+				this11.data = data5;
+			}
+		}
+		this11.data[5] = vup.y;
+		var this13 = this.rawData;
+		if(!this13.fixed) {
+			if(9 >= this13.length) this13.length = 10;
+			if(this13.data.length < this13.length) {
+				var data6;
+				var this14;
+				this14 = new Array(this13.data.length + 10);
+				data6 = this14;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+				this13.data = data6;
+			}
+		}
+		this13.data[9] = vup.z;
+		var this15 = this.rawData;
+		if(!this15.fixed) {
+			if(13 >= this15.length) this15.length = 14;
+			if(this15.data.length < this15.length) {
+				var data7;
+				var this16;
+				this16 = new Array(this15.data.length + 10);
+				data7 = this16;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+				this15.data = data7;
+			}
+		}
+		this15.data[13] = 0.0;
+		var this17 = this.rawData;
+		if(!this17.fixed) {
+			if(2 >= this17.length) this17.length = 3;
+			if(this17.data.length < this17.length) {
+				var data8;
+				var this18;
+				this18 = new Array(this17.data.length + 10);
+				data8 = this18;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+				this17.data = data8;
+			}
+		}
+		this17.data[2] = dir.x;
+		var this19 = this.rawData;
+		if(!this19.fixed) {
+			if(6 >= this19.length) this19.length = 7;
+			if(this19.data.length < this19.length) {
+				var data9;
+				var this20;
+				this20 = new Array(this19.data.length + 10);
+				data9 = this20;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+				this19.data = data9;
+			}
+		}
+		this19.data[6] = dir.y;
+		var this21 = this.rawData;
+		if(!this21.fixed) {
+			if(10 >= this21.length) this21.length = 11;
+			if(this21.data.length < this21.length) {
+				var data10;
+				var this22;
+				this22 = new Array(this21.data.length + 10);
+				data10 = this22;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+				this21.data = data10;
+			}
+		}
+		this21.data[10] = dir.z;
+		var this23 = this.rawData;
+		if(!this23.fixed) {
+			if(14 >= this23.length) this23.length = 15;
+			if(this23.data.length < this23.length) {
+				var data11;
+				var this24;
+				this24 = new Array(this23.data.length + 10);
+				data11 = this24;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+				this23.data = data11;
+			}
+		}
+		this23.data[14] = 0.0;
+		var this25 = this.rawData;
+		if(!this25.fixed) {
+			if(3 >= this25.length) this25.length = 4;
+			if(this25.data.length < this25.length) {
+				var data12;
+				var this26;
+				this26 = new Array(this25.data.length + 10);
+				data12 = this26;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+				this25.data = data12;
+			}
+		}
+		this25.data[3] = pos.x;
+		var this27 = this.rawData;
+		if(!this27.fixed) {
+			if(7 >= this27.length) this27.length = 8;
+			if(this27.data.length < this27.length) {
+				var data13;
+				var this28;
+				this28 = new Array(this27.data.length + 10);
+				data13 = this28;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+				this27.data = data13;
+			}
+		}
+		this27.data[7] = pos.y;
+		var this29 = this.rawData;
+		if(!this29.fixed) {
+			if(11 >= this29.length) this29.length = 12;
+			if(this29.data.length < this29.length) {
+				var data14;
+				var this30;
+				this30 = new Array(this29.data.length + 10);
+				data14 = this30;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+				this29.data = data14;
+			}
+		}
+		this29.data[11] = pos.z;
+		var this31 = this.rawData;
+		if(!this31.fixed) {
+			if(15 >= this31.length) this31.length = 16;
+			if(this31.data.length < this31.length) {
+				var data15;
+				var this32;
+				this32 = new Array(this31.data.length + 10);
+				data15 = this32;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+				this31.data = data15;
+			}
+		}
+		this31.data[15] = 1.0;
+	}
+	,prepend: function(rhs) {
+		var m111 = rhs.rawData.data[0];
+		var m121 = rhs.rawData.data[4];
+		var m131 = rhs.rawData.data[8];
+		var m141 = rhs.rawData.data[12];
+		var m112 = rhs.rawData.data[1];
+		var m122 = rhs.rawData.data[5];
+		var m132 = rhs.rawData.data[9];
+		var m142 = rhs.rawData.data[13];
+		var m113 = rhs.rawData.data[2];
+		var m123 = rhs.rawData.data[6];
+		var m133 = rhs.rawData.data[10];
+		var m143 = rhs.rawData.data[14];
+		var m114 = rhs.rawData.data[3];
+		var m124 = rhs.rawData.data[7];
+		var m134 = rhs.rawData.data[11];
+		var m144 = rhs.rawData.data[15];
+		var m211 = this.rawData.data[0];
+		var m221 = this.rawData.data[4];
+		var m231 = this.rawData.data[8];
+		var m241 = this.rawData.data[12];
+		var m212 = this.rawData.data[1];
+		var m222 = this.rawData.data[5];
+		var m232 = this.rawData.data[9];
+		var m242 = this.rawData.data[13];
+		var m213 = this.rawData.data[2];
+		var m223 = this.rawData.data[6];
+		var m233 = this.rawData.data[10];
+		var m243 = this.rawData.data[14];
+		var m214 = this.rawData.data[3];
+		var m224 = this.rawData.data[7];
+		var m234 = this.rawData.data[11];
+		var m244 = this.rawData.data[15];
+		var this1 = this.rawData;
+		if(!this1.fixed) {
+			if(0 >= this1.length) this1.length = 1;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(1 >= this3.length) this3.length = 2;
+			if(this3.data.length < this3.length) {
+				var data1;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data1 = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+				this3.data = data1;
+			}
+		}
+		this3.data[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(2 >= this5.length) this5.length = 3;
+			if(this5.data.length < this5.length) {
+				var data2;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data2 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+				this5.data = data2;
+			}
+		}
+		this5.data[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
+		var this7 = this.rawData;
+		if(!this7.fixed) {
+			if(3 >= this7.length) this7.length = 4;
+			if(this7.data.length < this7.length) {
+				var data3;
+				var this8;
+				this8 = new Array(this7.data.length + 10);
+				data3 = this8;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+				this7.data = data3;
+			}
+		}
+		this7.data[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
+		var this9 = this.rawData;
+		if(!this9.fixed) {
+			if(4 >= this9.length) this9.length = 5;
+			if(this9.data.length < this9.length) {
+				var data4;
+				var this10;
+				this10 = new Array(this9.data.length + 10);
+				data4 = this10;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+				this9.data = data4;
+			}
+		}
+		this9.data[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
+		var this11 = this.rawData;
+		if(!this11.fixed) {
+			if(5 >= this11.length) this11.length = 6;
+			if(this11.data.length < this11.length) {
+				var data5;
+				var this12;
+				this12 = new Array(this11.data.length + 10);
+				data5 = this12;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+				this11.data = data5;
+			}
+		}
+		this11.data[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
+		var this13 = this.rawData;
+		if(!this13.fixed) {
+			if(6 >= this13.length) this13.length = 7;
+			if(this13.data.length < this13.length) {
+				var data6;
+				var this14;
+				this14 = new Array(this13.data.length + 10);
+				data6 = this14;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+				this13.data = data6;
+			}
+		}
+		this13.data[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
+		var this15 = this.rawData;
+		if(!this15.fixed) {
+			if(7 >= this15.length) this15.length = 8;
+			if(this15.data.length < this15.length) {
+				var data7;
+				var this16;
+				this16 = new Array(this15.data.length + 10);
+				data7 = this16;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+				this15.data = data7;
+			}
+		}
+		this15.data[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
+		var this17 = this.rawData;
+		if(!this17.fixed) {
+			if(8 >= this17.length) this17.length = 9;
+			if(this17.data.length < this17.length) {
+				var data8;
+				var this18;
+				this18 = new Array(this17.data.length + 10);
+				data8 = this18;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+				this17.data = data8;
+			}
+		}
+		this17.data[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
+		var this19 = this.rawData;
+		if(!this19.fixed) {
+			if(9 >= this19.length) this19.length = 10;
+			if(this19.data.length < this19.length) {
+				var data9;
+				var this20;
+				this20 = new Array(this19.data.length + 10);
+				data9 = this20;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+				this19.data = data9;
+			}
+		}
+		this19.data[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
+		var this21 = this.rawData;
+		if(!this21.fixed) {
+			if(10 >= this21.length) this21.length = 11;
+			if(this21.data.length < this21.length) {
+				var data10;
+				var this22;
+				this22 = new Array(this21.data.length + 10);
+				data10 = this22;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+				this21.data = data10;
+			}
+		}
+		this21.data[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
+		var this23 = this.rawData;
+		if(!this23.fixed) {
+			if(11 >= this23.length) this23.length = 12;
+			if(this23.data.length < this23.length) {
+				var data11;
+				var this24;
+				this24 = new Array(this23.data.length + 10);
+				data11 = this24;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+				this23.data = data11;
+			}
+		}
+		this23.data[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
+		var this25 = this.rawData;
+		if(!this25.fixed) {
+			if(12 >= this25.length) this25.length = 13;
+			if(this25.data.length < this25.length) {
+				var data12;
+				var this26;
+				this26 = new Array(this25.data.length + 10);
+				data12 = this26;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+				this25.data = data12;
+			}
+		}
+		this25.data[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
+		var this27 = this.rawData;
+		if(!this27.fixed) {
+			if(13 >= this27.length) this27.length = 14;
+			if(this27.data.length < this27.length) {
+				var data13;
+				var this28;
+				this28 = new Array(this27.data.length + 10);
+				data13 = this28;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+				this27.data = data13;
+			}
+		}
+		this27.data[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
+		var this29 = this.rawData;
+		if(!this29.fixed) {
+			if(14 >= this29.length) this29.length = 15;
+			if(this29.data.length < this29.length) {
+				var data14;
+				var this30;
+				this30 = new Array(this29.data.length + 10);
+				data14 = this30;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+				this29.data = data14;
+			}
+		}
+		this29.data[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
+		var this31 = this.rawData;
+		if(!this31.fixed) {
+			if(15 >= this31.length) this31.length = 16;
+			if(this31.data.length < this31.length) {
+				var data15;
+				var this32;
+				this32 = new Array(this31.data.length + 10);
+				data15 = this32;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+				this31.data = data15;
+			}
+		}
+		this31.data[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
+	}
+	,prependRotation: function(degrees,axis,pivotPoint) {
+		var m = openfl_geom_Matrix3D.__getAxisRotation(axis.x,axis.y,axis.z,degrees);
+		if(pivotPoint != null) {
+			var p = pivotPoint;
+			m.appendTranslation(p.x,p.y,p.z);
+		}
+		this.prepend(m);
+	}
+	,prependScale: function(xScale,yScale,zScale) {
+		this.prepend(new openfl_geom_Matrix3D((function($this) {
+			var $r;
+			var value = [xScale,0.0,0.0,0.0,0.0,yScale,0.0,0.0,0.0,0.0,zScale,0.0,0.0,0.0,0.0,1.0];
+			var vectorData = new openfl_VectorData();
+			vectorData.length = value.length;
+			vectorData.fixed = true;
+			{
+				var vec;
+				var this1;
+				this1 = new Array(value.length);
+				vec = this1;
+				var _g1 = 0;
+				var _g = value.length;
+				while(_g1 < _g) {
+					var i = _g1++;
+					vec[i] = value[i];
+				}
+				vectorData.data = vec;
+			}
+			$r = vectorData;
+			return $r;
+		}(this))));
+	}
+	,prependTranslation: function(x,y,z) {
+		var m = new openfl_geom_Matrix3D();
+		m.set_position(new openfl_geom_Vector3D(x,y,z));
+		this.prepend(m);
+	}
+	,recompose: function(components,orientationStyle) {
+		if(components.length < 3 || components.data[2].x == 0 || components.data[2].y == 0 || components.data[2].z == 0) return false;
+		if(orientationStyle == null) orientationStyle = 1;
+		this.identity();
+		var scale = [];
+		scale[0] = scale[1] = scale[2] = components.data[2].x;
+		scale[4] = scale[5] = scale[6] = components.data[2].y;
+		scale[8] = scale[9] = scale[10] = components.data[2].z;
+		if(orientationStyle != null) switch(orientationStyle) {
+		case 1:
+			var cx = Math.cos(components.data[1].x);
+			var cy = Math.cos(components.data[1].y);
+			var cz = Math.cos(components.data[1].z);
+			var sx = Math.sin(components.data[1].x);
+			var sy = Math.sin(components.data[1].y);
+			var sz = Math.sin(components.data[1].z);
+			var this1 = this.rawData;
+			if(!this1.fixed) {
+				if(0 >= this1.length) this1.length = 1;
+				if(this1.data.length < this1.length) {
+					var data;
+					var this2;
+					this2 = new Array(this1.data.length + 10);
+					data = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+					this1.data = data;
+				}
+			}
+			this1.data[0] = cy * cz * scale[0];
+			var this3 = this.rawData;
+			if(!this3.fixed) {
+				if(1 >= this3.length) this3.length = 2;
+				if(this3.data.length < this3.length) {
+					var data1;
+					var this4;
+					this4 = new Array(this3.data.length + 10);
+					data1 = this4;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+					this3.data = data1;
+				}
+			}
+			this3.data[1] = cy * sz * scale[1];
+			var this5 = this.rawData;
+			if(!this5.fixed) {
+				if(2 >= this5.length) this5.length = 3;
+				if(this5.data.length < this5.length) {
+					var data2;
+					var this6;
+					this6 = new Array(this5.data.length + 10);
+					data2 = this6;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+					this5.data = data2;
+				}
+			}
+			this5.data[2] = -sy * scale[2];
+			var this7 = this.rawData;
+			if(!this7.fixed) {
+				if(3 >= this7.length) this7.length = 4;
+				if(this7.data.length < this7.length) {
+					var data3;
+					var this8;
+					this8 = new Array(this7.data.length + 10);
+					data3 = this8;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data3,0,this7.data.length);
+					this7.data = data3;
+				}
+			}
+			this7.data[3] = 0;
+			var this9 = this.rawData;
+			if(!this9.fixed) {
+				if(4 >= this9.length) this9.length = 5;
+				if(this9.data.length < this9.length) {
+					var data4;
+					var this10;
+					this10 = new Array(this9.data.length + 10);
+					data4 = this10;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data4,0,this9.data.length);
+					this9.data = data4;
+				}
+			}
+			this9.data[4] = (sx * sy * cz - cx * sz) * scale[4];
+			var this11 = this.rawData;
+			if(!this11.fixed) {
+				if(5 >= this11.length) this11.length = 6;
+				if(this11.data.length < this11.length) {
+					var data5;
+					var this12;
+					this12 = new Array(this11.data.length + 10);
+					data5 = this12;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data5,0,this11.data.length);
+					this11.data = data5;
+				}
+			}
+			this11.data[5] = (sx * sy * sz + cx * cz) * scale[5];
+			var this13 = this.rawData;
+			if(!this13.fixed) {
+				if(6 >= this13.length) this13.length = 7;
+				if(this13.data.length < this13.length) {
+					var data6;
+					var this14;
+					this14 = new Array(this13.data.length + 10);
+					data6 = this14;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data6,0,this13.data.length);
+					this13.data = data6;
+				}
+			}
+			this13.data[6] = sx * cy * scale[6];
+			var this15 = this.rawData;
+			if(!this15.fixed) {
+				if(7 >= this15.length) this15.length = 8;
+				if(this15.data.length < this15.length) {
+					var data7;
+					var this16;
+					this16 = new Array(this15.data.length + 10);
+					data7 = this16;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data7,0,this15.data.length);
+					this15.data = data7;
+				}
+			}
+			this15.data[7] = 0;
+			var this17 = this.rawData;
+			if(!this17.fixed) {
+				if(8 >= this17.length) this17.length = 9;
+				if(this17.data.length < this17.length) {
+					var data8;
+					var this18;
+					this18 = new Array(this17.data.length + 10);
+					data8 = this18;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data8,0,this17.data.length);
+					this17.data = data8;
+				}
+			}
+			this17.data[8] = (cx * sy * cz + sx * sz) * scale[8];
+			var this19 = this.rawData;
+			if(!this19.fixed) {
+				if(9 >= this19.length) this19.length = 10;
+				if(this19.data.length < this19.length) {
+					var data9;
+					var this20;
+					this20 = new Array(this19.data.length + 10);
+					data9 = this20;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data9,0,this19.data.length);
+					this19.data = data9;
+				}
+			}
+			this19.data[9] = (cx * sy * sz - sx * cz) * scale[9];
+			var this21 = this.rawData;
+			if(!this21.fixed) {
+				if(10 >= this21.length) this21.length = 11;
+				if(this21.data.length < this21.length) {
+					var data10;
+					var this22;
+					this22 = new Array(this21.data.length + 10);
+					data10 = this22;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data10,0,this21.data.length);
+					this21.data = data10;
+				}
+			}
+			this21.data[10] = cx * cy * scale[10];
+			var this23 = this.rawData;
+			if(!this23.fixed) {
+				if(11 >= this23.length) this23.length = 12;
+				if(this23.data.length < this23.length) {
+					var data11;
+					var this24;
+					this24 = new Array(this23.data.length + 10);
+					data11 = this24;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data11,0,this23.data.length);
+					this23.data = data11;
+				}
+			}
+			this23.data[11] = 0;
+			var this25 = this.rawData;
+			if(!this25.fixed) {
+				if(12 >= this25.length) this25.length = 13;
+				if(this25.data.length < this25.length) {
+					var data12;
+					var this26;
+					this26 = new Array(this25.data.length + 10);
+					data12 = this26;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data12,0,this25.data.length);
+					this25.data = data12;
+				}
+			}
+			this25.data[12] = components.data[0].x;
+			var this27 = this.rawData;
+			if(!this27.fixed) {
+				if(13 >= this27.length) this27.length = 14;
+				if(this27.data.length < this27.length) {
+					var data13;
+					var this28;
+					this28 = new Array(this27.data.length + 10);
+					data13 = this28;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this27.data,0,data13,0,this27.data.length);
+					this27.data = data13;
+				}
+			}
+			this27.data[13] = components.data[0].y;
+			var this29 = this.rawData;
+			if(!this29.fixed) {
+				if(14 >= this29.length) this29.length = 15;
+				if(this29.data.length < this29.length) {
+					var data14;
+					var this30;
+					this30 = new Array(this29.data.length + 10);
+					data14 = this30;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this29.data,0,data14,0,this29.data.length);
+					this29.data = data14;
+				}
+			}
+			this29.data[14] = components.data[0].z;
+			var this31 = this.rawData;
+			if(!this31.fixed) {
+				if(15 >= this31.length) this31.length = 16;
+				if(this31.data.length < this31.length) {
+					var data15;
+					var this32;
+					this32 = new Array(this31.data.length + 10);
+					data15 = this32;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this31.data,0,data15,0,this31.data.length);
+					this31.data = data15;
+				}
+			}
+			this31.data[15] = 1;
+			break;
+		default:
+			var x = components.data[1].x;
+			var y = components.data[1].y;
+			var z = components.data[1].z;
+			var w = components.data[1].w;
+			if(Type.enumEq(orientationStyle,0)) {
+				x *= Math.sin(w / 2);
+				y *= Math.sin(w / 2);
+				z *= Math.sin(w / 2);
+				w = Math.cos(w / 2);
+			}
+			var this33 = this.rawData;
+			if(!this33.fixed) {
+				if(0 >= this33.length) this33.length = 1;
+				if(this33.data.length < this33.length) {
+					var data16;
+					var this34;
+					this34 = new Array(this33.data.length + 10);
+					data16 = this34;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this33.data,0,data16,0,this33.data.length);
+					this33.data = data16;
+				}
+			}
+			this33.data[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
+			var this35 = this.rawData;
+			if(!this35.fixed) {
+				if(1 >= this35.length) this35.length = 2;
+				if(this35.data.length < this35.length) {
+					var data17;
+					var this36;
+					this36 = new Array(this35.data.length + 10);
+					data17 = this36;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this35.data,0,data17,0,this35.data.length);
+					this35.data = data17;
+				}
+			}
+			this35.data[1] = (2 * x * y + 2 * w * z) * scale[1];
+			var this37 = this.rawData;
+			if(!this37.fixed) {
+				if(2 >= this37.length) this37.length = 3;
+				if(this37.data.length < this37.length) {
+					var data18;
+					var this38;
+					this38 = new Array(this37.data.length + 10);
+					data18 = this38;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this37.data,0,data18,0,this37.data.length);
+					this37.data = data18;
+				}
+			}
+			this37.data[2] = (2 * x * z - 2 * w * y) * scale[2];
+			var this39 = this.rawData;
+			if(!this39.fixed) {
+				if(3 >= this39.length) this39.length = 4;
+				if(this39.data.length < this39.length) {
+					var data19;
+					var this40;
+					this40 = new Array(this39.data.length + 10);
+					data19 = this40;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this39.data,0,data19,0,this39.data.length);
+					this39.data = data19;
+				}
+			}
+			this39.data[3] = 0;
+			var this41 = this.rawData;
+			if(!this41.fixed) {
+				if(4 >= this41.length) this41.length = 5;
+				if(this41.data.length < this41.length) {
+					var data20;
+					var this42;
+					this42 = new Array(this41.data.length + 10);
+					data20 = this42;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this41.data,0,data20,0,this41.data.length);
+					this41.data = data20;
+				}
+			}
+			this41.data[4] = (2 * x * y - 2 * w * z) * scale[4];
+			var this43 = this.rawData;
+			if(!this43.fixed) {
+				if(5 >= this43.length) this43.length = 6;
+				if(this43.data.length < this43.length) {
+					var data21;
+					var this44;
+					this44 = new Array(this43.data.length + 10);
+					data21 = this44;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this43.data,0,data21,0,this43.data.length);
+					this43.data = data21;
+				}
+			}
+			this43.data[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
+			var this45 = this.rawData;
+			if(!this45.fixed) {
+				if(6 >= this45.length) this45.length = 7;
+				if(this45.data.length < this45.length) {
+					var data22;
+					var this46;
+					this46 = new Array(this45.data.length + 10);
+					data22 = this46;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this45.data,0,data22,0,this45.data.length);
+					this45.data = data22;
+				}
+			}
+			this45.data[6] = (2 * y * z + 2 * w * x) * scale[6];
+			var this47 = this.rawData;
+			if(!this47.fixed) {
+				if(7 >= this47.length) this47.length = 8;
+				if(this47.data.length < this47.length) {
+					var data23;
+					var this48;
+					this48 = new Array(this47.data.length + 10);
+					data23 = this48;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this47.data,0,data23,0,this47.data.length);
+					this47.data = data23;
+				}
+			}
+			this47.data[7] = 0;
+			var this49 = this.rawData;
+			if(!this49.fixed) {
+				if(8 >= this49.length) this49.length = 9;
+				if(this49.data.length < this49.length) {
+					var data24;
+					var this50;
+					this50 = new Array(this49.data.length + 10);
+					data24 = this50;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this49.data,0,data24,0,this49.data.length);
+					this49.data = data24;
+				}
+			}
+			this49.data[8] = (2 * x * z + 2 * w * y) * scale[8];
+			var this51 = this.rawData;
+			if(!this51.fixed) {
+				if(9 >= this51.length) this51.length = 10;
+				if(this51.data.length < this51.length) {
+					var data25;
+					var this52;
+					this52 = new Array(this51.data.length + 10);
+					data25 = this52;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this51.data,0,data25,0,this51.data.length);
+					this51.data = data25;
+				}
+			}
+			this51.data[9] = (2 * y * z - 2 * w * x) * scale[9];
+			var this53 = this.rawData;
+			if(!this53.fixed) {
+				if(10 >= this53.length) this53.length = 11;
+				if(this53.data.length < this53.length) {
+					var data26;
+					var this54;
+					this54 = new Array(this53.data.length + 10);
+					data26 = this54;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this53.data,0,data26,0,this53.data.length);
+					this53.data = data26;
+				}
+			}
+			this53.data[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
+			var this55 = this.rawData;
+			if(!this55.fixed) {
+				if(11 >= this55.length) this55.length = 12;
+				if(this55.data.length < this55.length) {
+					var data27;
+					var this56;
+					this56 = new Array(this55.data.length + 10);
+					data27 = this56;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this55.data,0,data27,0,this55.data.length);
+					this55.data = data27;
+				}
+			}
+			this55.data[11] = 0;
+			var this57 = this.rawData;
+			if(!this57.fixed) {
+				if(12 >= this57.length) this57.length = 13;
+				if(this57.data.length < this57.length) {
+					var data28;
+					var this58;
+					this58 = new Array(this57.data.length + 10);
+					data28 = this58;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this57.data,0,data28,0,this57.data.length);
+					this57.data = data28;
+				}
+			}
+			this57.data[12] = components.data[0].x;
+			var this59 = this.rawData;
+			if(!this59.fixed) {
+				if(13 >= this59.length) this59.length = 14;
+				if(this59.data.length < this59.length) {
+					var data29;
+					var this60;
+					this60 = new Array(this59.data.length + 10);
+					data29 = this60;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this59.data,0,data29,0,this59.data.length);
+					this59.data = data29;
+				}
+			}
+			this59.data[13] = components.data[0].y;
+			var this61 = this.rawData;
+			if(!this61.fixed) {
+				if(14 >= this61.length) this61.length = 15;
+				if(this61.data.length < this61.length) {
+					var data30;
+					var this62;
+					this62 = new Array(this61.data.length + 10);
+					data30 = this62;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this61.data,0,data30,0,this61.data.length);
+					this61.data = data30;
+				}
+			}
+			this61.data[14] = components.data[0].z;
+			var this63 = this.rawData;
+			if(!this63.fixed) {
+				if(15 >= this63.length) this63.length = 16;
+				if(this63.data.length < this63.length) {
+					var data31;
+					var this64;
+					this64 = new Array(this63.data.length + 10);
+					data31 = this64;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this63.data,0,data31,0,this63.data.length);
+					this63.data = data31;
+				}
+			}
+			this63.data[15] = 1;
+		} else {
+			var x = components.data[1].x;
+			var y = components.data[1].y;
+			var z = components.data[1].z;
+			var w = components.data[1].w;
+			if(Type.enumEq(orientationStyle,0)) {
+				x *= Math.sin(w / 2);
+				y *= Math.sin(w / 2);
+				z *= Math.sin(w / 2);
+				w = Math.cos(w / 2);
+			}
+			var this33 = this.rawData;
+			if(!this33.fixed) {
+				if(0 >= this33.length) this33.length = 1;
+				if(this33.data.length < this33.length) {
+					var data16;
+					var this34;
+					this34 = new Array(this33.data.length + 10);
+					data16 = this34;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this33.data,0,data16,0,this33.data.length);
+					this33.data = data16;
+				}
+			}
+			this33.data[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
+			var this35 = this.rawData;
+			if(!this35.fixed) {
+				if(1 >= this35.length) this35.length = 2;
+				if(this35.data.length < this35.length) {
+					var data17;
+					var this36;
+					this36 = new Array(this35.data.length + 10);
+					data17 = this36;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this35.data,0,data17,0,this35.data.length);
+					this35.data = data17;
+				}
+			}
+			this35.data[1] = (2 * x * y + 2 * w * z) * scale[1];
+			var this37 = this.rawData;
+			if(!this37.fixed) {
+				if(2 >= this37.length) this37.length = 3;
+				if(this37.data.length < this37.length) {
+					var data18;
+					var this38;
+					this38 = new Array(this37.data.length + 10);
+					data18 = this38;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this37.data,0,data18,0,this37.data.length);
+					this37.data = data18;
+				}
+			}
+			this37.data[2] = (2 * x * z - 2 * w * y) * scale[2];
+			var this39 = this.rawData;
+			if(!this39.fixed) {
+				if(3 >= this39.length) this39.length = 4;
+				if(this39.data.length < this39.length) {
+					var data19;
+					var this40;
+					this40 = new Array(this39.data.length + 10);
+					data19 = this40;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this39.data,0,data19,0,this39.data.length);
+					this39.data = data19;
+				}
+			}
+			this39.data[3] = 0;
+			var this41 = this.rawData;
+			if(!this41.fixed) {
+				if(4 >= this41.length) this41.length = 5;
+				if(this41.data.length < this41.length) {
+					var data20;
+					var this42;
+					this42 = new Array(this41.data.length + 10);
+					data20 = this42;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this41.data,0,data20,0,this41.data.length);
+					this41.data = data20;
+				}
+			}
+			this41.data[4] = (2 * x * y - 2 * w * z) * scale[4];
+			var this43 = this.rawData;
+			if(!this43.fixed) {
+				if(5 >= this43.length) this43.length = 6;
+				if(this43.data.length < this43.length) {
+					var data21;
+					var this44;
+					this44 = new Array(this43.data.length + 10);
+					data21 = this44;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this43.data,0,data21,0,this43.data.length);
+					this43.data = data21;
+				}
+			}
+			this43.data[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
+			var this45 = this.rawData;
+			if(!this45.fixed) {
+				if(6 >= this45.length) this45.length = 7;
+				if(this45.data.length < this45.length) {
+					var data22;
+					var this46;
+					this46 = new Array(this45.data.length + 10);
+					data22 = this46;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this45.data,0,data22,0,this45.data.length);
+					this45.data = data22;
+				}
+			}
+			this45.data[6] = (2 * y * z + 2 * w * x) * scale[6];
+			var this47 = this.rawData;
+			if(!this47.fixed) {
+				if(7 >= this47.length) this47.length = 8;
+				if(this47.data.length < this47.length) {
+					var data23;
+					var this48;
+					this48 = new Array(this47.data.length + 10);
+					data23 = this48;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this47.data,0,data23,0,this47.data.length);
+					this47.data = data23;
+				}
+			}
+			this47.data[7] = 0;
+			var this49 = this.rawData;
+			if(!this49.fixed) {
+				if(8 >= this49.length) this49.length = 9;
+				if(this49.data.length < this49.length) {
+					var data24;
+					var this50;
+					this50 = new Array(this49.data.length + 10);
+					data24 = this50;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this49.data,0,data24,0,this49.data.length);
+					this49.data = data24;
+				}
+			}
+			this49.data[8] = (2 * x * z + 2 * w * y) * scale[8];
+			var this51 = this.rawData;
+			if(!this51.fixed) {
+				if(9 >= this51.length) this51.length = 10;
+				if(this51.data.length < this51.length) {
+					var data25;
+					var this52;
+					this52 = new Array(this51.data.length + 10);
+					data25 = this52;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this51.data,0,data25,0,this51.data.length);
+					this51.data = data25;
+				}
+			}
+			this51.data[9] = (2 * y * z - 2 * w * x) * scale[9];
+			var this53 = this.rawData;
+			if(!this53.fixed) {
+				if(10 >= this53.length) this53.length = 11;
+				if(this53.data.length < this53.length) {
+					var data26;
+					var this54;
+					this54 = new Array(this53.data.length + 10);
+					data26 = this54;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this53.data,0,data26,0,this53.data.length);
+					this53.data = data26;
+				}
+			}
+			this53.data[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
+			var this55 = this.rawData;
+			if(!this55.fixed) {
+				if(11 >= this55.length) this55.length = 12;
+				if(this55.data.length < this55.length) {
+					var data27;
+					var this56;
+					this56 = new Array(this55.data.length + 10);
+					data27 = this56;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this55.data,0,data27,0,this55.data.length);
+					this55.data = data27;
+				}
+			}
+			this55.data[11] = 0;
+			var this57 = this.rawData;
+			if(!this57.fixed) {
+				if(12 >= this57.length) this57.length = 13;
+				if(this57.data.length < this57.length) {
+					var data28;
+					var this58;
+					this58 = new Array(this57.data.length + 10);
+					data28 = this58;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this57.data,0,data28,0,this57.data.length);
+					this57.data = data28;
+				}
+			}
+			this57.data[12] = components.data[0].x;
+			var this59 = this.rawData;
+			if(!this59.fixed) {
+				if(13 >= this59.length) this59.length = 14;
+				if(this59.data.length < this59.length) {
+					var data29;
+					var this60;
+					this60 = new Array(this59.data.length + 10);
+					data29 = this60;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this59.data,0,data29,0,this59.data.length);
+					this59.data = data29;
+				}
+			}
+			this59.data[13] = components.data[0].y;
+			var this61 = this.rawData;
+			if(!this61.fixed) {
+				if(14 >= this61.length) this61.length = 15;
+				if(this61.data.length < this61.length) {
+					var data30;
+					var this62;
+					this62 = new Array(this61.data.length + 10);
+					data30 = this62;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this61.data,0,data30,0,this61.data.length);
+					this61.data = data30;
+				}
+			}
+			this61.data[14] = components.data[0].z;
+			var this63 = this.rawData;
+			if(!this63.fixed) {
+				if(15 >= this63.length) this63.length = 16;
+				if(this63.data.length < this63.length) {
+					var data31;
+					var this64;
+					this64 = new Array(this63.data.length + 10);
+					data31 = this64;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this63.data,0,data31,0,this63.data.length);
+					this63.data = data31;
+				}
+			}
+			this63.data[15] = 1;
+		}
+		if(components.data[2].x == 0) {
+			var this65 = this.rawData;
+			if(!this65.fixed) {
+				if(0 >= this65.length) this65.length = 1;
+				if(this65.data.length < this65.length) {
+					var data32;
+					var this66;
+					this66 = new Array(this65.data.length + 10);
+					data32 = this66;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this65.data,0,data32,0,this65.data.length);
+					this65.data = data32;
+				}
+			}
+			this65.data[0] = 1e-15;
+		}
+		if(components.data[2].y == 0) {
+			var this67 = this.rawData;
+			if(!this67.fixed) {
+				if(5 >= this67.length) this67.length = 6;
+				if(this67.data.length < this67.length) {
+					var data33;
+					var this68;
+					this68 = new Array(this67.data.length + 10);
+					data33 = this68;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this67.data,0,data33,0,this67.data.length);
+					this67.data = data33;
+				}
+			}
+			this67.data[5] = 1e-15;
+		}
+		if(components.data[2].z == 0) {
+			var this69 = this.rawData;
+			if(!this69.fixed) {
+				if(10 >= this69.length) this69.length = 11;
+				if(this69.data.length < this69.length) {
+					var data34;
+					var this70;
+					this70 = new Array(this69.data.length + 10);
+					data34 = this70;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(this69.data,0,data34,0,this69.data.length);
+					this69.data = data34;
+				}
+			}
+			this69.data[10] = 1e-15;
+		}
+		return !(components.data[2].x == 0 || components.data[2].y == 0 || components.data[2].y == 0);
+	}
+	,transformVector: function(v) {
+		var x = v.x;
+		var y = v.y;
+		var z = v.z;
+		return new openfl_geom_Vector3D(x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[12],x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[13],x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[14],x * this.rawData.data[3] + y * this.rawData.data[7] + z * this.rawData.data[11] + this.rawData.data[15]);
+	}
+	,transformVectors: function(vin,vout) {
+		var i = 0;
+		var x;
+		var y;
+		var z;
+		while(i + 3 <= vin.length) {
+			x = vin.data[i];
+			y = vin.data[i + 1];
+			z = vin.data[i + 2];
+			{
+				if(!vout.fixed) {
+					if(i >= vout.length) vout.length = i + 1;
+					if(vout.data.length < vout.length) {
+						var data;
+						var this1;
+						this1 = new Array(vout.data.length + 10);
+						data = this1;
+						haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data,0,vout.data.length);
+						vout.data = data;
+					}
+				}
+				vout.data[i] = x * this.rawData.data[0] + y * this.rawData.data[4] + z * this.rawData.data[8] + this.rawData.data[12];
+			}
+			var key = i + 1;
+			if(!vout.fixed) {
+				if(key >= vout.length) vout.length = key + 1;
+				if(vout.data.length < vout.length) {
+					var data1;
+					var this2;
+					this2 = new Array(vout.data.length + 10);
+					data1 = this2;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data1,0,vout.data.length);
+					vout.data = data1;
+				}
+			}
+			vout.data[key] = x * this.rawData.data[1] + y * this.rawData.data[5] + z * this.rawData.data[9] + this.rawData.data[13];
+			var key1 = i + 2;
+			if(!vout.fixed) {
+				if(key1 >= vout.length) vout.length = key1 + 1;
+				if(vout.data.length < vout.length) {
+					var data2;
+					var this3;
+					this3 = new Array(vout.data.length + 10);
+					data2 = this3;
+					haxe_ds__$Vector_Vector_$Impl_$.blit(vout.data,0,data2,0,vout.data.length);
+					vout.data = data2;
+				}
+			}
+			vout.data[key1] = x * this.rawData.data[2] + y * this.rawData.data[6] + z * this.rawData.data[10] + this.rawData.data[14];
+			i += 3;
+		}
+	}
+	,transpose: function() {
+		var oRawData;
+		var this1 = this.rawData;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = this1.length;
+		vectorData.fixed = this1.fixed;
+		var this2;
+		this2 = new Array(this1.length);
+		vectorData.data = this2;
+		haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,vectorData.data,0,this1.length);
+		oRawData = vectorData;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(1 >= this3.length) this3.length = 2;
+			if(this3.data.length < this3.length) {
+				var data;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data,0,this3.data.length);
+				this3.data = data;
+			}
+		}
+		this3.data[1] = oRawData.data[4];
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(2 >= this5.length) this5.length = 3;
+			if(this5.data.length < this5.length) {
+				var data1;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data1 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data1,0,this5.data.length);
+				this5.data = data1;
+			}
+		}
+		this5.data[2] = oRawData.data[8];
+		var this7 = this.rawData;
+		if(!this7.fixed) {
+			if(3 >= this7.length) this7.length = 4;
+			if(this7.data.length < this7.length) {
+				var data2;
+				var this8;
+				this8 = new Array(this7.data.length + 10);
+				data2 = this8;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this7.data,0,data2,0,this7.data.length);
+				this7.data = data2;
+			}
+		}
+		this7.data[3] = oRawData.data[12];
+		var this9 = this.rawData;
+		if(!this9.fixed) {
+			if(4 >= this9.length) this9.length = 5;
+			if(this9.data.length < this9.length) {
+				var data3;
+				var this10;
+				this10 = new Array(this9.data.length + 10);
+				data3 = this10;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this9.data,0,data3,0,this9.data.length);
+				this9.data = data3;
+			}
+		}
+		this9.data[4] = oRawData.data[1];
+		var this11 = this.rawData;
+		if(!this11.fixed) {
+			if(6 >= this11.length) this11.length = 7;
+			if(this11.data.length < this11.length) {
+				var data4;
+				var this12;
+				this12 = new Array(this11.data.length + 10);
+				data4 = this12;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this11.data,0,data4,0,this11.data.length);
+				this11.data = data4;
+			}
+		}
+		this11.data[6] = oRawData.data[9];
+		var this13 = this.rawData;
+		if(!this13.fixed) {
+			if(7 >= this13.length) this13.length = 8;
+			if(this13.data.length < this13.length) {
+				var data5;
+				var this14;
+				this14 = new Array(this13.data.length + 10);
+				data5 = this14;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this13.data,0,data5,0,this13.data.length);
+				this13.data = data5;
+			}
+		}
+		this13.data[7] = oRawData.data[13];
+		var this15 = this.rawData;
+		if(!this15.fixed) {
+			if(8 >= this15.length) this15.length = 9;
+			if(this15.data.length < this15.length) {
+				var data6;
+				var this16;
+				this16 = new Array(this15.data.length + 10);
+				data6 = this16;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this15.data,0,data6,0,this15.data.length);
+				this15.data = data6;
+			}
+		}
+		this15.data[8] = oRawData.data[2];
+		var this17 = this.rawData;
+		if(!this17.fixed) {
+			if(9 >= this17.length) this17.length = 10;
+			if(this17.data.length < this17.length) {
+				var data7;
+				var this18;
+				this18 = new Array(this17.data.length + 10);
+				data7 = this18;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this17.data,0,data7,0,this17.data.length);
+				this17.data = data7;
+			}
+		}
+		this17.data[9] = oRawData.data[6];
+		var this19 = this.rawData;
+		if(!this19.fixed) {
+			if(11 >= this19.length) this19.length = 12;
+			if(this19.data.length < this19.length) {
+				var data8;
+				var this20;
+				this20 = new Array(this19.data.length + 10);
+				data8 = this20;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this19.data,0,data8,0,this19.data.length);
+				this19.data = data8;
+			}
+		}
+		this19.data[11] = oRawData.data[14];
+		var this21 = this.rawData;
+		if(!this21.fixed) {
+			if(12 >= this21.length) this21.length = 13;
+			if(this21.data.length < this21.length) {
+				var data9;
+				var this22;
+				this22 = new Array(this21.data.length + 10);
+				data9 = this22;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this21.data,0,data9,0,this21.data.length);
+				this21.data = data9;
+			}
+		}
+		this21.data[12] = oRawData.data[3];
+		var this23 = this.rawData;
+		if(!this23.fixed) {
+			if(13 >= this23.length) this23.length = 14;
+			if(this23.data.length < this23.length) {
+				var data10;
+				var this24;
+				this24 = new Array(this23.data.length + 10);
+				data10 = this24;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this23.data,0,data10,0,this23.data.length);
+				this23.data = data10;
+			}
+		}
+		this23.data[13] = oRawData.data[7];
+		var this25 = this.rawData;
+		if(!this25.fixed) {
+			if(14 >= this25.length) this25.length = 15;
+			if(this25.data.length < this25.length) {
+				var data11;
+				var this26;
+				this26 = new Array(this25.data.length + 10);
+				data11 = this26;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this25.data,0,data11,0,this25.data.length);
+				this25.data = data11;
+			}
+		}
+		this25.data[14] = oRawData.data[11];
+	}
+	,get_determinant: function() {
+		return (this.rawData.data[0] * this.rawData.data[5] - this.rawData.data[4] * this.rawData.data[1]) * (this.rawData.data[10] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[11]) - (this.rawData.data[0] * this.rawData.data[9] - this.rawData.data[8] * this.rawData.data[1]) * (this.rawData.data[6] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[7]) + (this.rawData.data[0] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[1]) * (this.rawData.data[6] * this.rawData.data[11] - this.rawData.data[10] * this.rawData.data[7]) + (this.rawData.data[4] * this.rawData.data[9] - this.rawData.data[8] * this.rawData.data[5]) * (this.rawData.data[2] * this.rawData.data[15] - this.rawData.data[14] * this.rawData.data[3]) - (this.rawData.data[4] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[5]) * (this.rawData.data[2] * this.rawData.data[11] - this.rawData.data[10] * this.rawData.data[3]) + (this.rawData.data[8] * this.rawData.data[13] - this.rawData.data[12] * this.rawData.data[9]) * (this.rawData.data[2] * this.rawData.data[7] - this.rawData.data[6] * this.rawData.data[3]);
+	}
+	,get_position: function() {
+		return new openfl_geom_Vector3D(this.rawData.data[12],this.rawData.data[13],this.rawData.data[14]);
+	}
+	,set_position: function(val) {
+		var this1 = this.rawData;
+		if(!this1.fixed) {
+			if(12 >= this1.length) this1.length = 13;
+			if(this1.data.length < this1.length) {
+				var data;
+				var this2;
+				this2 = new Array(this1.data.length + 10);
+				data = this2;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[12] = val.x;
+		var this3 = this.rawData;
+		if(!this3.fixed) {
+			if(13 >= this3.length) this3.length = 14;
+			if(this3.data.length < this3.length) {
+				var data1;
+				var this4;
+				this4 = new Array(this3.data.length + 10);
+				data1 = this4;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this3.data,0,data1,0,this3.data.length);
+				this3.data = data1;
+			}
+		}
+		this3.data[13] = val.y;
+		var this5 = this.rawData;
+		if(!this5.fixed) {
+			if(14 >= this5.length) this5.length = 15;
+			if(this5.data.length < this5.length) {
+				var data2;
+				var this6;
+				this6 = new Array(this5.data.length + 10);
+				data2 = this6;
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this5.data,0,data2,0,this5.data.length);
+				this5.data = data2;
+			}
+		}
+		this5.data[14] = val.z;
+		return val;
+	}
+	,__class__: openfl_geom_Matrix3D
+	,__properties__: {set_position:"set_position",get_position:"get_position",get_determinant:"get_determinant"}
+};
 var openfl_geom__$Orientation3D_Orientation3D_$Impl_$ = {};
 $hxClasses["openfl.geom._Orientation3D.Orientation3D_Impl_"] = openfl_geom__$Orientation3D_Orientation3D_$Impl_$;
 openfl_geom__$Orientation3D_Orientation3D_$Impl_$.__name__ = ["openfl","geom","_Orientation3D","Orientation3D_Impl_"];
@@ -41143,6 +39333,131 @@ openfl_geom_Transform.prototype = {
 	}
 	,__class__: openfl_geom_Transform
 	,__properties__: {set_matrix3D:"set_matrix3D",get_matrix3D:"get_matrix3D",set_matrix:"set_matrix",get_matrix:"get_matrix",get_concatenatedMatrix:"get_concatenatedMatrix",set_colorTransform:"set_colorTransform",get_colorTransform:"get_colorTransform"}
+};
+var openfl_geom_Vector3D = function(x,y,z,w) {
+	if(w == null) w = 0;
+	if(z == null) z = 0;
+	if(y == null) y = 0;
+	if(x == null) x = 0;
+	this.w = w;
+	this.x = x;
+	this.y = y;
+	this.z = z;
+};
+$hxClasses["openfl.geom.Vector3D"] = openfl_geom_Vector3D;
+openfl_geom_Vector3D.__name__ = ["openfl","geom","Vector3D"];
+openfl_geom_Vector3D.__properties__ = {get_Z_AXIS:"get_Z_AXIS",get_Y_AXIS:"get_Y_AXIS",get_X_AXIS:"get_X_AXIS"}
+openfl_geom_Vector3D.X_AXIS = null;
+openfl_geom_Vector3D.Y_AXIS = null;
+openfl_geom_Vector3D.Z_AXIS = null;
+openfl_geom_Vector3D.angleBetween = function(a,b) {
+	var la = a.get_length();
+	var lb = b.get_length();
+	var dot = a.dotProduct(b);
+	if(la != 0) dot /= la;
+	if(lb != 0) dot /= lb;
+	return Math.acos(dot);
+};
+openfl_geom_Vector3D.distance = function(pt1,pt2) {
+	var x = pt2.x - pt1.x;
+	var y = pt2.y - pt1.y;
+	var z = pt2.z - pt1.z;
+	return Math.sqrt(x * x + y * y + z * z);
+};
+openfl_geom_Vector3D.get_X_AXIS = function() {
+	return new openfl_geom_Vector3D(1,0,0);
+};
+openfl_geom_Vector3D.get_Y_AXIS = function() {
+	return new openfl_geom_Vector3D(0,1,0);
+};
+openfl_geom_Vector3D.get_Z_AXIS = function() {
+	return new openfl_geom_Vector3D(0,0,1);
+};
+openfl_geom_Vector3D.prototype = {
+	length: null
+	,lengthSquared: null
+	,w: null
+	,x: null
+	,y: null
+	,z: null
+	,add: function(a) {
+		return new openfl_geom_Vector3D(this.x + a.x,this.y + a.y,this.z + a.z);
+	}
+	,clone: function() {
+		return new openfl_geom_Vector3D(this.x,this.y,this.z,this.w);
+	}
+	,copyFrom: function(sourceVector3D) {
+		this.x = sourceVector3D.x;
+		this.y = sourceVector3D.y;
+		this.z = sourceVector3D.z;
+	}
+	,crossProduct: function(a) {
+		return new openfl_geom_Vector3D(this.y * a.z - this.z * a.y,this.z * a.x - this.x * a.z,this.x * a.y - this.y * a.x,1);
+	}
+	,decrementBy: function(a) {
+		this.x -= a.x;
+		this.y -= a.y;
+		this.z -= a.z;
+	}
+	,dotProduct: function(a) {
+		return this.x * a.x + this.y * a.y + this.z * a.z;
+	}
+	,equals: function(toCompare,allFour) {
+		if(allFour == null) allFour = false;
+		return this.x == toCompare.x && this.y == toCompare.y && this.z == toCompare.z && (!allFour || this.w == toCompare.w);
+	}
+	,incrementBy: function(a) {
+		this.x += a.x;
+		this.y += a.y;
+		this.z += a.z;
+	}
+	,nearEquals: function(toCompare,tolerance,allFour) {
+		if(allFour == null) allFour = false;
+		return Math.abs(this.x - toCompare.x) < tolerance && Math.abs(this.y - toCompare.y) < tolerance && Math.abs(this.z - toCompare.z) < tolerance && (!allFour || Math.abs(this.w - toCompare.w) < tolerance);
+	}
+	,negate: function() {
+		this.x *= -1;
+		this.y *= -1;
+		this.z *= -1;
+	}
+	,normalize: function() {
+		var l = this.get_length();
+		if(l != 0) {
+			this.x /= l;
+			this.y /= l;
+			this.z /= l;
+		}
+		return l;
+	}
+	,project: function() {
+		this.x /= this.w;
+		this.y /= this.w;
+		this.z /= this.w;
+	}
+	,scaleBy: function(s) {
+		this.x *= s;
+		this.y *= s;
+		this.z *= s;
+	}
+	,setTo: function(xa,ya,za) {
+		this.x = xa;
+		this.y = ya;
+		this.z = za;
+	}
+	,subtract: function(a) {
+		return new openfl_geom_Vector3D(this.x - a.x,this.y - a.y,this.z - a.z);
+	}
+	,toString: function() {
+		return "Vector3D(" + this.x + ", " + this.y + ", " + this.z + ")";
+	}
+	,get_length: function() {
+		return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+	}
+	,get_lengthSquared: function() {
+		return this.x * this.x + this.y * this.y + this.z * this.z;
+	}
+	,__class__: openfl_geom_Vector3D
+	,__properties__: {get_lengthSquared:"get_lengthSquared",get_length:"get_length"}
 };
 var openfl_media_ID3Info = function() {
 };
@@ -41344,38 +39659,6 @@ openfl_media_SoundTransform.prototype = {
 		return new openfl_media_SoundTransform(this.volume,this.pan);
 	}
 	,__class__: openfl_media_SoundTransform
-};
-var openfl_media_StageVideo = function() {
-	this.zoom = new openfl_geom_Point(1,1);
-	this.pan = new openfl_geom_Point();
-	openfl_events_EventDispatcher.call(this,null);
-};
-$hxClasses["openfl.media.StageVideo"] = openfl_media_StageVideo;
-openfl_media_StageVideo.__name__ = ["openfl","media","StageVideo"];
-openfl_media_StageVideo.__super__ = openfl_events_EventDispatcher;
-openfl_media_StageVideo.prototype = $extend(openfl_events_EventDispatcher.prototype,{
-	_colorSpaces: null
-	,colorSpaces: null
-	,depth: null
-	,pan: null
-	,videoWidth: null
-	,videoHeight: null
-	,viewPort: null
-	,zoom: null
-	,get_colorSpaces: function() {
-		return this._colorSpaces;
-	}
-	,attachNetStream: function(netStream) {
-	}
-	,__class__: openfl_media_StageVideo
-	,__properties__: {get_colorSpaces:"get_colorSpaces"}
-});
-var openfl_media_StageVideoAvailability = function() {
-};
-$hxClasses["openfl.media.StageVideoAvailability"] = openfl_media_StageVideoAvailability;
-openfl_media_StageVideoAvailability.__name__ = ["openfl","media","StageVideoAvailability"];
-openfl_media_StageVideoAvailability.prototype = {
-	__class__: openfl_media_StageVideoAvailability
 };
 var openfl_net_NetConnection = function() {
 	openfl_events_EventDispatcher.call(this);
@@ -44418,41 +42701,6 @@ openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.toString = func
 		return null;
 	}
 };
-var openfl_utils__$Dictionary_Dictionary_$Impl_$ = {};
-$hxClasses["openfl.utils._Dictionary.Dictionary_Impl_"] = openfl_utils__$Dictionary_Dictionary_$Impl_$;
-openfl_utils__$Dictionary_Dictionary_$Impl_$.__name__ = ["openfl","utils","_Dictionary","Dictionary_Impl_"];
-openfl_utils__$Dictionary_Dictionary_$Impl_$._new = null;
-openfl_utils__$Dictionary_Dictionary_$Impl_$.get = function(this1,key) {
-	return this1.get(key);
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.set = function(this1,key,value) {
-	this1.set(key,value);
-	return value;
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.iterator = function(this1) {
-	return this1.keys();
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.toStringMap = function(t,weakKeys) {
-	return new haxe_ds_StringMap();
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.toIntMap = function(t,weakKeys) {
-	return new haxe_ds_IntMap();
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.toEnumValueMapMap = function(t,weakKeys) {
-	return new haxe_ds_EnumValueMap();
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.toObjectMap = function(t,weakKeys) {
-	return new haxe_ds_ObjectMap();
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.fromStringMap = function(map) {
-	return map;
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.fromIntMap = function(map) {
-	return map;
-};
-openfl_utils__$Dictionary_Dictionary_$Impl_$.fromObjectMap = function(map) {
-	return map;
-};
 var openfl_utils__$Endian_Endian_$Impl_$ = {};
 $hxClasses["openfl.utils._Endian.Endian_Impl_"] = openfl_utils__$Endian_Endian_$Impl_$;
 openfl_utils__$Endian_Endian_$Impl_$.__name__ = ["openfl","utils","_Endian","Endian_Impl_"];
@@ -44533,728 +42781,115 @@ haxe_lang_Iterable.prototype = {
 	iterator: null
 	,__class__: haxe_lang_Iterable
 };
-var scenes_Scene = function() {
-	starling_display_Sprite.call(this);
-	this._backButton = new utils_MenuButton("Back",88,50);
-	this._backButton.set_x(Constants.CenterX - this._backButton.get_width() / 2);
-	this._backButton.set_y(Constants.GameHeight - this._backButton.get_height() + 12);
-	this._backButton.set_name("backButton");
-	this._backButton.get_textBounds().y -= 3;
-	this._backButton.readjustSize();
-	this.addChild(this._backButton);
+var starling_events_EventDispatcher = function() {
 };
-$hxClasses["scenes.Scene"] = scenes_Scene;
-scenes_Scene.__name__ = ["scenes","Scene"];
-scenes_Scene.__super__ = starling_display_Sprite;
-scenes_Scene.prototype = $extend(starling_display_Sprite.prototype,{
-	_backButton: null
-	,__class__: scenes_Scene
-});
-var scenes_AnimationScene = function() {
-	scenes_Scene.call(this);
-	this._transitions = [starling_animation_Transitions.LINEAR,starling_animation_Transitions.EASE_IN_OUT,starling_animation_Transitions.EASE_OUT_BACK,starling_animation_Transitions.EASE_OUT_BOUNCE,starling_animation_Transitions.EASE_OUT_ELASTIC];
-	this._startButton = new utils_MenuButton("Start animation");
-	this._startButton.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onStartButtonTriggered));
-	this._startButton.set_x(Constants.CenterX - this._startButton.get_width() / 2);
-	this._startButton.set_y(20);
-	this.addChild(this._startButton);
-	this._delayButton = new utils_MenuButton("Delayed call");
-	this._delayButton.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onDelayButtonTriggered));
-	this._delayButton.set_x(this._startButton.get_x());
-	this._delayButton.set_y(this._startButton.get_y() + 40);
-	this.addChild(this._delayButton);
-	this._egg = new starling_display_Image(Game.get_assets().getTexture("starling_front"));
-	this.addChild(this._egg);
-	this.resetEgg();
-	this._transitionLabel = new starling_text_TextField(320,30);
-	this._transitionLabel.get_format().set_size(20);
-	this._transitionLabel.get_format().set_bold(true);
-	this._transitionLabel.set_y(this._delayButton.get_y() + 40);
-	this._transitionLabel.set_alpha(0.0);
-	this.addChild(this._transitionLabel);
-};
-$hxClasses["scenes.AnimationScene"] = scenes_AnimationScene;
-scenes_AnimationScene.__name__ = ["scenes","AnimationScene"];
-scenes_AnimationScene.__super__ = scenes_Scene;
-scenes_AnimationScene.prototype = $extend(scenes_Scene.prototype,{
-	_startButton: null
-	,_delayButton: null
-	,_egg: null
-	,_transitionLabel: null
-	,_transitions: null
-	,resetEgg: function() {
-		this._egg.set_x(20);
-		this._egg.set_y(100);
-		this._egg.set_scaleX(this._egg.set_scaleY(1.0));
-		this._egg.set_rotation(0.0);
+$hxClasses["starling.events.EventDispatcher"] = starling_events_EventDispatcher;
+starling_events_EventDispatcher.__name__ = ["starling","events","EventDispatcher"];
+starling_events_EventDispatcher.prototype = {
+	_eventListeners: null
+	,addEventListener: function(type,listener) {
+		if(this._eventListeners == null) this._eventListeners = new haxe_ds_StringMap();
+		var listeners = this._eventListeners.get(type);
+		if(listeners == null) this._eventListeners.set(type,[listener]); else if(HxOverrides.indexOf(listeners,listener,0) == -1) listeners[listeners.length] = listener;
 	}
-	,onStartButtonTriggered: function() {
-		var _g = this;
-		this._startButton.set_enabled(false);
-		this.resetEgg();
-		var transition = this._transitions.shift();
-		this._transitions.push(transition);
-		var tween = new starling_animation_Tween(this._egg,2.0,transition);
-		tween.animate("rotation",0.5 * Math.PI);
-		tween.moveTo(300,360);
-		tween.scaleTo(0.5);
-		tween.set_onComplete(function() {
-			_g._startButton.set_enabled(true);
-		});
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).add(tween);
-		this._transitionLabel.set_text(transition);
-		this._transitionLabel.set_alpha(1.0);
-		var hideTween = new starling_animation_Tween(this._transitionLabel,2.0,starling_animation_Transitions.EASE_IN);
-		hideTween.animate("alpha",0.0);
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).add(hideTween);
-	}
-	,onDelayButtonTriggered: function() {
-		var _g = this;
-		this._delayButton.set_enabled(false);
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).delayCall($bind(this,this.colorizeEgg),1.0,[true]);
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).delayCall($bind(this,this.colorizeEgg),2.0,[false]);
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).delayCall(function() {
-			_g._delayButton.set_enabled(true);
-		},2.0);
-	}
-	,colorizeEgg: function(colorize) {
-		this._egg.set_color(colorize?starling_utils_Color.RED:starling_utils_Color.WHITE);
-	}
-	,dispose: function() {
-		this._startButton.removeEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onStartButtonTriggered));
-		this._delayButton.removeEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onDelayButtonTriggered));
-		scenes_Scene.prototype.dispose.call(this);
-	}
-	,__class__: scenes_AnimationScene
-});
-var scenes_BenchmarkScene = function() {
-	scenes_Scene.call(this);
-	this._container = new starling_display_Sprite();
-	this._container.set_x(Constants.CenterX);
-	this._container.set_y(Constants.CenterY);
-	this._container.set_touchable(false);
-	this.addChildAt(this._container,0);
-	this._statusText = new starling_text_TextField(Constants.GameWidth - 40,30);
-	this._statusText.set_format(new starling_text_TextFormat(starling_text_BitmapFont.MINI,starling_text_BitmapFont.NATIVE_SIZE * 2));
-	this._statusText.set_x(20);
-	this._statusText.set_y(10);
-	this.addChild(this._statusText);
-	this._startButton = new utils_MenuButton("Start benchmark",140);
-	this._startButton.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onStartButtonTriggered));
-	this._startButton.set_x(Constants.CenterX - this._startButton.get_width() / 2);
-	this._startButton.set_y(20);
-	this.addChild(this._startButton);
-	this._started = false;
-	this._frameTimes = [];
-	this._objectPool = [];
-	this._objectTexture = Game.get_assets().getTexture("benchmark_object");
-	this.addEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrame));
-};
-$hxClasses["scenes.BenchmarkScene"] = scenes_BenchmarkScene;
-scenes_BenchmarkScene.__name__ = ["scenes","BenchmarkScene"];
-scenes_BenchmarkScene.__super__ = scenes_Scene;
-scenes_BenchmarkScene.prototype = $extend(scenes_Scene.prototype,{
-	_startButton: null
-	,_resultText: null
-	,_statusText: null
-	,_container: null
-	,_objectPool: null
-	,_objectTexture: null
-	,_frameCount: null
-	,_failCount: null
-	,_started: null
-	,_frameTimes: null
-	,_targetFps: null
-	,_phase: null
-	,dispose: function() {
-		this.removeEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrame));
-		this._startButton.removeEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onStartButtonTriggered));
-		var _g = 0;
-		var _g1 = this._objectPool;
-		while(_g < _g1.length) {
-			var object = _g1[_g];
-			++_g;
-			object.dispose();
-		}
-		scenes_Scene.prototype.dispose.call(this);
-	}
-	,onStartButtonTriggered: function() {
-		haxe_Log.trace("Starting benchmark",{ fileName : "BenchmarkScene.hx", lineNumber : 84, className : "scenes.BenchmarkScene", methodName : "onStartButtonTriggered"});
-		this._startButton.set_visible(false);
-		this._started = true;
-		this._targetFps = starling_core_Starling.sCurrent.get_nativeStage().get_frameRate();
-		this._frameCount = 0;
-		this._failCount = 0;
-		this._phase = 0;
-		var _g1 = 0;
-		var _g = scenes_BenchmarkScene.FRAME_TIME_WINDOW_SIZE;
-		while(_g1 < _g) {
-			var i = _g1++;
-			this._frameTimes[i] = 1.0 / this._targetFps;
-		}
-		if(this._resultText != null) {
-			this._resultText.removeFromParent(true);
-			this._resultText = null;
-		}
-	}
-	,onEnterFrame: function(event,passedTime) {
-		if(!this._started) return;
-		this._frameCount++;
-		var _g = this._container;
-		_g.set_rotation(_g.get_rotation() + event.get_passedTime() * 0.5);
-		this._frameTimes[scenes_BenchmarkScene.FRAME_TIME_WINDOW_SIZE] = 0.0;
-		var _g1 = 0;
-		var _g2 = scenes_BenchmarkScene.FRAME_TIME_WINDOW_SIZE;
-		while(_g1 < _g2) {
-			var i = _g1++;
-			this._frameTimes[i] += passedTime;
-		}
-		var measuredFps = scenes_BenchmarkScene.FRAME_TIME_WINDOW_SIZE / this._frameTimes.shift();
-		if(this._phase == 0) {
-			if(measuredFps < 0.985 * this._targetFps) {
-				this._failCount++;
-				if(this._failCount == scenes_BenchmarkScene.MAX_FAIL_COUNT) this._phase = 1;
-			} else {
-				this.addTestObjects(16);
-				var _g3 = this._container;
-				_g3.set_scale(_g3.get_scale() * 0.99);
-				this._failCount = 0;
-			}
-		}
-		if(this._phase == 1) {
-			if(measuredFps > 0.99 * this._targetFps) {
-				this._failCount--;
-				if(this._failCount == 0) this.benchmarkComplete();
-			} else {
-				this.removeTestObjects(1);
-				var _g4 = this._container;
-				_g4.set_scale(_g4.get_scale() / 0.9993720513);
-			}
-		}
-		if(this._frameCount % js_Boot.__cast(this._targetFps / 4 , Int) == 0) this._statusText.set_text(Std.string(this._container.get_numChildren()) + " objects");
-	}
-	,addTestObjects: function(count) {
-		var scale = 1.0 / this._container.get_scale();
-		var _g = 0;
-		while(_g < count) {
-			var i = _g++;
-			var egg = this.getObjectFromPool();
-			var distance = (100 + Math.random() * 100) * scale;
-			var angle = Math.random() * Math.PI * 2.0;
-			egg.set_x(Math.cos(angle) * distance);
-			egg.set_y(Math.sin(angle) * distance);
-			egg.set_rotation(angle + Math.PI / 2.0);
-			egg.set_scale(scale);
-			this._container.addChild(egg);
-		}
-	}
-	,removeTestObjects: function(count) {
-		var numChildren = this._container.get_numChildren();
-		if(count >= numChildren) count = numChildren;
-		var _g = 0;
-		while(_g < count) {
-			var i = _g++;
-			this.putObjectToPool(this._container.removeChildAt(this._container.get_numChildren() - 1));
-		}
-	}
-	,getObjectFromPool: function() {
-		if(this._objectPool.length == 0) {
-			var image = new starling_display_Image(this._objectTexture);
-			image.alignPivot();
-			image.set_pixelSnapping(false);
-			return image;
-		} else return this._objectPool.pop();
-	}
-	,putObjectToPool: function(object) {
-		this._objectPool[this._objectPool.length] = object;
-	}
-	,benchmarkComplete: function() {
-		this._started = false;
-		this._startButton.set_visible(true);
-		var fps = starling_core_Starling.sCurrent.get_nativeStage().get_frameRate();
-		var numChildren = this._container.get_numChildren();
-		var resultString = starling_utils_StringUtil.format("Result:\n{0} objects\nwith {1} fps",[numChildren,fps]);
-		this._resultText = new starling_text_TextField(240,200,resultString);
-		this._resultText.get_format().set_size(30);
-		this._resultText.set_x(Constants.CenterX - this._resultText.get_width() / 2);
-		this._resultText.set_y(Constants.CenterY - this._resultText.get_height() / 2);
-		this.addChild(this._resultText);
-		this._container.set_scale(1.0);
-		this._frameTimes.splice(0,this._frameTimes.length);
-		this._statusText.set_text("");
-		var i = numChildren - 1;
-		while(i >= 0) {
-			this.putObjectToPool(this._container.removeChildAt(i));
-			--i;
-		}
-	}
-	,__class__: scenes_BenchmarkScene
-});
-var scenes_BlendModeScene = function() {
-	this._blendModes = [starling_display_BlendMode.NORMAL,starling_display_BlendMode.MULTIPLY,starling_display_BlendMode.SCREEN,starling_display_BlendMode.ADD,starling_display_BlendMode.ERASE,starling_display_BlendMode.NONE];
-	scenes_Scene.call(this);
-	this._button = new utils_MenuButton("Switch Mode");
-	this._button.set_x(Constants.CenterX - this._button.get_width() / 2);
-	this._button.set_y(15);
-	this._button.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onButtonTriggered));
-	this.addChild(this._button);
-	this._image = new starling_display_Image(Game.get_assets().getTexture("starling_rocket"));
-	this._image.set_x(Constants.CenterX - this._image.get_width() / 2);
-	this._image.set_y(170);
-	this.addChild(this._image);
-	this._infoText = new starling_text_TextField(300,32);
-	this._infoText.get_format().set_size(19);
-	this._infoText.set_x(10);
-	this._infoText.set_y(330);
-	this.addChild(this._infoText);
-	this.onButtonTriggered();
-};
-$hxClasses["scenes.BlendModeScene"] = scenes_BlendModeScene;
-scenes_BlendModeScene.__name__ = ["scenes","BlendModeScene"];
-scenes_BlendModeScene.__super__ = scenes_Scene;
-scenes_BlendModeScene.prototype = $extend(scenes_Scene.prototype,{
-	_button: null
-	,_image: null
-	,_infoText: null
-	,_blendModes: null
-	,onButtonTriggered: function() {
-		var blendMode;
-		blendMode = js_Boot.__cast(this._blendModes.shift() , String);
-		this._blendModes.push(blendMode);
-		this._infoText.set_text(blendMode);
-		this._image.set_blendMode(blendMode);
-	}
-	,__class__: scenes_BlendModeScene
-});
-var scenes_CustomHitTestScene = function() {
-	scenes_Scene.call(this);
-	var description = "Pushing the bird only works when the touch occurs within a circle." + "This can be accomplished by overriding the method 'hitTest'.";
-	var infoText = new starling_text_TextField(300,100,description);
-	infoText.set_x(infoText.set_y(10));
-	infoText.get_format().set_verticalAlign(starling_utils_Align.TOP);
-	infoText.get_format().set_horizontalAlign(starling_utils_Align.CENTER);
-	this.addChild(infoText);
-	var button = new utils_RoundButton(Game.get_assets().getTexture("starling_round"));
-	button.set_x(Constants.CenterX - button.get_width() / 2);
-	button.set_y(150);
-	this.addChild(button);
-};
-$hxClasses["scenes.CustomHitTestScene"] = scenes_CustomHitTestScene;
-scenes_CustomHitTestScene.__name__ = ["scenes","CustomHitTestScene"];
-scenes_CustomHitTestScene.__super__ = scenes_Scene;
-scenes_CustomHitTestScene.prototype = $extend(scenes_Scene.prototype,{
-	__class__: scenes_CustomHitTestScene
-});
-var scenes_FilterScene = function() {
-	scenes_Scene.call(this);
-	this._button = new utils_MenuButton("Switch Filter");
-	this._button.set_x(Constants.CenterX - this._button.get_width() / 2);
-	this._button.set_y(15);
-	this._button.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onButtonTriggered));
-	this.addChild(this._button);
-	this._image = new starling_display_Image(Game.get_assets().getTexture("starling_rocket"));
-	this._image.set_x(Constants.CenterX - this._image.get_width() / 2);
-	this._image.set_y(170);
-	this.addChild(this._image);
-	this._infoText = new starling_text_TextField(300,32);
-	this._infoText.get_format().set_size(19);
-	this._infoText.set_x(10);
-	this._infoText.set_y(330);
-	this.addChild(this._infoText);
-	this.initFilters();
-	this.onButtonTriggered();
-};
-$hxClasses["scenes.FilterScene"] = scenes_FilterScene;
-scenes_FilterScene.__name__ = ["scenes","FilterScene"];
-scenes_FilterScene.__super__ = scenes_Scene;
-scenes_FilterScene.prototype = $extend(scenes_Scene.prototype,{
-	_button: null
-	,_image: null
-	,_infoText: null
-	,_filterInfos: null
-	,_displacementMap: null
-	,dispose: function() {
-		this._displacementMap.dispose();
-		scenes_Scene.prototype.dispose.call(this);
-	}
-	,onButtonTriggered: function() {
-		var filterInfo;
-		filterInfo = js_Boot.__cast(this._filterInfos.shift() , Array);
-		this._filterInfos.push(filterInfo);
-		this._infoText.set_text(filterInfo[0]);
-		this._image.set_filter(filterInfo[1]);
-	}
-	,initFilters: function() {
-		this._filterInfos = [["Identity",new starling_filters_FragmentFilter()],["Blur",new starling_filters_BlurFilter()],["Drop Shadow",new starling_filters_DropShadowFilter()],["Glow",new starling_filters_GlowFilter()]];
-		this._displacementMap = this.createDisplacementMap(this._image.get_width(),this._image.get_height());
-		var displacementFilter = new starling_filters_DisplacementMapFilter(this._displacementMap,null,1,2,25,25);
-		this._filterInfos.push(["Displacement Map",displacementFilter]);
-		var invertFilter = new starling_filters_ColorMatrixFilter();
-		invertFilter.invert();
-		this._filterInfos.push(["Invert",invertFilter]);
-		var grayscaleFilter = new starling_filters_ColorMatrixFilter();
-		grayscaleFilter.adjustSaturation(-1);
-		this._filterInfos.push(["Grayscale",grayscaleFilter]);
-		var saturationFilter = new starling_filters_ColorMatrixFilter();
-		saturationFilter.adjustSaturation(1);
-		this._filterInfos.push(["Saturation",saturationFilter]);
-		var contrastFilter = new starling_filters_ColorMatrixFilter();
-		contrastFilter.adjustContrast(0.75);
-		this._filterInfos.push(["Contrast",contrastFilter]);
-		var brightnessFilter = new starling_filters_ColorMatrixFilter();
-		brightnessFilter.adjustBrightness(-0.25);
-		this._filterInfos.push(["Brightness",brightnessFilter]);
-		var hueFilter = new starling_filters_ColorMatrixFilter();
-		hueFilter.adjustHue(1);
-		this._filterInfos.push(["Hue",hueFilter]);
-		var chain = new starling_filters_FilterChain([hueFilter,new starling_filters_DropShadowFilter()]);
-		this._filterInfos.push(["Hue + Shadow",chain]);
-	}
-	,createDisplacementMap: function(width,height) {
-		var scale;
-		if(starling_core_Starling.sCurrent != null) scale = starling_core_Starling.sCurrent.get_contentScaleFactor(); else scale = 1.0;
-		var map = new openfl_display_BitmapData(Math.floor(width * scale),Math.floor(height * scale),false);
-		map.perlinNoise(20 * scale,20 * scale,3,5,false,true);
-		var texture = starling_textures_Texture.fromBitmapData(map,false,false,scale);
-		return texture;
-	}
-	,__class__: scenes_FilterScene
-});
-var scenes_MaskScene = function() {
-	scenes_Scene.call(this);
-	this._contents = new starling_display_Sprite();
-	this.addChild(this._contents);
-	var stageWidth = starling_core_Starling.sCurrent.get_stage().get_stageWidth();
-	var stageHeight = starling_core_Starling.sCurrent.get_stage().get_stageHeight();
-	var touchQuad = new starling_display_Quad(stageWidth,stageHeight);
-	touchQuad.set_alpha(0);
-	this.addChildAt(touchQuad,0);
-	var image = new starling_display_Image(Game.get_assets().getTexture("flight_00"));
-	image.set_x((stageWidth - image.get_width()) / 2);
-	image.set_y(80);
-	this._contents.addChild(image);
-	var cm = new starling_filters_ColorMatrixFilter();
-	cm.adjustHue(-0.5);
-	image.set_filter(cm);
-	var maskText = new starling_text_TextField(256,128,"Move the mouse (or a finger) over the screen to move the mask.");
-	maskText.set_x((stageWidth - maskText.get_width()) / 2);
-	maskText.set_y(260);
-	maskText.get_format().set_size(20);
-	this._contents.addChild(maskText);
-	this._maskDisplay = this.createCircle();
-	this._maskDisplay.set_alpha(0.1);
-	this._maskDisplay.set_touchable(false);
-	this.addChild(this._maskDisplay);
-	this.canvasMask = this.createCircle();
-	this._contents.set_mask(this.canvasMask);
-	this.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.OnTouch));
-};
-$hxClasses["scenes.MaskScene"] = scenes_MaskScene;
-scenes_MaskScene.__name__ = ["scenes","MaskScene"];
-scenes_MaskScene.__super__ = scenes_Scene;
-scenes_MaskScene.prototype = $extend(scenes_Scene.prototype,{
-	_contents: null
-	,canvasMask: null
-	,_maskDisplay: null
-	,OnTouch: function(event) {
-		var touch = event.getTouch(this,starling_events_TouchPhase.HOVER);
-		if(touch == null) touch = event.getTouch(this,starling_events_TouchPhase.BEGAN);
-		if(touch == null) touch = event.getTouch(this,starling_events_TouchPhase.MOVED);
-		if(touch != null) {
-			var localPos = touch.getLocation(this);
-			this.canvasMask.set_x(this._maskDisplay.set_x(localPos.x));
-			this.canvasMask.set_y(this._maskDisplay.set_y(localPos.y));
-		}
-	}
-	,createCircle: function() {
-		var circle = new starling_display_Canvas();
-		circle.beginFill(16711680);
-		circle.drawCircle(0,0,100);
-		circle.endFill();
-		return circle;
-	}
-	,__class__: scenes_MaskScene
-});
-var scenes_MovieScene = function() {
-	scenes_Scene.call(this);
-	var frames = Game.get_assets().getTextures("flight");
-	this._movie = new starling_display_MovieClip(frames,15);
-	var stepSound = Game.get_assets().getSound("wing_flap");
-	this._movie.setFrameSound(2,stepSound);
-	this._movie.set_x(Constants.CenterX - this._movie.get_width() / 2);
-	this._movie.set_y(Constants.CenterY - this._movie.get_height() / 2);
-	this.addChild(this._movie);
-	this.addEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.onAddedToStage));
-	this.addEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.onRemovedFromStage));
-};
-$hxClasses["scenes.MovieScene"] = scenes_MovieScene;
-scenes_MovieScene.__name__ = ["scenes","MovieScene"];
-scenes_MovieScene.__super__ = scenes_Scene;
-scenes_MovieScene.prototype = $extend(scenes_Scene.prototype,{
-	_movie: null
-	,onAddedToStage: function() {
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).add(this._movie);
-	}
-	,onRemovedFromStage: function() {
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).remove(this._movie);
-	}
-	,dispose: function() {
-		this.removeEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.onRemovedFromStage));
-		this.removeEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.onAddedToStage));
-		scenes_Scene.prototype.dispose.call(this);
-	}
-	,__class__: scenes_MovieScene
-});
-var scenes_RenderTextureScene = function() {
-	scenes_Scene.call(this);
-	this._colors = new haxe_ds_IntMap();
-	this._renderTexture = new starling_textures_RenderTexture(320,435);
-	this._canvas = new starling_display_Image(this._renderTexture);
-	this._canvas.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.OnTouch));
-	this.addChild(this._canvas);
-	this._brush = new starling_display_Image(Game.get_assets().getTexture("brush"));
-	this._brush.set_pivotX(this._brush.get_width() / 2);
-	this._brush.set_pivotY(this._brush.get_height() / 2);
-	this._brush.set_blendMode(starling_display_BlendMode.NORMAL);
-	var infoText = new starling_text_TextField(256,128,"Touch the screen\nto draw!");
-	infoText.get_format().set_size(24);
-	infoText.set_x(Constants.CenterX - infoText.get_width() / 2);
-	infoText.set_y(Constants.CenterY - infoText.get_height() / 2);
-	this._renderTexture.draw(infoText);
-	this._button = new utils_MenuButton("Mode: Draw");
-	this._button.set_x(Constants.CenterX - this._button.get_width() / 2);
-	this._button.set_y(15);
-	this._button.addEventListener(starling_events_Event.TRIGGERED,$bind(this,this.onButtonTriggered));
-	this.addChild(this._button);
-};
-$hxClasses["scenes.RenderTextureScene"] = scenes_RenderTextureScene;
-scenes_RenderTextureScene.__name__ = ["scenes","RenderTextureScene"];
-scenes_RenderTextureScene.__super__ = scenes_Scene;
-scenes_RenderTextureScene.prototype = $extend(scenes_Scene.prototype,{
-	_renderTexture: null
-	,_canvas: null
-	,_brush: null
-	,_button: null
-	,_colors: null
-	,OnTouch: function(event) {
-		var _g = this;
-		this._renderTexture.drawBundled(function() {
-			var touches = event.getTouches(_g._canvas);
-			var _g1 = 0;
-			while(_g1 < touches.length) {
-				var touch = touches[_g1];
-				++_g1;
-				if(touch.get_phase() == starling_events_TouchPhase.BEGAN) {
-					var key = touch.get_id();
-					var value = Math.random() * 1073741823;
-					_g._colors.h[key] = value;
+	,removeEventListener: function(type,listener) {
+		if(this._eventListeners != null) {
+			var listeners = this._eventListeners.get(type);
+			var numListeners;
+			if(listeners != null) numListeners = listeners.length; else numListeners = 0;
+			if(numListeners > 0) {
+				var index = Lambda.indexOf(listeners,listener);
+				if(index != -1) {
+					var restListeners = listeners.splice(0,index);
+					var _g = index + 1;
+					while(_g < numListeners) {
+						var i = _g++;
+						restListeners[i - 1] = listeners[i];
+					}
+					this._eventListeners.set(type,restListeners);
 				}
-				if(touch.get_phase() == starling_events_TouchPhase.HOVER || touch.get_phase() == starling_events_TouchPhase.ENDED) continue;
-				var location = touch.getLocation(_g._canvas);
-				_g._brush.set_x(location.x);
-				_g._brush.set_y(location.y);
-				_g._brush.set_color((function($this) {
-					var $r;
-					var key1 = touch.get_id();
-					$r = _g._colors.h[key1];
-					return $r;
-				}(this)));
-				_g._brush.set_rotation(Math.random() * Math.PI * 2.0);
-				_g._renderTexture.draw(_g._brush);
 			}
-		});
-	}
-	,onButtonTriggered: function() {
-		if(this._brush.get_blendMode() == starling_display_BlendMode.NORMAL) {
-			this._brush.set_blendMode(starling_display_BlendMode.ERASE);
-			this._button.set_text("Mode: Erase");
-		} else {
-			this._brush.set_blendMode(starling_display_BlendMode.NORMAL);
-			this._button.set_text("Mode: Draw");
 		}
 	}
-	,dispose: function() {
-		this._renderTexture.dispose();
-		scenes_Scene.prototype.dispose.call(this);
+	,removeEventListeners: function(type) {
+		if(type != null && this._eventListeners != null) this._eventListeners.remove(type); else this._eventListeners = null;
 	}
-	,__class__: scenes_RenderTextureScene
-});
-var scenes_Sprite3DScene = function() {
-	scenes_Scene.call(this);
-	var texture = Game.get_assets().getTexture("gamua-logo");
-	this._cube = this.createCube(texture);
-	this._cube.set_x(Constants.CenterX);
-	this._cube.set_y(Constants.CenterY);
-	this._cube.set_z(100);
-	this.addChild(this._cube);
-	this.addEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.start));
-	this.addEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.stop));
+	,dispatchEvent: function(event) {
+		var bubbles = event.get_bubbles();
+		if(!bubbles && (this._eventListeners == null || !(function($this) {
+			var $r;
+			var key = event.get_type();
+			$r = $this._eventListeners.exists(key);
+			return $r;
+		}(this)))) return;
+		var previousTarget = event.get_target();
+		event.setTarget(this);
+		if(bubbles && js_Boot.__instanceof(this,starling_display_DisplayObject)) this.bubbleEvent(event); else this.invokeEvent(event);
+		if(previousTarget != null) event.setTarget(previousTarget);
+	}
+	,invokeEvent: function(event) {
+		var listeners;
+		if(this._eventListeners != null) {
+			var key = event.get_type();
+			listeners = this._eventListeners.get(key);
+		} else listeners = null;
+		var numListeners;
+		if(listeners == null) numListeners = 0; else numListeners = listeners.length;
+		if(numListeners != 0) {
+			event.setCurrentTarget(this);
+			var i = numListeners - 1;
+			while(i >= 0) {
+				var listener = listeners[i];
+				if(listener != null) listener(event,event.get_data());
+				if(event.get_stopsImmediatePropagation()) return true;
+				i--;
+			}
+			return event.get_stopsPropagation();
+		} else return false;
+	}
+	,bubbleEvent: function(event) {
+		var chain;
+		var element;
+		element = js_Boot.__cast(this , starling_display_DisplayObject);
+		var length = 1;
+		if(starling_events_EventDispatcher.sBubbleChains.length > 0) {
+			chain = starling_events_EventDispatcher.sBubbleChains.pop();
+			chain[0] = element;
+		} else chain = [element];
+		while((element = element.get_parent()) != null) chain[js_Boot.__cast(length++ , Int)] = element;
+		var _g = 0;
+		while(_g < length) {
+			var i = _g++;
+			var stopPropagation = chain[i].invokeEvent(event);
+			if(stopPropagation) break;
+		}
+		chain.splice(0,chain.length);
+		starling_events_EventDispatcher.sBubbleChains[starling_events_EventDispatcher.sBubbleChains.length] = chain;
+	}
+	,dispatchEventWith: function(type,bubbles,data) {
+		if(bubbles == null) bubbles = false;
+		var _hasEventListener = this.hasEventListener(type);
+		if(bubbles || _hasEventListener) {
+			var event = starling_events_Event.fromPool(type,bubbles,data);
+			this.dispatchEvent(event);
+			starling_events_Event.toPool(event);
+		}
+	}
+	,hasEventListener: function(type,listener) {
+		var listeners;
+		if(this._eventListeners != null) listeners = this._eventListeners.get(type); else listeners = null;
+		if(listeners == null) return false; else if(listener != null) {
+			var _g1 = 0;
+			var _g = listeners.length;
+			while(_g1 < _g) {
+				var i = _g1++;
+				if(listeners[i] == listener) return true;
+			}
+			return false;
+		} else return listeners.length != 0;
+	}
+	,__class__: starling_events_EventDispatcher
 };
-$hxClasses["scenes.Sprite3DScene"] = scenes_Sprite3DScene;
-scenes_Sprite3DScene.__name__ = ["scenes","Sprite3DScene"];
-scenes_Sprite3DScene.__super__ = scenes_Scene;
-scenes_Sprite3DScene.prototype = $extend(scenes_Scene.prototype,{
-	_cube: null
-	,start: function() {
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).tween(this._cube,6,{ rotationX : 2 * Math.PI, repeatCount : 0});
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).tween(this._cube,7,{ rotationY : 2 * Math.PI, repeatCount : 0});
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).tween(this._cube,8,{ rotationZ : 2 * Math.PI, repeatCount : 0});
-	}
-	,stop: function() {
-		(starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._juggler:null).removeTweens(this._cube);
-	}
-	,createCube: function(texture) {
-		var offset = texture.get_width() / 2;
-		var front = this.createSidewall(texture,16711680);
-		front.set_z(-offset);
-		var back = this.createSidewall(texture,65280);
-		back.set_rotationX(Math.PI);
-		back.set_z(offset);
-		var top = this.createSidewall(texture,255);
-		top.set_y(-offset);
-		top.set_rotationX(Math.PI / -2.0);
-		var bottom = this.createSidewall(texture,16776960);
-		bottom.set_y(offset);
-		bottom.set_rotationX(Math.PI / 2.0);
-		var left = this.createSidewall(texture,16711935);
-		left.set_x(-offset);
-		left.set_rotationY(Math.PI / 2.0);
-		var right = this.createSidewall(texture,65535);
-		right.set_x(offset);
-		right.set_rotationY(Math.PI / -2.0);
-		var cube = new starling_display_Sprite3D();
-		cube.addChild(front);
-		cube.addChild(back);
-		cube.addChild(top);
-		cube.addChild(bottom);
-		cube.addChild(left);
-		cube.addChild(right);
-		return cube;
-	}
-	,createSidewall: function(texture,color) {
-		if(color == null) color = 16777215;
-		var image = new starling_display_Image(texture);
-		image.set_color(color);
-		image.alignPivot();
-		var sprite = new starling_display_Sprite3D();
-		sprite.addChild(image);
-		return sprite;
-	}
-	,render: function(painter) {
-		painter.pushState();
-		painter.get_state().set_culling(1028);
-		scenes_Scene.prototype.render.call(this,painter);
-		painter.popState();
-	}
-	,__class__: scenes_Sprite3DScene
-});
-var scenes_TextScene = function() {
-	scenes_Scene.call(this);
-	this.init();
-};
-$hxClasses["scenes.TextScene"] = scenes_TextScene;
-scenes_TextScene.__name__ = ["scenes","TextScene"];
-scenes_TextScene.__super__ = scenes_Scene;
-scenes_TextScene.prototype = $extend(scenes_Scene.prototype,{
-	init: function() {
-		var offset = 10;
-		var ttFont = "Ubuntu";
-		var ttFontSize = 19;
-		var colorTF = new starling_text_TextField(300,80,"TextFields can have a border and a color. They can be aligned in different ways, ...");
-		colorTF.set_format(new starling_text_TextFormat(ttFont,ttFontSize,209817));
-		colorTF.set_x(colorTF.set_y(offset));
-		colorTF.set_border(true);
-		this.addChild(colorTF);
-		var leftTF = new starling_text_TextField(145,80,"... e.g.\ntop-left ...");
-		leftTF.set_format(new starling_text_TextFormat(ttFont,ttFontSize,10040115));
-		leftTF.get_format().set_horizontalAlign(starling_utils_Align.LEFT);
-		leftTF.get_format().set_verticalAlign(starling_utils_Align.TOP);
-		leftTF.set_x(offset);
-		leftTF.set_y(colorTF.get_y() + colorTF.get_height() + offset);
-		leftTF.set_border(true);
-		this.addChild(leftTF);
-		var rightTF = new starling_text_TextField(145,80,"... or\nbottom right ...");
-		rightTF.set_format(new starling_text_TextFormat(ttFont,ttFontSize,2129952));
-		rightTF.get_format().set_horizontalAlign(starling_utils_Align.RIGHT);
-		rightTF.get_format().set_verticalAlign(starling_utils_Align.BOTTOM);
-		rightTF.set_border(true);
-		rightTF.set_x(2 * offset + leftTF.get_width());
-		rightTF.set_y(leftTF.get_y());
-		this.addChild(rightTF);
-		var fontTF = new starling_text_TextField(300,80,"... or centered. Embedded fonts are detected automatically and " + "<font color='#208080'>support</font> " + "<font color='#993333'>basic</font> " + "<font color='#333399'>HTML</font> " + "<font color='#208020'>formatting</font>.");
-		fontTF.set_format(new starling_text_TextFormat(ttFont,ttFontSize));
-		fontTF.set_x(offset);
-		fontTF.set_y(leftTF.get_y() + leftTF.get_height() + offset);
-		fontTF.get_format().set_bold(true);
-		fontTF.set_border(true);
-		fontTF.set_isHtmlText(true);
-		this.addChild(fontTF);
-		var bmpFontTF = new starling_text_TextField(300,150,"It is very easy to use Bitmap fonts,\nas well!");
-		bmpFontTF.get_format().set_font("Desyrel");
-		bmpFontTF.get_format().set_size(starling_text_BitmapFont.NATIVE_SIZE);
-		bmpFontTF.get_format().set_color(starling_utils_Color.WHITE);
-		bmpFontTF.set_x(offset);
-		bmpFontTF.set_y(fontTF.get_y() + 20 + offset);
-		this.addChild(bmpFontTF);
-	}
-	,__class__: scenes_TextScene
-});
-var scenes_TextureScene = function() {
-	scenes_Scene.call(this);
-	var image1 = new starling_display_Image(Game.get_assets().getTexture("flight_00"));
-	image1.set_x(-20);
-	image1.set_y(0);
-	this.addChild(image1);
-	var image2 = new starling_display_Image(Game.get_assets().getTexture("flight_04"));
-	image2.set_x(90);
-	image2.set_y(85);
-	this.addChild(image2);
-	var image3 = new starling_display_Image(Game.get_assets().getTexture("flight_08"));
-	image3.set_x(100);
-	image3.set_y(-60);
-	this.addChild(image3);
-	try {
-		var compressedTexture = Game.get_assets().getTexture("compressed_texture");
-		var image = new starling_display_Image(compressedTexture);
-		image.set_x(Constants.CenterX - image.get_width() / 2);
-		image.set_y(280);
-		this.addChild(image);
-	} catch( e ) {
-		haxe_CallStack.lastException = e;
-		if (e instanceof js__$Boot_HaxeError) e = e.val;
-		if( js_Boot.__instanceof(e,openfl_errors_Error) ) {
-			var textField = new starling_text_TextField(220,128,"Update to Flash Player 11.4 or AIR 3.4 (swf-version=17) to see a compressed " + "ATF texture instead of this boring text.");
-			textField.get_format().set_size(14);
-			textField.set_x(Constants.CenterX - textField.get_width() / 2);
-			textField.set_y(280);
-			this.addChild(textField);
-		} else throw(e);
-	}
-};
-$hxClasses["scenes.TextureScene"] = scenes_TextureScene;
-scenes_TextureScene.__name__ = ["scenes","TextureScene"];
-scenes_TextureScene.__super__ = scenes_Scene;
-scenes_TextureScene.prototype = $extend(scenes_Scene.prototype,{
-	__class__: scenes_TextureScene
-});
-var scenes_TouchScene = function() {
-	scenes_Scene.call(this);
-	var description = "[use Ctrl/Cmd & Shift to simulate multi-touch]";
-	var infoText = new starling_text_TextField(300,25,description);
-	infoText.set_x(infoText.set_y(10));
-	this.addChild(infoText);
-	var sheet = new utils_TouchSheet(new starling_display_Image(Game.get_assets().getTexture("starling_sheet")));
-	sheet.set_x(Constants.CenterX);
-	sheet.set_y(Constants.CenterY);
-	sheet.set_rotation(0.055555555555555552 * Math.PI);
-	this.addChild(sheet);
-};
-$hxClasses["scenes.TouchScene"] = scenes_TouchScene;
-scenes_TouchScene.__name__ = ["scenes","TouchScene"];
-scenes_TouchScene.__super__ = scenes_Scene;
-scenes_TouchScene.prototype = $extend(scenes_Scene.prototype,{
-	__class__: scenes_TouchScene
-});
 var starling_animation_IAnimatable = function() { };
 $hxClasses["starling.animation.IAnimatable"] = starling_animation_IAnimatable;
 starling_animation_IAnimatable.__name__ = ["starling","animation","IAnimatable"];
@@ -46536,6 +44171,883 @@ starling_core_Starling.prototype = $extend(starling_events_EventDispatcher.proto
 	,__class__: starling_core_Starling
 	,__properties__: {get_contextValid:"get_contextValid",get_frameID:"get_frameID",set_touchProcessor:"set_touchProcessor",get_touchProcessor:"get_touchProcessor",set_supportHighResolutions:"set_supportHighResolutions",get_supportHighResolutions:"get_supportHighResolutions",get_profile:"get_profile",set_shareContext:"set_shareContext",get_shareContext:"get_shareContext",set_rootClass:"set_rootClass",get_rootClass:"get_rootClass",get_root:"get_root",get_nativeStage:"get_nativeStage",get_stage3D:"get_stage3D",get_stage:"get_stage",set_showStats:"set_showStats",get_showStats:"get_showStats",get_nativeOverlay:"get_nativeOverlay",get_contentScaleFactor:"get_contentScaleFactor",set_viewPort:"set_viewPort",get_viewPort:"get_viewPort",set_antiAliasing:"set_antiAliasing",get_antiAliasing:"get_antiAliasing",set_enableErrorChecking:"set_enableErrorChecking",get_enableErrorChecking:"get_enableErrorChecking",set_simulateMultitouch:"set_simulateMultitouch",get_simulateMultitouch:"get_simulateMultitouch",get_context:"get_context",get_painter:"get_painter",get_juggler:"get_juggler",get_isStarted:"get_isStarted",get_touchEventTypes:"get_touchEventTypes"}
 });
+var starling_display_DisplayObject = function() {
+	this._popToken = new starling_rendering_BatchToken();
+	this._pushToken = new starling_rendering_BatchToken();
+	starling_events_EventDispatcher.call(this);
+	if(openfl_system_Capabilities.isDebugger && Type.getClassName(js_Boot.getClass(this)) == "starling.display::DisplayObject") throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
+	this._x = this._y = this._pivotX = this._pivotY = this._rotation = this._skewX = this._skewY = 0.0;
+	this._scaleX = this._scaleY = this._alpha = 1.0;
+	this._visible = this._touchable = this._hasVisibleArea = true;
+	this._blendMode = starling_display_BlendMode.AUTO;
+	this._transformationMatrix = new openfl_geom_Matrix();
+};
+$hxClasses["starling.display.DisplayObject"] = starling_display_DisplayObject;
+starling_display_DisplayObject.__name__ = ["starling","display","DisplayObject"];
+starling_display_DisplayObject.findCommonParent = function(object1,object2) {
+	var currentObject = object1;
+	while(currentObject != null) {
+		starling_display_DisplayObject.sAncestors[starling_display_DisplayObject.sAncestors.length] = currentObject;
+		currentObject = currentObject._parent;
+	}
+	currentObject = object2;
+	while(currentObject != null && Lambda.indexOf(starling_display_DisplayObject.sAncestors,currentObject) == -1) currentObject = currentObject._parent;
+	starling_display_DisplayObject.sAncestors.splice(0,starling_display_DisplayObject.sAncestors.length);
+	if(currentObject != null) return currentObject; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Object not connected to target"));
+};
+starling_display_DisplayObject.__super__ = starling_events_EventDispatcher;
+starling_display_DisplayObject.prototype = $extend(starling_events_EventDispatcher.prototype,{
+	_x: null
+	,_y: null
+	,_pivotX: null
+	,_pivotY: null
+	,_scaleX: null
+	,_scaleY: null
+	,_skewX: null
+	,_skewY: null
+	,_rotation: null
+	,_alpha: null
+	,_visible: null
+	,_touchable: null
+	,_blendMode: null
+	,_name: null
+	,_useHandCursor: null
+	,_parent: null
+	,_transformationMatrix: null
+	,_transformationMatrix3D: null
+	,_orientationChanged: null
+	,_is3D: null
+	,_isMask: null
+	,_lastParentOrSelfChangeFrameID: null
+	,_lastChildChangeFrameID: null
+	,_tokenFrameID: null
+	,_pushToken: null
+	,_popToken: null
+	,_hasVisibleArea: null
+	,_filter: null
+	,_mask: null
+	,dispose: function() {
+		if(this._filter != null) this._filter.dispose();
+		if(this._mask != null) this._mask.dispose();
+		this.removeEventListeners();
+		this.set_mask(null);
+	}
+	,removeFromParent: function(dispose) {
+		if(dispose == null) dispose = false;
+		if(this._parent != null) this._parent.removeChild(this,dispose); else if(dispose) this.dispose();
+	}
+	,getTransformationMatrix: function(targetSpace,out) {
+		var commonParent;
+		var currentObject;
+		if(out != null) out.identity(); else out = new openfl_geom_Matrix();
+		if(targetSpace == this) return out; else if(targetSpace == this._parent || targetSpace == null && this._parent == null) {
+			out.copyFrom(this.get_transformationMatrix());
+			return out;
+		} else if(targetSpace == null || targetSpace == this.get_base()) {
+			currentObject = this;
+			while(currentObject != targetSpace) {
+				out.concat(currentObject.get_transformationMatrix());
+				currentObject = currentObject._parent;
+			}
+			return out;
+		} else if(targetSpace._parent == this) {
+			targetSpace.getTransformationMatrix(this,out);
+			out.invert();
+			return out;
+		}
+		commonParent = starling_display_DisplayObject.findCommonParent(this,targetSpace);
+		currentObject = this;
+		while(currentObject != commonParent) {
+			out.concat(currentObject.get_transformationMatrix());
+			currentObject = currentObject._parent;
+		}
+		if(commonParent == targetSpace) return out;
+		starling_display_DisplayObject.sHelperMatrix.identity();
+		currentObject = targetSpace;
+		while(currentObject != commonParent) {
+			starling_display_DisplayObject.sHelperMatrix.concat(currentObject.get_transformationMatrix());
+			currentObject = currentObject._parent;
+		}
+		starling_display_DisplayObject.sHelperMatrix.invert();
+		out.concat(starling_display_DisplayObject.sHelperMatrix);
+		return out;
+	}
+	,getBounds: function(targetSpace,out) {
+		throw new js__$Boot_HaxeError(new starling_errors_AbstractMethodError());
+	}
+	,hitTest: function(localPoint) {
+		if(!this._visible || !this._touchable) return null;
+		if(this._mask != null && !this.hitTestMask(localPoint)) return null;
+		if(this.getBounds(this,starling_display_DisplayObject.sHelperRect).containsPoint(localPoint)) return this; else return null;
+	}
+	,hitTestMask: function(localPoint) {
+		if(this._mask != null) {
+			if(this._mask.get_stage() != null) this.getTransformationMatrix(this._mask,starling_display_DisplayObject.sHelperMatrixAlt); else {
+				starling_display_DisplayObject.sHelperMatrixAlt.copyFrom(this._mask.get_transformationMatrix());
+				starling_display_DisplayObject.sHelperMatrixAlt.invert();
+			}
+			var helperPoint;
+			if(localPoint == starling_display_DisplayObject.sHelperPoint) helperPoint = new openfl_geom_Point(); else helperPoint = starling_display_DisplayObject.sHelperPoint;
+			starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,localPoint,helperPoint);
+			return this._mask.hitTest(helperPoint) != null;
+		} else return true;
+	}
+	,localToGlobal: function(localPoint,out) {
+		if(this.get_is3D()) {
+			starling_display_DisplayObject.sHelperPoint3D.setTo(localPoint.x,localPoint.y,0);
+			return this.local3DToGlobal(starling_display_DisplayObject.sHelperPoint3D,out);
+		} else {
+			this.getTransformationMatrix(this.get_base(),starling_display_DisplayObject.sHelperMatrixAlt);
+			return starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,localPoint,out);
+		}
+	}
+	,globalToLocal: function(globalPoint,out) {
+		if(this.get_is3D()) {
+			this.globalToLocal3D(globalPoint,starling_display_DisplayObject.sHelperPoint3D);
+			this.get_stage().getCameraPosition(this,starling_display_DisplayObject.sHelperPointAlt3D);
+			return starling_utils_MathUtil.intersectLineWithXYPlane(starling_display_DisplayObject.sHelperPointAlt3D,starling_display_DisplayObject.sHelperPoint3D,out);
+		} else {
+			this.getTransformationMatrix(this.get_base(),starling_display_DisplayObject.sHelperMatrixAlt);
+			starling_display_DisplayObject.sHelperMatrixAlt.invert();
+			return starling_utils_MatrixUtil.transformPoint(starling_display_DisplayObject.sHelperMatrixAlt,globalPoint,out);
+		}
+	}
+	,render: function(painter) {
+		throw new js__$Boot_HaxeError(new starling_errors_AbstractMethodError());
+	}
+	,alignPivot: function(horizontalAlign,verticalAlign) {
+		if(verticalAlign == null) verticalAlign = "center";
+		if(horizontalAlign == null) horizontalAlign = "center";
+		var bounds = this.getBounds(this,starling_display_DisplayObject.sHelperRect);
+		this.setOrientationChanged();
+		if(horizontalAlign == starling_utils_Align.LEFT) this._pivotX = bounds.x; else if(horizontalAlign == starling_utils_Align.CENTER) this._pivotX = bounds.x + bounds.width / 2.0; else if(horizontalAlign == starling_utils_Align.RIGHT) this._pivotX = bounds.x + bounds.width; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid horizontal alignment: " + horizontalAlign));
+		if(verticalAlign == starling_utils_Align.TOP) this._pivotY = bounds.y; else if(verticalAlign == starling_utils_Align.CENTER) this._pivotY = bounds.y + bounds.height / 2.0; else if(verticalAlign == starling_utils_Align.BOTTOM) this._pivotY = bounds.y + bounds.height; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid vertical alignment: " + verticalAlign));
+	}
+	,getTransformationMatrix3D: function(targetSpace,out) {
+		var commonParent;
+		var currentObject;
+		if(out != null) out.identity(); else out = new openfl_geom_Matrix3D();
+		if(targetSpace == this) return out; else if(targetSpace == this._parent || targetSpace == null && this._parent == null) {
+			out.copyFrom(this.get_transformationMatrix3D());
+			return out;
+		} else if(targetSpace == null || targetSpace == this.get_base()) {
+			currentObject = this;
+			while(currentObject != targetSpace) {
+				out.append(currentObject.get_transformationMatrix3D());
+				currentObject = currentObject._parent;
+			}
+			return out;
+		} else if(targetSpace._parent == this) {
+			targetSpace.getTransformationMatrix3D(this,out);
+			out.invert();
+			return out;
+		}
+		commonParent = starling_display_DisplayObject.findCommonParent(this,targetSpace);
+		currentObject = this;
+		while(currentObject != commonParent) {
+			out.append(currentObject.get_transformationMatrix3D());
+			currentObject = currentObject._parent;
+		}
+		if(commonParent == targetSpace) return out;
+		starling_display_DisplayObject.sHelperMatrix3D.identity();
+		currentObject = targetSpace;
+		while(currentObject != commonParent) {
+			starling_display_DisplayObject.sHelperMatrix3D.append(currentObject.get_transformationMatrix3D());
+			currentObject = currentObject._parent;
+		}
+		starling_display_DisplayObject.sHelperMatrix3D.invert();
+		out.append(starling_display_DisplayObject.sHelperMatrix3D);
+		return out;
+	}
+	,local3DToGlobal: function(localPoint,out) {
+		var stage = this.get_stage();
+		if(stage == null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Object not connected to stage"));
+		this.getTransformationMatrix3D(stage,starling_display_DisplayObject.sHelperMatrixAlt3D);
+		starling_utils_MatrixUtil.transformPoint3D(starling_display_DisplayObject.sHelperMatrixAlt3D,localPoint,starling_display_DisplayObject.sHelperPoint3D);
+		return starling_utils_MathUtil.intersectLineWithXYPlane(stage.get_cameraPosition(),starling_display_DisplayObject.sHelperPoint3D,out);
+	}
+	,globalToLocal3D: function(globalPoint,out) {
+		var stage = this.get_stage();
+		if(stage == null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Object not connected to stage"));
+		this.getTransformationMatrix3D(stage,starling_display_DisplayObject.sHelperMatrixAlt3D);
+		starling_display_DisplayObject.sHelperMatrixAlt3D.invert();
+		return starling_utils_MatrixUtil.transformCoords3D(starling_display_DisplayObject.sHelperMatrixAlt3D,globalPoint.x,globalPoint.y,0,out);
+	}
+	,setParent: function(value) {
+		var ancestor = value;
+		while(ancestor != this && ancestor != null) ancestor = ancestor._parent;
+		if(ancestor == this) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("An object cannot be added as a child to itself or one " + "of its children (or children's children, etc.)")); else this._parent = value;
+	}
+	,setIs3D: function(value) {
+		this._is3D = value;
+	}
+	,get_isMask: function() {
+		return this._isMask;
+	}
+	,setRequiresRedraw: function() {
+		var parent = this._parent;
+		var frameID;
+		if(starling_core_Starling.sCurrent != null) frameID = starling_core_Starling.sCurrent._frameID; else frameID = 0;
+		this._hasVisibleArea = this._alpha != 0.0 && this._visible && !this._isMask && this._scaleX != 0.0 && this._scaleY != 0.0;
+		this._lastParentOrSelfChangeFrameID = frameID;
+		while(parent != null && parent._lastChildChangeFrameID != frameID) {
+			parent._lastChildChangeFrameID = frameID;
+			parent = parent._parent;
+		}
+	}
+	,get_supportsRenderCache: function() {
+		return this._mask == null;
+	}
+	,updateSupportsRenderCache: function() {
+		if(this.get_supportsRenderCache()) this.removeEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrameWithoutRenderCache)); else this.addEventListener(starling_events_Event.ENTER_FRAME,$bind(this,this.onEnterFrameWithoutRenderCache));
+	}
+	,onEnterFrameWithoutRenderCache: function() {
+		this.setRequiresRedraw();
+	}
+	,setOrientationChanged: function() {
+		this._orientationChanged = true;
+		this.setRequiresRedraw();
+	}
+	,dispatchEvent: function(event) {
+		if(event.get_type() == starling_events_Event.REMOVED_FROM_STAGE && this.get_stage() == null) return; else starling_events_EventDispatcher.prototype.dispatchEvent.call(this,event);
+	}
+	,addEventListener: function(type,listener) {
+		if(type == starling_events_Event.ENTER_FRAME && !this.hasEventListener(type)) {
+			this.addEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
+			this.addEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
+			if(this.get_stage() != null) this.addEnterFrameListenerToStage();
+		}
+		starling_events_EventDispatcher.prototype.addEventListener.call(this,type,listener);
+	}
+	,removeEventListener: function(type,listener) {
+		starling_events_EventDispatcher.prototype.removeEventListener.call(this,type,listener);
+		if(type == starling_events_Event.ENTER_FRAME && !this.hasEventListener(type)) {
+			this.removeEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
+			this.removeEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
+			this.removeEnterFrameListenerFromStage();
+		}
+	}
+	,removeEventListeners: function(type) {
+		if((type == null || type == starling_events_Event.ENTER_FRAME) && this.hasEventListener(starling_events_Event.ENTER_FRAME)) {
+			this.removeEventListener(starling_events_Event.ADDED_TO_STAGE,$bind(this,this.addEnterFrameListenerToStage));
+			this.removeEventListener(starling_events_Event.REMOVED_FROM_STAGE,$bind(this,this.removeEnterFrameListenerFromStage));
+			this.removeEnterFrameListenerFromStage();
+		}
+		starling_events_EventDispatcher.prototype.removeEventListeners.call(this,type);
+	}
+	,addEnterFrameListenerToStage: function() {
+		starling_core_Starling.sCurrent.get_stage().addEnterFrameListener(this);
+	}
+	,removeEnterFrameListenerFromStage: function() {
+		starling_core_Starling.sCurrent.get_stage().removeEnterFrameListener(this);
+	}
+	,get_transformationMatrix: function() {
+		if(this._orientationChanged) {
+			this._orientationChanged = false;
+			if(this._skewX == 0.0 && this._skewY == 0.0) {
+				if(this._rotation == 0.0) this._transformationMatrix.setTo(this._scaleX,0.0,0.0,this._scaleY,this._x - this._pivotX * this._scaleX,this._y - this._pivotY * this._scaleY); else {
+					var cos = Math.cos(this._rotation);
+					var sin = Math.sin(this._rotation);
+					var a = this._scaleX * cos;
+					var b = this._scaleX * sin;
+					var c = this._scaleY * -sin;
+					var d = this._scaleY * cos;
+					var tx = this._x - this._pivotX * a - this._pivotY * c;
+					var ty = this._y - this._pivotX * b - this._pivotY * d;
+					this._transformationMatrix.setTo(a,b,c,d,tx,ty);
+				}
+			} else {
+				this._transformationMatrix.identity();
+				this._transformationMatrix.scale(this._scaleX,this._scaleY);
+				starling_utils_MatrixUtil.skew(this._transformationMatrix,this._skewX,this._skewY);
+				this._transformationMatrix.rotate(this._rotation);
+				this._transformationMatrix.translate(this._x,this._y);
+				if(this._pivotX != 0.0 || this._pivotY != 0.0) {
+					this._transformationMatrix.tx = this._x - this._transformationMatrix.a * this._pivotX - this._transformationMatrix.c * this._pivotY;
+					this._transformationMatrix.ty = this._y - this._transformationMatrix.b * this._pivotX - this._transformationMatrix.d * this._pivotY;
+				}
+			}
+		}
+		return this._transformationMatrix;
+	}
+	,set_transformationMatrix: function(matrix) {
+		var PI_Q = Math.PI / 4.0;
+		this.setRequiresRedraw();
+		this._orientationChanged = false;
+		this._transformationMatrix.copyFrom(matrix);
+		this._pivotX = this._pivotY = 0;
+		this._x = matrix.tx;
+		this._y = matrix.ty;
+		this._skewX = Math.atan(-matrix.c / matrix.d);
+		this._skewY = Math.atan(matrix.b / matrix.a);
+		if(this._skewX != this._skewX) this._skewX = 0.0;
+		if(this._skewY != this._skewY) this._skewY = 0.0;
+		if(this._skewX > -PI_Q && this._skewX < PI_Q) this._scaleY = matrix.d / Math.cos(this._skewX); else this._scaleY = -matrix.c / Math.sin(this._skewX);
+		if(this._skewY > -PI_Q && this._skewY < PI_Q) this._scaleX = matrix.a / Math.cos(this._skewY); else this._scaleX = matrix.b / Math.sin(this._skewY);
+		if(starling_utils_MathUtil.isEquivalent(this._skewX,this._skewY)) {
+			this._rotation = this._skewX;
+			this._skewX = this._skewY = 0;
+		} else this._rotation = 0;
+		return matrix;
+	}
+	,get_transformationMatrix3D: function() {
+		if(this._transformationMatrix3D == null) this._transformationMatrix3D = new openfl_geom_Matrix3D();
+		return starling_utils_MatrixUtil.convertTo3D(this.get_transformationMatrix(),this._transformationMatrix3D);
+	}
+	,get_is3D: function() {
+		return this._is3D;
+	}
+	,get_useHandCursor: function() {
+		return this._useHandCursor;
+	}
+	,set_useHandCursor: function(value) {
+		if(value == this._useHandCursor) return value;
+		this._useHandCursor = value;
+		if(this._useHandCursor) this.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch)); else this.removeEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch));
+		return value;
+	}
+	,onTouch: function(event) {
+	}
+	,get_bounds: function() {
+		return this.getBounds(this._parent);
+	}
+	,get_width: function() {
+		return this.getBounds(this._parent,starling_display_DisplayObject.sHelperRect).width;
+	}
+	,set_width: function(value) {
+		this.set_scaleX(1.0);
+		var actualWidth = this.get_width();
+		if(actualWidth != 0.0) this.set_scaleX(value / actualWidth);
+		return value;
+	}
+	,get_height: function() {
+		return this.getBounds(this._parent,starling_display_DisplayObject.sHelperRect).height;
+	}
+	,set_height: function(value) {
+		this.set_scaleY(1.0);
+		var actualHeight = this.get_height();
+		if(actualHeight != 0.0) this.set_scaleY(value / actualHeight);
+		return value;
+	}
+	,get_x: function() {
+		return this._x;
+	}
+	,set_x: function(value) {
+		if(this._x != value) {
+			this._x = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_y: function() {
+		return this._y;
+	}
+	,set_y: function(value) {
+		if(this._y != value) {
+			this._y = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_pivotX: function() {
+		return this._pivotX;
+	}
+	,set_pivotX: function(value) {
+		if(this._pivotX != value) {
+			this._pivotX = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_pivotY: function() {
+		return this._pivotY;
+	}
+	,set_pivotY: function(value) {
+		if(this._pivotY != value) {
+			this._pivotY = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_scaleX: function() {
+		return this._scaleX;
+	}
+	,set_scaleX: function(value) {
+		if(this._scaleX != value) {
+			this._scaleX = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_scaleY: function() {
+		return this._scaleY;
+	}
+	,set_scaleY: function(value) {
+		if(this._scaleY != value) {
+			this._scaleY = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_scale: function() {
+		return this.get_scaleX();
+	}
+	,set_scale: function(value) {
+		this.set_scaleX(this.set_scaleY(value));
+		return value;
+	}
+	,get_skewX: function() {
+		return this._skewX;
+	}
+	,set_skewX: function(value) {
+		value = starling_utils_MathUtil.normalizeAngle(value);
+		if(this._skewX != value) {
+			this._skewX = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_skewY: function() {
+		return this._skewY;
+	}
+	,set_skewY: function(value) {
+		value = starling_utils_MathUtil.normalizeAngle(value);
+		if(this._skewY != value) {
+			this._skewY = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_rotation: function() {
+		return this._rotation;
+	}
+	,set_rotation: function(value) {
+		value = starling_utils_MathUtil.normalizeAngle(value);
+		if(this._rotation != value) {
+			this._rotation = value;
+			this.setOrientationChanged();
+		}
+		return value;
+	}
+	,get_alpha: function() {
+		return this._alpha;
+	}
+	,set_alpha: function(value) {
+		if(value != this._alpha) {
+			if(value < 0.0) this._alpha = 0.0; else if(value > 1.0) this._alpha = 1.0; else this._alpha = value;
+			this.setRequiresRedraw();
+		}
+		return value;
+	}
+	,get_visible: function() {
+		return this._visible;
+	}
+	,set_visible: function(value) {
+		if(value != this._visible) {
+			this._visible = value;
+			this.setRequiresRedraw();
+		}
+		return value;
+	}
+	,get_touchable: function() {
+		return this._touchable;
+	}
+	,set_touchable: function(value) {
+		this._touchable = value;
+		return value;
+	}
+	,get_blendMode: function() {
+		return this._blendMode;
+	}
+	,set_blendMode: function(value) {
+		if(value != this._blendMode) {
+			this._blendMode = value;
+			this.setRequiresRedraw();
+		}
+		return value;
+	}
+	,get_name: function() {
+		return this._name;
+	}
+	,set_name: function(value) {
+		this._name = value;
+		return value;
+	}
+	,get_filter: function() {
+		return this._filter;
+	}
+	,set_filter: function(value) {
+		if(value != this._filter) {
+			if(this._filter != null) this._filter.setTarget(null);
+			if(value != null) value.setTarget(this);
+			this._filter = value;
+			this.setRequiresRedraw();
+		}
+		return value;
+	}
+	,get_mask: function() {
+		return this._mask;
+	}
+	,set_mask: function(value) {
+		if(this._mask != value) {
+			if(this._mask != null) this._mask._isMask = false;
+			if(value != null) {
+				value._isMask = true;
+				value._hasVisibleArea = false;
+			}
+			this._mask = value;
+			this.setRequiresRedraw();
+			this.updateSupportsRenderCache();
+		}
+		return value;
+	}
+	,get_parent: function() {
+		return this._parent;
+	}
+	,get_base: function() {
+		var currentObject = this;
+		while(currentObject._parent != null) currentObject = currentObject._parent;
+		return currentObject;
+	}
+	,get_root: function() {
+		var currentObject = this;
+		while(currentObject._parent != null) if(js_Boot.__instanceof(currentObject._parent,starling_display_Stage)) return currentObject; else currentObject = currentObject.get_parent();
+		return null;
+	}
+	,get_stage: function() {
+		var base = this.get_base();
+		if(base == null) return null; else if(js_Boot.__instanceof(base,starling_display_Stage)) return base; else return null;
+	}
+	,__class__: starling_display_DisplayObject
+	,__properties__: {get_stage:"get_stage",get_root:"get_root",get_base:"get_base",get_parent:"get_parent",set_mask:"set_mask",get_mask:"get_mask",set_filter:"set_filter",get_filter:"get_filter",set_name:"set_name",get_name:"get_name",set_blendMode:"set_blendMode",get_blendMode:"get_blendMode",set_touchable:"set_touchable",get_touchable:"get_touchable",set_visible:"set_visible",get_visible:"get_visible",set_alpha:"set_alpha",get_alpha:"get_alpha",set_rotation:"set_rotation",get_rotation:"get_rotation",set_skewY:"set_skewY",get_skewY:"get_skewY",set_skewX:"set_skewX",get_skewX:"get_skewX",set_scale:"set_scale",get_scale:"get_scale",set_scaleY:"set_scaleY",get_scaleY:"get_scaleY",set_scaleX:"set_scaleX",get_scaleX:"get_scaleX",set_pivotY:"set_pivotY",get_pivotY:"get_pivotY",set_pivotX:"set_pivotX",get_pivotX:"get_pivotX",set_y:"set_y",get_y:"get_y",set_x:"set_x",get_x:"get_x",set_height:"set_height",get_height:"get_height",set_width:"set_width",get_width:"get_width",get_bounds:"get_bounds",set_useHandCursor:"set_useHandCursor",get_useHandCursor:"get_useHandCursor",get_is3D:"get_is3D",get_transformationMatrix3D:"get_transformationMatrix3D",set_transformationMatrix:"set_transformationMatrix",get_transformationMatrix:"get_transformationMatrix",get_supportsRenderCache:"get_supportsRenderCache",get_isMask:"get_isMask"}
+});
+var starling_rendering_BatchToken = function(batchID,vertexID,indexID) {
+	if(indexID == null) indexID = 0;
+	if(vertexID == null) vertexID = 0;
+	if(batchID == null) batchID = 0;
+	this.indexID = 0;
+	this.vertexID = 0;
+	this.setTo(batchID,vertexID,indexID);
+};
+$hxClasses["starling.rendering.BatchToken"] = starling_rendering_BatchToken;
+starling_rendering_BatchToken.__name__ = ["starling","rendering","BatchToken"];
+starling_rendering_BatchToken.prototype = {
+	batchID: null
+	,vertexID: null
+	,indexID: null
+	,copyFrom: function(token) {
+		this.set_batchID(token.get_batchID());
+		this.vertexID = token.vertexID;
+		this.indexID = token.indexID;
+	}
+	,setTo: function(batchID,vertexID,indexID) {
+		if(indexID == null) indexID = 0;
+		if(vertexID == null) vertexID = 0;
+		if(batchID == null) batchID = 0;
+		this.set_batchID(batchID);
+		this.vertexID = vertexID;
+		this.indexID = indexID;
+	}
+	,reset: function() {
+		this.set_batchID(this.vertexID = this.indexID = 0);
+	}
+	,equals: function(other) {
+		return this.get_batchID() == other.get_batchID() && this.vertexID == other.vertexID && this.indexID == other.indexID;
+	}
+	,toString: function() {
+		return starling_utils_StringUtil.format("[BatchToken batchID={0} vertexID={1} indexID={2}]",[this.get_batchID(),this.vertexID,this.indexID]);
+	}
+	,get_batchID: function() {
+		return this.batchID;
+	}
+	,set_batchID: function(value) {
+		this.batchID = value;
+		return this.get_batchID();
+	}
+	,__class__: starling_rendering_BatchToken
+	,__properties__: {set_batchID:"set_batchID",get_batchID:"get_batchID"}
+};
+var starling_display_DisplayObjectContainer = function() {
+	this._children = [];
+	starling_display_DisplayObject.call(this);
+	if(openfl_system_Capabilities.isDebugger && Type.getClassName(js_Boot.getClass(this)) == "starling.display::DisplayObjectContainer") throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
+};
+$hxClasses["starling.display.DisplayObjectContainer"] = starling_display_DisplayObjectContainer;
+starling_display_DisplayObjectContainer.__name__ = ["starling","display","DisplayObjectContainer"];
+starling_display_DisplayObjectContainer.mergeSort = function(input,compareFunc,startIndex,length,buffer) {
+	if(length > 1) {
+		var i;
+		var endIndex = startIndex + length;
+		var halfLength = length / 2;
+		var l = startIndex;
+		var r = startIndex + halfLength;
+		starling_display_DisplayObjectContainer.mergeSort(input,compareFunc,startIndex,halfLength,buffer);
+		starling_display_DisplayObjectContainer.mergeSort(input,compareFunc,startIndex + halfLength,length - halfLength,buffer);
+		var _g = 0;
+		while(_g < length) {
+			var i1 = _g++;
+			if(l < startIndex + halfLength && (r == endIndex || compareFunc(input[l],input[r]) <= 0)) {
+				buffer[i1] = input[l];
+				l++;
+			} else {
+				buffer[i1] = input[r];
+				r++;
+			}
+		}
+		var _g1 = startIndex;
+		while(_g1 < endIndex) {
+			var i2 = _g1++;
+			input[i2] = buffer[js_Boot.__cast(i2 - startIndex , Int)];
+		}
+	}
+};
+starling_display_DisplayObjectContainer.__super__ = starling_display_DisplayObject;
+starling_display_DisplayObjectContainer.prototype = $extend(starling_display_DisplayObject.prototype,{
+	_children: null
+	,_touchGroup: null
+	,dispose: function() {
+		var i = this._children.length - 1;
+		while(i >= 0) {
+			this._children[i].dispose();
+			this._children.splice(i,1);
+			--i;
+		}
+		starling_display_DisplayObject.prototype.dispose.call(this);
+	}
+	,addChild: function(child) {
+		return this.addChildAt(child,this._children.length);
+	}
+	,addChildAt: function(child,index) {
+		var numChildren = this._children.length;
+		if(index >= 0 && index <= numChildren) {
+			this.setRequiresRedraw();
+			if(child.get_parent() == this) this.setChildIndex(child,index); else {
+				this._children.splice(index,0,child);
+				child.removeFromParent();
+				child.setParent(this);
+				child.dispatchEventWith(starling_events_Event.ADDED,true);
+				if(this.get_stage() != null) {
+					var isDisplayObjectContainer = js_Boot.__instanceof(child,starling_display_DisplayObjectContainer);
+					if(isDisplayObjectContainer) {
+						var container;
+						container = js_Boot.__cast(child , starling_display_DisplayObjectContainer);
+						container.broadcastEventWith(starling_events_Event.ADDED_TO_STAGE);
+					} else child.dispatchEventWith(starling_events_Event.ADDED_TO_STAGE);
+				}
+			}
+			return child;
+		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
+	}
+	,removeChild: function(child,dispose) {
+		if(dispose == null) dispose = false;
+		var childIndex = this.getChildIndex(child);
+		if(childIndex != -1) this.removeChildAt(childIndex,dispose);
+		return child;
+	}
+	,removeChildAt: function(index,dispose) {
+		if(dispose == null) dispose = false;
+		if(index >= 0 && index < this._children.length) {
+			this.setRequiresRedraw();
+			var child = this._children[index];
+			child.dispatchEventWith(starling_events_Event.REMOVED,true);
+			if(this.get_stage() != null) {
+				var isDisplayObjectContainer = js_Boot.__instanceof(child,starling_display_DisplayObjectContainer);
+				if(isDisplayObjectContainer) {
+					var container;
+					container = js_Boot.__cast(child , starling_display_DisplayObjectContainer);
+					container.broadcastEventWith(starling_events_Event.REMOVED_FROM_STAGE);
+				} else child.dispatchEventWith(starling_events_Event.REMOVED_FROM_STAGE);
+			}
+			child.setParent(null);
+			index = Lambda.indexOf(this._children,child);
+			if(index >= 0) this._children.splice(index,1);
+			if(dispose) child.dispose();
+			return child;
+		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
+	}
+	,removeChildren: function(beginIndex,endIndex,dispose) {
+		if(dispose == null) dispose = false;
+		if(endIndex == null) endIndex = -1;
+		if(beginIndex == null) beginIndex = 0;
+		if(endIndex < 0 || endIndex >= this.get_numChildren()) endIndex = this.get_numChildren() - 1;
+		var _g1 = beginIndex;
+		var _g = endIndex + 1;
+		while(_g1 < _g) {
+			var i = _g1++;
+			this.removeChildAt(beginIndex,dispose);
+		}
+	}
+	,getChildAt: function(index) {
+		var numChildren = this._children.length;
+		if(index < 0) index = numChildren + index;
+		if(index >= 0 && index < numChildren) return this._children[index]; else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid child index"));
+	}
+	,getChildByName: function(name) {
+		var numChildren = this._children.length;
+		var _g = 0;
+		while(_g < numChildren) {
+			var i = _g++;
+			if(this._children[i].get_name() == name) return this._children[i];
+		}
+		return null;
+	}
+	,getChildIndex: function(child) {
+		return Lambda.indexOf(this._children,child);
+	}
+	,setChildIndex: function(child,index) {
+		var oldIndex = this.getChildIndex(child);
+		if(oldIndex == index) return;
+		if(oldIndex == -1) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Not a child of this container"));
+		this._children.splice(oldIndex,1);
+		this._children.splice(index,0,child);
+		this.setRequiresRedraw();
+	}
+	,swapChildren: function(child1,child2) {
+		var index1 = this.getChildIndex(child1);
+		var index2 = this.getChildIndex(child2);
+		if(index1 == -1 || index2 == -1) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Not a child of this container"));
+		this.swapChildrenAt(index1,index2);
+	}
+	,swapChildrenAt: function(index1,index2) {
+		var child1 = this.getChildAt(index1);
+		var child2 = this.getChildAt(index2);
+		this._children[index1] = child2;
+		this._children[index2] = child1;
+		this.setRequiresRedraw();
+	}
+	,sortChildren: function(compareFunction) {
+		starling_display_DisplayObjectContainer.sSortBuffer.splice(this._children.length,starling_display_DisplayObjectContainer.sSortBuffer.length - this._children.length);
+		starling_display_DisplayObjectContainer.mergeSort(this._children,compareFunction,0,this._children.length,starling_display_DisplayObjectContainer.sSortBuffer);
+		starling_display_DisplayObjectContainer.sSortBuffer.splice(0,starling_display_DisplayObjectContainer.sSortBuffer.length);
+		this.setRequiresRedraw();
+	}
+	,contains: function(child) {
+		while(child != null) if(child == this) return true; else child = child.get_parent();
+		return false;
+	}
+	,getBounds: function(targetSpace,out) {
+		if(out == null) out = new openfl_geom_Rectangle();
+		var numChildren = this._children.length;
+		if(numChildren == 0) {
+			this.getTransformationMatrix(targetSpace,starling_display_DisplayObjectContainer.sHelperMatrix);
+			starling_utils_MatrixUtil.transformCoords(starling_display_DisplayObjectContainer.sHelperMatrix,0.0,0.0,starling_display_DisplayObjectContainer.sHelperPoint);
+			out.setTo(starling_display_DisplayObjectContainer.sHelperPoint.x,starling_display_DisplayObjectContainer.sHelperPoint.y,0,0);
+		} else if(numChildren == 1) this._children[0].getBounds(targetSpace,out); else {
+			var minX = Infinity;
+			var maxX = -Infinity;
+			var minY = Infinity;
+			var maxY = -Infinity;
+			var _g = 0;
+			while(_g < numChildren) {
+				var i = _g++;
+				this._children[i].getBounds(targetSpace,out);
+				if(minX > out.x) minX = out.x;
+				if(maxX < out.get_right()) maxX = out.get_right();
+				if(minY > out.y) minY = out.y;
+				if(maxY < out.get_bottom()) maxY = out.get_bottom();
+			}
+			out.setTo(minX,minY,maxX - minX,maxY - minY);
+		}
+		return out;
+	}
+	,hitTest: function(localPoint) {
+		if(!this.get_visible() || !this.get_touchable() || !this.hitTestMask(localPoint)) return null;
+		var target = null;
+		var localX = localPoint.x;
+		var localY = localPoint.y;
+		var numChildren = this._children.length;
+		var i = numChildren - 1;
+		while(i >= 0) {
+			var child = this._children[i];
+			if(child.get_isMask()) {
+				--i;
+				continue;
+			}
+			starling_display_DisplayObjectContainer.sHelperMatrix.copyFrom(child.get_transformationMatrix());
+			starling_display_DisplayObjectContainer.sHelperMatrix.invert();
+			starling_utils_MatrixUtil.transformCoords(starling_display_DisplayObjectContainer.sHelperMatrix,localX,localY,starling_display_DisplayObjectContainer.sHelperPoint);
+			target = child.hitTest(starling_display_DisplayObjectContainer.sHelperPoint);
+			if(target != null) if(this._touchGroup) return this; else return target;
+			--i;
+		}
+		return null;
+	}
+	,render: function(painter) {
+		var numChildren = this._children.length;
+		var frameID = painter.get_frameID();
+		var selfOrParentChanged = this._lastParentOrSelfChangeFrameID == frameID;
+		var _g = 0;
+		while(_g < numChildren) {
+			var i = _g++;
+			var child = this._children[i];
+			if(child._hasVisibleArea) {
+				if(selfOrParentChanged) child._lastParentOrSelfChangeFrameID = frameID;
+				var mask = child._mask;
+				var filter = child._filter;
+				painter.pushState(child._pushToken);
+				painter.setStateTo(child.get_transformationMatrix(),child.get_alpha(),child.get_blendMode());
+				if(mask != null) painter.drawMask(mask);
+				if(filter != null) filter.render(painter); else child.render(painter);
+				if(mask != null) painter.eraseMask(mask);
+				painter.popState(child._popToken);
+				child._tokenFrameID = frameID;
+			}
+		}
+	}
+	,broadcastEvent: function(event) {
+		if(event.get_bubbles()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Broadcast of bubbling events is prohibited"));
+		var fromIndex = starling_display_DisplayObjectContainer.sBroadcastListeners.length;
+		this.getChildEventListeners(this,event.get_type(),starling_display_DisplayObjectContainer.sBroadcastListeners);
+		var toIndex = starling_display_DisplayObjectContainer.sBroadcastListeners.length;
+		var _g = fromIndex;
+		while(_g < toIndex) {
+			var i = _g++;
+			starling_display_DisplayObjectContainer.sBroadcastListeners[i].dispatchEvent(event);
+		}
+		starling_display_DisplayObjectContainer.sBroadcastListeners.splice(fromIndex,starling_display_DisplayObjectContainer.sBroadcastListeners.length - fromIndex);
+	}
+	,broadcastEventWith: function(eventType,data) {
+		var event = starling_events_Event.fromPool(eventType,false,data);
+		this.broadcastEvent(event);
+		starling_events_Event.toPool(event);
+	}
+	,get_numChildren: function() {
+		return this._children.length;
+	}
+	,get_touchGroup: function() {
+		return this._touchGroup;
+	}
+	,set_touchGroup: function(value) {
+		this._touchGroup = value;
+		return value;
+	}
+	,getChildEventListeners: function(object,eventType,listeners) {
+		var isDisplayObjectContainer = js_Boot.__instanceof(object,starling_display_DisplayObjectContainer);
+		var container;
+		if(isDisplayObjectContainer) container = js_Boot.__cast(object , starling_display_DisplayObjectContainer); else container = null;
+		if(object.hasEventListener(eventType)) listeners[listeners.length] = object;
+		if(container != null) {
+			var children = container._children;
+			var numChildren = children.length;
+			var _g = 0;
+			while(_g < numChildren) {
+				var i = _g++;
+				this.getChildEventListeners(children[i],eventType,listeners);
+			}
+		}
+	}
+	,__class__: starling_display_DisplayObjectContainer
+	,__properties__: $extend(starling_display_DisplayObject.prototype.__properties__,{set_touchGroup:"set_touchGroup",get_touchGroup:"get_touchGroup",get_numChildren:"get_numChildren"})
+});
+var starling_display_Sprite = function() {
+	starling_display_DisplayObjectContainer.call(this);
+};
+$hxClasses["starling.display.Sprite"] = starling_display_Sprite;
+starling_display_Sprite.__name__ = ["starling","display","Sprite"];
+starling_display_Sprite.__super__ = starling_display_DisplayObjectContainer;
+starling_display_Sprite.prototype = $extend(starling_display_DisplayObjectContainer.prototype,{
+	__class__: starling_display_Sprite
+});
 var starling_core_StatsDisplay = function() {
 	this._drawCount = 0;
 	this._memory = 0;
@@ -46667,371 +45179,6 @@ starling_display_BlendMode.prototype = {
 	,__class__: starling_display_BlendMode
 	,__properties__: {get_name:"get_name",get_destinationFactor:"get_destinationFactor",get_sourceFactor:"get_sourceFactor"}
 };
-var starling_display_Button = function(upState,text,downState,overState,disabledState) {
-	if(text == null) text = "";
-	starling_display_DisplayObjectContainer.call(this);
-	if(upState == null) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Texture 'upState' cannot be null"));
-	this._upState = upState;
-	this._downState = downState;
-	this._overState = overState;
-	this._disabledState = disabledState;
-	this._state = starling_display_ButtonState.UP;
-	this._body = new starling_display_Image(upState);
-	if(downState != null) this._scaleWhenDown = 1.0; else this._scaleWhenDown = 0.9;
-	this._scaleWhenOver = this._alphaWhenDown = 1.0;
-	if(disabledState != null) this._alphaWhenDisabled = 1.0; else this._alphaWhenDisabled = 0.5;
-	this._enabled = true;
-	this._useHandCursor = true;
-	this._textBounds = new openfl_geom_Rectangle(0,0,this._body.get_width(),this._body.get_height());
-	this._triggerBounds = new openfl_geom_Rectangle();
-	this._contents = new starling_display_Sprite();
-	this._contents.addChild(this._body);
-	this.addChild(this._contents);
-	this.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch));
-	this.set_touchGroup(true);
-	this.set_text(text);
-};
-$hxClasses["starling.display.Button"] = starling_display_Button;
-starling_display_Button.__name__ = ["starling","display","Button"];
-starling_display_Button.__super__ = starling_display_DisplayObjectContainer;
-starling_display_Button.prototype = $extend(starling_display_DisplayObjectContainer.prototype,{
-	_upState: null
-	,_downState: null
-	,_overState: null
-	,_disabledState: null
-	,_contents: null
-	,_body: null
-	,_textField: null
-	,_textBounds: null
-	,_overlay: null
-	,_scaleWhenDown: null
-	,_scaleWhenOver: null
-	,_alphaWhenDown: null
-	,_alphaWhenDisabled: null
-	,_enabled: null
-	,_state: null
-	,_triggerBounds: null
-	,dispose: function() {
-		if(this._textField != null) this._textField.dispose();
-		starling_display_DisplayObjectContainer.prototype.dispose.call(this);
-	}
-	,readjustSize: function() {
-		var prevWidth = this._body.get_width();
-		var prevHeight = this._body.get_height();
-		this._body.readjustSize();
-		var scaleX = this._body.get_width() / prevWidth;
-		var scaleY = this._body.get_height() / prevHeight;
-		this._textBounds.x *= scaleX;
-		this._textBounds.y *= scaleY;
-		this._textBounds.width *= scaleX;
-		this._textBounds.height *= scaleY;
-		if(this._textField != null) this.createTextField();
-	}
-	,createTextField: function() {
-		if(this._textField == null) {
-			this._textField = new starling_text_TextField(this._textBounds.width,this._textBounds.height);
-			this._textField.set_touchable(false);
-			this._textField.set_autoScale(true);
-			this._textField.set_batchable(true);
-		}
-		this._textField.set_width(this._textBounds.width);
-		this._textField.set_height(this._textBounds.height);
-		this._textField.set_x(this._textBounds.x);
-		this._textField.set_y(this._textBounds.y);
-	}
-	,onTouch: function(event) {
-		var touch = event.getTouch(this);
-		var isWithinBounds;
-		if(!this._enabled) return; else if(touch == null) this.set_state(starling_display_ButtonState.UP); else if(touch.get_phase() == starling_events_TouchPhase.HOVER) this.set_state(starling_display_ButtonState.OVER); else if(touch.get_phase() == starling_events_TouchPhase.BEGAN && this._state != starling_display_ButtonState.DOWN) {
-			this._triggerBounds = this.getBounds(this.get_stage(),this._triggerBounds);
-			this._triggerBounds.inflate(starling_display_Button.MAX_DRAG_DIST,starling_display_Button.MAX_DRAG_DIST);
-			this.set_state(starling_display_ButtonState.DOWN);
-		} else if(touch.get_phase() == starling_events_TouchPhase.MOVED) {
-			isWithinBounds = this._triggerBounds.contains(touch.get_globalX(),touch.get_globalY());
-			if(this._state == starling_display_ButtonState.DOWN && !isWithinBounds) this.set_state(starling_display_ButtonState.UP); else if(this._state == starling_display_ButtonState.UP && isWithinBounds) this.set_state(starling_display_ButtonState.DOWN);
-		} else if(touch.get_phase() == starling_events_TouchPhase.ENDED && this._state == starling_display_ButtonState.DOWN) {
-			this.set_state(starling_display_ButtonState.UP);
-			if(!touch.get_cancelled()) this.dispatchEventWith(starling_events_Event.TRIGGERED,true);
-		}
-	}
-	,get_state: function() {
-		return this._state;
-	}
-	,set_state: function(value) {
-		this._state = value;
-		this._contents.set_x(this._contents.set_y(0));
-		this._contents.set_scaleX(this._contents.set_scaleY(this._contents.set_alpha(1.0)));
-		var _g = this._state;
-		switch(_g) {
-		case "down":
-			this.setStateTexture(this._downState);
-			this._contents.set_alpha(this._alphaWhenDown);
-			this._contents.set_scaleX(this._contents.set_scaleY(this._scaleWhenDown));
-			this._contents.set_x((1.0 - this._scaleWhenDown) / 2.0 * this._body.get_width());
-			this._contents.set_y((1.0 - this._scaleWhenDown) / 2.0 * this._body.get_height());
-			break;
-		case "up":
-			this.setStateTexture(this._upState);
-			break;
-		case "over":
-			this.setStateTexture(this._overState);
-			this._contents.set_scaleX(this._contents.set_scaleY(this._scaleWhenOver));
-			this._contents.set_x((1.0 - this._scaleWhenOver) / 2.0 * this._body.get_width());
-			this._contents.set_y((1.0 - this._scaleWhenOver) / 2.0 * this._body.get_height());
-			break;
-		case "disabled":
-			this.setStateTexture(this._disabledState);
-			this._contents.set_alpha(this._alphaWhenDisabled);
-			break;
-		default:
-			throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid button state: " + this._state));
-		}
-		return value;
-	}
-	,setStateTexture: function(texture) {
-		this._body.set_texture(texture != null?texture:this._upState);
-	}
-	,get_scaleWhenDown: function() {
-		return this._scaleWhenDown;
-	}
-	,set_scaleWhenDown: function(value) {
-		this._scaleWhenDown = value;
-		return value;
-	}
-	,get_scaleWhenOver: function() {
-		return this._scaleWhenOver;
-	}
-	,set_scaleWhenOver: function(value) {
-		this._scaleWhenOver = value;
-		return value;
-	}
-	,get_alphaWhenDown: function() {
-		return this._alphaWhenDown;
-	}
-	,set_alphaWhenDown: function(value) {
-		this._alphaWhenDown = value;
-		return value;
-	}
-	,get_alphaWhenDisabled: function() {
-		return this._alphaWhenDisabled;
-	}
-	,set_alphaWhenDisabled: function(value) {
-		this._alphaWhenDisabled = value;
-		return value;
-	}
-	,get_enabled: function() {
-		return this._enabled;
-	}
-	,set_enabled: function(value) {
-		if(this._enabled != value) {
-			this._enabled = value;
-			this.set_state(value?starling_display_ButtonState.UP:starling_display_ButtonState.DISABLED);
-		}
-		return value;
-	}
-	,get_text: function() {
-		if(this._textField != null) return this._textField.get_text(); else return "";
-	}
-	,set_text: function(value) {
-		if(value.length == 0) {
-			if(this._textField != null) {
-				this._textField.set_text(value);
-				this._textField.removeFromParent();
-			}
-		} else {
-			this.createTextField();
-			this._textField.set_text(value);
-			if(this._textField.get_parent() == null) this._contents.addChild(this._textField);
-		}
-		return value;
-	}
-	,get_textFormat: function() {
-		if(this._textField == null) this.createTextField();
-		return this._textField.get_format();
-	}
-	,set_textFormat: function(value) {
-		if(this._textField == null) this.createTextField();
-		this._textField.set_format(value);
-		return value;
-	}
-	,get_upState: function() {
-		return this._upState;
-	}
-	,set_upState: function(value) {
-		if(value == null) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Texture 'upState' cannot be null"));
-		if(this._upState != value) {
-			this._upState = value;
-			if(this._state == starling_display_ButtonState.UP || this._state == starling_display_ButtonState.DISABLED && this._disabledState == null || this._state == starling_display_ButtonState.DOWN && this._downState == null || this._state == starling_display_ButtonState.OVER && this._overState == null) this.setStateTexture(value);
-		}
-		return value;
-	}
-	,get_downState: function() {
-		return this._downState;
-	}
-	,set_downState: function(value) {
-		if(this._downState != value) {
-			this._downState = value;
-			if(this._state == starling_display_ButtonState.DOWN) this.setStateTexture(value);
-		}
-		return value;
-	}
-	,get_overState: function() {
-		return this._overState;
-	}
-	,set_overState: function(value) {
-		if(this._overState != value) {
-			this._overState = value;
-			if(this._state == starling_display_ButtonState.OVER) this.setStateTexture(value);
-		}
-		return value;
-	}
-	,get_disabledState: function() {
-		return this._disabledState;
-	}
-	,set_disabledState: function(value) {
-		if(this._disabledState != value) {
-			this._disabledState = value;
-			if(this._state == starling_display_ButtonState.DISABLED) this.setStateTexture(value);
-		}
-		return value;
-	}
-	,get_textBounds: function() {
-		return this._textBounds;
-	}
-	,set_textBounds: function(value) {
-		this._textBounds.copyFrom(value);
-		this.createTextField();
-		return value;
-	}
-	,get_color: function() {
-		return this._body.get_color();
-	}
-	,set_color: function(value) {
-		this._body.set_color(value);
-		return value;
-	}
-	,get_textureSmoothing: function() {
-		return this._body.get_textureSmoothing();
-	}
-	,set_textureSmoothing: function(value) {
-		this._body.set_textureSmoothing(value);
-		return value;
-	}
-	,get_overlay: function() {
-		if(this._overlay == null) this._overlay = new starling_display_Sprite();
-		this._contents.addChild(this._overlay);
-		return this._overlay;
-	}
-	,get_useHandCursor: function() {
-		return this._useHandCursor;
-	}
-	,set_useHandCursor: function(value) {
-		this._useHandCursor = value;
-		return value;
-	}
-	,set_width: function(value) {
-		var scaleX = value / this._body.get_width();
-		this._body.set_width(value);
-		this._textBounds.x *= scaleX;
-		this._textBounds.width *= scaleX;
-		if(this._textField != null) this._textField.set_width(value);
-		return value;
-	}
-	,set_height: function(value) {
-		var scaleY = value / this._body.get_height();
-		this._body.set_height(value);
-		this._textBounds.y *= scaleY;
-		this._textBounds.height *= scaleY;
-		if(this._textField != null) this._textField.set_height(value);
-		return value;
-	}
-	,get_scale9Grid: function() {
-		return this._body.get_scale9Grid();
-	}
-	,set_scale9Grid: function(value) {
-		this._body.set_scale9Grid(value);
-		return value;
-	}
-	,__class__: starling_display_Button
-	,__properties__: $extend(starling_display_DisplayObjectContainer.prototype.__properties__,{set_scale9Grid:"set_scale9Grid",get_scale9Grid:"get_scale9Grid",get_overlay:"get_overlay",set_textureSmoothing:"set_textureSmoothing",get_textureSmoothing:"get_textureSmoothing",set_color:"set_color",get_color:"get_color",set_textBounds:"set_textBounds",get_textBounds:"get_textBounds",set_disabledState:"set_disabledState",get_disabledState:"get_disabledState",set_overState:"set_overState",get_overState:"get_overState",set_downState:"set_downState",get_downState:"get_downState",set_upState:"set_upState",get_upState:"get_upState",set_textFormat:"set_textFormat",get_textFormat:"get_textFormat",set_text:"set_text",get_text:"get_text",set_enabled:"set_enabled",get_enabled:"get_enabled",set_alphaWhenDisabled:"set_alphaWhenDisabled",get_alphaWhenDisabled:"get_alphaWhenDisabled",set_alphaWhenDown:"set_alphaWhenDown",get_alphaWhenDown:"get_alphaWhenDown",set_scaleWhenOver:"set_scaleWhenOver",get_scaleWhenOver:"get_scaleWhenOver",set_scaleWhenDown:"set_scaleWhenDown",get_scaleWhenDown:"get_scaleWhenDown",set_state:"set_state",get_state:"get_state"})
-});
-var starling_display_ButtonState = function() {
-	throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
-};
-$hxClasses["starling.display.ButtonState"] = starling_display_ButtonState;
-starling_display_ButtonState.__name__ = ["starling","display","ButtonState"];
-starling_display_ButtonState.prototype = {
-	__class__: starling_display_ButtonState
-};
-var starling_display_Canvas = function() {
-	starling_display_DisplayObjectContainer.call(this);
-	this._polygons = [];
-	this._fillColor = 16777215;
-	this._fillAlpha = 1.0;
-	this.set_touchGroup(true);
-};
-$hxClasses["starling.display.Canvas"] = starling_display_Canvas;
-starling_display_Canvas.__name__ = ["starling","display","Canvas"];
-starling_display_Canvas.__super__ = starling_display_DisplayObjectContainer;
-starling_display_Canvas.prototype = $extend(starling_display_DisplayObjectContainer.prototype,{
-	_polygons: null
-	,_fillColor: null
-	,_fillAlpha: null
-	,dispose: function() {
-		this._polygons.splice(0,this._polygons.length);
-		starling_display_DisplayObjectContainer.prototype.dispose.call(this);
-	}
-	,hitTest: function(localPoint) {
-		if(!this.get_visible() || !this.get_touchable() || !this.hitTestMask(localPoint)) return null;
-		var len = this._polygons.length;
-		var _g = 0;
-		while(_g < len) {
-			var i = _g++;
-			if(this._polygons[i].containsPoint(localPoint)) return this;
-		}
-		return null;
-	}
-	,drawCircle: function(x,y,radius) {
-		this.appendPolygon(starling_geom_Polygon.createCircle(x,y,radius));
-	}
-	,drawEllipse: function(x,y,width,height) {
-		var radiusX = width / 2.0;
-		var radiusY = height / 2.0;
-		this.appendPolygon(starling_geom_Polygon.createEllipse(x + radiusX,y + radiusY,radiusX,radiusY));
-	}
-	,drawRectangle: function(x,y,width,height) {
-		this.appendPolygon(starling_geom_Polygon.createRectangle(x,y,width,height));
-	}
-	,drawPolygon: function(polygon) {
-		this.appendPolygon(polygon);
-	}
-	,beginFill: function(color,alpha) {
-		if(alpha == null) alpha = 1.0;
-		if(color == null) color = 16777215;
-		this._fillColor = color;
-		this._fillAlpha = alpha;
-	}
-	,endFill: function() {
-		this._fillColor = 16777215;
-		this._fillAlpha = 1.0;
-	}
-	,clear: function() {
-		this.removeChildren(0,-1,true);
-		this._polygons.splice(0,this._polygons.length);
-	}
-	,appendPolygon: function(polygon) {
-		var numVertices = polygon.get_numVertices();
-		var vertexFormat = "position:float2, color:bytes4";
-		var vertexData = new starling_rendering_VertexData(vertexFormat,numVertices);
-		var indexData = new starling_rendering_IndexData(polygon.get_numTriangles() * 3);
-		polygon.triangulate(indexData);
-		polygon.copyToVertexData(vertexData);
-		vertexData.colorize("color",this._fillColor,this._fillAlpha);
-		this.addChild(new starling_display_Mesh(vertexData,indexData));
-		this._polygons[this._polygons.length] = polygon;
-	}
-	,__class__: starling_display_Canvas
-});
 var starling_rendering_VertexDataFormat = function() {
 	this._vertexSize = 0;
 	this._attributes = [];
@@ -48210,506 +46357,6 @@ starling_display_MeshBatch.prototype = $extend(starling_display_Mesh.prototype,{
 	}
 	,__class__: starling_display_MeshBatch
 	,__properties__: $extend(starling_display_Mesh.prototype.__properties__,{set_batchable:"set_batchable",get_batchable:"get_batchable"})
-});
-var starling_display_MovieClip = function(textures,fps) {
-	if(fps == null) fps = 12;
-	starling_display_Image.call(this,null);
-	if(textures.length > 0) {
-		starling_display_Image.call(this,textures[0]);
-		this.init(textures,fps);
-	} else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Empty texture array"));
-};
-$hxClasses["starling.display.MovieClip"] = starling_display_MovieClip;
-starling_display_MovieClip.__name__ = ["starling","display","MovieClip"];
-starling_display_MovieClip.__interfaces__ = [starling_animation_IAnimatable];
-starling_display_MovieClip.__super__ = starling_display_Image;
-starling_display_MovieClip.prototype = $extend(starling_display_Image.prototype,{
-	_frames: null
-	,_defaultFrameDuration: null
-	,_currentTime: null
-	,_currentFrameID: null
-	,_loop: null
-	,_playing: null
-	,_muted: null
-	,_wasStopped: null
-	,_soundTransform: null
-	,init: function(textures,fps) {
-		if(fps <= 0) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid fps: " + fps));
-		var numFrames = textures.length;
-		this._defaultFrameDuration = 1.0 / fps;
-		this._loop = true;
-		this._playing = true;
-		this._currentTime = 0.0;
-		this._currentFrameID = 0;
-		this._wasStopped = true;
-		this._frames = [];
-		var _g = 0;
-		while(_g < numFrames) {
-			var i = _g++;
-			this._frames[i] = new starling_display_MovieClipFrame(textures[i],this._defaultFrameDuration,this._defaultFrameDuration * i);
-		}
-	}
-	,addFrame: function(texture,sound,duration) {
-		if(duration == null) duration = -1;
-		this.addFrameAt(this.get_numFrames(),texture,sound,duration);
-	}
-	,addFrameAt: function(frameID,texture,sound,duration) {
-		if(duration == null) duration = -1;
-		if(frameID < 0 || frameID > this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		if(duration < 0) duration = this._defaultFrameDuration;
-		var frame = new starling_display_MovieClipFrame(texture,duration);
-		frame.sound = sound;
-		this._frames.splice(frameID,0,frame);
-		if(frameID == this.get_numFrames()) {
-			var prevStartTime;
-			if(frameID > 0) prevStartTime = this._frames[frameID - 1].startTime; else prevStartTime = 0.0;
-			var prevDuration;
-			if(frameID > 0) prevDuration = this._frames[frameID - 1].duration; else prevDuration = 0.0;
-			frame.startTime = prevStartTime + prevDuration;
-		} else this.updateStartTimes();
-	}
-	,removeFrameAt: function(frameID) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		if(this.get_numFrames() == 1) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Movie clip must not be empty"));
-		this._frames.splice(frameID,0);
-		if(frameID != this.get_numFrames()) this.updateStartTimes();
-	}
-	,getFrameTexture: function(frameID) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		return this._frames[frameID].texture;
-	}
-	,setFrameTexture: function(frameID,texture) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		this._frames[frameID].texture = texture;
-	}
-	,getFrameSound: function(frameID) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		return this._frames[frameID].sound;
-	}
-	,setFrameSound: function(frameID,sound) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		this._frames[frameID].sound = sound;
-	}
-	,getFrameAction: function(frameID) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		return this._frames[frameID].action;
-	}
-	,setFrameAction: function(frameID,action) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		this._frames[frameID].action = action;
-	}
-	,getFrameDuration: function(frameID) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		return this._frames[frameID].duration;
-	}
-	,setFrameDuration: function(frameID,duration) {
-		if(frameID < 0 || frameID >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		this._frames[frameID].duration = duration;
-		this.updateStartTimes();
-	}
-	,reverseFrames: function() {
-		this._frames.reverse();
-		this._currentTime = this.get_totalTime() - this._currentTime;
-		this._currentFrameID = this.get_numFrames() - this._currentFrameID - 1;
-		this.updateStartTimes();
-	}
-	,play: function() {
-		this._playing = true;
-	}
-	,pause: function() {
-		this._playing = false;
-	}
-	,stop: function() {
-		this._playing = false;
-		this._wasStopped = true;
-		this.set_currentFrame(0);
-	}
-	,updateStartTimes: function() {
-		var numFrames = this.get_numFrames();
-		var prevFrame = this._frames[0];
-		prevFrame.startTime = 0;
-		var _g = 1;
-		while(_g < numFrames) {
-			var i = _g++;
-			this._frames[i].startTime = prevFrame.startTime + prevFrame.duration;
-			prevFrame = this._frames[i];
-		}
-	}
-	,advanceTime: function(passedTime) {
-		if(!this._playing) return;
-		var frame = this._frames[this._currentFrameID];
-		haxe_Log.trace("_currentFrameID = " + this._currentFrameID,{ fileName : "MovieClip.hx", lineNumber : 267, className : "starling.display.MovieClip", methodName : "advanceTime"});
-		if(this._wasStopped) {
-			this._wasStopped = false;
-			frame.playSound(this._soundTransform);
-			if(frame.action != null) {
-				frame.executeAction(this,this._currentFrameID);
-				this.advanceTime(passedTime);
-				return;
-			}
-		}
-		haxe_Log.trace("totalTime = " + this.get_totalTime(),{ fileName : "MovieClip.hx", lineNumber : 284, className : "starling.display.MovieClip", methodName : "advanceTime"});
-		if(this._currentTime == this.get_totalTime()) {
-			if(this._loop) {
-				this._currentTime = 0.0;
-				this._currentFrameID = 0;
-				frame = this._frames[0];
-				frame.playSound(this._soundTransform);
-				this.set_texture(frame.texture);
-				if(frame.action != null) {
-					frame.executeAction(this,this._currentFrameID);
-					this.advanceTime(passedTime);
-					return;
-				}
-			} else return;
-		}
-		var finalFrameID = this._frames.length - 1;
-		var restTimeInFrame = frame.duration - this._currentTime + frame.startTime;
-		var dispatchCompleteEvent = false;
-		var frameAction = null;
-		var previousFrameID = this._currentFrameID;
-		var changedFrame;
-		while(passedTime >= restTimeInFrame) {
-			changedFrame = false;
-			passedTime -= restTimeInFrame;
-			this._currentTime = frame.startTime + frame.duration;
-			if(this._currentFrameID == finalFrameID) {
-				if(this.hasEventListener(starling_events_Event.COMPLETE)) dispatchCompleteEvent = true; else if(this._loop) {
-					this._currentTime = 0;
-					this._currentFrameID = 0;
-					changedFrame = true;
-				} else return;
-			} else {
-				this._currentFrameID += 1;
-				changedFrame = true;
-			}
-			frame = this._frames[this._currentFrameID];
-			frameAction = frame.action;
-			if(changedFrame) frame.playSound(this._soundTransform);
-			if(dispatchCompleteEvent) {
-				this.set_texture(frame.texture);
-				this.dispatchEventWith(starling_events_Event.COMPLETE);
-				this.advanceTime(passedTime);
-				return;
-			} else if(frameAction != null) {
-				this.set_texture(frame.texture);
-				frame.executeAction(this,this._currentFrameID);
-				this.advanceTime(passedTime);
-				return;
-			}
-			restTimeInFrame = frame.duration;
-		}
-		if(previousFrameID != this._currentFrameID) this.set_texture(this._frames[this._currentFrameID].texture);
-		this._currentTime += passedTime;
-	}
-	,get_numFrames: function() {
-		return this._frames.length;
-	}
-	,get_totalTime: function() {
-		var lastFrame = this._frames[this._frames.length - 1];
-		return lastFrame.startTime + lastFrame.duration;
-	}
-	,get_currentTime: function() {
-		return this._currentTime;
-	}
-	,set_currentTime: function(value) {
-		if(value < 0 || value > this.get_totalTime()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid time: " + value));
-		var lastFrameID = this._frames.length - 1;
-		this._currentTime = value;
-		this._currentFrameID = 0;
-		while(this._currentFrameID < lastFrameID && this._frames[this._currentFrameID + 1].startTime <= value) ++this._currentFrameID;
-		var frame = this._frames[this._currentFrameID];
-		this.set_texture(frame.texture);
-		return value;
-	}
-	,get_loop: function() {
-		return this._loop;
-	}
-	,set_loop: function(value) {
-		this._loop = value;
-		return value;
-	}
-	,get_muted: function() {
-		return this._muted;
-	}
-	,set_muted: function(value) {
-		this._muted = value;
-		return value;
-	}
-	,get_soundTransform: function() {
-		return this._soundTransform;
-	}
-	,set_soundTransform: function(value) {
-		this._soundTransform = value;
-		return value;
-	}
-	,get_currentFrame: function() {
-		return this._currentFrameID;
-	}
-	,set_currentFrame: function(value) {
-		if(value < 0 || value >= this.get_numFrames()) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid frame id"));
-		this.set_currentTime(this._frames[value].startTime);
-		return value;
-	}
-	,get_fps: function() {
-		return 1.0 / this._defaultFrameDuration;
-	}
-	,set_fps: function(value) {
-		if(value <= 0) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid fps: " + value));
-		var newFrameDuration = 1.0 / value;
-		var acceleration = newFrameDuration / this._defaultFrameDuration;
-		this._currentTime *= acceleration;
-		this._defaultFrameDuration = newFrameDuration;
-		var _g1 = 0;
-		var _g = this.get_numFrames();
-		while(_g1 < _g) {
-			var i = _g1++;
-			this._frames[i].duration *= acceleration;
-		}
-		this.updateStartTimes();
-		return value;
-	}
-	,get_isPlaying: function() {
-		if(this._playing) return this._loop || this._currentTime < this.get_totalTime(); else return false;
-	}
-	,get_isComplete: function() {
-		return !this._loop && this._currentTime >= this.get_totalTime();
-	}
-	,__class__: starling_display_MovieClip
-	,__properties__: $extend(starling_display_Image.prototype.__properties__,{get_isComplete:"get_isComplete",get_isPlaying:"get_isPlaying",set_fps:"set_fps",get_fps:"get_fps",set_currentFrame:"set_currentFrame",get_currentFrame:"get_currentFrame",set_soundTransform:"set_soundTransform",get_soundTransform:"get_soundTransform",set_muted:"set_muted",get_muted:"get_muted",set_loop:"set_loop",get_loop:"get_loop",set_currentTime:"set_currentTime",get_currentTime:"get_currentTime",get_totalTime:"get_totalTime",get_numFrames:"get_numFrames"})
-});
-var starling_display_MovieClipFrame = function(texture,duration,startTime) {
-	if(startTime == null) startTime = 0;
-	if(duration == null) duration = 0.1;
-	this.texture = texture;
-	this.duration = duration;
-	this.startTime = startTime;
-};
-$hxClasses["starling.display.MovieClipFrame"] = starling_display_MovieClipFrame;
-starling_display_MovieClipFrame.__name__ = ["starling","display","MovieClipFrame"];
-starling_display_MovieClipFrame.prototype = {
-	texture: null
-	,sound: null
-	,duration: null
-	,startTime: null
-	,action: null
-	,playSound: function(transform) {
-		if(this.sound != null) this.sound.play(0,0,transform);
-	}
-	,executeAction: function(movie,frameID) {
-		if(this.action != null) {
-			var numArgs = 2;
-			if(numArgs == 0) this.action(); else if(numArgs == 1) this.action(movie); else if(numArgs == 2) this.action(movie,frameID); else throw new js__$Boot_HaxeError(new openfl_errors_Error("Frame actions support zero, one or two parameters: " + "movie:MovieClip, frameID:int"));
-		}
-	}
-	,__class__: starling_display_MovieClipFrame
-};
-var starling_display_Sprite3D = function() {
-	starling_display_DisplayObjectContainer.call(this);
-	this._scaleZ = 1.0;
-	this._rotationX = this._rotationY = this._pivotZ = this._z = 0.0;
-	this._transformationMatrix = new openfl_geom_Matrix();
-	this._transformationMatrix3D = new openfl_geom_Matrix3D();
-	this._is2D = true;
-	this.setIs3D(true);
-	this.addEventListener(starling_events_Event.ADDED,$bind(this,this.onAddedChild));
-	this.addEventListener(starling_events_Event.REMOVED,$bind(this,this.onRemovedChild));
-};
-$hxClasses["starling.display.Sprite3D"] = starling_display_Sprite3D;
-starling_display_Sprite3D.__name__ = ["starling","display","Sprite3D"];
-starling_display_Sprite3D.__super__ = starling_display_DisplayObjectContainer;
-starling_display_Sprite3D.prototype = $extend(starling_display_DisplayObjectContainer.prototype,{
-	_rotationX: null
-	,_rotationY: null
-	,_scaleZ: null
-	,_pivotZ: null
-	,_z: null
-	,_transformationChanged: null
-	,_is2D: null
-	,render: function(painter) {
-		if(this._is2D) starling_display_DisplayObjectContainer.prototype.render.call(this,painter); else {
-			painter.finishMeshBatch();
-			painter.pushState();
-			painter.get_state().transformModelviewMatrix3D(this.get_transformationMatrix3D());
-			starling_display_DisplayObjectContainer.prototype.render.call(this,painter);
-			painter.finishMeshBatch();
-			painter.popState();
-		}
-	}
-	,hitTest: function(localPoint) {
-		if(this._is2D) return starling_display_DisplayObjectContainer.prototype.hitTest.call(this,localPoint); else {
-			if(!this.get_visible() || !this.get_touchable()) return null;
-			starling_display_Sprite3D.sHelperMatrix.copyFrom(this.get_transformationMatrix3D());
-			starling_display_Sprite3D.sHelperMatrix.invert();
-			this.get_stage().getCameraPosition(this,starling_display_Sprite3D.sHelperPoint);
-			starling_utils_MatrixUtil.transformCoords3D(starling_display_Sprite3D.sHelperMatrix,localPoint.x,localPoint.y,0,starling_display_Sprite3D.sHelperPointAlt);
-			starling_utils_MathUtil.intersectLineWithXYPlane(starling_display_Sprite3D.sHelperPoint,starling_display_Sprite3D.sHelperPointAlt,localPoint);
-			return starling_display_DisplayObjectContainer.prototype.hitTest.call(this,localPoint);
-		}
-	}
-	,setRequiresRedraw: function() {
-		var was2D = this._is2D;
-		this._is2D = this._z > -starling_display_Sprite3D.E && this._z < starling_display_Sprite3D.E && this._rotationX > -starling_display_Sprite3D.E && this._rotationX < starling_display_Sprite3D.E && this._rotationY > -starling_display_Sprite3D.E && this._rotationY < starling_display_Sprite3D.E && this._pivotZ > -starling_display_Sprite3D.E && this._pivotZ < starling_display_Sprite3D.E;
-		if(this._is2D != was2D) this.updateSupportsRenderCache();
-		starling_display_DisplayObjectContainer.prototype.setRequiresRedraw.call(this);
-	}
-	,get_supportsRenderCache: function() {
-		return this._is2D && starling_display_DisplayObjectContainer.prototype.get_supportsRenderCache.call(this);
-	}
-	,onAddedChild: function(event) {
-		this.recursivelySetIs3D(js_Boot.__cast(event.get_target() , starling_display_DisplayObject),true);
-	}
-	,onRemovedChild: function(event) {
-		this.recursivelySetIs3D(js_Boot.__cast(event.get_target() , starling_display_DisplayObject),false);
-	}
-	,recursivelySetIs3D: function(object,value) {
-		if(js_Boot.__instanceof(object,starling_display_Sprite3D)) return;
-		if(js_Boot.__instanceof(object,starling_display_DisplayObjectContainer)) {
-			var container;
-			container = js_Boot.__cast(object , starling_display_DisplayObjectContainer);
-			var numChildren = container.get_numChildren();
-			var _g = 0;
-			while(_g < numChildren) {
-				var i = _g++;
-				this.recursivelySetIs3D(container.getChildAt(i),value);
-			}
-		}
-		object.setIs3D(value);
-	}
-	,updateMatrices: function() {
-		var x = this.get_x();
-		var y = this.get_y();
-		var scaleX = this.get_scaleX();
-		var scaleY = this.get_scaleY();
-		var pivotX = this.get_pivotX();
-		var pivotY = this.get_pivotY();
-		var rotationZ = this.get_rotation();
-		this._transformationMatrix3D.identity();
-		if(scaleX != 1.0 || scaleY != 1.0 || this._scaleZ != 1.0) this._transformationMatrix3D.appendScale(scaleX || starling_display_Sprite3D.E,scaleY || starling_display_Sprite3D.E,this.get_scaleZ() || starling_display_Sprite3D.E);
-		if(this._rotationX != 0.0) this._transformationMatrix3D.appendRotation(this._rotationX / Math.PI * 180.0,new openfl_geom_Vector3D(1,0,0));
-		if(this._rotationY != 0.0) this._transformationMatrix3D.appendRotation(this._rotationY / Math.PI * 180.0,new openfl_geom_Vector3D(0,1,0));
-		if(rotationZ != 0.0) this._transformationMatrix3D.appendRotation(rotationZ / Math.PI * 180.0,new openfl_geom_Vector3D(0,0,1));
-		if(x != 0.0 || y != 0.0 || this._z != 0.0) this._transformationMatrix3D.appendTranslation(x,y,this._z);
-		if(pivotX != 0.0 || pivotY != 0.0 || this._pivotZ != 0.0) this._transformationMatrix3D.prependTranslation(-pivotX,-pivotY,-this._pivotZ);
-		if(this._is2D) starling_utils_MatrixUtil.convertTo2D(this._transformationMatrix3D,this._transformationMatrix); else this._transformationMatrix.identity();
-	}
-	,get_transformationMatrix: function() {
-		if(this._transformationChanged) {
-			this.updateMatrices();
-			this._transformationChanged = false;
-		}
-		return this._transformationMatrix;
-	}
-	,set_transformationMatrix: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_transformationMatrix.call(this,value);
-		this._rotationX = this._rotationY = this._pivotZ = this._z = 0;
-		this._transformationChanged = true;
-		return value;
-	}
-	,get_transformationMatrix3D: function() {
-		if(this._transformationChanged) {
-			this.updateMatrices();
-			this._transformationChanged = false;
-		}
-		return this._transformationMatrix3D;
-	}
-	,set_x: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_x.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,set_y: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_y.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,get_z: function() {
-		return this._z;
-	}
-	,set_z: function(value) {
-		this._z = value;
-		this._transformationChanged = true;
-		this.setRequiresRedraw();
-		return value;
-	}
-	,set_pivotX: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_pivotX.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,set_pivotY: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_pivotY.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,get_pivotZ: function() {
-		return this._pivotZ;
-	}
-	,set_pivotZ: function(value) {
-		this._pivotZ = value;
-		this._transformationChanged = true;
-		this.setRequiresRedraw();
-		return value;
-	}
-	,set_scaleX: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_scaleX.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,set_scaleY: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_scaleY.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,get_scaleZ: function() {
-		return this._scaleZ;
-	}
-	,set_scaleZ: function(value) {
-		this._scaleZ = value;
-		this._transformationChanged = true;
-		this.setRequiresRedraw();
-		return value;
-	}
-	,set_skewX: function(value) {
-		throw new js__$Boot_HaxeError(new openfl_errors_Error("3D objects do not support skewing"));
-		return value;
-	}
-	,set_skewY: function(value) {
-		throw new js__$Boot_HaxeError(new openfl_errors_Error("3D objects do not support skewing"));
-		return value;
-	}
-	,set_rotation: function(value) {
-		starling_display_DisplayObjectContainer.prototype.set_rotation.call(this,value);
-		this._transformationChanged = true;
-		return value;
-	}
-	,get_rotationX: function() {
-		return this._rotationX;
-	}
-	,set_rotationX: function(value) {
-		this._rotationX = starling_utils_MathUtil.normalizeAngle(value);
-		this._transformationChanged = true;
-		this.setRequiresRedraw();
-		return value;
-	}
-	,get_rotationY: function() {
-		return this._rotationY;
-	}
-	,set_rotationY: function(value) {
-		this._rotationY = starling_utils_MathUtil.normalizeAngle(value);
-		this._transformationChanged = true;
-		this.setRequiresRedraw();
-		return value;
-	}
-	,get_rotationZ: function() {
-		return this.get_rotation();
-	}
-	,set_rotationZ: function(value) {
-		this.set_rotation(value);
-		return value;
-	}
-	,__class__: starling_display_Sprite3D
-	,__properties__: $extend(starling_display_DisplayObjectContainer.prototype.__properties__,{set_rotationZ:"set_rotationZ",get_rotationZ:"get_rotationZ",set_rotationY:"set_rotationY",get_rotationY:"get_rotationY",set_rotationX:"set_rotationX",get_rotationX:"get_rotationX",set_scaleZ:"set_scaleZ",get_scaleZ:"get_scaleZ",set_pivotZ:"set_pivotZ",get_pivotZ:"get_pivotZ",set_z:"set_z",get_z:"get_z"})
 });
 var starling_display_Stage = function(width,height,color) {
 	if(color == null) color = 0;
@@ -49921,1144 +47568,6 @@ starling_filters_FragmentFilter.prototype = $extend(starling_events_EventDispatc
 	,__class__: starling_filters_FragmentFilter
 	,__properties__: {set_padding:"set_padding",get_padding:"get_padding",get_indexData:"get_indexData",get_vertexData:"get_vertexData",get_effect:"get_effect",get_target:"get_target"}
 });
-var starling_filters_BlurFilter = function(blurX,blurY) {
-	if(blurY == null) blurY = 1.0;
-	if(blurX == null) blurX = 1.0;
-	starling_filters_FragmentFilter.call(this);
-	this._blurX = blurX;
-	this._blurY = blurY;
-	this.updatePadding();
-};
-$hxClasses["starling.filters.BlurFilter"] = starling_filters_BlurFilter;
-starling_filters_BlurFilter.__name__ = ["starling","filters","BlurFilter"];
-starling_filters_BlurFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_BlurFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	_blurX: null
-	,_blurY: null
-	,process: function(painter,pool,input0,input1,input2,input3) {
-		var effect;
-		effect = js_Boot.__cast(this.get_effect() , starling_filters_BlurEffect);
-		if(this._blurX == 0 && this._blurY == 0) {
-			effect.set_strength(0);
-			return starling_filters_FragmentFilter.prototype.process.call(this,painter,pool,input0);
-		}
-		var blurX = Math.abs(this._blurX);
-		var blurY = Math.abs(this._blurY);
-		var outTexture = input0;
-		var inTexture;
-		effect.set_direction(starling_filters_BlurEffect.HORIZONTAL);
-		while(blurX > 0) {
-			effect.set_strength(Math.min(1.0,blurX));
-			blurX -= effect.get_strength();
-			inTexture = outTexture;
-			outTexture = starling_filters_FragmentFilter.prototype.process.call(this,painter,pool,inTexture);
-			if(inTexture != input0) pool.putTexture(inTexture);
-		}
-		effect.set_direction(starling_filters_BlurEffect.VERTICAL);
-		while(blurY > 0) {
-			effect.set_strength(Math.min(1.0,blurY));
-			blurY -= effect.get_strength();
-			inTexture = outTexture;
-			outTexture = starling_filters_FragmentFilter.prototype.process.call(this,painter,pool,inTexture);
-			if(inTexture != input0) pool.putTexture(inTexture);
-		}
-		return outTexture;
-	}
-	,createEffect: function() {
-		return new starling_filters_BlurEffect();
-	}
-	,updatePadding: function() {
-		var paddingX;
-		if(this._blurX != 0) paddingX = Math.ceil(Math.abs(this._blurX)) + 3; else paddingX = 1;
-		var paddingY;
-		if(this._blurY != 0) paddingY = Math.ceil(Math.abs(this._blurY)) + 3; else paddingY = 1;
-		this.get_padding().setTo(paddingX,paddingX,paddingY,paddingY);
-	}
-	,get_blurX: function() {
-		return this._blurX;
-	}
-	,set_blurX: function(value) {
-		this._blurX = value;
-		this.updatePadding();
-		return value;
-	}
-	,get_blurY: function() {
-		return this._blurY;
-	}
-	,set_blurY: function(value) {
-		this._blurY = value;
-		this.updatePadding();
-		return value;
-	}
-	,__class__: starling_filters_BlurFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{set_blurY:"set_blurY",get_blurY:"get_blurY",set_blurX:"set_blurX",get_blurX:"get_blurX"})
-});
-var starling_filters_BlurEffect = function(direction,strength) {
-	if(strength == null) strength = 1;
-	if(direction == null) direction = "horizontal";
-	this.sTmpWeights = [0,0,0,0,0];
-	this._weights = [0,0,0,0];
-	this._offsets = [0,0,0,0];
-	starling_rendering_FilterEffect.call(this);
-	this.set_strength(strength);
-	this.set_direction(direction);
-};
-$hxClasses["starling.filters.BlurEffect"] = starling_filters_BlurEffect;
-starling_filters_BlurEffect.__name__ = ["starling","filters","BlurEffect"];
-starling_filters_BlurEffect.tex = function(resultReg,uvReg,sampler,texture) {
-	return starling_utils_RenderUtil.createAGALTexOperation(resultReg,uvReg,sampler,texture);
-};
-starling_filters_BlurEffect.__super__ = starling_rendering_FilterEffect;
-starling_filters_BlurEffect.prototype = $extend(starling_rendering_FilterEffect.prototype,{
-	_strength: null
-	,_direction: null
-	,_offsets: null
-	,_weights: null
-	,sTmpWeights: null
-	,createProgram: function() {
-		if(this._strength == 0) return starling_rendering_FilterEffect.prototype.createProgram.call(this);
-		var vertexShader = ["m44 op, va0, vc0\t ","mov v0, va1\t\t  ","sub v1, va1, vc4.zwxx","sub v2, va1, vc4.xyxx","add v3, va1, vc4.xyxx","add v4, va1, vc4.zwxx"].join("\n");
-		var fragmentShader = [starling_filters_BlurEffect.tex("ft0","v0",0,this.get_texture()),"mul ft5, ft0, fc0.xxxx\t   ",starling_filters_BlurEffect.tex("ft1","v1",0,this.get_texture()),"mul ft1, ft1, fc0.zzzz\t   ","add ft5, ft5, ft1\t\t\t",starling_filters_BlurEffect.tex("ft2","v2",0,this.get_texture()),"mul ft2, ft2, fc0.yyyy\t   ","add ft5, ft5, ft2\t\t\t",starling_filters_BlurEffect.tex("ft3","v3",0,this.get_texture()),"mul ft3, ft3, fc0.yyyy\t   ","add ft5, ft5, ft3\t\t\t",starling_filters_BlurEffect.tex("ft4","v4",0,this.get_texture()),"mul ft4, ft4, fc0.zzzz\t   ","add  oc, ft5, ft4\t\t\t"].join("\n");
-		return starling_rendering_Program.fromSource(vertexShader,fragmentShader);
-	}
-	,beforeDraw: function(context) {
-		starling_rendering_FilterEffect.prototype.beforeDraw.call(this,context);
-		if(this._strength != 0) {
-			this.updateParameters();
-			context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.VERTEX,4,this._offsets);
-			context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.FRAGMENT,0,this._weights);
-		}
-	}
-	,get_programVariantName: function() {
-		return starling_rendering_FilterEffect.prototype.get_programVariantName.call(this) | (this._strength != 0?16:0);
-	}
-	,updateParameters: function() {
-		var sigma;
-		var pixelSize;
-		if(this._direction == starling_filters_BlurEffect.HORIZONTAL) {
-			sigma = this._strength * starling_filters_BlurEffect.MAX_SIGMA;
-			pixelSize = 1.0 / this.get_texture().get_root().get_width();
-		} else {
-			sigma = this._strength * starling_filters_BlurEffect.MAX_SIGMA;
-			pixelSize = 1.0 / this.get_texture().get_root().get_height();
-		}
-		var twoSigmaSq = 2 * sigma * sigma;
-		var multiplier = 1.0 / Math.sqrt(twoSigmaSq * Math.PI);
-		var _g = 0;
-		while(_g < 5) {
-			var i = _g++;
-			this.sTmpWeights[i] = multiplier * Math.exp(-i * i / twoSigmaSq);
-		}
-		this._weights[0] = this.sTmpWeights[0];
-		this._weights[1] = this.sTmpWeights[1] + this.sTmpWeights[2];
-		this._weights[2] = this.sTmpWeights[3] + this.sTmpWeights[4];
-		var weightSum = this._weights[0] + 2 * this._weights[1] + 2 * this._weights[2];
-		var invWeightSum = 1.0 / weightSum;
-		this._weights[0] *= invWeightSum;
-		this._weights[1] *= invWeightSum;
-		this._weights[2] *= invWeightSum;
-		var offset1 = (pixelSize * this.sTmpWeights[1] + 2 * pixelSize * this.sTmpWeights[2]) / this._weights[1];
-		var offset2 = (3 * pixelSize * this.sTmpWeights[3] + 4 * pixelSize * this.sTmpWeights[4]) / this._weights[2];
-		if(this._direction == starling_filters_BlurEffect.HORIZONTAL) {
-			this._offsets[0] = offset1;
-			this._offsets[1] = 0;
-			this._offsets[2] = offset2;
-			this._offsets[3] = 0;
-		} else {
-			this._offsets[0] = 0;
-			this._offsets[1] = offset1;
-			this._offsets[2] = 0;
-			this._offsets[3] = offset2;
-		}
-	}
-	,get_direction: function() {
-		return this._direction;
-	}
-	,set_direction: function(value) {
-		this._direction = value;
-		return value;
-	}
-	,get_strength: function() {
-		return this._strength;
-	}
-	,set_strength: function(value) {
-		this._strength = starling_utils_MathUtil.clamp(value,0,1);
-		return value;
-	}
-	,__class__: starling_filters_BlurEffect
-	,__properties__: $extend(starling_rendering_FilterEffect.prototype.__properties__,{set_strength:"set_strength",get_strength:"get_strength",set_direction:"set_direction",get_direction:"get_direction"})
-});
-var starling_filters_ColorMatrixFilter = function(matrix) {
-	starling_filters_FragmentFilter.call(this);
-	if(matrix != null) this.get_colorEffect().set_matrix(matrix);
-};
-$hxClasses["starling.filters.ColorMatrixFilter"] = starling_filters_ColorMatrixFilter;
-starling_filters_ColorMatrixFilter.__name__ = ["starling","filters","ColorMatrixFilter"];
-starling_filters_ColorMatrixFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_ColorMatrixFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	createEffect: function() {
-		return new starling_filters_ColorMatrixEffect();
-	}
-	,invert: function() {
-		this.concatValues(-1,0,0,0,255,0,-1,0,0,255,0,0,-1,0,255,0,0,0,1,0);
-	}
-	,adjustSaturation: function(sat) {
-		sat += 1;
-		var invSat = 1 - sat;
-		var invLumR = invSat * starling_filters_ColorMatrixFilter.LUMA_R;
-		var invLumG = invSat * starling_filters_ColorMatrixFilter.LUMA_G;
-		var invLumB = invSat * starling_filters_ColorMatrixFilter.LUMA_B;
-		this.concatValues(invLumR + sat,invLumG,invLumB,0,0,invLumR,invLumG + sat,invLumB,0,0,invLumR,invLumG,invLumB + sat,0,0,0,0,0,1,0);
-	}
-	,adjustContrast: function(value) {
-		var s = value + 1;
-		var o = 128 * (1 - s);
-		this.concatValues(s,0,0,0,o,0,s,0,0,o,0,0,s,0,o,0,0,0,1,0);
-	}
-	,adjustBrightness: function(value) {
-		value *= 255;
-		this.concatValues(1,0,0,0,value,0,1,0,0,value,0,0,1,0,value,0,0,0,1,0);
-	}
-	,adjustHue: function(value) {
-		value *= Math.PI;
-		var cos = Math.cos(value);
-		var sin = Math.sin(value);
-		this.concatValues(starling_filters_ColorMatrixFilter.LUMA_R + cos * (1 - starling_filters_ColorMatrixFilter.LUMA_R) + sin * -starling_filters_ColorMatrixFilter.LUMA_R,starling_filters_ColorMatrixFilter.LUMA_G + cos * -starling_filters_ColorMatrixFilter.LUMA_G + sin * -starling_filters_ColorMatrixFilter.LUMA_G,starling_filters_ColorMatrixFilter.LUMA_B + cos * -starling_filters_ColorMatrixFilter.LUMA_B + sin * (1 - starling_filters_ColorMatrixFilter.LUMA_B),0,0,starling_filters_ColorMatrixFilter.LUMA_R + cos * -starling_filters_ColorMatrixFilter.LUMA_R + sin * 0.143,starling_filters_ColorMatrixFilter.LUMA_G + cos * (1 - starling_filters_ColorMatrixFilter.LUMA_G) + sin * 0.14,starling_filters_ColorMatrixFilter.LUMA_B + cos * -starling_filters_ColorMatrixFilter.LUMA_B + sin * -0.283,0,0,starling_filters_ColorMatrixFilter.LUMA_R + cos * -starling_filters_ColorMatrixFilter.LUMA_R + sin * -(1 - starling_filters_ColorMatrixFilter.LUMA_R),starling_filters_ColorMatrixFilter.LUMA_G + cos * -starling_filters_ColorMatrixFilter.LUMA_G + sin * starling_filters_ColorMatrixFilter.LUMA_G,starling_filters_ColorMatrixFilter.LUMA_B + cos * (1 - starling_filters_ColorMatrixFilter.LUMA_B) + sin * starling_filters_ColorMatrixFilter.LUMA_B,0,0,0,0,0,1,0);
-	}
-	,tint: function(color,amount) {
-		if(amount == null) amount = 1.0;
-		var r = starling_utils_Color.getRed(color) / 255.0;
-		var g = starling_utils_Color.getGreen(color) / 255.0;
-		var b = starling_utils_Color.getBlue(color) / 255.0;
-		var q = 1 - amount;
-		var rA = amount * r;
-		var gA = amount * g;
-		var bA = amount * b;
-		this.concatValues(q + rA * starling_filters_ColorMatrixFilter.LUMA_R,rA * starling_filters_ColorMatrixFilter.LUMA_G,rA * starling_filters_ColorMatrixFilter.LUMA_B,0,0,gA * starling_filters_ColorMatrixFilter.LUMA_R,q + gA * starling_filters_ColorMatrixFilter.LUMA_G,gA * starling_filters_ColorMatrixFilter.LUMA_B,0,0,bA * starling_filters_ColorMatrixFilter.LUMA_R,bA * starling_filters_ColorMatrixFilter.LUMA_G,q + bA * starling_filters_ColorMatrixFilter.LUMA_B,0,0,0,0,0,1,0);
-	}
-	,reset: function() {
-		this.set_matrix(null);
-	}
-	,concat: function(matrix) {
-		this.get_colorEffect().concat(matrix);
-		this.setRequiresRedraw();
-	}
-	,concatValues: function(m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19) {
-		starling_filters_ColorMatrixFilter.sMatrix.splice(0,starling_filters_ColorMatrixFilter.sMatrix.length);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m0);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m1);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m2);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m3);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m4);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m5);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m6);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m7);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m8);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m9);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m10);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m11);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m12);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m13);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m14);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m15);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m16);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m17);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m18);
-		starling_filters_ColorMatrixFilter.sMatrix.push(m19);
-		this.concat(starling_filters_ColorMatrixFilter.sMatrix);
-	}
-	,get_matrix: function() {
-		return this.get_colorEffect().get_matrix();
-	}
-	,set_matrix: function(value) {
-		this.get_colorEffect().set_matrix(value);
-		this.setRequiresRedraw();
-		return value;
-	}
-	,get_colorEffect: function() {
-		return js_Boot.__cast(this.get_effect() , starling_filters_ColorMatrixEffect);
-	}
-	,__class__: starling_filters_ColorMatrixFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{get_colorEffect:"get_colorEffect",set_matrix:"set_matrix",get_matrix:"get_matrix"})
-});
-var starling_filters_ColorMatrixEffect = function() {
-	starling_rendering_FilterEffect.call(this);
-	this._userMatrix = [];
-	this._shaderMatrix = [];
-	this.set_matrix(null);
-};
-$hxClasses["starling.filters.ColorMatrixEffect"] = starling_filters_ColorMatrixEffect;
-starling_filters_ColorMatrixEffect.__name__ = ["starling","filters","ColorMatrixEffect"];
-starling_filters_ColorMatrixEffect.__super__ = starling_rendering_FilterEffect;
-starling_filters_ColorMatrixEffect.prototype = $extend(starling_rendering_FilterEffect.prototype,{
-	_userMatrix: null
-	,_shaderMatrix: null
-	,createProgram: function() {
-		var vertexShader = starling_rendering_FilterEffect.STD_VERTEX_SHADER;
-		var fragmentShader = [starling_utils_RenderUtil.createAGALTexOperation("ft0","v0",0,this.get_texture()),"max ft0, ft0, fc5\t\t\t  ","div ft0.xyz, ft0.xyz, ft0.www  ","m44 ft0, ft0, fc0\t\t\t  ","add ft0, ft0, fc4\t\t\t  ","mul ft0.xyz, ft0.xyz, ft0.www  ","mov oc, ft0\t\t\t\t\t"].join("\n");
-		return starling_rendering_Program.fromSource(vertexShader,fragmentShader);
-	}
-	,beforeDraw: function(context) {
-		starling_rendering_FilterEffect.prototype.beforeDraw.call(this,context);
-		context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.FRAGMENT,0,this._shaderMatrix);
-		context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.FRAGMENT,5,starling_filters_ColorMatrixEffect.MIN_COLOR);
-	}
-	,reset: function() {
-		this.set_matrix(null);
-	}
-	,concat: function(matrix) {
-		var i = 0;
-		var _g = 0;
-		while(_g < 4) {
-			var y = _g++;
-			var _g1 = 0;
-			while(_g1 < 5) {
-				var x = _g1++;
-				starling_filters_ColorMatrixEffect.sMatrix[i + x] = matrix[i] * this._userMatrix[x] + matrix[i + 1] * this._userMatrix[x + 5] + matrix[i + 2] * this._userMatrix[x + 10] + matrix[i + 3] * this._userMatrix[x + 15] + (x == 4?matrix[i + 4]:0);
-			}
-			i += 5;
-		}
-		this.copyMatrix(starling_filters_ColorMatrixEffect.sMatrix,this._userMatrix);
-		this.updateShaderMatrix();
-	}
-	,copyMatrix: function(from,to) {
-		var _g = 0;
-		while(_g < 20) {
-			var i = _g++;
-			to[i] = from[i];
-		}
-	}
-	,updateShaderMatrix: function() {
-		this._shaderMatrix.splice(0,this._shaderMatrix.length);
-		this._shaderMatrix.push(this._userMatrix[0]);
-		this._shaderMatrix.push(this._userMatrix[1]);
-		this._shaderMatrix.push(this._userMatrix[2]);
-		this._shaderMatrix.push(this._userMatrix[3]);
-		this._shaderMatrix.push(this._userMatrix[5]);
-		this._shaderMatrix.push(this._userMatrix[6]);
-		this._shaderMatrix.push(this._userMatrix[7]);
-		this._shaderMatrix.push(this._userMatrix[8]);
-		this._shaderMatrix.push(this._userMatrix[10]);
-		this._shaderMatrix.push(this._userMatrix[11]);
-		this._shaderMatrix.push(this._userMatrix[12]);
-		this._shaderMatrix.push(this._userMatrix[13]);
-		this._shaderMatrix.push(this._userMatrix[15]);
-		this._shaderMatrix.push(this._userMatrix[16]);
-		this._shaderMatrix.push(this._userMatrix[17]);
-		this._shaderMatrix.push(this._userMatrix[18]);
-		this._shaderMatrix.push(this._userMatrix[4] / 255.0);
-		this._shaderMatrix.push(this._userMatrix[9] / 255.0);
-		this._shaderMatrix.push(this._userMatrix[14] / 255.0);
-		this._shaderMatrix.push(this._userMatrix[19] / 255.0);
-	}
-	,get_matrix: function() {
-		return this._userMatrix;
-	}
-	,set_matrix: function(value) {
-		if(value != null && value.length != 20) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid matrix length: must be 20"));
-		if(value == null) {
-			this._userMatrix.splice(0,this._userMatrix.length);
-			var _g1 = 0;
-			var _g = starling_filters_ColorMatrixEffect.IDENTITY.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				this._userMatrix.push(starling_filters_ColorMatrixEffect.IDENTITY[i]);
-			}
-		} else this.copyMatrix(value,this._userMatrix);
-		this.updateShaderMatrix();
-		return this._userMatrix;
-	}
-	,__class__: starling_filters_ColorMatrixEffect
-	,__properties__: $extend(starling_rendering_FilterEffect.prototype.__properties__,{set_matrix:"set_matrix",get_matrix:"get_matrix"})
-});
-var starling_filters_CompositeFilter = function() {
-	starling_filters_FragmentFilter.call(this);
-};
-$hxClasses["starling.filters.CompositeFilter"] = starling_filters_CompositeFilter;
-starling_filters_CompositeFilter.__name__ = ["starling","filters","CompositeFilter"];
-starling_filters_CompositeFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_CompositeFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	process: function(painter,pool,input0,input1,input2,input3) {
-		this.get_compositeEffect().set_texture(input0);
-		this.get_compositeEffect().getLayerAt(1).texture = input1;
-		this.get_compositeEffect().getLayerAt(2).texture = input2;
-		this.get_compositeEffect().getLayerAt(3).texture = input3;
-		return starling_filters_FragmentFilter.prototype.process.call(this,painter,pool,input0,input1,input2,input3);
-	}
-	,createEffect: function() {
-		return new starling_filters_CompositeEffect();
-	}
-	,getOffsetAt: function(layerID,out) {
-		if(out == null) out = new openfl_geom_Point();
-		out.x = this.get_compositeEffect().getLayerAt(layerID).x;
-		out.y = this.get_compositeEffect().getLayerAt(layerID).y;
-		return out;
-	}
-	,setOffsetAt: function(layerID,x,y) {
-		this.get_compositeEffect().getLayerAt(layerID).x = x;
-		this.get_compositeEffect().getLayerAt(layerID).y = y;
-	}
-	,getColorAt: function(layerID) {
-		return this.get_compositeEffect().getLayerAt(layerID).color;
-	}
-	,setColorAt: function(layerID,color,replace) {
-		if(replace == null) replace = false;
-		this.get_compositeEffect().getLayerAt(layerID).color = color;
-		this.get_compositeEffect().getLayerAt(layerID).replaceColor = replace;
-	}
-	,getAlphaAt: function(layerID) {
-		return this.get_compositeEffect().getLayerAt(layerID).alpha;
-	}
-	,setAlphaAt: function(layerID,alpha) {
-		this.get_compositeEffect().getLayerAt(layerID).alpha = alpha;
-	}
-	,get_compositeEffect: function() {
-		return js_Boot.__cast(this.get_effect() , starling_filters_CompositeEffect);
-	}
-	,__class__: starling_filters_CompositeFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{get_compositeEffect:"get_compositeEffect"})
-});
-var starling_filters_CompositeEffect = function(numLayers) {
-	if(numLayers == null) numLayers = 4;
-	starling_rendering_FilterEffect.call(this);
-	if(numLayers < 1 || numLayers > 4) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("number of layers must be between 1 and 4"));
-	this._layers = [];
-	var _g = 0;
-	while(_g < numLayers) {
-		var i = _g++;
-		this._layers[i] = new starling_filters_CompositeLayer();
-	}
-};
-$hxClasses["starling.filters.CompositeEffect"] = starling_filters_CompositeEffect;
-starling_filters_CompositeEffect.__name__ = ["starling","filters","CompositeEffect"];
-starling_filters_CompositeEffect.tex = function(resultReg,uvReg,sampler,texture) {
-	return starling_utils_RenderUtil.createAGALTexOperation(resultReg,uvReg,sampler,texture);
-};
-starling_filters_CompositeEffect.__super__ = starling_rendering_FilterEffect;
-starling_filters_CompositeEffect.prototype = $extend(starling_rendering_FilterEffect.prototype,{
-	_layers: null
-	,getLayerAt: function(layerID) {
-		return this._layers[layerID];
-	}
-	,getUsedLayers: function(out) {
-		if(out == null) out = []; else out.splice(0,out.length);
-		var _g = 0;
-		var _g1 = this._layers;
-		while(_g < _g1.length) {
-			var layer = _g1[_g];
-			++_g;
-			if(layer.texture != null) out[out.length] = layer;
-		}
-		return out;
-	}
-	,createProgram: function() {
-		var layers = this.getUsedLayers(starling_filters_CompositeEffect.sLayers);
-		var numLayers = layers.length;
-		var i;
-		if(numLayers != 0) {
-			var vertexShader = ["m44 op, va0, vc0"];
-			var layer = this._layers[0];
-			var _g = 0;
-			while(_g < numLayers) {
-				var i1 = _g++;
-				vertexShader.push(starling_utils_StringUtil.format("sub v{0}, va1, vc{1} \n",[i1,i1 + 4]));
-			}
-			var fragmentShader = ["seq ft5, v0, v0"];
-			var _g1 = 0;
-			while(_g1 < numLayers) {
-				var i2 = _g1++;
-				var fti = "ft" + i2;
-				var fci = "fc" + i2;
-				var vi = "v" + i2;
-				layer = this._layers[i2];
-				fragmentShader.push(starling_filters_CompositeEffect.tex(fti,vi,i2,layers[i2].texture));
-				if(layer.replaceColor) {
-					fragmentShader.push("mul " + fti + ".w,   " + fti + ".w,   " + fci + ".w");
-					fragmentShader.push("mul " + fti + ".xyz, " + fci + ".xyz, " + fti + ".www");
-				} else fragmentShader.push("mul " + fti + ", " + fti + ", " + fci);
-				if(i2 != 0) {
-					fragmentShader.push("sub ft4, ft5, " + fti + ".wwww");
-					fragmentShader.push("mul ft0, ft0, ft4");
-					fragmentShader.push("add ft0, ft0, " + fti);
-				}
-			}
-			fragmentShader.push("mov oc ft0");
-			return starling_rendering_Program.fromSource(vertexShader.join("\n"),fragmentShader.join("\n"));
-		} else return starling_rendering_FilterEffect.prototype.createProgram.call(this);
-	}
-	,get_programVariantName: function() {
-		var bits;
-		var totalBits = 0;
-		var layer;
-		var layers = this.getUsedLayers(starling_filters_CompositeEffect.sLayers);
-		var numLayers = layers.length;
-		var _g = 0;
-		while(_g < numLayers) {
-			var i = _g++;
-			layer = layers[i];
-			var replaceColorBoolInt = 0;
-			if(layer.replaceColor) replaceColorBoolInt = 1;
-			bits = starling_utils_RenderUtil.getTextureVariantBits(layer.texture) | replaceColorBoolInt << 3;
-			totalBits |= bits << i * 4;
-		}
-		return totalBits;
-	}
-	,beforeDraw: function(context) {
-		var layers = this.getUsedLayers(starling_filters_CompositeEffect.sLayers);
-		var numLayers = layers.length;
-		if(numLayers != 0) {
-			var _g = 0;
-			while(_g < numLayers) {
-				var i = _g++;
-				var layer = layers[i];
-				var texture = layer.texture;
-				var alphaFactor;
-				if(layer.replaceColor) alphaFactor = 1.0; else alphaFactor = layer.alpha;
-				starling_filters_CompositeEffect.sOffset[0] = layer.x / texture.get_root().get_width();
-				starling_filters_CompositeEffect.sOffset[1] = layer.y / texture.get_root().get_height();
-				starling_filters_CompositeEffect.sColor[0] = starling_utils_Color.getRed(layer.color) * alphaFactor / 255.0;
-				starling_filters_CompositeEffect.sColor[1] = starling_utils_Color.getGreen(layer.color) * alphaFactor / 255.0;
-				starling_filters_CompositeEffect.sColor[2] = starling_utils_Color.getBlue(layer.color) * alphaFactor / 255.0;
-				starling_filters_CompositeEffect.sColor[3] = layer.alpha;
-				context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.VERTEX,i + 4,starling_filters_CompositeEffect.sOffset);
-				context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.FRAGMENT,i,starling_filters_CompositeEffect.sColor);
-				context.setTextureAt(i,texture.get_base());
-				starling_utils_RenderUtil.setSamplerStateAt(i,texture.get_mipMapping(),this.get_textureSmoothing());
-			}
-		}
-		starling_rendering_FilterEffect.prototype.beforeDraw.call(this,context);
-	}
-	,afterDraw: function(context) {
-		var len = this._layers.length;
-		var _g = 0;
-		while(_g < len) {
-			var i = _g++;
-			context.setTextureAt(i,null);
-		}
-	}
-	,get_numLayers: function() {
-		return this._layers.length;
-	}
-	,set_texture: function(value) {
-		this._layers[0].texture = value;
-		starling_rendering_FilterEffect.prototype.set_texture.call(this,value);
-		return value;
-	}
-	,__class__: starling_filters_CompositeEffect
-	,__properties__: $extend(starling_rendering_FilterEffect.prototype.__properties__,{get_numLayers:"get_numLayers"})
-});
-var starling_filters_CompositeLayer = function() {
-	this.x = this.y = 0;
-	this.alpha = 1.0;
-	this.color = 16777215;
-};
-$hxClasses["starling.filters.CompositeLayer"] = starling_filters_CompositeLayer;
-starling_filters_CompositeLayer.__name__ = ["starling","filters","CompositeLayer"];
-starling_filters_CompositeLayer.prototype = {
-	texture: null
-	,x: null
-	,y: null
-	,color: null
-	,alpha: null
-	,replaceColor: null
-	,__class__: starling_filters_CompositeLayer
-};
-var starling_filters_DisplacementMapFilter = function(mapTexture,mapPoint,componentX,componentY,scaleX,scaleY) {
-	if(scaleY == null) scaleY = 0.0;
-	if(scaleX == null) scaleX = 0.0;
-	if(componentY == null) componentY = 0;
-	if(componentX == null) componentX = 0;
-	starling_filters_FragmentFilter.call(this);
-	this.set_mapTexture(mapTexture);
-	this.set_mapPoint(mapPoint);
-	this.set_componentX(componentX);
-	this.set_componentY(componentY);
-	this.set_scaleX(scaleX);
-	this.set_scaleY(scaleY);
-};
-$hxClasses["starling.filters.DisplacementMapFilter"] = starling_filters_DisplacementMapFilter;
-starling_filters_DisplacementMapFilter.__name__ = ["starling","filters","DisplacementMapFilter"];
-starling_filters_DisplacementMapFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_DisplacementMapFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	process: function(painter,pool,input0,input1,input2,input3) {
-		this.updateVertexData(input0,this.get_mapTexture());
-		return starling_filters_FragmentFilter.prototype.process.call(this,painter,pool,input0);
-	}
-	,createEffect: function() {
-		return new starling_filters_DisplacementMapEffect();
-	}
-	,updateVertexData: function(inputTexture,mapTexture) {
-		var scale;
-		if(starling_core_Starling.sCurrent != null) scale = starling_core_Starling.sCurrent.get_contentScaleFactor(); else scale = 1.0;
-		var mapX = (this.get_dispEffect().get_mapPoint().x + this.get_padding().get_left()) / mapTexture.get_width();
-		var mapY = (this.get_dispEffect().get_mapPoint().y + this.get_padding().get_top()) / mapTexture.get_height();
-		var maxU = inputTexture.get_root().get_nativeWidth() / (mapTexture.get_width() * scale);
-		var maxV = inputTexture.get_root().get_nativeHeight() / (mapTexture.get_height() * scale);
-		mapTexture.setTexCoords(this.get_vertexData(),0,"mapTexCoords",-mapX,-mapY);
-		mapTexture.setTexCoords(this.get_vertexData(),1,"mapTexCoords",-mapX + maxU,-mapY);
-		mapTexture.setTexCoords(this.get_vertexData(),2,"mapTexCoords",-mapX,-mapY + maxV);
-		mapTexture.setTexCoords(this.get_vertexData(),3,"mapTexCoords",-mapX + maxU,-mapY + maxV);
-	}
-	,updatePadding: function() {
-		var paddingX = Math.ceil(Math.abs(this.get_dispEffect().get_scaleX()) / 2);
-		var paddingY = Math.ceil(Math.abs(this.get_dispEffect().get_scaleY()) / 2);
-		this.get_padding().setTo(paddingX,paddingX,paddingY,paddingY);
-	}
-	,get_componentX: function() {
-		return this.get_dispEffect().get_componentX();
-	}
-	,set_componentX: function(value) {
-		if(this.get_dispEffect().get_componentX() != value) {
-			this.get_dispEffect().set_componentX(value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_componentY: function() {
-		return this.get_dispEffect().get_componentY();
-	}
-	,set_componentY: function(value) {
-		if(this.get_dispEffect().get_componentY() != value) {
-			this.get_dispEffect().set_componentY(value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_scaleX: function() {
-		return this.get_dispEffect().get_scaleX();
-	}
-	,set_scaleX: function(value) {
-		if(this.get_dispEffect().get_scaleX() != value) {
-			this.get_dispEffect().set_scaleX(value);
-			this.updatePadding();
-		}
-		return value;
-	}
-	,get_scaleY: function() {
-		return this.get_dispEffect().get_scaleY();
-	}
-	,set_scaleY: function(value) {
-		if(this.get_dispEffect().get_scaleY() != value) {
-			this.get_dispEffect().set_scaleY(value);
-			this.updatePadding();
-		}
-		return value;
-	}
-	,get_mapTexture: function() {
-		return this.get_dispEffect().get_mapTexture();
-	}
-	,set_mapTexture: function(value) {
-		if(this.get_dispEffect().get_mapTexture() != value) {
-			this.get_dispEffect().set_mapTexture(value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_mapPoint: function() {
-		return this.get_dispEffect().get_mapPoint();
-	}
-	,set_mapPoint: function(value) {
-		this.get_dispEffect().set_mapPoint(value);
-		this.setRequiresRedraw();
-		return value;
-	}
-	,get_mapRepeat: function() {
-		return this.get_dispEffect().get_mapRepeat();
-	}
-	,set_mapRepeat: function(value) {
-		if(this.get_dispEffect().get_mapRepeat() != value) {
-			this.get_dispEffect().set_mapRepeat(value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_dispEffect: function() {
-		return js_Boot.__cast(this.get_effect() , starling_filters_DisplacementMapEffect);
-	}
-	,__class__: starling_filters_DisplacementMapFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{get_dispEffect:"get_dispEffect",set_mapRepeat:"set_mapRepeat",get_mapRepeat:"get_mapRepeat",set_mapPoint:"set_mapPoint",get_mapPoint:"get_mapPoint",set_mapTexture:"set_mapTexture",get_mapTexture:"get_mapTexture",set_scaleY:"set_scaleY",get_scaleY:"get_scaleY",set_scaleX:"set_scaleX",get_scaleX:"get_scaleX",set_componentY:"set_componentY",get_componentY:"get_componentY",set_componentX:"set_componentX",get_componentX:"get_componentX"})
-});
-var starling_filters_DisplacementMapEffect = function() {
-	starling_rendering_FilterEffect.call(this);
-	this._mapPoint = new openfl_geom_Point();
-	this._componentX = this._componentY = 0;
-	this._scaleX = this._scaleY = 0;
-};
-$hxClasses["starling.filters.DisplacementMapEffect"] = starling_filters_DisplacementMapEffect;
-starling_filters_DisplacementMapEffect.__name__ = ["starling","filters","DisplacementMapEffect"];
-starling_filters_DisplacementMapEffect.tex = function(resultReg,uvReg,sampler,texture,convertToPmaIfRequired) {
-	if(convertToPmaIfRequired == null) convertToPmaIfRequired = true;
-	return starling_utils_RenderUtil.createAGALTexOperation(resultReg,uvReg,sampler,texture,convertToPmaIfRequired);
-};
-starling_filters_DisplacementMapEffect.__super__ = starling_rendering_FilterEffect;
-starling_filters_DisplacementMapEffect.prototype = $extend(starling_rendering_FilterEffect.prototype,{
-	_mapTexture: null
-	,_mapPoint: null
-	,_mapRepeat: null
-	,_componentX: null
-	,_componentY: null
-	,_scaleX: null
-	,_scaleY: null
-	,createProgram: function() {
-		if(this._mapTexture != null) {
-			var vertexShader = ["m44  op, va0, vc0","mov  v0, va1","mov  v1, va2"].join("\n");
-			var fragmentShader = [starling_filters_DisplacementMapEffect.tex("ft0","v1",1,this._mapTexture,false),"sub ft1, ft0, fc0","m44 ft2, ft1, fc1","add ft3,  v0, ft2",starling_filters_DisplacementMapEffect.tex("oc","ft3",0,this.get_texture())].join("\n");
-			return starling_rendering_Program.fromSource(vertexShader,fragmentShader);
-		} else return starling_rendering_FilterEffect.prototype.createProgram.call(this);
-	}
-	,beforeDraw: function(context) {
-		starling_rendering_FilterEffect.prototype.beforeDraw.call(this,context);
-		if(this._mapTexture != null) {
-			this.getMapMatrix(starling_filters_DisplacementMapEffect.sMatrix);
-			this.get_vertexFormat().setVertexBufferAt(2,this.get_vertexBuffer(),"mapTexCoords");
-			context.setProgramConstantsFromVector(openfl_display3D_Context3DProgramType.FRAGMENT,0,starling_filters_DisplacementMapEffect.sOneHalf);
-			context.setProgramConstantsFromMatrix(openfl_display3D_Context3DProgramType.FRAGMENT,1,starling_filters_DisplacementMapEffect.sMatrix,true);
-			starling_utils_RenderUtil.setSamplerStateAt(1,this._mapTexture.get_mipMapping(),this.get_textureSmoothing(),this._mapRepeat);
-			context.setTextureAt(1,this._mapTexture.get_base());
-		}
-	}
-	,afterDraw: function(context) {
-		if(this._mapTexture != null) {
-			context.setVertexBufferAt(2,null);
-			context.setTextureAt(1,null);
-		}
-		starling_rendering_FilterEffect.prototype.afterDraw.call(this,context);
-	}
-	,get_vertexFormat: function() {
-		return starling_filters_DisplacementMapEffect.VERTEX_FORMAT;
-	}
-	,getMapMatrix: function(out) {
-		if(out == null) out = new openfl_geom_Matrix3D();
-		var columnX;
-		var columnY;
-		var scale;
-		if(starling_core_Starling.sCurrent != null) scale = starling_core_Starling.sCurrent.get_contentScaleFactor(); else scale = 1.0;
-		var textureWidth = this.get_texture().get_root().get_nativeWidth();
-		var textureHeight = this.get_texture().get_root().get_nativeHeight();
-		var _g = 0;
-		while(_g < 16) {
-			var i = _g++;
-			starling_filters_DisplacementMapEffect.sMatrixData[i] = 0;
-		}
-		if(this._componentX == 1) columnX = 0; else if(this._componentX == 2) columnX = 1; else if(this._componentX == 4) columnX = 2; else columnX = 3;
-		if(this._componentY == 1) columnY = 0; else if(this._componentY == 2) columnY = 1; else if(this._componentY == 4) columnY = 2; else columnY = 3;
-		starling_filters_DisplacementMapEffect.sMatrixData[columnX * 4] = this._scaleX * scale / textureWidth;
-		starling_filters_DisplacementMapEffect.sMatrixData[columnY * 4 + 1] = this._scaleY * scale / textureHeight;
-		out.copyRawDataFrom((function($this) {
-			var $r;
-			var value = starling_filters_DisplacementMapEffect.sMatrixData;
-			var vectorData = new openfl_VectorData();
-			vectorData.length = value.length;
-			vectorData.fixed = true;
-			{
-				var vec;
-				var this1;
-				this1 = new Array(value.length);
-				vec = this1;
-				var _g1 = 0;
-				var _g2 = value.length;
-				while(_g1 < _g2) {
-					var i1 = _g1++;
-					vec[i1] = value[i1];
-				}
-				vectorData.data = vec;
-			}
-			$r = vectorData;
-			return $r;
-		}(this)));
-		return out;
-	}
-	,get_componentX: function() {
-		return this._componentX;
-	}
-	,set_componentX: function(value) {
-		this._componentX = value;
-		return value;
-	}
-	,get_componentY: function() {
-		return this._componentY;
-	}
-	,set_componentY: function(value) {
-		this._componentY = value;
-		return value;
-	}
-	,get_scaleX: function() {
-		return this._scaleX;
-	}
-	,set_scaleX: function(value) {
-		this._scaleX = value;
-		return value;
-	}
-	,get_scaleY: function() {
-		return this._scaleY;
-	}
-	,set_scaleY: function(value) {
-		this._scaleY = value;
-		return value;
-	}
-	,get_mapTexture: function() {
-		return this._mapTexture;
-	}
-	,set_mapTexture: function(value) {
-		this._mapTexture = value;
-		return value;
-	}
-	,get_mapPoint: function() {
-		return this._mapPoint;
-	}
-	,set_mapPoint: function(value) {
-		if(value != null) this._mapPoint.setTo(value.x,value.y); else this._mapPoint.setTo(0,0);
-		return value;
-	}
-	,get_mapRepeat: function() {
-		return this._mapRepeat;
-	}
-	,set_mapRepeat: function(value) {
-		this._mapRepeat = value;
-		return value;
-	}
-	,__class__: starling_filters_DisplacementMapEffect
-	,__properties__: $extend(starling_rendering_FilterEffect.prototype.__properties__,{set_mapRepeat:"set_mapRepeat",get_mapRepeat:"get_mapRepeat",set_mapPoint:"set_mapPoint",get_mapPoint:"get_mapPoint",set_mapTexture:"set_mapTexture",get_mapTexture:"get_mapTexture",set_scaleY:"set_scaleY",get_scaleY:"get_scaleY",set_scaleX:"set_scaleX",get_scaleX:"get_scaleX",set_componentY:"set_componentY",get_componentY:"get_componentY",set_componentX:"set_componentX",get_componentX:"get_componentX"})
-});
-var starling_filters_DropShadowFilter = function(distance,angle,color,alpha,blur) {
-	if(blur == null) blur = 1.0;
-	if(alpha == null) alpha = 0.5;
-	if(color == null) color = 0;
-	if(angle == null) angle = 0.785;
-	if(distance == null) distance = 4.0;
-	starling_filters_FragmentFilter.call(this);
-	this._compositeFilter = new starling_filters_CompositeFilter();
-	this._blurFilter = new starling_filters_BlurFilter(blur,blur);
-	this._distance = distance;
-	this._angle = angle;
-	this.set_color(color);
-	this.set_alpha(alpha);
-	this.updatePadding();
-};
-$hxClasses["starling.filters.DropShadowFilter"] = starling_filters_DropShadowFilter;
-starling_filters_DropShadowFilter.__name__ = ["starling","filters","DropShadowFilter"];
-starling_filters_DropShadowFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_DropShadowFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	_blurFilter: null
-	,_compositeFilter: null
-	,_distance: null
-	,_angle: null
-	,dispose: function() {
-		this._blurFilter.dispose();
-		this._compositeFilter.dispose();
-		starling_filters_FragmentFilter.prototype.dispose.call(this);
-	}
-	,process: function(painter,pool,input0,input1,input2,input3) {
-		var shadow = this._blurFilter.process(painter,pool,input0);
-		var result = this._compositeFilter.process(painter,pool,shadow,input0);
-		pool.putTexture(shadow);
-		return result;
-	}
-	,updatePadding: function() {
-		var offsetX = Math.cos(this._angle) * this._distance;
-		var offsetY = Math.sin(this._angle) * this._distance;
-		this._compositeFilter.setOffsetAt(0,offsetX,offsetY);
-		var blurPadding = this._blurFilter.get_padding();
-		var left = blurPadding.get_left();
-		var right = blurPadding.get_right();
-		var top = blurPadding.get_top();
-		var bottom = blurPadding.get_bottom();
-		if(offsetX > 0) right += offsetX; else left -= offsetX;
-		if(offsetY > 0) bottom += offsetY; else top -= offsetY;
-		this.get_padding().setTo(left,right,top,bottom);
-	}
-	,get_color: function() {
-		return this._compositeFilter.getColorAt(0);
-	}
-	,set_color: function(value) {
-		if(this.get_color() != value) {
-			this._compositeFilter.setColorAt(0,value,true);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_alpha: function() {
-		return this._compositeFilter.getAlphaAt(0);
-	}
-	,set_alpha: function(value) {
-		if(this.get_alpha() != value) {
-			this._compositeFilter.setAlphaAt(0,value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_distance: function() {
-		return this._distance;
-	}
-	,set_distance: function(value) {
-		if(this._distance != value) {
-			this._distance = value;
-			this.updatePadding();
-		}
-		return value;
-	}
-	,get_angle: function() {
-		return this._angle;
-	}
-	,set_angle: function(value) {
-		if(this._angle != value) {
-			this._angle = value;
-			this.updatePadding();
-		}
-		return value;
-	}
-	,get_blur: function() {
-		return this._blurFilter.get_blurX();
-	}
-	,set_blur: function(value) {
-		if(this.get_blur() != value) {
-			this._blurFilter.set_blurX(this._blurFilter.set_blurY(value));
-			this.updatePadding();
-		}
-		return value;
-	}
-	,__class__: starling_filters_DropShadowFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{set_blur:"set_blur",get_blur:"get_blur",set_angle:"set_angle",get_angle:"get_angle",set_distance:"set_distance",get_distance:"get_distance",set_alpha:"set_alpha",get_alpha:"get_alpha",set_color:"set_color",get_color:"get_color"})
-});
-var starling_utils_Padding = function(left,right,top,bottom) {
-	if(bottom == null) bottom = 0;
-	if(top == null) top = 0;
-	if(right == null) right = 0;
-	if(left == null) left = 0;
-	starling_events_EventDispatcher.call(this);
-	this.setTo(left,right,top,bottom);
-};
-$hxClasses["starling.utils.Padding"] = starling_utils_Padding;
-starling_utils_Padding.__name__ = ["starling","utils","Padding"];
-starling_utils_Padding.__super__ = starling_events_EventDispatcher;
-starling_utils_Padding.prototype = $extend(starling_events_EventDispatcher.prototype,{
-	_left: null
-	,_right: null
-	,_top: null
-	,_bottom: null
-	,setTo: function(left,right,top,bottom) {
-		if(bottom == null) bottom = 0;
-		if(top == null) top = 0;
-		if(right == null) right = 0;
-		if(left == null) left = 0;
-		var changed = this._left != left || this._right != right || this._top != top || this._bottom != bottom;
-		this._left = left;
-		this._right = right;
-		this._top = top;
-		this._bottom = bottom;
-		if(changed) this.dispatchEventWith(starling_events_Event.CHANGE);
-	}
-	,copyFrom: function(padding) {
-		if(padding == null) this.setTo(0,0,0,0); else this.setTo(padding._left,padding._right,padding._top,padding._bottom);
-	}
-	,clone: function() {
-		return new starling_utils_Padding(this._left,this._right,this._top,this._bottom);
-	}
-	,get_left: function() {
-		return this._left;
-	}
-	,set_left: function(value) {
-		if(this._left != value) {
-			this._left = value;
-			this.dispatchEventWith(starling_events_Event.CHANGE);
-		}
-		return value;
-	}
-	,get_right: function() {
-		return this._right;
-	}
-	,set_right: function(value) {
-		if(this._right != value) {
-			this._right = value;
-			this.dispatchEventWith(starling_events_Event.CHANGE);
-		}
-		return value;
-	}
-	,get_top: function() {
-		return this._top;
-	}
-	,set_top: function(value) {
-		if(this._top != value) {
-			this._top = value;
-			this.dispatchEventWith(starling_events_Event.CHANGE);
-		}
-		return value;
-	}
-	,get_bottom: function() {
-		return this._bottom;
-	}
-	,set_bottom: function(value) {
-		if(this._bottom != value) {
-			this._bottom = value;
-			this.dispatchEventWith(starling_events_Event.CHANGE);
-		}
-		return value;
-	}
-	,__class__: starling_utils_Padding
-	,__properties__: {set_bottom:"set_bottom",get_bottom:"get_bottom",set_top:"set_top",get_top:"get_top",set_right:"set_right",get_right:"get_right",set_left:"set_left",get_left:"get_left"}
-});
-var starling_filters_FilterChain = function(args) {
-	starling_filters_FragmentFilter.call(this);
-	this._filters = [];
-	var _g1 = 0;
-	var _g = args.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var filter;
-		filter = js_Boot.__cast(args[i] , starling_filters_FragmentFilter);
-		if(filter != null) this.addFilterAt(filter,i); else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("pass only fragment filters to the constructor"));
-	}
-	this.updatePadding();
-};
-$hxClasses["starling.filters.FilterChain"] = starling_filters_FilterChain;
-starling_filters_FilterChain.__name__ = ["starling","filters","FilterChain"];
-starling_filters_FilterChain.__super__ = starling_filters_FragmentFilter;
-starling_filters_FilterChain.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	_filters: null
-	,dispose: function() {
-		var _g = 0;
-		var _g1 = this._filters;
-		while(_g < _g1.length) {
-			var filter = _g1[_g];
-			++_g;
-			filter.dispose();
-		}
-		this._filters.splice(0,this._filters.length);
-		starling_filters_FragmentFilter.prototype.dispose.call(this);
-	}
-	,setRequiresRedraw: function() {
-		this.updatePadding();
-		starling_filters_FragmentFilter.prototype.setRequiresRedraw.call(this);
-	}
-	,process: function(painter,pool,input0,input1,input2,input3) {
-		var numFilters = this._filters.length;
-		var outTexture = input0;
-		var inTexture;
-		var _g = 0;
-		while(_g < numFilters) {
-			var i = _g++;
-			inTexture = outTexture;
-			outTexture = this._filters[i].process(painter,pool,inTexture);
-			haxe_Log.trace("check if (i > 0) == if (i)",{ fileName : "FilterChain.hx", lineNumber : 81, className : "starling.filters.FilterChain", methodName : "process"});
-			if(i > 0) pool.putTexture(inTexture);
-		}
-		return outTexture;
-	}
-	,getFilterAt: function(index) {
-		if(index < 0) index += this.get_numFilters();
-		return this._filters[index];
-	}
-	,addFilter: function(filter) {
-		this.addFilterAt(filter,this._filters.length);
-	}
-	,addFilterAt: function(filter,index) {
-		this._filters.splice(index,0,filter);
-		filter.addEventListener(starling_events_Event.CHANGE,$bind(this,this.setRequiresRedraw));
-		this.setRequiresRedraw();
-	}
-	,removeFilter: function(filter,dispose) {
-		if(dispose == null) dispose = false;
-		var filterIndex = this.getFilterIndex(filter);
-		if(filterIndex != -1) this.removeFilterAt(filterIndex,dispose);
-		return filter;
-	}
-	,removeFilterAt: function(index,dispose) {
-		if(dispose == null) dispose = false;
-		var filter;
-		filter = js_Boot.__cast(this._filters.splice(index,1) , starling_filters_FragmentFilter);
-		filter.removeEventListener(starling_events_Event.CHANGE,$bind(this,this.setRequiresRedraw));
-		if(dispose) filter.dispose();
-		this.setRequiresRedraw();
-		return filter;
-	}
-	,getFilterIndex: function(filter) {
-		return Lambda.indexOf(this._filters,filter);
-	}
-	,updatePadding: function() {
-		starling_filters_FilterChain.sPadding.setTo();
-		var _g = 0;
-		var _g1 = this._filters;
-		while(_g < _g1.length) {
-			var filter = _g1[_g];
-			++_g;
-			var padding = filter.get_padding();
-			if(padding.get_left() > starling_filters_FilterChain.sPadding.get_left()) starling_filters_FilterChain.sPadding.set_left(padding.get_left());
-			if(padding.get_right() > starling_filters_FilterChain.sPadding.get_right()) starling_filters_FilterChain.sPadding.set_right(padding.get_right());
-			if(padding.get_top() > starling_filters_FilterChain.sPadding.get_top()) starling_filters_FilterChain.sPadding.set_top(padding.get_top());
-			if(padding.get_bottom() > starling_filters_FilterChain.sPadding.get_bottom()) starling_filters_FilterChain.sPadding.set_bottom(padding.get_bottom());
-		}
-		this.get_padding().copyFrom(starling_filters_FilterChain.sPadding);
-	}
-	,get_numFilters: function() {
-		return this._filters.length;
-	}
-	,__class__: starling_filters_FilterChain
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{get_numFilters:"get_numFilters"})
-});
-var starling_filters_GlowFilter = function(color,alpha,blur) {
-	if(blur == null) blur = 1.0;
-	if(alpha == null) alpha = 1.0;
-	if(color == null) color = 16776960;
-	starling_filters_FragmentFilter.call(this);
-	this._compositeFilter = new starling_filters_CompositeFilter();
-	this._blurFilter = new starling_filters_BlurFilter(blur,blur);
-	this.set_color(color);
-	this.set_alpha(alpha);
-	this.updatePadding();
-};
-$hxClasses["starling.filters.GlowFilter"] = starling_filters_GlowFilter;
-starling_filters_GlowFilter.__name__ = ["starling","filters","GlowFilter"];
-starling_filters_GlowFilter.__super__ = starling_filters_FragmentFilter;
-starling_filters_GlowFilter.prototype = $extend(starling_filters_FragmentFilter.prototype,{
-	_blurFilter: null
-	,_compositeFilter: null
-	,dispose: function() {
-		this._blurFilter.dispose();
-		this._compositeFilter.dispose();
-		starling_filters_FragmentFilter.prototype.dispose.call(this);
-	}
-	,process: function(painter,pool,input0,input1,input2,input3) {
-		var glow = this._blurFilter.process(painter,pool,input0);
-		var result = this._compositeFilter.process(painter,pool,glow,input0);
-		pool.putTexture(glow);
-		return result;
-	}
-	,updatePadding: function() {
-		this.get_padding().copyFrom(this._blurFilter.get_padding());
-	}
-	,get_color: function() {
-		return this._compositeFilter.getColorAt(0);
-	}
-	,set_color: function(value) {
-		if(this.get_color() != value) {
-			this._compositeFilter.setColorAt(0,value,true);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_alpha: function() {
-		return this._compositeFilter.getAlphaAt(0);
-	}
-	,set_alpha: function(value) {
-		if(this.get_alpha() != value) {
-			this._compositeFilter.setAlphaAt(0,value);
-			this.setRequiresRedraw();
-		}
-		return value;
-	}
-	,get_blur: function() {
-		return this._blurFilter.get_blurX();
-	}
-	,set_blur: function(value) {
-		if(this.get_blur() != value) {
-			this._blurFilter.set_blurX(this._blurFilter.set_blurY(value));
-			this.updatePadding();
-		}
-		return value;
-	}
-	,__class__: starling_filters_GlowFilter
-	,__properties__: $extend(starling_filters_FragmentFilter.prototype.__properties__,{set_blur:"set_blur",get_blur:"get_blur",set_alpha:"set_alpha",get_alpha:"get_alpha",set_color:"set_color",get_color:"get_color"})
-});
 var starling_filters_ITexturePool = function() { };
 $hxClasses["starling.filters.ITexturePool"] = starling_filters_ITexturePool;
 starling_filters_ITexturePool.__name__ = ["starling","filters","ITexturePool"];
@@ -51152,397 +47661,6 @@ starling_filters_TexturePool.prototype = {
 	,__class__: starling_filters_TexturePool
 	,__properties__: {get_textureScale:"get_textureScale",get_textureHeight:"get_textureHeight",get_textureWidth:"get_textureWidth"}
 };
-var starling_geom_Polygon = function(vertices) {
-	this._coords = [];
-	this.addVertices(vertices);
-};
-$hxClasses["starling.geom.Polygon"] = starling_geom_Polygon;
-starling_geom_Polygon.__name__ = ["starling","geom","Polygon"];
-starling_geom_Polygon.createEllipse = function(x,y,radiusX,radiusY) {
-	return new starling_geom_Ellipse(x,y,radiusX,radiusY);
-};
-starling_geom_Polygon.createCircle = function(x,y,radius) {
-	return new starling_geom_Ellipse(x,y,radius,radius);
-};
-starling_geom_Polygon.createRectangle = function(x,y,width,height) {
-	return new starling_geom_Rectangle(x,y,width,height);
-};
-starling_geom_Polygon.isConvexTriangle = function(ax,ay,bx,by,cx,cy) {
-	return (ay - by) * (cx - bx) + (bx - ax) * (cy - by) >= 0;
-};
-starling_geom_Polygon.areVectorsIntersecting = function(ax,ay,bx,by,cx,cy,dx,dy) {
-	if(ax == bx && ay == by || cx == dx && cy == dy) return false;
-	var abx = bx - ax;
-	var aby = by - ay;
-	var cdx = dx - cx;
-	var cdy = dy - cy;
-	var tDen = cdy * abx - cdx * aby;
-	if(tDen == 0.0) return false;
-	var t = (aby * (cx - ax) - abx * (cy - ay)) / tDen;
-	if(t < 0 || t > 1) return false;
-	var s;
-	if(aby != 0) s = (cy - ay + t * cdy) / aby; else s = (cx - ax + t * cdx) / abx;
-	return s >= 0.0 && s <= 1.0;
-};
-starling_geom_Polygon.prototype = {
-	_coords: null
-	,clone: function() {
-		var clone = new starling_geom_Polygon();
-		var numCoords = this._coords.length;
-		var _g = 0;
-		while(_g < numCoords) {
-			var i = _g++;
-			clone._coords[i] = this._coords[i];
-		}
-		return clone;
-	}
-	,reverse: function() {
-		var numCoords = this._coords.length;
-		var numVertices = numCoords / 2;
-		var tmp;
-		var i = 0;
-		while(i < numVertices) {
-			tmp = this._coords[i];
-			this._coords[i] = this._coords[numCoords - i - 2];
-			this._coords[numCoords - i - 2] = tmp;
-			tmp = this._coords[i + 1];
-			this._coords[i + 1] = this._coords[numCoords - i - 1];
-			this._coords[numCoords - i - 1] = tmp;
-			i += 2;
-		}
-	}
-	,addVertices: function(args) {
-		var i;
-		var numArgs = args.length;
-		var numCoords = this._coords.length;
-		if(numArgs > 0) {
-			if(js_Boot.__instanceof(args[0],openfl_geom_Point)) {
-				var _g = 0;
-				while(_g < numArgs) {
-					var i1 = _g++;
-					this._coords[numCoords + i1 * 2] = (js_Boot.__cast(args[i1] , openfl_geom_Point)).x;
-					this._coords[numCoords + i1 * 2 + 1] = (js_Boot.__cast(args[i1] , openfl_geom_Point)).y;
-				}
-			} else if(typeof(args[0]) == "number") {
-				var _g1 = 0;
-				while(_g1 < numArgs) {
-					var i2 = _g1++;
-					this._coords[numCoords + i2] = args[i2];
-				}
-			} else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Invalid type: " + Type.getClassName(args[0])));
-		}
-	}
-	,setVertex: function(index,x,y) {
-		if(index >= 0 && index <= this.get_numVertices()) {
-			this._coords[index * 2] = x;
-			this._coords[index * 2 + 1] = y;
-		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid index: " + index));
-	}
-	,getVertex: function(index,out) {
-		if(index >= 0 && index < this.get_numVertices()) {
-			if(out == null) out = new openfl_geom_Point();
-			out.setTo(this._coords[index * 2],this._coords[index * 2 + 1]);
-			return out;
-		} else throw new js__$Boot_HaxeError(new openfl_errors_RangeError("Invalid index: " + index));
-	}
-	,contains: function(x,y) {
-		var i;
-		var j = this.get_numVertices() - 1;
-		var oddNodes = 0;
-		var _g1 = 0;
-		var _g = this.get_numVertices();
-		while(_g1 < _g) {
-			var i1 = _g1++;
-			var ix = this._coords[i1 * 2];
-			var iy = this._coords[i1 * 2 + 1];
-			var jx = this._coords[j * 2];
-			var jy = this._coords[j * 2 + 1];
-			if((iy < y && jy >= y || jy < y && iy >= y) && (ix <= x || jx <= x)) oddNodes ^= js_Boot.__cast(ix + (y - iy) / (jy - iy) * (jx - ix) < x , Int);
-			j = i1;
-		}
-		return oddNodes != 0;
-	}
-	,containsPoint: function(point) {
-		return this.contains(point.x,point.y);
-	}
-	,triangulate: function(indexData,offset) {
-		if(offset == null) offset = 0;
-		var numVertices = this.get_numVertices();
-		var numTriangles = this.get_numTriangles();
-		var i;
-		var restIndexPos;
-		var numRestIndices;
-		if(indexData == null) indexData = new starling_rendering_IndexData(numTriangles * 3);
-		if(numTriangles == 0) return indexData;
-		starling_geom_Polygon.sRestIndices.splice(numVertices,starling_geom_Polygon.sRestIndices.length - numVertices);
-		var _g = 0;
-		while(_g < numVertices) {
-			var i1 = _g++;
-			starling_geom_Polygon.sRestIndices[i1] = i1;
-		}
-		restIndexPos = 0;
-		numRestIndices = numVertices;
-		var a = starling_utils_Pool.getPoint();
-		var b = starling_utils_Pool.getPoint();
-		var c = starling_utils_Pool.getPoint();
-		var p = starling_utils_Pool.getPoint();
-		while(numRestIndices > 3) {
-			var otherIndex;
-			var earFound = false;
-			var i0 = starling_geom_Polygon.sRestIndices[restIndexPos % numRestIndices];
-			var i11 = starling_geom_Polygon.sRestIndices[(restIndexPos + 1) % numRestIndices];
-			var i2 = starling_geom_Polygon.sRestIndices[(restIndexPos + 2) % numRestIndices];
-			a.setTo(this._coords[2 * i0],this._coords[2 * i0 + 1]);
-			b.setTo(this._coords[2 * i11],this._coords[2 * i11 + 1]);
-			c.setTo(this._coords[2 * i2],this._coords[2 * i2 + 1]);
-			if(starling_geom_Polygon.isConvexTriangle(a.x,a.y,b.x,b.y,c.x,c.y)) {
-				earFound = true;
-				var _g1 = 3;
-				while(_g1 < numRestIndices) {
-					var i3 = _g1++;
-					otherIndex = starling_geom_Polygon.sRestIndices[(restIndexPos + i3) % numRestIndices];
-					p.setTo(this._coords[2 * otherIndex],this._coords[2 * otherIndex + 1]);
-					if(starling_utils_MathUtil.isPointInTriangle(p,a,b,c)) {
-						earFound = false;
-						break;
-					}
-				}
-			}
-			if(earFound) {
-				indexData.addTriangle(i0 + offset,i11 + offset,i2 + offset);
-				starling_geom_Polygon.sRestIndices.splice((restIndexPos + 1) % numRestIndices,1);
-				numRestIndices--;
-				restIndexPos = 0;
-			} else {
-				restIndexPos++;
-				if(restIndexPos == numRestIndices) break;
-			}
-		}
-		starling_utils_Pool.putPoint(a);
-		starling_utils_Pool.putPoint(b);
-		starling_utils_Pool.putPoint(c);
-		starling_utils_Pool.putPoint(p);
-		indexData.addTriangle(starling_geom_Polygon.sRestIndices[0] + offset,starling_geom_Polygon.sRestIndices[1] + offset,starling_geom_Polygon.sRestIndices[2] + offset);
-		return indexData;
-	}
-	,copyToVertexData: function(target,targetVertexID,attrName) {
-		if(attrName == null) attrName = "position";
-		if(targetVertexID == null) targetVertexID = 0;
-		var numVertices = this.get_numVertices();
-		var requiredTargetLength = targetVertexID + numVertices;
-		if(target.get_numVertices() < requiredTargetLength) target.set_numVertices(requiredTargetLength);
-		var _g = 0;
-		while(_g < numVertices) {
-			var i = _g++;
-			target.setPoint(targetVertexID + i,attrName,this._coords[i * 2],this._coords[i * 2 + 1]);
-		}
-	}
-	,toString: function() {
-		var result = "[Polygon";
-		var numPoints = this.get_numVertices();
-		if(numPoints > 0) result += "\n";
-		var _g = 0;
-		while(_g < numPoints) {
-			var i = _g++;
-			result += "  [Vertex " + i + ": " + "x=" + starling_utils_FloatUtil.toFixed(this._coords[i * 2],1) + ", " + "y=" + starling_utils_FloatUtil.toFixed(this._coords[i * 2 + 1],1) + "]" + (i == numPoints - 1?"\n":",\n");
-		}
-		return result + "]";
-	}
-	,get_isSimple: function() {
-		var numCoords = this._coords.length;
-		if(numCoords <= 6) return true;
-		var i = 0;
-		while(i < numCoords) {
-			var ax = this._coords[i];
-			var ay = this._coords[i + 1];
-			var bx = this._coords[(i + 2) % numCoords];
-			var by = this._coords[(i + 3) % numCoords];
-			var endJ = i + numCoords - 2;
-			var j = i + 4;
-			while(j < endJ) {
-				var cx = this._coords[j % numCoords];
-				var cy = this._coords[(j + 1) % numCoords];
-				var dx = this._coords[(j + 2) % numCoords];
-				var dy = this._coords[(j + 3) % numCoords];
-				if(starling_geom_Polygon.areVectorsIntersecting(ax,ay,bx,by,cx,cy,dx,dy)) return false;
-				j += 2;
-			}
-			i += 2;
-		}
-		return true;
-	}
-	,get_isConvex: function() {
-		var numCoords = this._coords.length;
-		if(numCoords < 6) return true; else {
-			var i = 0;
-			while(i < numCoords) {
-				if(!starling_geom_Polygon.isConvexTriangle(this._coords[i],this._coords[i + 1],this._coords[(i + 2) % numCoords],this._coords[(i + 3) % numCoords],this._coords[(i + 4) % numCoords],this._coords[(i + 5) % numCoords])) return false;
-				i += 2;
-			}
-		}
-		return true;
-	}
-	,get_area: function() {
-		var area = 0;
-		var numCoords = this._coords.length;
-		if(numCoords >= 6) {
-			var i = 0;
-			while(i < numCoords) {
-				area += this._coords[i] * this._coords[(i + 3) % numCoords];
-				area -= this._coords[i + 1] * this._coords[(i + 2) % numCoords];
-				i += 2;
-			}
-		}
-		return area / 2.0;
-	}
-	,get_numVertices: function() {
-		return this._coords.length / 2;
-	}
-	,set_numVertices: function(value) {
-		var oldLength = this.get_numVertices();
-		this._coords.splice(value * 2,this._coords.length - value * 2);
-		if(oldLength < value) {
-			var _g = oldLength;
-			while(_g < value) {
-				var i = _g++;
-				this._coords[i * 2] = this._coords[i * 2 + 1] = 0.0;
-			}
-		}
-		return value;
-	}
-	,get_numTriangles: function() {
-		var numVertices = this.get_numVertices();
-		if(numVertices >= 3) return numVertices - 2; else return 0;
-	}
-	,__class__: starling_geom_Polygon
-	,__properties__: {get_numTriangles:"get_numTriangles",set_numVertices:"set_numVertices",get_numVertices:"get_numVertices",get_area:"get_area",get_isConvex:"get_isConvex",get_isSimple:"get_isSimple"}
-};
-var starling_geom_ImmutablePolygon = function(vertices) {
-	starling_geom_Polygon.call(this,vertices);
-	this._frozen = true;
-};
-$hxClasses["starling.geom.ImmutablePolygon"] = starling_geom_ImmutablePolygon;
-starling_geom_ImmutablePolygon.__name__ = ["starling","geom","ImmutablePolygon"];
-starling_geom_ImmutablePolygon.__super__ = starling_geom_Polygon;
-starling_geom_ImmutablePolygon.prototype = $extend(starling_geom_Polygon.prototype,{
-	_frozen: null
-	,addVertices: function(args) {
-		if(this._frozen) throw new js__$Boot_HaxeError(this.getImmutableError()); else starling_geom_Polygon.prototype.addVertices.call(this,args);
-	}
-	,setVertex: function(index,x,y) {
-		if(this._frozen) throw new js__$Boot_HaxeError(this.getImmutableError()); else starling_geom_Polygon.prototype.setVertex.call(this,index,x,y);
-	}
-	,reverse: function() {
-		if(this._frozen) throw new js__$Boot_HaxeError(this.getImmutableError()); else starling_geom_Polygon.prototype.reverse.call(this);
-	}
-	,set_numVertices: function(value) {
-		if(this._frozen) throw new js__$Boot_HaxeError(this.getImmutableError()); else starling_geom_Polygon.prototype.reverse.call(this);
-		return value;
-	}
-	,getImmutableError: function() {
-		var className = Type.getClassName(js_Boot.getClass(this)).split("::").pop();
-		var msg = className + " cannot be modified. Call 'clone' to create a mutable copy.";
-		return new openfl_errors_IllegalOperationError(msg);
-	}
-	,__class__: starling_geom_ImmutablePolygon
-});
-var starling_geom_Ellipse = function(x,y,radiusX,radiusY,numSides) {
-	if(numSides == null) numSides = -1;
-	this._x = x;
-	this._y = y;
-	this._radiusX = radiusX;
-	this._radiusY = radiusY;
-	starling_geom_ImmutablePolygon.call(this,this.getVertices(numSides));
-};
-$hxClasses["starling.geom.Ellipse"] = starling_geom_Ellipse;
-starling_geom_Ellipse.__name__ = ["starling","geom","Ellipse"];
-starling_geom_Ellipse.__super__ = starling_geom_ImmutablePolygon;
-starling_geom_Ellipse.prototype = $extend(starling_geom_ImmutablePolygon.prototype,{
-	_x: null
-	,_y: null
-	,_radiusX: null
-	,_radiusY: null
-	,getVertices: function(numSides) {
-		if(numSides < 0) numSides = Math.PI * (this._radiusX + this._radiusY) / 4.0;
-		if(numSides < 6) numSides = 6;
-		var vertices = [];
-		var angleDelta = 2 * Math.PI / numSides;
-		var angle = 0;
-		var _g = 0;
-		while(_g < numSides) {
-			var i = _g++;
-			vertices[i * 2] = Math.cos(angle) * this._radiusX + this._x;
-			vertices[i * 2 + 1] = Math.sin(angle) * this._radiusY + this._y;
-			angle += angleDelta;
-		}
-		return vertices;
-	}
-	,triangulate: function(indexData,offset) {
-		if(offset == null) offset = 0;
-		if(indexData == null) indexData = new starling_rendering_IndexData((this.get_numVertices() - 2) * 3);
-		var from = 1;
-		var to = this.get_numVertices() - 1;
-		var _g = from;
-		while(_g < to) {
-			var i = _g++;
-			indexData.addTriangle(offset,offset + i,offset + i + 1);
-		}
-		return indexData;
-	}
-	,contains: function(x,y) {
-		var vx = x - this._x;
-		var vy = y - this._y;
-		var a = vx / this._radiusX;
-		var b = vy / this._radiusY;
-		return a * a + b * b <= 1;
-	}
-	,get_area: function() {
-		return Math.PI * this._radiusX * this._radiusY;
-	}
-	,get_isSimple: function() {
-		return true;
-	}
-	,get_isConvex: function() {
-		return true;
-	}
-	,__class__: starling_geom_Ellipse
-});
-var starling_geom_Rectangle = function(x,y,width,height) {
-	this._x = x;
-	this._y = y;
-	this._width = width;
-	this._height = height;
-	starling_geom_ImmutablePolygon.call(this,[x,y,x + width,y,x + width,y + height,x,y + height]);
-};
-$hxClasses["starling.geom.Rectangle"] = starling_geom_Rectangle;
-starling_geom_Rectangle.__name__ = ["starling","geom","Rectangle"];
-starling_geom_Rectangle.__super__ = starling_geom_ImmutablePolygon;
-starling_geom_Rectangle.prototype = $extend(starling_geom_ImmutablePolygon.prototype,{
-	_x: null
-	,_y: null
-	,_width: null
-	,_height: null
-	,triangulate: function(indexData,offset) {
-		if(offset == null) offset = 0;
-		if(indexData == null) indexData = new starling_rendering_IndexData(6);
-		indexData.addTriangle(offset,offset + 1,offset + 3);
-		indexData.addTriangle(offset + 1,offset + 2,offset + 3);
-		return indexData;
-	}
-	,contains: function(x,y) {
-		return x >= this._x && x <= this._x + this._width && y >= this._y && y <= this._y + this._height;
-	}
-	,get_area: function() {
-		return this._width * this._height;
-	}
-	,get_isSimple: function() {
-		return true;
-	}
-	,get_isConvex: function() {
-		return true;
-	}
-	,__class__: starling_geom_Rectangle
-});
 var starling_openfl_OpenFLOverrides = function() {
 };
 $hxClasses["starling.openfl.OpenFLOverrides"] = starling_openfl_OpenFLOverrides;
@@ -52403,7 +48521,7 @@ starling_rendering_Painter.prototype = {
 		} else return false;
 	}
 	,get_profile: function() {
-		haxe_Log.trace("WARNING: _context.profile not supported for this target",{ fileName : "Painter.hx", lineNumber : 847, className : "starling.rendering.Painter", methodName : "get_profile"});
+		haxe_Log.trace("WARNING: _context.profile not supported for this target",{ fileName : "Painter.hx", lineNumber : 846, className : "starling.rendering.Painter", methodName : "get_profile"});
 		return openfl_display3D_Context3DProfile.BASELINE_CONSTRAINED;
 	}
 	,get_sharedData: function() {
@@ -55122,258 +51240,6 @@ starling_textures_SubTexture.prototype = $extend(starling_textures_Texture.proto
 	,__class__: starling_textures_SubTexture
 	,__properties__: $extend(starling_textures_Texture.prototype.__properties__,{get_region:"get_region",get_rotated:"get_rotated",get_ownsParent:"get_ownsParent",get_parent:"get_parent"})
 });
-var starling_textures_RenderTexture = function(width,height,persistent,scale,format) {
-	if(scale == null) scale = -1;
-	if(persistent == null) persistent = true;
-	if(format == null) format = openfl_display3D_Context3DTextureFormat.BGRA;
-	this._isPersistent = persistent;
-	this._activeTexture = starling_textures_Texture.empty(width,height,true,false,true,scale,format);
-	this._activeTexture.get_root().set_onRestore(($_=this._activeTexture.get_root(),$bind($_,$_.clear)));
-	starling_textures_SubTexture.call(this,this._activeTexture,new openfl_geom_Rectangle(0,0,width,height),true,null,false);
-	if(persistent && starling_textures_RenderTexture.get_useDoubleBuffering()) {
-		this._bufferTexture = starling_textures_Texture.empty(width,height,true,false,true,scale,format);
-		this._bufferTexture.get_root().set_onRestore(($_=this._bufferTexture.get_root(),$bind($_,$_.clear)));
-		this._helperImage = new starling_display_Image(this._bufferTexture);
-		this._helperImage.set_textureSmoothing(starling_textures_TextureSmoothing.NONE);
-	}
-};
-$hxClasses["starling.textures.RenderTexture"] = starling_textures_RenderTexture;
-starling_textures_RenderTexture.__name__ = ["starling","textures","RenderTexture"];
-starling_textures_RenderTexture.__properties__ = {set_useDoubleBuffering:"set_useDoubleBuffering",get_useDoubleBuffering:"get_useDoubleBuffering"}
-starling_textures_RenderTexture.get_useDoubleBuffering = function() {
-	if(starling_core_Starling.sCurrent != null) {
-		var painter;
-		if(starling_core_Starling.sCurrent != null) painter = starling_core_Starling.sCurrent._painter; else painter = null;
-		var sharedData = painter.get_sharedData();
-		if(sharedData.exists(starling_textures_RenderTexture.USE_DOUBLE_BUFFERING_DATA_NAME)) return sharedData.get(starling_textures_RenderTexture.USE_DOUBLE_BUFFERING_DATA_NAME); else {
-			var profile;
-			if(painter.get_profile() != null) profile = painter.get_profile(); else profile = openfl_display3D_Context3DProfile.BASELINE;
-			var value = profile == openfl_display3D_Context3DProfile.BASELINE || profile == openfl_display3D_Context3DProfile.BASELINE_CONSTRAINED;
-			sharedData.set(starling_textures_RenderTexture.USE_DOUBLE_BUFFERING_DATA_NAME,value);
-			return value;
-		}
-	} else return false;
-};
-starling_textures_RenderTexture.set_useDoubleBuffering = function(value) {
-	if(starling_core_Starling.sCurrent == null) throw new js__$Boot_HaxeError(new openfl_errors_IllegalOperationError("Starling not yet initialized")); else {
-		var this1 = (starling_core_Starling.sCurrent != null?starling_core_Starling.sCurrent._painter:null).get_sharedData();
-		this1.set(starling_textures_RenderTexture.USE_DOUBLE_BUFFERING_DATA_NAME,value);
-	}
-	return value;
-};
-starling_textures_RenderTexture.__super__ = starling_textures_SubTexture;
-starling_textures_RenderTexture.prototype = $extend(starling_textures_SubTexture.prototype,{
-	_activeTexture: null
-	,_bufferTexture: null
-	,_helperImage: null
-	,_drawing: null
-	,_bufferReady: null
-	,_isPersistent: null
-	,dispose: function() {
-		this._activeTexture.dispose();
-		if(this.get_isDoubleBuffered()) {
-			this._bufferTexture.dispose();
-			this._helperImage.dispose();
-		}
-		starling_textures_SubTexture.prototype.dispose.call(this);
-	}
-	,draw: function(object,matrix,alpha,antiAliasing) {
-		if(antiAliasing == null) antiAliasing = 0;
-		if(alpha == null) alpha = 1.0;
-		if(object == null) return;
-		if(this._drawing) this.render(object,matrix,alpha); else this.renderBundled($bind(this,this.render),object,matrix,alpha,antiAliasing);
-	}
-	,drawBundled: function(drawingBlock,antiAliasing) {
-		if(antiAliasing == null) antiAliasing = 0;
-		this.renderBundled(drawingBlock,null,null,1.0,antiAliasing);
-	}
-	,render: function(object,matrix,alpha) {
-		if(alpha == null) alpha = 1.0;
-		var painter;
-		if(starling_core_Starling.sCurrent != null) painter = starling_core_Starling.sCurrent._painter; else painter = null;
-		var state = painter.get_state();
-		var filter = object.get_filter();
-		var mask = object.get_mask();
-		painter.pushState();
-		var _g = state;
-		_g.set_alpha(_g.get_alpha() * alpha);
-		state.setModelviewMatricesToIdentity();
-		state.set_blendMode(object.get_blendMode() == starling_display_BlendMode.AUTO?starling_display_BlendMode.NORMAL:object.get_blendMode());
-		if(matrix != null) state.transformModelviewMatrix(matrix); else state.transformModelviewMatrix(object.get_transformationMatrix());
-		if(mask != null) painter.drawMask(mask);
-		if(filter != null) filter.render(painter); else object.render(painter);
-		if(mask != null) painter.eraseMask(mask);
-		painter.popState();
-	}
-	,renderBundled: function(renderBlock,object,matrix,alpha,antiAliasing) {
-		if(antiAliasing == null) antiAliasing = 0;
-		if(alpha == null) alpha = 1.0;
-		var painter;
-		if(starling_core_Starling.sCurrent != null) painter = starling_core_Starling.sCurrent._painter; else painter = null;
-		var state = painter.get_state();
-		if(!starling_core_Starling.sCurrent.get_contextValid()) return;
-		if(this.get_isDoubleBuffered()) {
-			var tmpTexture = this._activeTexture;
-			this._activeTexture = this._bufferTexture;
-			this._bufferTexture = tmpTexture;
-			this._helperImage.set_texture(this._bufferTexture);
-		}
-		painter.pushState();
-		var rootTexture = this._activeTexture.get_root();
-		state.setProjectionMatrix(0,0,rootTexture.get_width(),rootTexture.get_height(),this.get_width(),this.get_height());
-		starling_textures_RenderTexture.sClipRect.setTo(0,0,this._activeTexture.get_width(),this._activeTexture.get_height());
-		state.set_clipRect(starling_textures_RenderTexture.sClipRect);
-		state.setRenderTarget(this._activeTexture,true,antiAliasing);
-		painter.prepareToDraw();
-		if(this.get_isDoubleBuffered() || !this.get_isPersistent() || !this._bufferReady) painter.clear();
-		if(this.get_isDoubleBuffered() && this._bufferReady) this._helperImage.render(painter); else this._bufferReady = true;
-		try {
-			this._drawing = true;
-			starling_utils_Execute.call(renderBlock,[object,matrix,alpha]);
-		} catch( e ) {
-			haxe_CallStack.lastException = e;
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-			if( js_Boot.__instanceof(e,openfl_errors_Error) ) {
-			} else throw(e);
-		}
-		this._drawing = false;
-		painter.popState();
-	}
-	,clear: function(color,alpha) {
-		if(alpha == null) alpha = 0.0;
-		if(color == null) color = 0;
-		this._activeTexture.get_root().clear(color,alpha);
-		this._bufferReady = true;
-	}
-	,get_isDoubleBuffered: function() {
-		return this._bufferTexture != null;
-	}
-	,get_isPersistent: function() {
-		return this._isPersistent;
-	}
-	,get_base: function() {
-		return this._activeTexture.get_base();
-	}
-	,get_root: function() {
-		return this._activeTexture.get_root();
-	}
-	,__class__: starling_textures_RenderTexture
-	,__properties__: $extend(starling_textures_SubTexture.prototype.__properties__,{get_isPersistent:"get_isPersistent",get_isDoubleBuffered:"get_isDoubleBuffered"})
-});
-var starling_textures_TextureAtlas = function(texture,atlasXml) {
-	this._subTextures = new haxe_ds_StringMap();
-	this._atlasTexture = texture;
-	if(atlasXml != null) this.parseAtlasXml(atlasXml);
-};
-$hxClasses["starling.textures.TextureAtlas"] = starling_textures_TextureAtlas;
-starling_textures_TextureAtlas.__name__ = ["starling","textures","TextureAtlas"];
-starling_textures_TextureAtlas.parseBool = function(value) {
-	return value.toLowerCase() == "true";
-};
-starling_textures_TextureAtlas.prototype = {
-	_atlasTexture: null
-	,_subTextures: null
-	,_subTextureNames: null
-	,dispose: function() {
-		this._atlasTexture.dispose();
-	}
-	,parseAtlasXml: function(atlasXml) {
-		var scale = this._atlasTexture.get_scale();
-		var frame = new openfl_geom_Rectangle();
-		var region = new openfl_geom_Rectangle();
-		var $it0 = atlasXml.firstElement().iterator();
-		while( $it0.hasNext() ) {
-			var subTexture = $it0.next();
-			if(subTexture.nodeType == Xml.Element) {
-				var name = starling_utils_StringUtil.clean(subTexture.get("name"));
-				var x = Std.parseFloat(subTexture.get("x")) / scale;
-				var y = Std.parseFloat(subTexture.get("y")) / scale;
-				var width = Std.parseFloat(subTexture.get("width")) / scale;
-				var height = Std.parseFloat(subTexture.get("height")) / scale;
-				var frameWidth = Std.parseFloat(subTexture.get("frameWidth")) / scale;
-				var frameHeight = Std.parseFloat(subTexture.get("frameHeight")) / scale;
-				var frameX = Std.parseFloat(subTexture.get("frameX")) / scale;
-				var frameY = Std.parseFloat(subTexture.get("frameY")) / scale;
-				var rotatedStr = subTexture.get("rotated");
-				var rotated = false;
-				if(rotatedStr != null) rotated = starling_textures_TextureAtlas.parseBool(subTexture.get("rotated"));
-				region.setTo(x,y,width,height);
-				frame.setTo(frameX,frameY,frameWidth,frameHeight);
-				if(frameWidth > 0 && frameHeight > 0) this.addRegion(name,region,frame,rotated); else this.addRegion(name,region,null,rotated);
-			}
-		}
-	}
-	,getTexture: function(name) {
-		return this._subTextures.get(name);
-	}
-	,getTextures: function(prefix,out) {
-		if(prefix == null) prefix = "";
-		if(out == null) out = [];
-		var _g = 0;
-		var _g1 = this.getNames(prefix,starling_textures_TextureAtlas.sNames);
-		while(_g < _g1.length) {
-			var name = _g1[_g];
-			++_g;
-			out[out.length] = this.getTexture(name);
-		}
-		starling_textures_TextureAtlas.sNames.splice(0,starling_textures_TextureAtlas.sNames.length);
-		return out;
-	}
-	,getNames: function(prefix,out) {
-		if(prefix == null) prefix = "";
-		var name;
-		if(out == null) out = [];
-		if(this._subTextureNames == null) {
-			this._subTextureNames = [];
-			var $it0 = this._subTextures.keys();
-			while( $it0.hasNext() ) {
-				var name1 = $it0.next();
-				this._subTextureNames[this._subTextureNames.length] = name1;
-			}
-			this._subTextureNames.sort($bind(this,this.compare));
-		}
-		var _g = 0;
-		var _g1 = this._subTextureNames;
-		while(_g < _g1.length) {
-			var name2 = _g1[_g];
-			++_g;
-			if(name2.indexOf(prefix) == 0) out[out.length] = name2;
-		}
-		return out;
-	}
-	,compare: function(a,b) {
-		if(a < b) return -1; else if(a > b) return 1; else return 0;
-	}
-	,getRegion: function(name) {
-		var subTexture = this._subTextures.get(name);
-		if(subTexture != null) return subTexture.get_region(); else return null;
-	}
-	,getFrame: function(name) {
-		var subTexture = this._subTextures.get(name);
-		if(subTexture != null) return subTexture.get_frame(); else return null;
-	}
-	,getRotation: function(name) {
-		var subTexture = this._subTextures.get(name);
-		if(subTexture != null) return subTexture.get_rotated(); else return false;
-	}
-	,addRegion: function(name,region,frame,rotated) {
-		if(rotated == null) rotated = false;
-		var value = new starling_textures_SubTexture(this._atlasTexture,region,false,frame,rotated);
-		this._subTextures.set(name,value);
-		this._subTextureNames = null;
-	}
-	,removeRegion: function(name) {
-		var subTexture = this._subTextures.get(name);
-		if(subTexture != null) subTexture.dispose();
-		this._subTextures.remove(name);
-		this._subTextureNames = null;
-	}
-	,get_texture: function() {
-		return this._atlasTexture;
-	}
-	,__class__: starling_textures_TextureAtlas
-	,__properties__: {get_texture:"get_texture"}
-};
 var starling_textures_TextureSmoothing = function() {
 	throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
 };
@@ -55402,820 +51268,6 @@ starling_utils_Align.isValidVertical = function(align) {
 starling_utils_Align.prototype = {
 	__class__: starling_utils_Align
 };
-var starling_utils_AssetManager = function(scaleFactor,useMipmaps) {
-	if(useMipmaps == null) useMipmaps = false;
-	if(scaleFactor == null) scaleFactor = 1;
-	this.mVerbose = false;
-	this.mNumConnections = 0;
-	this.mKeepFontXmls = false;
-	this.mKeepAtlasXmls = false;
-	this.mCheckPolicyFile = false;
-	this.mNumLoadingQueues = 0;
-	this.mNumRestoredTextures = 0;
-	this.mNumLostTextures = 0;
-	this.mQueue = [];
-	this.mDefaultTextureOptions = new starling_textures_TextureOptions(scaleFactor,useMipmaps);
-	this.mTextures = new haxe_ds_StringMap();
-	this.mAtlases = new haxe_ds_StringMap();
-	this.mSounds = new haxe_ds_StringMap();
-	this.mXmls = new haxe_ds_StringMap();
-	this.mObjects = new haxe_ds_StringMap();
-	this.mByteArrays = new haxe_ds_StringMap();
-	this.mNumConnections = 1;
-	this.mVerbose = true;
-	starling_events_EventDispatcher.call(this);
-};
-$hxClasses["starling.utils.AssetManager"] = starling_utils_AssetManager;
-starling_utils_AssetManager.__name__ = ["starling","utils","AssetManager"];
-starling_utils_AssetManager.__super__ = starling_events_EventDispatcher;
-starling_utils_AssetManager.prototype = $extend(starling_events_EventDispatcher.prototype,{
-	mStarling: null
-	,mNumLostTextures: null
-	,mNumRestoredTextures: null
-	,mNumLoadingQueues: null
-	,mDefaultTextureOptions: null
-	,mCheckPolicyFile: null
-	,mKeepAtlasXmls: null
-	,mKeepFontXmls: null
-	,mNumConnections: null
-	,mVerbose: null
-	,mQueue: null
-	,mTextures: null
-	,mAtlases: null
-	,mSounds: null
-	,mXmls: null
-	,mObjects: null
-	,mByteArrays: null
-	,queue: null
-	,numQueuedAssets: null
-	,isLoading: null
-	,dispose: function() {
-		var $it0 = this.mTextures.iterator();
-		while( $it0.hasNext() ) {
-			var texture = $it0.next();
-			texture.dispose();
-		}
-		var $it1 = this.mAtlases.iterator();
-		while( $it1.hasNext() ) {
-			var atlas = $it1.next();
-			atlas.dispose();
-		}
-		var $it2 = this.mByteArrays.iterator();
-		while( $it2.hasNext() ) {
-			var byteArray = $it2.next();
-			byteArray.clear();
-		}
-	}
-	,getTexture: function(name) {
-		if(this.mTextures.exists(name)) return this.mTextures.get(name); else {
-			var $it0 = this.mAtlases.iterator();
-			while( $it0.hasNext() ) {
-				var atlas = $it0.next();
-				var texture = atlas.getTexture(name);
-				if(texture != null) return texture;
-			}
-			return null;
-		}
-	}
-	,getTextures: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		if(result == null) result = [];
-		var names = this.getTextureNames(prefix,starling_utils_AssetManager.sNames);
-		var _g = 0;
-		while(_g < names.length) {
-			var name = names[_g];
-			++_g;
-			result[result.length] = this.getTexture(name);
-		}
-		starling_utils_AssetManager.sNames.splice(0,starling_utils_AssetManager.sNames.length);
-		return result;
-	}
-	,getTextureNames: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		result = this.getDictionaryKeys(this.mTextures,prefix,result);
-		var $it0 = this.mAtlases.iterator();
-		while( $it0.hasNext() ) {
-			var atlas = $it0.next();
-			result = atlas.getNames(prefix,result);
-		}
-		result.sort(function(a,b) {
-			a = a.toLowerCase();
-			b = b.toLowerCase();
-			if(a < b) return -1;
-			if(a > b) return 1;
-			return 0;
-		});
-		return result;
-	}
-	,getTextureAtlas: function(name) {
-		return this.mAtlases.get(name);
-	}
-	,getSound: function(name) {
-		return this.mSounds.get(name);
-	}
-	,getSoundNames: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		return this.getDictionaryKeys(this.mSounds,prefix,result);
-	}
-	,playSound: function(name,startTime,loops,transform) {
-		if(loops == null) loops = 0;
-		if(startTime == null) startTime = 0;
-		if(this.mSounds.exists(name)) return this.getSound(name).play(startTime,loops,transform); else return null;
-	}
-	,getXml: function(name) {
-		return this.mXmls.get(name);
-	}
-	,getXmlNames: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		return this.getDictionaryKeys(this.mXmls,prefix,result);
-	}
-	,getObject: function(name) {
-		return this.mObjects.get(name);
-	}
-	,getObjectNames: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		return this.getDictionaryKeys(this.mObjects,prefix,result);
-	}
-	,getByteArray: function(name) {
-		return this.mByteArrays.get(name);
-	}
-	,getByteArrayNames: function(prefix,result) {
-		if(prefix == null) prefix = "";
-		return this.getDictionaryKeys(this.mByteArrays,prefix,result);
-	}
-	,addTexture: function(name,texture) {
-		this.log("Adding texture '" + name + "'");
-		if(this.mTextures.exists(name)) {
-			this.log("Warning: name was already in use; the previous texture will be replaced.");
-			this.mTextures.get(name).dispose();
-		}
-		this.mTextures.set(name,texture);
-	}
-	,addTextureAtlas: function(name,atlas) {
-		this.log("Adding texture atlas '" + name + "'");
-		if(this.mAtlases.exists(name)) {
-			this.log("Warning: name was already in use; the previous atlas will be replaced.");
-			this.mAtlases.get(name).dispose();
-		}
-		this.mAtlases.set(name,atlas);
-	}
-	,addSound: function(name,sound) {
-		this.log("Adding sound '" + name + "'");
-		if(this.mSounds.exists(name)) this.log("Warning: name was already in use; the previous sound will be replaced.");
-		{
-			this.mSounds.set(name,sound);
-			sound;
-		}
-	}
-	,addXml: function(name,xml) {
-		this.log("Adding Xml '" + name + "'");
-		if(this.mXmls.exists(name)) this.log("Warning: name was already in use; the previous Xml will be replaced.");
-		{
-			this.mXmls.set(name,xml);
-			xml;
-		}
-	}
-	,addObject: function(name,object) {
-		this.log("Adding object '" + name + "'");
-		if(this.mObjects.exists(name)) this.log("Warning: name was already in use; the previous object will be replaced.");
-		var v = object;
-		this.mObjects.set(name,v);
-		v;
-	}
-	,addByteArray: function(name,byteArray) {
-		this.log("Adding byte array '" + name + "'");
-		if(this.mByteArrays.exists(name)) {
-			this.log("Warning: name was already in use; the previous byte array will be replaced.");
-			this.mByteArrays.get(name).clear();
-		}
-		this.mByteArrays.set(name,byteArray);
-	}
-	,removeTexture: function(name,dispose) {
-		if(dispose == null) dispose = true;
-		this.log("Removing texture '" + name + "'");
-		if(dispose && this.mTextures.exists(name)) this.mTextures.get(name).dispose();
-		this.mTextures.remove(name);
-	}
-	,removeTextureAtlas: function(name,dispose) {
-		if(dispose == null) dispose = true;
-		this.log("Removing texture atlas '" + name + "'");
-		if(dispose && this.mAtlases.exists(name)) this.mAtlases.get(name).dispose();
-		this.mAtlases.remove(name);
-	}
-	,removeSound: function(name) {
-		this.log("Removing sound '" + name + "'");
-		this.mSounds.remove(name);
-	}
-	,removeXml: function(name,dispose) {
-		if(dispose == null) dispose = true;
-		this.log("Removing xml '" + name + "'");
-		if(dispose && this.mXmls.exists(name)) this.mXmls.remove(name);
-	}
-	,removeObject: function(name) {
-		this.log("Removing object '" + name + "'");
-		this.mObjects.remove(name);
-	}
-	,removeByteArray: function(name,dispose) {
-		if(dispose == null) dispose = true;
-		this.log("Removing byte array '" + name + "'");
-		if(dispose && this.mByteArrays.exists(name)) this.mByteArrays.get(name).clear();
-		this.mByteArrays.remove(name);
-	}
-	,purgeQueue: function() {
-		this.mQueue.splice(0,this.mQueue.length);
-		this.dispatchEventWith(starling_events_Event.CANCEL);
-	}
-	,purge: function() {
-		this.log("Purging all assets, emptying queue");
-		this.purgeQueue();
-		this.dispose();
-		this.mTextures = new haxe_ds_StringMap();
-		this.mAtlases = new haxe_ds_StringMap();
-		this.mSounds = new haxe_ds_StringMap();
-		this.mXmls = new haxe_ds_StringMap();
-		this.mObjects = new haxe_ds_StringMap();
-		this.mByteArrays = new haxe_ds_StringMap();
-	}
-	,enqueue: function(rawAssets) {
-		if((rawAssets instanceof Array) && rawAssets.__enum__ == null) {
-			var rawAssetsArray = rawAssets;
-			var _g1 = 0;
-			var _g = rawAssetsArray.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				this.enqueueItem(rawAssetsArray[i]);
-			}
-		} else this.enqueueItem(rawAssets);
-	}
-	,enqueueItem: function(rawAssets) {
-		var fields = Reflect.fields(rawAssets);
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
-			var child = Reflect.getProperty(rawAssets,field);
-			if((child instanceof Array) && child.__enum__ == null) this.enqueue(child); else if(typeof(child) == "string" || js_Boot.__instanceof(child,openfl_net_URLRequest)) this.enqueueWithName(child); else this.log("Ignoring unsupported asset type: " + Type.getClassName(child == null?null:js_Boot.getClass(child)));
-		}
-	}
-	,enqueueWithName: function(asset,name,options) {
-		haxe_Log.trace("CHECK",{ fileName : "AssetManager.hx", lineNumber : 598, className : "starling.utils.AssetManager", methodName : "enqueueWithName"});
-		if(Type.getClassName(Type.getClass(asset)) == "openfl.filesystem.File") asset = StringTools.urlDecode(Reflect.getProperty(asset,"url"));
-		if(name == null) name = this.getName(asset);
-		if(options == null) options = this.mDefaultTextureOptions.clone(); else options = options.clone();
-		this.log("Enqueuing '" + name + "'");
-		this.mQueue.push({ name : name, asset : asset, options : options});
-		return name;
-	}
-	,loadQueue: function(onProgress) {
-		var _g = this;
-		if(onProgress == null) throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Argument 'onProgress' must not be null"));
-		if(this.mQueue.length == 0) {
-			onProgress(1.0);
-			return;
-		}
-		this.mStarling = starling_core_Starling.sCurrent;
-		if(this.mStarling == null || this.mStarling.get_context() == null) throw new js__$Boot_HaxeError(new openfl_errors_Error("The Starling instance needs to be ready before assets can be loaded."));
-		var PROGRESS_PART_ASSETS = 0.9;
-		var PROGRESS_PART_XMLS = 1.0 - PROGRESS_PART_ASSETS;
-		var i;
-		var canceled = false;
-		var xmls = [];
-		var assetInfos = this.mQueue.concat([]);
-		var _g1 = 0;
-		var _g2 = this.mQueue.length;
-		while(_g1 < _g2) {
-			var j = _g1++;
-			assetInfos.push(this.mQueue[j]);
-		}
-		var assetCount = this.mQueue.length;
-		var assetProgress = [];
-		var assetIndex = 0;
-		var updateAssetProgress = null;
-		var loadQueueElement = null;
-		var loadNextQueueElement = null;
-		var processXmls = null;
-		var processXml = null;
-		var cancel = null;
-		var finish = null;
-		updateAssetProgress = function(index,progress) {
-			assetProgress[index] = progress;
-			var sum = 0.0;
-			var len = assetProgress.length;
-			var _g3 = 0;
-			while(_g3 < len) {
-				var i1 = _g3++;
-				sum += assetProgress[i1];
-			}
-			onProgress(sum / len * PROGRESS_PART_ASSETS);
-		};
-		loadQueueElement = function(index1,assetInfo) {
-			if(canceled) return;
-			var onElementProgress = function(progress1) {
-				updateAssetProgress(index1,progress1 * 0.8);
-			};
-			var onElementLoaded = function() {
-				updateAssetProgress(index1,1.0);
-				assetCount--;
-				if(assetCount > 0) loadNextQueueElement(); else processXmls();
-			};
-			_g.processRawAsset(assetInfo.name,assetInfo.asset,assetInfo.options,xmls,onElementProgress,onElementLoaded);
-		};
-		loadNextQueueElement = function() {
-			if(assetIndex < assetInfos.length) {
-				var index2 = assetIndex++;
-				loadQueueElement(index2,assetInfos[index2]);
-			}
-		};
-		processXmls = function() {
-			haxe_Log.trace("FIX",{ fileName : "AssetManager.hx", lineNumber : 718, className : "starling.utils.AssetManager", methodName : "loadQueue"});
-			haxe_Timer.delay(function() {
-				processXml(0);
-			},1);
-		};
-		processXml = function(index3) {
-			if(canceled) return; else if(index3 == xmls.length) {
-				finish();
-				return;
-			}
-			haxe_Log.trace("FIX",{ fileName : "AssetManager.hx", lineNumber : 738, className : "starling.utils.AssetManager", methodName : "loadQueue"});
-			var name;
-			var texture;
-			var xml = xmls[index3];
-			var rootNode = "";
-			var xmlProgress = (index3 + 1) / (xmls.length + 1);
-			var firstElement = xml.firstElement();
-			if(firstElement.nodeType == Xml.Element) {
-				if(firstElement.nodeType != Xml.Element) throw new js__$Boot_HaxeError("Bad node type, expected Element but found " + firstElement.nodeType);
-				rootNode = firstElement.nodeName;
-			}
-			if(rootNode == "TextureAtlas") {
-				name = firstElement.get("imagePath").split(".")[0];
-				texture = _g.getTexture(name);
-				if(texture != null) {
-					_g.addTextureAtlas(name,new starling_textures_TextureAtlas(texture,xml));
-					_g.removeTexture(name,false);
-					if(_g.mKeepAtlasXmls) _g.addXml(name,xml);
-				} else _g.log("Cannot create atlas: texture '" + name + "' is missing.");
-			} else if(rootNode == "font") {
-				name = "";
-				var $it0 = xml.elementsNamed("font");
-				while( $it0.hasNext() ) {
-					var font = $it0.next();
-					if(font.nodeType == Xml.Element) {
-						var $it1 = font.elementsNamed("pages");
-						while( $it1.hasNext() ) {
-							var pages = $it1.next();
-							if(pages.nodeType == Xml.Element) {
-								var $it2 = pages.elementsNamed("page");
-								while( $it2.hasNext() ) {
-									var page = $it2.next();
-									if(page.nodeType == Xml.Element) name = page.get("file").split(".")[0];
-								}
-							}
-						}
-					}
-				}
-				texture = _g.getTexture(name);
-				if(texture != null) {
-					_g.log("Adding bitmap font '" + name + "'");
-					starling_text_TextField.registerBitmapFont(new starling_text_BitmapFont(texture,xml),name);
-					_g.removeTexture(name,false);
-					if(_g.mKeepFontXmls) _g.addXml(name,xml);
-				} else _g.log("Cannot create bitmap font: texture '" + name + "' is missing.");
-			} else throw new js__$Boot_HaxeError(new openfl_errors_Error("Xml contents not recognized: " + rootNode));
-			onProgress(PROGRESS_PART_ASSETS + PROGRESS_PART_XMLS * xmlProgress);
-			haxe_Timer.delay(function() {
-				processXml(index3 + 1);
-			},1);
-		};
-		cancel = function() {
-			_g.removeEventListener(starling_events_Event.CANCEL,cancel);
-			_g.mNumLoadingQueues--;
-			canceled = true;
-		};
-		finish = function() {
-			openfl_system_System.gc();
-			haxe_Timer.delay(function() {
-				if(!canceled) {
-					cancel();
-					onProgress(1.0);
-				}
-			},1);
-		};
-		var _g4 = 0;
-		while(_g4 < assetCount) {
-			var i2 = _g4++;
-			assetProgress[i2] = 0.0;
-		}
-		var _g11 = 0;
-		var _g5 = this.mNumConnections;
-		while(_g11 < _g5) {
-			var i3 = _g11++;
-			loadNextQueueElement();
-		}
-		this.mQueue.splice(0,this.mQueue.length);
-		this.mNumLoadingQueues++;
-		this.addEventListener(starling_events_Event.CANCEL,cancel);
-	}
-	,processRawAsset: function(name,rawAsset,options,xmls,onProgress,onComplete) {
-		var _g = this;
-		var canceled = false;
-		var process = null;
-		var progress = null;
-		var cancel = null;
-		process = function(asset) {
-			var texture;
-			var bytes;
-			var object = null;
-			var xml = null;
-			_g.mStarling.makeCurrent();
-			if(canceled) {
-			} else if(asset == null) onComplete(); else if(js_Boot.__instanceof(asset,openfl_media_Sound)) {
-				_g.addSound(name,asset);
-				onComplete();
-			} else if(js_Boot.__instanceof(asset,Xml)) {
-				haxe_Log.trace("CHECK",{ fileName : "AssetManager.hx", lineNumber : 879, className : "starling.utils.AssetManager", methodName : "processRawAsset"});
-				xml = asset;
-				var firstNodeName = "";
-				if(xml.firstElement().nodeType == Xml.Element) firstNodeName = xml.firstElement().get_nodeName();
-				if(firstNodeName == "TextureAtlas" || firstNodeName == "font") xmls.push(xml); else _g.addXml(name,xml);
-				onComplete();
-			} else if(_g.mStarling.get_context().driverInfo == "Disposed") {
-				_g.log("Context lost while processing assets, retrying ...");
-				haxe_Timer.delay(function() {
-					process(asset);
-				},1);
-				return;
-			} else if(js_Boot.__instanceof(asset,openfl_display_Bitmap)) {
-				texture = starling_textures_Texture.fromData(asset,options);
-				texture.get_root().set_onRestore(function() {
-					_g.mNumLostTextures++;
-					_g.loadRawAsset(rawAsset,null,function(asset1) {
-						try {
-							texture.get_root().uploadBitmap(asset1);
-						} catch( e ) {
-							haxe_CallStack.lastException = e;
-							if (e instanceof js__$Boot_HaxeError) e = e.val;
-							if( js_Boot.__instanceof(e,openfl_errors_Error) ) {
-								_g.log("Texture restoration failed: " + e.message);
-							} else throw(e);
-						}
-						asset1.bitmapData.dispose();
-						_g.mNumRestoredTextures++;
-						if(_g.mNumLostTextures == _g.mNumRestoredTextures) _g.dispatchEventWith(starling_events_Event.TEXTURES_RESTORED);
-					});
-				});
-				asset.bitmapData.dispose();
-				_g.addTexture(name,texture);
-				onComplete();
-			} else if(js_Boot.__instanceof(asset,openfl_display_BitmapData)) {
-				texture = starling_textures_Texture.fromData(asset,options);
-				texture.get_root().set_onRestore(function() {
-					_g.mNumLostTextures++;
-					_g.loadRawAsset(rawAsset,null,function(asset2) {
-						try {
-							texture.get_root().uploadBitmapData(asset2);
-						} catch( e1 ) {
-							haxe_CallStack.lastException = e1;
-							if (e1 instanceof js__$Boot_HaxeError) e1 = e1.val;
-							if( js_Boot.__instanceof(e1,openfl_errors_Error) ) {
-								_g.log("Texture restoration failed: " + e1.message);
-							} else throw(e1);
-						}
-						asset2.dispose();
-						_g.mNumRestoredTextures++;
-						if(_g.mNumLostTextures == _g.mNumRestoredTextures) _g.dispatchEventWith(starling_events_Event.TEXTURES_RESTORED);
-					});
-				});
-				asset.dispose();
-				_g.addTexture(name,texture);
-				onComplete();
-			} else if(js_Boot.__instanceof(asset,openfl_utils_ByteArrayData)) {
-				bytes = asset;
-				var isAtfData = starling_textures_AtfData.isAtfData(bytes);
-				if(isAtfData) {
-					options.set_onReady(_g.prependCallback(options.get_onReady(),onComplete));
-					texture = starling_textures_Texture.fromData(bytes,options);
-					texture.get_root().set_onRestore(function() {
-						_g.mNumLostTextures++;
-						_g.loadRawAsset(rawAsset,null,function(asset3) {
-							try {
-								texture.get_root().uploadAtfData(asset3,0,true);
-							} catch( e2 ) {
-								haxe_CallStack.lastException = e2;
-								if (e2 instanceof js__$Boot_HaxeError) e2 = e2.val;
-								if( js_Boot.__instanceof(e2,openfl_errors_Error) ) {
-									_g.log("Texture restoration failed: " + e2.message);
-								} else throw(e2);
-							}
-							asset3.clear();
-							_g.mNumRestoredTextures++;
-							if(_g.mNumLostTextures == _g.mNumRestoredTextures) _g.dispatchEventWith(starling_events_Event.TEXTURES_RESTORED);
-						});
-					});
-					bytes.clear();
-					_g.addTexture(name,texture);
-					onComplete();
-				} else if(_g.byteArrayStartsWith(bytes,"{") || _g.byteArrayStartsWith(bytes,"[")) haxe_Log.trace("FIX",{ fileName : "AssetManager.hx", lineNumber : 979, className : "starling.utils.AssetManager", methodName : "processRawAsset"}); else if(_g.byteArrayStartsWith(bytes,"<")) haxe_Log.trace("FIX",{ fileName : "AssetManager.hx", lineNumber : 994, className : "starling.utils.AssetManager", methodName : "processRawAsset"}); else {
-					_g.addByteArray(name,bytes);
-					onComplete();
-				}
-			} else {
-				_g.addObject(name,asset);
-				onComplete();
-			}
-			asset = null;
-			bytes = null;
-			_g.removeEventListener(starling_events_Event.CANCEL,cancel);
-		};
-		progress = function(ratio) {
-			if(!canceled) onProgress(ratio);
-		};
-		cancel = function() {
-			canceled = true;
-		};
-		this.addEventListener(starling_events_Event.CANCEL,cancel);
-		this.loadRawAsset(rawAsset,progress,process);
-	}
-	,loadRawAsset: function(rawAsset,onProgress,onComplete) {
-		var _g = this;
-		var onIoError = null;
-		var onSecurityError = null;
-		var onHttpResponseStatus = null;
-		var onLoadProgress = null;
-		var onUrlLoaderComplete = null;
-		var onLoaderComplete = null;
-		var complete = null;
-		var extension = null;
-		var loaderInfo = null;
-		var urlLoader = null;
-		var urlRequest = null;
-		var url = null;
-		onIoError = function(event) {
-			_g.log("IO error: " + event.text);
-			_g.dispatchEventWith(starling_events_Event.IO_ERROR,false,url);
-			complete(null);
-		};
-		onSecurityError = function(event1) {
-			_g.log("security error: " + event1.text);
-			_g.dispatchEventWith(starling_events_Event.SECURITY_ERROR,false,url);
-			complete(null);
-		};
-		onHttpResponseStatus = function(event2) {
-			haxe_Log.trace("FIX",{ fileName : "AssetManager.hx", lineNumber : 1085, className : "starling.utils.AssetManager", methodName : "loadRawAsset"});
-		};
-		onLoadProgress = function(event3) {
-			if(onProgress != null && event3.bytesTotal > 0) onProgress(event3.bytesLoaded / event3.bytesTotal);
-		};
-		onUrlLoaderComplete = function(event4) {
-			var bytes = _g.transformData(urlLoader.data,url);
-			var sound;
-			if(bytes == null) {
-				complete(null);
-				return;
-			}
-			if(extension != null) extension = extension.toLowerCase();
-			switch(extension) {
-			case "mpeg":
-				break;
-			case "mp3":
-				sound = new openfl_media_Sound();
-				sound.loadCompressedDataFromByteArray(bytes,openfl_utils__$ByteArray_ByteArray_$Impl_$.get_length(bytes));
-				bytes.clear();
-				complete(sound);
-				break;
-			case "jpg":
-				break;
-			case "jpeg":
-				break;
-			case "png":
-				break;
-			case "gif":
-				var loaderContext = new openfl_system_LoaderContext(_g.mCheckPolicyFile);
-				var loader = new openfl_display_Loader();
-				loaderInfo = loader.contentLoaderInfo;
-				loaderInfo.addEventListener("ioError",onIoError);
-				loaderInfo.addEventListener(starling_events_Event.COMPLETE,onLoaderComplete);
-				loader.loadBytes(bytes);
-				break;
-			default:
-				complete(bytes);
-			}
-		};
-		onLoaderComplete = function(event5) {
-			urlLoader.data.clear();
-			complete(event5.target.content);
-		};
-		complete = function(asset) {
-			if(urlLoader != null) {
-				urlLoader.removeEventListener("ioError",onIoError);
-				urlLoader.removeEventListener("securityError",onSecurityError);
-				urlLoader.removeEventListener(starling_utils_AssetManager.HTTP_RESPONSE_STATUS,onHttpResponseStatus);
-				urlLoader.removeEventListener("progress",onLoadProgress);
-				urlLoader.removeEventListener(starling_events_Event.COMPLETE,onUrlLoaderComplete);
-			}
-			if(loaderInfo != null) {
-				loaderInfo.removeEventListener("ioError",onIoError);
-				loaderInfo.removeEventListener(starling_events_Event.COMPLETE,onLoaderComplete);
-			}
-			onComplete(asset);
-		};
-		if(js_Boot.__instanceof(rawAsset,Class)) haxe_Timer.delay(function() {
-			complete(Type.createInstance(rawAsset,[]));
-		},1); else if(typeof(rawAsset) == "string" || js_Boot.__instanceof(rawAsset,openfl_net_URLRequest)) {
-			if(typeof(rawAsset) == "string") urlRequest = new openfl_net_URLRequest(rawAsset); else urlRequest = rawAsset;
-			url = urlRequest.url;
-			extension = this.getExtensionFromUrl(url);
-			urlLoader = new openfl_net_URLLoader();
-			urlLoader.set_dataFormat(0);
-			urlLoader.addEventListener("ioError",onIoError);
-			urlLoader.addEventListener("securityError",onSecurityError);
-			urlLoader.addEventListener(starling_utils_AssetManager.HTTP_RESPONSE_STATUS,onHttpResponseStatus);
-			urlLoader.addEventListener("progress",onLoadProgress);
-			urlLoader.addEventListener(starling_events_Event.COMPLETE,onUrlLoaderComplete);
-			urlLoader.load(urlRequest);
-		} else if(js_Boot.__instanceof(rawAsset,Dynamic)) haxe_Timer.delay(function() {
-			complete(rawAsset);
-		},1);
-	}
-	,getName: function(rawAsset) {
-		var name = null;
-		if(typeof(rawAsset) == "string") name = js_Boot.__cast(rawAsset , String); else if(js_Boot.__instanceof(rawAsset,openfl_net_URLRequest)) name = (js_Boot.__cast(rawAsset , openfl_net_URLRequest)).url;
-		if(name != null) {
-			name = StringTools.replace(name,"%20"," ");
-			name = this.getBasenameFromUrl(name);
-			if(name != null) return name; else throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Could not extract name from String '" + Std.string(rawAsset) + "'"));
-		} else {
-			name = Type.getClassName(Type.getClass(rawAsset));
-			throw new js__$Boot_HaxeError(new openfl_errors_ArgumentError("Cannot extract names for objects of type '" + name + "'"));
-		}
-	}
-	,transformData: function(data,url) {
-		return data;
-	}
-	,log: function(message) {
-		if(this.mVerbose) haxe_Log.trace("[AssetManager]",{ fileName : "AssetManager.hx", lineNumber : 1257, className : "starling.utils.AssetManager", methodName : "log", customParams : [message]});
-	}
-	,byteArrayStartsWith: function(bytes,$char) {
-		var start = 0;
-		var length = openfl_utils__$ByteArray_ByteArray_$Impl_$.get_length(bytes);
-		var wanted = HxOverrides.cca($char,0);
-		var b0 = 0;
-		var b1 = 0;
-		var b2 = 0;
-		var b3 = 0;
-		var pass = false;
-		if(pass == false && length >= 4) {
-			bytes.position = 0;
-			b0 = bytes.readByte();
-			b1 = bytes.readByte();
-			b2 = bytes.readByte();
-			b3 = bytes.readByte();
-			if(b0 == 0 && b1 == 0 && b2 == 254 && b3 == 255 || b0 == 255 && b1 == 254 && b2 == 0 && b3 == 0) {
-				start = 4;
-				pass = true;
-			}
-		}
-		if(pass == false && length >= 3) {
-			bytes.position = 0;
-			b0 = bytes.readByte();
-			b1 = bytes.readByte();
-			b2 = bytes.readByte();
-			if(b0 == 239 && b1 == 187 && b2 == 191) {
-				start = 3;
-				pass = true;
-			}
-		}
-		if(pass == false && length >= 2) {
-			bytes.position = 0;
-			b0 = bytes.readByte();
-			b1 = bytes.readByte();
-			if(b0 == 254 && b1 == 255 || b0 == 255 && b1 == 254) {
-				start = 2;
-				pass = true;
-			}
-		}
-		bytes.position = start;
-		var _g = start;
-		while(_g < length) {
-			var i = _g++;
-			var $byte = bytes.readByte();
-			if($byte == 0 || $byte == 10 || $byte == 13 || $byte == 32) continue; else return $byte == wanted;
-		}
-		return false;
-	}
-	,getDictionaryKeys: function(map,prefix,result) {
-		if(prefix == null) prefix = "";
-		if(result == null) result = [];
-		haxe_Log.trace("CHECK!",{ fileName : "AssetManager.hx", lineNumber : 1326, className : "starling.utils.AssetManager", methodName : "getDictionaryKeys"});
-		var $it0 = map.keys();
-		while( $it0.hasNext() ) {
-			var key = $it0.next();
-			if(key.indexOf(prefix) == 0) result.push(key);
-		}
-		haxe_Log.trace("CHECK Array.CASEINSENSITIVE is needed",{ fileName : "AssetManager.hx", lineNumber : 1341, className : "starling.utils.AssetManager", methodName : "getDictionaryKeys"});
-		return result;
-	}
-	,getHttpHeader: function(headers,headerName) {
-		if(headers != null) {
-			var _g1 = 0;
-			var _g = headers.length;
-			while(_g1 < _g) {
-				var i = _g1++;
-				var header = headers[i];
-				if(Reflect.getProperty(header,"name") == headerName) return Reflect.getProperty(header,"value");
-			}
-		}
-		return null;
-	}
-	,getBasenameFromUrl: function(url) {
-		haxe_Log.trace("RESTORE REGEX",{ fileName : "AssetManager.hx", lineNumber : 1364, className : "starling.utils.AssetManager", methodName : "getBasenameFromUrl"});
-		var split = url.split("/");
-		var returnVal = split[split.length - 1];
-		var split1 = url.split(".");
-		return split1[0];
-	}
-	,getExtensionFromUrl: function(url) {
-		haxe_Log.trace("RESTORE REGEX",{ fileName : "AssetManager.hx", lineNumber : 1377, className : "starling.utils.AssetManager", methodName : "getExtensionFromUrl"});
-		var split = url.split("/");
-		var returnVal = split[split.length - 1];
-		var split1 = url.split(".");
-		return split1[split1.length - 1];
-	}
-	,prependCallback: function(oldCallback,newCallback) {
-		if(oldCallback == null) return newCallback; else if(newCallback == null) return oldCallback; else return function() {
-			newCallback();
-			oldCallback();
-		};
-	}
-	,get_queue: function() {
-		return this.mQueue;
-	}
-	,get_numQueuedAssets: function() {
-		return this.mQueue.length;
-	}
-	,get_verbose: function() {
-		return this.mVerbose;
-	}
-	,set_verbose: function(value) {
-		this.mVerbose = value;
-		return value;
-	}
-	,get_isLoading: function() {
-		return this.mNumLoadingQueues > 0;
-	}
-	,get_useMipMaps: function() {
-		return this.mDefaultTextureOptions.get_mipMapping();
-	}
-	,set_useMipMaps: function(value) {
-		this.mDefaultTextureOptions.set_mipMapping(value);
-		return value;
-	}
-	,get_scaleFactor: function() {
-		return this.mDefaultTextureOptions.get_scale();
-	}
-	,set_scaleFactor: function(value) {
-		this.mDefaultTextureOptions.set_scale(value);
-		return value;
-	}
-	,get_textureFormat: function() {
-		return this.mDefaultTextureOptions.get_format();
-	}
-	,set_textureFormat: function(value) {
-		this.mDefaultTextureOptions.set_format(value);
-		return value;
-	}
-	,get_checkPolicyFile: function() {
-		return this.mCheckPolicyFile;
-	}
-	,set_checkPolicyFile: function(value) {
-		this.mCheckPolicyFile = value;
-		return value;
-	}
-	,get_keepAtlasXmls: function() {
-		return this.mKeepAtlasXmls;
-	}
-	,set_keepAtlasXmls: function(value) {
-		this.mKeepAtlasXmls = value;
-		return value;
-	}
-	,get_keepFontXmls: function() {
-		return this.mKeepFontXmls;
-	}
-	,set_keepFontXmls: function(value) {
-		this.mKeepFontXmls = value;
-		return value;
-	}
-	,get_numConnections: function() {
-		return this.mNumConnections;
-	}
-	,set_numConnections: function(value) {
-		this.mNumConnections = value;
-		return value;
-	}
-	,__class__: starling_utils_AssetManager
-	,__properties__: {set_numConnections:"set_numConnections",get_numConnections:"get_numConnections",set_keepFontXmls:"set_keepFontXmls",get_keepFontXmls:"get_keepFontXmls",set_keepAtlasXmls:"set_keepAtlasXmls",get_keepAtlasXmls:"get_keepAtlasXmls",set_checkPolicyFile:"set_checkPolicyFile",get_checkPolicyFile:"get_checkPolicyFile",set_textureFormat:"set_textureFormat",get_textureFormat:"get_textureFormat",set_scaleFactor:"set_scaleFactor",get_scaleFactor:"get_scaleFactor",set_useMipMaps:"set_useMipMaps",get_useMipMaps:"get_useMipMaps",get_isLoading:"get_isLoading",set_verbose:"set_verbose",get_verbose:"get_verbose",get_numQueuedAssets:"get_numQueuedAssets",get_queue:"get_queue"}
-});
 var starling_utils_Color = function() {
 	throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
 };
@@ -56260,16 +51312,6 @@ starling_utils_Color.multiply = function(color,factor) {
 };
 starling_utils_Color.prototype = {
 	__class__: starling_utils_Color
-};
-var starling_utils_Deg2rad = function() {
-};
-$hxClasses["starling.utils.Deg2rad"] = starling_utils_Deg2rad;
-starling_utils_Deg2rad.__name__ = ["starling","utils","Deg2rad"];
-starling_utils_Deg2rad.call = function(deg) {
-	return deg / 180.0 * Math.PI;
-};
-starling_utils_Deg2rad.prototype = {
-	__class__: starling_utils_Deg2rad
 };
 var starling_utils_Execute = function() {
 };
@@ -56909,6 +51951,83 @@ starling_utils_MeshUtil.calculateBounds = function(vertexData,sourceSpace,target
 starling_utils_MeshUtil.prototype = {
 	__class__: starling_utils_MeshUtil
 };
+var starling_utils_Padding = function(left,right,top,bottom) {
+	if(bottom == null) bottom = 0;
+	if(top == null) top = 0;
+	if(right == null) right = 0;
+	if(left == null) left = 0;
+	starling_events_EventDispatcher.call(this);
+	this.setTo(left,right,top,bottom);
+};
+$hxClasses["starling.utils.Padding"] = starling_utils_Padding;
+starling_utils_Padding.__name__ = ["starling","utils","Padding"];
+starling_utils_Padding.__super__ = starling_events_EventDispatcher;
+starling_utils_Padding.prototype = $extend(starling_events_EventDispatcher.prototype,{
+	_left: null
+	,_right: null
+	,_top: null
+	,_bottom: null
+	,setTo: function(left,right,top,bottom) {
+		if(bottom == null) bottom = 0;
+		if(top == null) top = 0;
+		if(right == null) right = 0;
+		if(left == null) left = 0;
+		var changed = this._left != left || this._right != right || this._top != top || this._bottom != bottom;
+		this._left = left;
+		this._right = right;
+		this._top = top;
+		this._bottom = bottom;
+		if(changed) this.dispatchEventWith(starling_events_Event.CHANGE);
+	}
+	,copyFrom: function(padding) {
+		if(padding == null) this.setTo(0,0,0,0); else this.setTo(padding._left,padding._right,padding._top,padding._bottom);
+	}
+	,clone: function() {
+		return new starling_utils_Padding(this._left,this._right,this._top,this._bottom);
+	}
+	,get_left: function() {
+		return this._left;
+	}
+	,set_left: function(value) {
+		if(this._left != value) {
+			this._left = value;
+			this.dispatchEventWith(starling_events_Event.CHANGE);
+		}
+		return value;
+	}
+	,get_right: function() {
+		return this._right;
+	}
+	,set_right: function(value) {
+		if(this._right != value) {
+			this._right = value;
+			this.dispatchEventWith(starling_events_Event.CHANGE);
+		}
+		return value;
+	}
+	,get_top: function() {
+		return this._top;
+	}
+	,set_top: function(value) {
+		if(this._top != value) {
+			this._top = value;
+			this.dispatchEventWith(starling_events_Event.CHANGE);
+		}
+		return value;
+	}
+	,get_bottom: function() {
+		return this._bottom;
+	}
+	,set_bottom: function(value) {
+		if(this._bottom != value) {
+			this._bottom = value;
+			this.dispatchEventWith(starling_events_Event.CHANGE);
+		}
+		return value;
+	}
+	,__class__: starling_utils_Padding
+	,__properties__: {set_bottom:"set_bottom",get_bottom:"get_bottom",set_top:"set_top",get_top:"get_top",set_right:"set_right",get_right:"get_right",set_left:"set_left",get_left:"get_left"}
+});
 var starling_utils_Pool = function() {
 	throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
 };
@@ -56985,16 +52104,6 @@ starling_utils_Pool.putRectangle = function(rectangle) {
 };
 starling_utils_Pool.prototype = {
 	__class__: starling_utils_Pool
-};
-var starling_utils_Rad2deg = function() {
-};
-$hxClasses["starling.utils.Rad2deg"] = starling_utils_Rad2deg;
-starling_utils_Rad2deg.__name__ = ["starling","utils","Rad2deg"];
-starling_utils_Rad2deg.call = function(rad) {
-	return rad / Math.PI * 180.0;
-};
-starling_utils_Rad2deg.prototype = {
-	__class__: starling_utils_Rad2deg
 };
 var starling_utils_RectangleUtil = function() {
 	throw new js__$Boot_HaxeError(new starling_errors_AbstractClassError());
@@ -57393,222 +52502,16 @@ starling_utils_SystemUtil.get_supportsVideoTexture = function() {
 starling_utils_SystemUtil.prototype = {
 	__class__: starling_utils_SystemUtil
 };
-var utils_DeviceInfo = function() {
-};
-$hxClasses["utils.DeviceInfo"] = utils_DeviceInfo;
-utils_DeviceInfo.__name__ = ["utils","DeviceInfo"];
-utils_DeviceInfo.__properties__ = {get_isCardboardCompatible:"get_isCardboardCompatible",get_isAndroid:"get_isAndroid",get_isIOS:"get_isIOS",get_isPhone:"get_isPhone",get_isTablet:"get_isTablet",get_isDesktop:"get_isDesktop",get_isMobile:"get_isMobile"}
-utils_DeviceInfo._checked = null;
-utils_DeviceInfo._os = null;
-utils_DeviceInfo._manufacturer = null;
-utils_DeviceInfo._isMobile = null;
-utils_DeviceInfo._isDesktop = null;
-utils_DeviceInfo._isAndroid = null;
-utils_DeviceInfo._isIOS = null;
-utils_DeviceInfo._isTablet = null;
-utils_DeviceInfo._isPhone = null;
-utils_DeviceInfo._isCardboardCompatible = null;
-utils_DeviceInfo.dpi = null;
-utils_DeviceInfo.physicalScreenSize = null;
-utils_DeviceInfo.screenWidth = null;
-utils_DeviceInfo.screenHeight = null;
-utils_DeviceInfo.isMobile = null;
-utils_DeviceInfo.isDesktop = null;
-utils_DeviceInfo.isTablet = null;
-utils_DeviceInfo.isPhone = null;
-utils_DeviceInfo.isIOS = null;
-utils_DeviceInfo.isAndroid = null;
-utils_DeviceInfo.isCardboardCompatible = null;
-utils_DeviceInfo.get_isMobile = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isMobile;
-};
-utils_DeviceInfo.get_isDesktop = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isDesktop;
-};
-utils_DeviceInfo.get_isTablet = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isTablet;
-};
-utils_DeviceInfo.get_isPhone = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isPhone;
-};
-utils_DeviceInfo.get_isIOS = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isIOS;
-};
-utils_DeviceInfo.get_isAndroid = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isAndroid;
-};
-utils_DeviceInfo.get_isCardboardCompatible = function() {
-	if(!utils_DeviceInfo._checked) utils_DeviceInfo.checkDevice();
-	return utils_DeviceInfo._isCardboardCompatible;
-};
-utils_DeviceInfo.checkDevice = function() {
-	utils_DeviceInfo._checked = true;
-	var match = ["Android","BlackBerry","iPhone","iPad","iPod","Opera Mini","IEMobile","WPDesktop"];
-	var mobileFound = false;
-	var _g1 = 0;
-	var _g = match.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		if(window.navigator.userAgent.indexOf(match[i]) != -1) {
-			mobileFound = true;
-			break;
-		}
-	}
-	if(mobileFound) utils_DeviceInfo._manufacturer = "mobile"; else utils_DeviceInfo._manufacturer = "windows";
-	if(utils_DeviceInfo._manufacturer.indexOf("windows") != -1 || utils_DeviceInfo._manufacturer.indexOf("osx") != -1) utils_DeviceInfo._isMobile = false; else utils_DeviceInfo._isMobile = true;
-	utils_DeviceInfo._isDesktop = !utils_DeviceInfo._isMobile;
-	utils_DeviceInfo.screenWidth = Math.max(openfl_system_Capabilities.get_screenResolutionX(),openfl_system_Capabilities.get_screenResolutionY());
-	utils_DeviceInfo.screenHeight = Math.min(openfl_system_Capabilities.get_screenResolutionX(),openfl_system_Capabilities.get_screenResolutionY());
-	utils_DeviceInfo.dpi = openfl_system_Capabilities.get_screenDPI();
-	var dPixel = Math.sqrt(Math.pow(utils_DeviceInfo.screenWidth,2) + Math.pow(utils_DeviceInfo.screenHeight,2));
-	utils_DeviceInfo.physicalScreenSize = dPixel / utils_DeviceInfo.dpi;
-	if(utils_DeviceInfo._isMobile) {
-		if(utils_DeviceInfo._manufacturer.indexOf("android") != -1) utils_DeviceInfo._isAndroid = true;
-		if(utils_DeviceInfo._manufacturer.indexOf("apple") != -1) utils_DeviceInfo._isIOS = true;
-		if(utils_DeviceInfo.physicalScreenSize > utils_DeviceInfo._tabletScreenMinimumInches) utils_DeviceInfo._isTablet = true; else utils_DeviceInfo._isPhone = true;
-		if(utils_DeviceInfo.physicalScreenSize < 7) utils_DeviceInfo._isCardboardCompatible = true; else utils_DeviceInfo._isCardboardCompatible = false;
-	}
-};
-utils_DeviceInfo.prototype = {
-	__class__: utils_DeviceInfo
-};
-var utils_MenuButton = function(text,width,height) {
-	if(height == null) height = 32;
-	if(width == null) width = 128;
-	var assets = Game.get_assets();
-	var upState = assets.getTexture("button");
-	starling_display_Button.call(this,upState,text);
-	this.set_scale9Grid(new openfl_geom_Rectangle(12.5,12.5,20,20));
-	this.set_width(width);
-	this.set_height(height);
-};
-$hxClasses["utils.MenuButton"] = utils_MenuButton;
-utils_MenuButton.__name__ = ["utils","MenuButton"];
-utils_MenuButton.__super__ = starling_display_Button;
-utils_MenuButton.prototype = $extend(starling_display_Button.prototype,{
-	__class__: utils_MenuButton
-});
-var utils_ProgressBar = function(width,height) {
-	openfl_display_Sprite.call(this);
-	this.init(width,height);
-};
-$hxClasses["utils.ProgressBar"] = utils_ProgressBar;
-utils_ProgressBar.__name__ = ["utils","ProgressBar"];
-utils_ProgressBar.__super__ = openfl_display_Sprite;
-utils_ProgressBar.prototype = $extend(openfl_display_Sprite.prototype,{
-	_background: null
-	,_bar: null
-	,init: function(width,height) {
-		var padding = height * 0.2;
-		var cornerRadius = padding * 2;
-		this._background = new openfl_display_Shape();
-		this._background.get_graphics().beginFill(0,0.5);
-		this._background.get_graphics().drawRoundRect(0,0,width,height,cornerRadius,cornerRadius);
-		this._background.get_graphics().endFill();
-		this.addChild(this._background);
-		var barWidth = width - 2 * padding;
-		var barHeight = height - 2 * padding;
-		var barMatrix = new openfl_geom_Matrix();
-		barMatrix.createGradientBox(barWidth,barHeight,Math.PI / 2);
-		this._bar = new openfl_display_Shape();
-		this._bar.get_graphics().beginGradientFill(0,[15658734,11184810],[1,1],[0,255],barMatrix);
-		this._bar.get_graphics().drawRect(0,0,barWidth,barHeight);
-		this._bar.set_x(padding);
-		this._bar.set_y(padding);
-		this._bar.set_scaleX(0.0);
-		this.addChild(this._bar);
-	}
-	,get_ratio: function() {
-		return this._bar.get_scaleX();
-	}
-	,set_ratio: function(value) {
-		this._bar.set_scaleX(Math.max(0.0,Math.min(1.0,value)));
-		return value;
-	}
-	,__class__: utils_ProgressBar
-	,__properties__: $extend(openfl_display_Sprite.prototype.__properties__,{set_ratio:"set_ratio",get_ratio:"get_ratio"})
-});
-var utils_RoundButton = function(upState,text,downState) {
-	if(text == null) text = "";
-	starling_display_Button.call(this,upState,text,downState);
-};
-$hxClasses["utils.RoundButton"] = utils_RoundButton;
-utils_RoundButton.__name__ = ["utils","RoundButton"];
-utils_RoundButton.__super__ = starling_display_Button;
-utils_RoundButton.prototype = $extend(starling_display_Button.prototype,{
-	hitTest: function(localPoint) {
-		if(!this.get_visible() || !this.get_touchable() || !this.hitTestMask(localPoint)) return null;
-		var bounds = this.get_bounds();
-		var centerX = bounds.width / 2;
-		var centerY = bounds.height / 2;
-		var sqDist = Math.pow(localPoint.x - centerX,2) + Math.pow(localPoint.y - centerY,2);
-		var radius = bounds.width / 2 - 8;
-		if(sqDist < Math.pow(radius,2)) return this; else return null;
-	}
-	,__class__: utils_RoundButton
-});
-var utils_TouchSheet = function(contents) {
+var test_TestBase = function() {
 	starling_display_Sprite.call(this);
-	this.addEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch));
-	this.set_useHandCursor(true);
-	if(contents != null) {
-		contents.set_x(contents.get_width() / -2);
-		contents.set_y(contents.get_height() / -2);
-		this.addChild(contents);
-	}
+	var quad = new starling_display_Quad(256,256,-65536);
+	this.addChild(quad);
 };
-$hxClasses["utils.TouchSheet"] = utils_TouchSheet;
-utils_TouchSheet.__name__ = ["utils","TouchSheet"];
-utils_TouchSheet.__super__ = starling_display_Sprite;
-utils_TouchSheet.prototype = $extend(starling_display_Sprite.prototype,{
-	onTouch: function(event) {
-		var touches = event.getTouches(this,starling_events_TouchPhase.MOVED);
-		if(touches.length == 1) {
-			var delta = touches[0].getMovement(this.get_parent());
-			var _g = this;
-			_g.set_x(_g.get_x() + delta.x);
-			var _g1 = this;
-			_g1.set_y(_g1.get_y() + delta.y);
-		} else if(touches.length == 2) {
-			var touchA = touches[0];
-			var touchB = touches[1];
-			var currentPosA = touchA.getLocation(this.get_parent());
-			var previousPosA = touchA.getPreviousLocation(this.get_parent());
-			var currentPosB = touchB.getLocation(this.get_parent());
-			var previousPosB = touchB.getPreviousLocation(this.get_parent());
-			var currentVector = currentPosA.subtract(currentPosB);
-			var previousVector = previousPosA.subtract(previousPosB);
-			var currentAngle = Math.atan2(currentVector.y,currentVector.x);
-			var previousAngle = Math.atan2(previousVector.y,previousVector.x);
-			var deltaAngle = currentAngle - previousAngle;
-			var previousLocalA = touchA.getPreviousLocation(this);
-			var previousLocalB = touchB.getPreviousLocation(this);
-			this.set_pivotX((previousLocalA.x + previousLocalB.x) * 0.5);
-			this.set_pivotY((previousLocalA.y + previousLocalB.y) * 0.5);
-			this.set_x((currentPosA.x + currentPosB.x) * 0.5);
-			this.set_y((currentPosA.y + currentPosB.y) * 0.5);
-			var _g2 = this;
-			_g2.set_rotation(_g2.get_rotation() + deltaAngle);
-			var sizeDiff = currentVector.get_length() / previousVector.get_length();
-			var _g3 = this;
-			_g3.set_scaleX(_g3.get_scaleX() * sizeDiff);
-			var _g4 = this;
-			_g4.set_scaleY(_g4.get_scaleY() * sizeDiff);
-		}
-		var touch = event.getTouch(this,starling_events_TouchPhase.ENDED);
-		if(touch != null && touch.get_tapCount() == 2) this.get_parent().addChild(this);
-	}
-	,dispose: function() {
-		this.removeEventListener(starling_events_TouchEvent.TOUCH,$bind(this,this.onTouch));
-		starling_display_Sprite.prototype.dispose.call(this);
-	}
-	,__class__: utils_TouchSheet
+$hxClasses["test.TestBase"] = test_TestBase;
+test_TestBase.__name__ = ["test","TestBase"];
+test_TestBase.__super__ = starling_display_Sprite;
+test_TestBase.prototype = $extend(starling_display_Sprite.prototype,{
+	__class__: test_TestBase
 });
 function $iterator(o) { if( o instanceof Array ) return function() { return HxOverrides.iter(o); }; return typeof(o.iterator) == 'function' ? $bind(o,o.iterator) : o.iterator; }
 var $_, $fid = 0;
@@ -57695,30 +52598,11 @@ openfl_display_DisplayObject.__instanceCount = 0;
 openfl_display_DisplayObject.__worldRenderDirty = 0;
 openfl_display_DisplayObject.__worldTransformDirty = 0;
 openfl_display_DisplayObject.__cacheAsBitmapMode = false;
-sample_Main._mouseOnStage = false;
 Constants.GameWidth = 320;
 Constants.GameHeight = 480;
 Constants.CenterX = Constants.GameWidth / 2;
 Constants.CenterY = Constants.GameHeight / 2;
 openfl_text_Font.__registeredFonts = [];
-starling_events_EventDispatcher.sBubbleChains = [];
-openfl_geom_Matrix.__identity = new openfl_geom_Matrix();
-openfl_geom_Matrix.__temp = new openfl_geom_Matrix();
-openfl_geom_Rectangle.__temp = new openfl_geom_Rectangle();
-starling_display_DisplayObject.sAncestors = [];
-starling_display_DisplayObject.sHelperPoint = new openfl_geom_Point();
-starling_display_DisplayObject.sHelperPoint3D = new openfl_geom_Vector3D();
-starling_display_DisplayObject.sHelperPointAlt3D = new openfl_geom_Vector3D();
-starling_display_DisplayObject.sHelperRect = new openfl_geom_Rectangle();
-starling_display_DisplayObject.sHelperMatrix = new openfl_geom_Matrix();
-starling_display_DisplayObject.sHelperMatrixAlt = new openfl_geom_Matrix();
-starling_display_DisplayObject.sHelperMatrix3D = new openfl_geom_Matrix3D();
-starling_display_DisplayObject.sHelperMatrixAlt3D = new openfl_geom_Matrix3D();
-starling_display_DisplayObjectContainer.sHelperMatrix = new openfl_geom_Matrix();
-starling_display_DisplayObjectContainer.sHelperPoint = new openfl_geom_Point();
-starling_display_DisplayObjectContainer.sBroadcastListeners = [];
-starling_display_DisplayObjectContainer.sSortBuffer = [];
-starling_display_DisplayObjectContainer.sCacheToken = new starling_rendering_BatchToken();
 Xml.Element = 0;
 Xml.PCData = 1;
 Xml.CData = 2;
@@ -58596,10 +53480,10 @@ lime_utils__$Int32Array_Int32Array_$Impl_$.BYTES_PER_ELEMENT = 4;
 lime_utils__$UInt16Array_UInt16Array_$Impl_$.BYTES_PER_ELEMENT = 2;
 lime_utils__$UInt32Array_UInt32Array_$Impl_$.BYTES_PER_ELEMENT = 4;
 lime_utils__$UInt8Array_UInt8Array_$Impl_$.BYTES_PER_ELEMENT = 1;
-openfl_Assets.cache = new openfl_AssetCache();
-openfl_Assets.dispatcher = new openfl_events_EventDispatcher();
 openfl_display_LoaderInfo.__rootURL = window.document.URL;
 openfl_system_ApplicationDomain.currentDomain = new openfl_system_ApplicationDomain(null);
+openfl_geom_Matrix.__identity = new openfl_geom_Matrix();
+openfl_geom_Matrix.__temp = new openfl_geom_Matrix();
 openfl_Lib.current = new openfl_display_MovieClip();
 openfl_Lib.__sentWarnings = new haxe_ds_StringMap();
 openfl__$internal_aglsl_Context3D.defaultsampler = new openfl__$internal_aglsl_Sampler();
@@ -58628,6 +53512,7 @@ openfl__$internal_renderer_opengl_shaders2_Shader.UID = 0;
 openfl__$internal_renderer_opengl_shaders2_DefaultShader.VERTEX_SRC = ["attribute vec2 " + "openfl_aPosition" + ";","attribute vec2 " + "openfl_aTexCoord0" + ";","attribute vec4 " + "openfl_aColor" + ";","uniform mat3 " + "openfl_uProjectionMatrix" + ";","uniform bool " + "openfl_uUseColorTransform" + ";","varying vec2 " + "openfl_vTexCoord" + ";","varying vec4 " + "openfl_vColor" + ";","void main(void) {","   gl_Position = vec4((" + "openfl_uProjectionMatrix" + " * vec3(" + "openfl_aPosition" + ", 1.0)).xy, 0.0, 1.0);","   " + "openfl_vTexCoord" + " = " + "openfl_aTexCoord0" + ";","   if(" + "openfl_uUseColorTransform" + ")","   \t" + "openfl_vColor" + " = " + "openfl_aColor" + ";","   else","   \t" + "openfl_vColor" + " = vec4(" + "openfl_aColor" + ".rgb * " + "openfl_aColor" + ".a, " + "openfl_aColor" + ".a);","}"];
 openfl__$internal_renderer_opengl_utils_PathBuiler.__currentWinding = 0;
 openfl__$internal_renderer_opengl_utils_PathBuiler.__fillIndex = 0;
+openfl_geom_Rectangle.__temp = new openfl_geom_Rectangle();
 openfl__$internal_renderer_opengl_utils_GraphicsRenderer.fillVertexAttributes = [new openfl__$internal_renderer_opengl_utils_VertexAttribute(2,5126,false,"openfl_aPosition")];
 openfl__$internal_renderer_opengl_utils_GraphicsRenderer.drawTrianglesVertexAttributes = [new openfl__$internal_renderer_opengl_utils_VertexAttribute(2,5126,false,"openfl_aPosition"),new openfl__$internal_renderer_opengl_utils_VertexAttribute(2,5126,false,"openfl_aTexCoord0"),new openfl__$internal_renderer_opengl_utils_VertexAttribute(4,5121,true,"openfl_aColor")];
 openfl__$internal_renderer_opengl_utils_GraphicsRenderer.primitiveVertexAttributes = [new openfl__$internal_renderer_opengl_utils_VertexAttribute(2,5126,false,"openfl_aPosition"),new openfl__$internal_renderer_opengl_utils_VertexAttribute(4,5126,false,"openfl_aColor")];
@@ -58862,7 +53747,6 @@ openfl_events_NetStatusEvent.NET_STATUS = "netStatus";
 openfl_events_ProgressEvent.PROGRESS = "progress";
 openfl_events_ProgressEvent.SOCKET_DATA = "socketData";
 openfl_events_SecurityErrorEvent.SECURITY_ERROR = "securityError";
-openfl_events_StageVideoAvailabilityEvent.STAGE_VIDEO_AVAILABILITY = "stageVideoAvailability";
 openfl_events_TouchEvent.TOUCH_BEGIN = "touchBegin";
 openfl_events_TouchEvent.TOUCH_END = "touchEnd";
 openfl_events_TouchEvent.TOUCH_MOVE = "touchMove";
@@ -58875,8 +53759,6 @@ openfl_geom__$Orientation3D_Orientation3D_$Impl_$.AXIS_ANGLE = 0;
 openfl_geom__$Orientation3D_Orientation3D_$Impl_$.EULER_ANGLES = 1;
 openfl_geom__$Orientation3D_Orientation3D_$Impl_$.QUATERNION = 2;
 openfl_media_Sound.__registeredSounds = new haxe_ds_StringMap();
-openfl_media_StageVideoAvailability.AVAILABLE = "available";
-openfl_media_StageVideoAvailability.UNAVAILABLE = "unavailable";
 openfl_net_NetConnection.CONNECT_SUCCESS = "connectSuccess";
 openfl_net__$URLLoaderDataFormat_URLLoaderDataFormat_$Impl_$.BINARY = 0;
 openfl_net__$URLLoaderDataFormat_URLLoaderDataFormat_$Impl_$.TEXT = 1;
@@ -59057,8 +53939,7 @@ openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.LZMA = 1;
 openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.ZLIB = 2;
 openfl_utils__$Endian_Endian_$Impl_$.BIG_ENDIAN = 0;
 openfl_utils__$Endian_Endian_$Impl_$.LITTLE_ENDIAN = 1;
-scenes_BenchmarkScene.FRAME_TIME_WINDOW_SIZE = 10;
-scenes_BenchmarkScene.MAX_FAIL_COUNT = 100;
+starling_events_EventDispatcher.sBubbleChains = [];
 starling_animation_DelayedCall.sPool = [];
 starling_animation_Juggler.sCurrentObjectID = 0;
 starling_animation_Juggler.tweenSetters = null;
@@ -59085,6 +53966,20 @@ starling_core_Starling.VERSION = "2.0";
 starling_core_Starling.PROGRAM_DATA_NAME = "Starling.programs";
 starling_core_Starling.sPainters = new haxe_ds_ObjectMap();
 starling_core_Starling.sAll = [];
+starling_display_DisplayObject.sAncestors = [];
+starling_display_DisplayObject.sHelperPoint = new openfl_geom_Point();
+starling_display_DisplayObject.sHelperPoint3D = new openfl_geom_Vector3D();
+starling_display_DisplayObject.sHelperPointAlt3D = new openfl_geom_Vector3D();
+starling_display_DisplayObject.sHelperRect = new openfl_geom_Rectangle();
+starling_display_DisplayObject.sHelperMatrix = new openfl_geom_Matrix();
+starling_display_DisplayObject.sHelperMatrixAlt = new openfl_geom_Matrix();
+starling_display_DisplayObject.sHelperMatrix3D = new openfl_geom_Matrix3D();
+starling_display_DisplayObject.sHelperMatrixAlt3D = new openfl_geom_Matrix3D();
+starling_display_DisplayObjectContainer.sHelperMatrix = new openfl_geom_Matrix();
+starling_display_DisplayObjectContainer.sHelperPoint = new openfl_geom_Point();
+starling_display_DisplayObjectContainer.sBroadcastListeners = [];
+starling_display_DisplayObjectContainer.sSortBuffer = [];
+starling_display_DisplayObjectContainer.sCacheToken = new starling_rendering_BatchToken();
 starling_display_BlendMode.AUTO = "auto";
 starling_display_BlendMode.NONE = "none";
 starling_display_BlendMode.NORMAL = "normal";
@@ -59094,11 +53989,6 @@ starling_display_BlendMode.SCREEN = "screen";
 starling_display_BlendMode.ERASE = "erase";
 starling_display_BlendMode.MASK = "mask";
 starling_display_BlendMode.BELOW = "below";
-starling_display_Button.MAX_DRAG_DIST = 50;
-starling_display_ButtonState.UP = "up";
-starling_display_ButtonState.DOWN = "down";
-starling_display_ButtonState.OVER = "over";
-starling_display_ButtonState.DISABLED = "disabled";
 starling_rendering_VertexDataFormat.sFormats = new haxe_ds_StringMap();
 starling_rendering_Effect.VERTEX_FORMAT = starling_rendering_VertexDataFormat.fromString("position:float2");
 starling_rendering_Effect.sProgramNameCache = new haxe_ds_StringMap();
@@ -59118,10 +54008,6 @@ starling_display_Image.sHorizSizes = [];
 starling_display_Image.sVertSizes = [];
 starling_display_MeshBatch.MAX_NUM_VERTICES = 65535;
 starling_display_MeshBatch.sFullMeshSubset = new starling_utils_MeshSubset();
-starling_display_Sprite3D.E = 0.00001;
-starling_display_Sprite3D.sHelperPoint = new openfl_geom_Vector3D();
-starling_display_Sprite3D.sHelperPointAlt = new openfl_geom_Vector3D();
-starling_display_Sprite3D.sHelperMatrix = new openfl_geom_Matrix3D();
 starling_display_Stage.sMatrix = new openfl_geom_Matrix();
 starling_display_Stage.sMatrix3D = new openfl_geom_Matrix3D();
 starling_events_Event.ADDED = "added";
@@ -59166,25 +54052,6 @@ starling_events_TouchProcessor.sUpdatedTouches = [];
 starling_events_TouchProcessor.sHoveringTouchData = [];
 starling_events_TouchProcessor.sHelperPoint = new openfl_geom_Point();
 starling_filters_FragmentFilter.sMatrix = new openfl_geom_Matrix();
-starling_filters_BlurEffect.HORIZONTAL = "horizontal";
-starling_filters_BlurEffect.VERTICAL = "vertical";
-starling_filters_BlurEffect.MAX_SIGMA = 2.0;
-starling_filters_ColorMatrixFilter.LUMA_R = 0.299;
-starling_filters_ColorMatrixFilter.LUMA_G = 0.587;
-starling_filters_ColorMatrixFilter.LUMA_B = 0.114;
-starling_filters_ColorMatrixFilter.sMatrix = [];
-starling_filters_ColorMatrixEffect.MIN_COLOR = [0,0,0,0.0001];
-starling_filters_ColorMatrixEffect.IDENTITY = [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0];
-starling_filters_ColorMatrixEffect.sMatrix = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-starling_filters_CompositeEffect.sLayers = [];
-starling_filters_CompositeEffect.sOffset = [0,0,0,0];
-starling_filters_CompositeEffect.sColor = [0,0,0,0];
-starling_filters_DisplacementMapEffect.VERTEX_FORMAT = starling_rendering_VertexDataFormat.fromString("position:float2, texCoords:float2, mapTexCoords:float2");
-starling_filters_DisplacementMapEffect.sOneHalf = [0.5,0.5,0.5,0.5];
-starling_filters_DisplacementMapEffect.sMatrix = new openfl_geom_Matrix3D();
-starling_filters_DisplacementMapEffect.sMatrixData = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-starling_filters_FilterChain.sPadding = new starling_utils_Padding();
-starling_geom_Polygon.sRestIndices = [];
 starling_rendering_BatchProcessor.sMeshSubset = new starling_utils_MeshSubset();
 starling_rendering_IndexData.INDEX_SIZE = 2;
 starling_rendering_IndexData.sVector = [];
@@ -59237,9 +54104,6 @@ starling_textures_Texture.sPoint = new openfl_geom_Point();
 starling_textures_ConcretePotTexture.sMatrix = new openfl_geom_Matrix();
 starling_textures_ConcretePotTexture.sRectangle = new openfl_geom_Rectangle();
 starling_textures_ConcretePotTexture.sOrigin = new openfl_geom_Point();
-starling_textures_RenderTexture.USE_DOUBLE_BUFFERING_DATA_NAME = "starling.textures.RenderTexture.useDoubleBuffering";
-starling_textures_RenderTexture.sClipRect = new openfl_geom_Rectangle();
-starling_textures_TextureAtlas.sNames = [];
 starling_textures_TextureSmoothing.NONE = "none";
 starling_textures_TextureSmoothing.BILINEAR = "bilinear";
 starling_textures_TextureSmoothing.TRILINEAR = "trilinear";
@@ -59248,9 +54112,6 @@ starling_utils_Align.RIGHT = "right";
 starling_utils_Align.TOP = "top";
 starling_utils_Align.BOTTOM = "bottom";
 starling_utils_Align.CENTER = "center";
-starling_utils_AssetManager.HTTP_RESPONSE_STATUS = "httpResponseStatus";
-starling_utils_AssetManager.sNames = [];
-starling_utils_AssetManager.NAME_REGEX = new EReg("([^\\?/\\\\]+?)(?:\\.([\\w\\-]+))?(?:\\?.*)?$","");
 starling_utils_Color.WHITE = 16777215;
 starling_utils_Color.SILVER = 12632256;
 starling_utils_Color.GRAY = 8421504;
@@ -59353,7 +54214,6 @@ starling_utils_SystemUtil.sInitialized = false;
 starling_utils_SystemUtil.sApplicationActive = true;
 starling_utils_SystemUtil.sWaitingCalls = [];
 starling_utils_SystemUtil.sSupportsDepthAndStencil = true;
-utils_DeviceInfo._tabletScreenMinimumInches = 6.2;
 ApplicationMain.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
 

@@ -74,6 +74,10 @@ class ApplicationMain {
 		types.push (lime.Assets.AssetType.BINARY);
 		
 		
+		urls.push ("assets/textures/1x/jsHeader.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
 		urls.push ("assets/textures/2x/atlas.png");
 		types.push (lime.Assets.AssetType.IMAGE);
 		
@@ -82,16 +86,20 @@ class ApplicationMain {
 		types.push (lime.Assets.AssetType.TEXT);
 		
 		
-		urls.push ("assets/textures/2x/atlas2.png");
-		types.push (lime.Assets.AssetType.IMAGE);
-		
-		
 		urls.push ("assets/textures/2x/background.jpg");
 		types.push (lime.Assets.AssetType.IMAGE);
 		
 		
 		urls.push ("assets/textures/2x/compressed_texture.atf");
 		types.push (lime.Assets.AssetType.BINARY);
+		
+		
+		urls.push ("assets/textures/perlinNoise.png");
+		types.push (lime.Assets.AssetType.IMAGE);
+		
+		
+		urls.push ("assets/textures/Untitled.png");
+		types.push (lime.Assets.AssetType.IMAGE);
 		
 		
 		
@@ -155,7 +163,7 @@ class ApplicationMain {
 		
 		config = {
 			
-			build: "1372",
+			build: "1389",
 			company: "P.J.Shand",
 			file: "OpenFLStarlingSamples",
 			fps: 60,
@@ -209,7 +217,7 @@ class ApplicationMain {
 	public static function start ():Void {
 		
 		var hasMain = false;
-		var entryPoint = Type.resolveClass ("sample.Main");
+		var entryPoint = Type.resolveClass ("test.TestMain");
 		
 		for (methodName in Type.getClassFields (entryPoint)) {
 			
@@ -269,7 +277,7 @@ class ApplicationMain {
 
 
 @:build(DocumentClass.build())
-@:keep class DocumentClass extends sample.Main {}
+@:keep class DocumentClass extends test.TestMain {}
 
 
 #else

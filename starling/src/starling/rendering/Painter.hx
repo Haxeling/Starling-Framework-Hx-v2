@@ -532,7 +532,6 @@ class Painter
 		
 		if (!startToken.equals(endToken)) 
 		{
-			
 			pushState();
 			
 			var start:Int = startToken.batchID;

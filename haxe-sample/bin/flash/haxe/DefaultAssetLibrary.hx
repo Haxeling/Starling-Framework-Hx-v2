@@ -68,6 +68,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		
 		
+		
+		
 		#end
 		
 		#if flash
@@ -94,16 +96,20 @@ class DefaultAssetLibrary extends AssetLibrary {
 		type.set ("assets/textures/1x/background.jpg", AssetType.IMAGE);
 		className.set ("assets/textures/1x/compressed_texture.atf", __ASSET__assets_textures_1x_compressed_texture_atf);
 		type.set ("assets/textures/1x/compressed_texture.atf", AssetType.BINARY);
+		className.set ("assets/textures/1x/jsHeader.png", __ASSET__assets_textures_1x_jsheader_png);
+		type.set ("assets/textures/1x/jsHeader.png", AssetType.IMAGE);
 		className.set ("assets/textures/2x/atlas.png", __ASSET__assets_textures_2x_atlas_png);
 		type.set ("assets/textures/2x/atlas.png", AssetType.IMAGE);
 		className.set ("assets/textures/2x/atlas.xml", __ASSET__assets_textures_2x_atlas_xml);
 		type.set ("assets/textures/2x/atlas.xml", AssetType.TEXT);
-		className.set ("assets/textures/2x/atlas2.png", __ASSET__assets_textures_2x_atlas2_png);
-		type.set ("assets/textures/2x/atlas2.png", AssetType.IMAGE);
 		className.set ("assets/textures/2x/background.jpg", __ASSET__assets_textures_2x_background_jpg);
 		type.set ("assets/textures/2x/background.jpg", AssetType.IMAGE);
 		className.set ("assets/textures/2x/compressed_texture.atf", __ASSET__assets_textures_2x_compressed_texture_atf);
 		type.set ("assets/textures/2x/compressed_texture.atf", AssetType.BINARY);
+		className.set ("assets/textures/perlinNoise.png", __ASSET__assets_textures_perlinnoise_png);
+		type.set ("assets/textures/perlinNoise.png", AssetType.IMAGE);
+		className.set ("assets/textures/Untitled.png", __ASSET__assets_textures_untitled_png);
+		type.set ("assets/textures/Untitled.png", AssetType.IMAGE);
 		
 		
 		#elseif html5
@@ -153,6 +159,10 @@ class DefaultAssetLibrary extends AssetLibrary {
 		path.set (id, id);
 		
 		type.set (id, AssetType.BINARY);
+		id = "assets/textures/1x/jsHeader.png";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
 		id = "assets/textures/2x/atlas.png";
 		path.set (id, id);
 		
@@ -161,10 +171,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		path.set (id, id);
 		
 		type.set (id, AssetType.TEXT);
-		id = "assets/textures/2x/atlas2.png";
-		path.set (id, id);
-		
-		type.set (id, AssetType.IMAGE);
 		id = "assets/textures/2x/background.jpg";
 		path.set (id, id);
 		
@@ -173,6 +179,14 @@ class DefaultAssetLibrary extends AssetLibrary {
 		path.set (id, id);
 		
 		type.set (id, AssetType.BINARY);
+		id = "assets/textures/perlinNoise.png";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
+		id = "assets/textures/Untitled.png";
+		path.set (id, id);
+		
+		type.set (id, AssetType.IMAGE);
 		
 		
 		var assetsPrefix = null;
@@ -224,20 +238,26 @@ class DefaultAssetLibrary extends AssetLibrary {
 		className.set ("assets/textures/1x/compressed_texture.atf", __ASSET__assets_textures_1x_compressed_texture_atf);
 		type.set ("assets/textures/1x/compressed_texture.atf", AssetType.BINARY);
 		
+		className.set ("assets/textures/1x/jsHeader.png", __ASSET__assets_textures_1x_jsheader_png);
+		type.set ("assets/textures/1x/jsHeader.png", AssetType.IMAGE);
+		
 		className.set ("assets/textures/2x/atlas.png", __ASSET__assets_textures_2x_atlas_png);
 		type.set ("assets/textures/2x/atlas.png", AssetType.IMAGE);
 		
 		className.set ("assets/textures/2x/atlas.xml", __ASSET__assets_textures_2x_atlas_xml);
 		type.set ("assets/textures/2x/atlas.xml", AssetType.TEXT);
 		
-		className.set ("assets/textures/2x/atlas2.png", __ASSET__assets_textures_2x_atlas2_png);
-		type.set ("assets/textures/2x/atlas2.png", AssetType.IMAGE);
-		
 		className.set ("assets/textures/2x/background.jpg", __ASSET__assets_textures_2x_background_jpg);
 		type.set ("assets/textures/2x/background.jpg", AssetType.IMAGE);
 		
 		className.set ("assets/textures/2x/compressed_texture.atf", __ASSET__assets_textures_2x_compressed_texture_atf);
 		type.set ("assets/textures/2x/compressed_texture.atf", AssetType.BINARY);
+		
+		className.set ("assets/textures/perlinNoise.png", __ASSET__assets_textures_perlinnoise_png);
+		type.set ("assets/textures/perlinNoise.png", AssetType.IMAGE);
+		
+		className.set ("assets/textures/Untitled.png", __ASSET__assets_textures_untitled_png);
+		type.set ("assets/textures/Untitled.png", AssetType.IMAGE);
 		
 		
 		if (useManifest) {
@@ -893,11 +913,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 @:keep @:bind #if display private #end class __ASSET__assets_textures_1x_atlas_xml extends flash.utils.ByteArray { }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_1x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_1x_compressed_texture_atf extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_1x_jsheader_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_2x_atlas_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_2x_atlas_xml extends flash.utils.ByteArray { }
-@:keep @:bind #if display private #end class __ASSET__assets_textures_2x_atlas2_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_2x_background_jpg extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind #if display private #end class __ASSET__assets_textures_2x_compressed_texture_atf extends flash.utils.ByteArray { }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_perlinnoise_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep @:bind #if display private #end class __ASSET__assets_textures_untitled_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 
 
 #elseif html5
@@ -909,6 +931,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 
 @:keep #if display private #end class __ASSET__assets_fonts_ubuntu_r_ttf extends lime.text.Font { public function new () { super (); name = "Ubuntu"; } } 
+
+
 
 
 
@@ -938,11 +962,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 @:file("assets/textures/1x/atlas.xml") #if display private #end class __ASSET__assets_textures_1x_atlas_xml extends lime.utils.Bytes {}
 @:image("assets/textures/1x/background.jpg") #if display private #end class __ASSET__assets_textures_1x_background_jpg extends lime.graphics.Image {}
 @:file("assets/textures/1x/compressed_texture.atf") #if display private #end class __ASSET__assets_textures_1x_compressed_texture_atf extends lime.utils.Bytes {}
+@:image("assets/textures/1x/jsHeader.png") #if display private #end class __ASSET__assets_textures_1x_jsheader_png extends lime.graphics.Image {}
 @:image("assets/textures/2x/atlas.png") #if display private #end class __ASSET__assets_textures_2x_atlas_png extends lime.graphics.Image {}
 @:file("assets/textures/2x/atlas.xml") #if display private #end class __ASSET__assets_textures_2x_atlas_xml extends lime.utils.Bytes {}
-@:image("assets/textures/2x/atlas2.png") #if display private #end class __ASSET__assets_textures_2x_atlas2_png extends lime.graphics.Image {}
 @:image("assets/textures/2x/background.jpg") #if display private #end class __ASSET__assets_textures_2x_background_jpg extends lime.graphics.Image {}
 @:file("assets/textures/2x/compressed_texture.atf") #if display private #end class __ASSET__assets_textures_2x_compressed_texture_atf extends lime.utils.Bytes {}
+@:image("assets/textures/perlinNoise.png") #if display private #end class __ASSET__assets_textures_perlinnoise_png extends lime.graphics.Image {}
+@:image("assets/textures/Untitled.png") #if display private #end class __ASSET__assets_textures_untitled_png extends lime.graphics.Image {}
 
 
 

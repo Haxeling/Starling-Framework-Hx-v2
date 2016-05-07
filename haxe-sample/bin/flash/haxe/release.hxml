@@ -1,6 +1,6 @@
 -main ApplicationMain 
 -cp C:/_projects/HaxeLibraries/Imagination/openfl
--D openfl=3.6.0
+-D openfl=3.6.1
 -cp C:/_sdks/haxe/3.2/haxe/lib/lime/2,9,0
 -D lime=2.9.0
 -cp C:/_sdks/haxe/3.2/haxe/lib/actuate/1,8,6

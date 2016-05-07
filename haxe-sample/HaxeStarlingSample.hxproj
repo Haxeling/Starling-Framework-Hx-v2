@@ -16,13 +16,13 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\_projects\HaxeLibraries\Imagination\openfl" />
+    <class path="C:\_sdks\haxe\3.2\haxe\lib\openfl\3,6,0" />
     <class path="C:\_sdks\haxe\3.2\haxe\lib\lime\2,9,0" />
     <class path="C:\_sdks\haxe\3.2\haxe\lib\actuate\1,8,6" />
     <class path="C:\_sdks\haxe\3.2\haxe\lib\air3\0,0,1" />
     <class path="src" />
     <class path="..\starling\src" />
-    <class path="C:\_projects\HaxeLibraries\Imagination\openfl\extern" />
+    <class path="C:\_sdks\haxe\3.2\haxe\lib\openfl\3,6,0\extern" />
     <class path="bin\html5\haxe" />
   </classpaths>
   <!-- Build options -->
