@@ -27,7 +27,8 @@ import haxe.Constraints.Function;
 			#if flash
 				maxNumArgs = Reflect.getProperty(func, "length");
 			#else 
-				maxNumArgs = args.length;
+				if (args == null) maxNumArgs = 0;
+				else maxNumArgs = args.length;
 			#end
 			if (args != null) {				
 				for (i in args.length...maxNumArgs)
