@@ -38,7 +38,6 @@ class MainMenu extends Sprite
 		var logo:Image = new Image(Game.assets.getTexture("logo"));
 		addChild(logo);
 		
-		trace("MainMenu");
 		var scenesToCreate:Array<Dynamic> = [
 		["Textures", TextureScene], 
 		["Multitouch", TouchScene], 

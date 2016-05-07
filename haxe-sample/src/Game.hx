@@ -103,6 +103,7 @@ class Game extends Sprite
 	
 	private function onButtonTriggered(event:Event):Void
 	{
+		trace("onButtonTriggered");
 		var button:Button = cast(event.target, Button);
 		
 		if (button.name == "backButton") 

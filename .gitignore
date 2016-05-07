@@ -46,3 +46,6 @@ FlexUnitCompilerApplication.as
 # Release package
 starling/bin/starling-*.zip
 /sample2/bin/flash/bin/OpenFLStarlingSamples.swf
+/haxe-sample/bin/flash/bin/OpenFLStarlingSamples.swf
+/haxe-sample/bin/html5
+/haxe-sample/bin/flash

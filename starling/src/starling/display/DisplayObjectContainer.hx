@@ -385,7 +385,7 @@ class DisplayObjectContainer extends DisplayObject
 				if (selfOrParentChanged) 
 					child._lastParentOrSelfChangeFrameID = frameID;
 				
-				/*if (child._lastParentOrSelfChangeFrameID != frameID &&
+				if (child._lastParentOrSelfChangeFrameID != frameID &&
 					child._lastChildChangeFrameID != frameID &&
 					child._tokenFrameID == frameID - 1) 
 				{
@@ -396,7 +396,7 @@ class DisplayObjectContainer extends DisplayObject
 					child._pushToken.copyFrom(sCacheToken);
 				}
 				else 
-				{*/
+				{
 					var mask:DisplayObject = child._mask;
 					var filter:FragmentFilter = child._filter;
 					
@@ -411,7 +411,7 @@ class DisplayObjectContainer extends DisplayObject
 					if (mask != null) painter.eraseMask(mask);
 					
 					painter.popState(child._popToken);
-				//}
+				}
 				child._tokenFrameID = frameID;
 			}
 		}

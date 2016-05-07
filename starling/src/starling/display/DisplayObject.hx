@@ -24,8 +24,8 @@ import openfl.geom.Vector3D;
 import openfl.system.Capabilities;
 
 #if flash
-import flash.ui.Mouse;
-import flash.ui.MouseCursor;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 #end
 
 import starling.core.Starling;

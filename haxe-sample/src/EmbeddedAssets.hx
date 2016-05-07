@@ -26,7 +26,7 @@ class EmbeddedAssets
 	//public static var atlas:String = "assets/textures/1x/atlas.png";
 	@:isVar public static var atlas(get, null):BitmapData;
 //public static var atlas:String = "assets/textures/1x/atlas.png";
-	@:isVar public static var atlas2(get, null):BitmapData;
+	//@:isVar public static var atlas2(get, null):BitmapData;
 
 	// Bitmap textures
 
@@ -61,10 +61,10 @@ class EmbeddedAssets
 		return Assets.getBitmapData("assets/textures/2x/atlas.png");
 	}
 	
-	static function get_atlas2():BitmapData 
+	/*static function get_atlas2():BitmapData 
 	{
 		return Assets.getBitmapData("assets/textures/2x/atlas2.png");
-	}
+	}*/
 	
 	static function get_background():BitmapData 
 	{

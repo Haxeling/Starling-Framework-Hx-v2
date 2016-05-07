@@ -1,5 +1,6 @@
 package starling.openfl; #if (!flash)
 
+import openfl.display3D.Context3DVertexBufferFormat;
 import lime.app.Application;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLView;
@@ -10,7 +11,6 @@ import openfl.display3D.Context3DProgramType;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display3D.Context3DTriangleFace;
-import starling.openfl.Context3DVertexBufferFormat;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.Program3D;

@@ -15,7 +15,7 @@ import openfl.geom.Rectangle;
 import openfl.ui.Mouse;
 
 #if flash
-import flash.ui.MouseCursor;
+import openfl.ui.MouseCursor;
 #end
 
 import starling.display.DisplayObjectContainer;
@@ -214,7 +214,7 @@ class Button extends DisplayObjectContainer
 		else if (touch.phase == TouchPhase.ENDED && _state == ButtonState.DOWN) 
 		{
 			state = ButtonState.UP;
-			if (!touch.cancelled)				 dispatchEventWith(Event.TRIGGERED, true);
+			if (!touch.cancelled) dispatchEventWith(Event.TRIGGERED, true);
 		}
 	}
 	

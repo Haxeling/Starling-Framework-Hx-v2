@@ -791,13 +791,13 @@ class Starling extends EventDispatcher
 		var supportsCursor:Bool = false;
 		#if flash
 		supportsCursor = Mouse.supportsCursor;
+		if (!MultitouchEnabled || supportsCursor)
 		#end
-		if (!MultitouchEnabled || supportsCursor) {
+		{
 			types.push(MouseEvent.MOUSE_DOWN);
 			types.push(MouseEvent.MOUSE_MOVE);
 			types.push(MouseEvent.MOUSE_UP);
 		}
-		
 		return types;
 	}
 	
@@ -1119,3 +1119,14 @@ class Starling extends EventDispatcher
 		return (sCurrent != null) ? sCurrent._frameID:0;
 	}
 }
+
+
+//typedef Context3D = starling.openfl.Context3D;
+//typedef AGLSLParser = starling.openfl.AGLSLParser;
+//typedef Mapping = starling.openfl.Mapping;
+//typedef Mapping = starling.openfl.Context3DProfile;
+
+
+#if cpp
+//typedef Texture = starling.openfl.Texture;
+#end

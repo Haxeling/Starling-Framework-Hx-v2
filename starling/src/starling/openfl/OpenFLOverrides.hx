@@ -14,6 +14,15 @@ class OpenFLOverrides
 	
 }
 
+//typedef Context3D = starling.openfl.Context3D;
+//typedef AGLSLParser = starling.openfl.AGLSLParser;
+//typedef Mapping = starling.openfl.Mapping;
+//typedef Mapping = starling.openfl.Context3DProfile;
+
+
+#if cpp
+//typedef Texture = starling.openfl.Texture;
+#end
 
 //typedef Context3D = starling.openfl.Context3D;
 //typedef AGLSLParser = starling.openfl.AGLSLParser;

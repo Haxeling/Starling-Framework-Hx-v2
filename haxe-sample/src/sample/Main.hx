@@ -79,7 +79,7 @@ class Main extends Sprite
 		var viewPort:Rectangle = new Rectangle(0, 0, StageWidth * 2, StageHeight * 2);
 		var scaleFactor:Int = viewPort.width < (480) ? 1:2;  // midway between 320 and 640  
 		
-		mStarling = new Starling(Game, stage, viewPort, null,Context3DRenderMode.AUTO, [Context3DProfile.BASELINE]);
+		mStarling = new Starling(Game, stage, new Rectangle(0,0,320,480), null,Context3DRenderMode.AUTO, [Context3DProfile.BASELINE]);
 		mStarling.stage.stageWidth = StageWidth;  // <- same size on all devices!  
 		mStarling.stage.stageHeight = StageHeight;  // <- same size on all devices!  
 		mStarling.antiAliasing = 2;
@@ -124,14 +124,14 @@ class Main extends Sprite
 	{
 		// Our assets are loaded and managed by the 'AssetManager'. To use that class,
 		// we first have to enqueue pointers to all assets we want it to load.
-		var assets:AssetManager = new AssetManager(scaleFactor);
+		var assets:AssetManager = new AssetManager(2);
 		
 		//assets.verbose = Capabilities.isDebugger;
 		//assets.enqueue(EmbeddedAssets);
 		assets.enqueueWithName(EmbeddedAssets.atlas, "atlas", new TextureOptions(2));
 		assets.enqueueWithName(EmbeddedAssets.atlas_xml, "atlas_xml");
 		assets.enqueueWithName(EmbeddedAssets.background, "background");
-		assets.enqueueWithName(EmbeddedAssets.compressed_texture, "compressed_texture");
+		//assets.enqueueWithName(EmbeddedAssets.compressed_texture, "compressed_texture");
 		assets.enqueueWithName(EmbeddedAssets.desyrel, "desyrel", new TextureOptions(2));
 		assets.enqueueWithName(EmbeddedAssets.desyrel_fnt, "desyrel_fnt");
 		assets.enqueueWithName(EmbeddedAssets.wing_flap, "wing_flap");

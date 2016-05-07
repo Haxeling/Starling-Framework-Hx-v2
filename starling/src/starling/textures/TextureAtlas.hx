@@ -100,6 +100,33 @@ class TextureAtlas
 	 *  (e.g. to support a different file format). */
 	private function parseAtlasXml(atlasXml:Xml):Void
 	{
+		/*var scale:Float = _atlasTexture.scale;
+        var region:Rectangle = new Rectangle();
+        var frame:Rectangle  = new Rectangle();
+        
+        for(subTexture in atlasXml.elementsNamed("SubTexture"))
+        {
+            var name:String        = StringUtil.clean(subTexture.get("name"));
+            var x:Float           = Std.parseFloat(subTexture.get("x")) / scale;
+            var y:Float           = Std.parseFloat(subTexture.get("y")) / scale;
+            var width:Float       = Std.parseFloat(subTexture.get("width")) / scale;
+            var height:Float      = Std.parseFloat(subTexture.get("height")) / scale;
+            var frameX:Float      = Std.parseFloat(subTexture.get("frameX")) / scale;
+            var frameY:Float      = Std.parseFloat(subTexture.get("frameY")) / scale;
+            var frameWidth:Float  = Std.parseFloat(subTexture.get("frameWidth")) / scale;
+            var frameHeight:Float = Std.parseFloat(subTexture.get("frameHeight")) / scale;
+            var rotated:Bool    = parseBool(subTexture.get("rotated"));
+
+            region.setTo(x, y, width, height);
+            frame.setTo(frameX, frameY, frameWidth, frameHeight);
+
+            if (frameWidth > 0 && frameHeight > 0)
+                addRegion(name, region, frame, rotated);
+            else
+                addRegion(name, region, null,  rotated);
+        }*/
+		
+		
 		var scale = _atlasTexture.scale;
 		var frame  = new Rectangle();
 		var region = new Rectangle();
@@ -122,8 +149,12 @@ class TextureAtlas
 				region.setTo(x, y, width, height);
 				frame.setTo(frameX, frameY, frameWidth, frameHeight);
 				
-				if (frameWidth > 0 && frameHeight > 0) addRegion(name, region, frame, rotated);
-				else addRegion(name, region, null,  rotated);
+				if (frameWidth > 0 && frameHeight > 0) {
+					addRegion(name, region, frame, rotated);
+				}
+				else {
+					addRegion(name, region, null, rotated);
+				}
 			}
 		}
 		
@@ -226,6 +257,9 @@ class TextureAtlas
 	public function addRegion(name:String, region:Rectangle, frame:Rectangle = null,
 			rotated:Bool = false):Void
 	{
+		trace("name = " + name);
+		trace("region = " + region);
+		
 		_subTextures.set(name, new SubTexture(_atlasTexture, region, false, frame, rotated));
 		_subTextureNames = null;
 	}
