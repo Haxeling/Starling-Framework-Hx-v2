@@ -15,7 +15,7 @@ import openfl.geom.Rectangle;
 import openfl.ui.Mouse;
 
 #if flash
-import openfl.ui.MouseCursor;
+import flash.ui.MouseCursor;
 #end
 
 import starling.display.DisplayObjectContainer;
