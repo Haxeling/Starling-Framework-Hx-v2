@@ -413,7 +413,7 @@ class Juggler implements IAnimatable
 	
 	private function onRemove(event:Event):Void
 	{
-		var objectID:Int = remove(cast(event.target, IAnimatable));
+		var objectID:Int = remove(cast event.target);
 		
 		if (objectID != 0) 
 		{
@@ -421,9 +421,12 @@ class Juggler implements IAnimatable
 			try { tween = cast event.target; }
 			catch (e:Error) { }
 			
-			//var tween:Tween = cast(event.target, Tween);
-			if (tween != null && tween.isComplete) 
-				addWithID(tween.nextTween, objectID);
+			if (tween != null){
+				if (tween.isComplete) {
+					var nextTween = Reflect.getProperty(tween, "nextTween");
+					if (nextTween != null) add(cast nextTween);
+				}
+			}
 		}
 	}
 	
